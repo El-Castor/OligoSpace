@@ -4,12 +4,9 @@
 
 - Review the deterministic Excel preview, target decomposition, and storage
   conflicts with a data owner; require explicit approval before import writes.
-- Create the next execution plan for registry search, detail/edit workflows, and
-  PostgreSQL authorization/integration tests.
 
 ## Next
 
-- Core registry search, detail/edit workflows, and PostgreSQL integration tests.
 - Persist and expose worker jobs/results for Primer3 QC and pair compatibility.
 - Exact target mapping persistence and interactive GeneOligoViewer.
 - ExperimentRun and contextual Validation with attachments.
@@ -32,3 +29,5 @@
   retaining existing Wallace calculation provenance.
 - Generate TypeScript API types from OpenAPI after endpoint stabilization.
 - Migrate to ESLint 10 when the Next.js lint plugin dependency graph supports it.
+- Split the serial core-registry E2E journey into independently seeded scenarios as
+  browser coverage grows beyond plan 002.

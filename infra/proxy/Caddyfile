@@ -1,18 +1,36 @@
-{$APP_ORIGIN} {
+{$APP_ORIGIN}, http://caddy:8080 {
   encode zstd gzip
 
-  @api path /api/* /docs* /openapi.json
+  @api path /api/v1/* /docs* /openapi.json
   handle @api {
-    reverse_proxy api:8000
+    reverse_proxy {
+      dynamic a api 8000 {
+        refresh 5s
+        resolvers 127.0.0.11
+        versions ipv4
+      }
+    }
   }
 
   @identity path /realms/* /resources/* /.well-known/*
   handle @identity {
-    reverse_proxy keycloak:8080
+    reverse_proxy {
+      dynamic a keycloak 8080 {
+        refresh 5s
+        resolvers 127.0.0.11
+        versions ipv4
+      }
+    }
   }
 
   handle {
-    reverse_proxy web:3000
+    reverse_proxy {
+      dynamic a web 3000 {
+        refresh 5s
+        resolvers 127.0.0.11
+        versions ipv4
+      }
+    }
   }
 
   header {

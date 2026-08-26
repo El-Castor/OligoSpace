@@ -66,12 +66,32 @@ class TargetRead(ORMModel):
     name: str
     target_type: str
     organism_id: uuid.UUID | None
+    reference_genome_id: uuid.UUID | None
     gene_identifier: str | None
     transcript_identifier: str | None
     description: str | None
+    reference_sequence: str | None
     visibility: Visibility
     status: RecordStatus
     created_at: datetime
+    updated_at: datetime
+
+
+class TargetUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str | None = Field(default=None, min_length=1, max_length=240)
+    target_type: str | None = Field(default=None, min_length=1, max_length=40)
+    organism_id: uuid.UUID | None = None
+    reference_genome_id: uuid.UUID | None = None
+    gene_identifier: str | None = Field(default=None, max_length=160)
+    transcript_identifier: str | None = Field(default=None, max_length=160)
+    description: str | None = None
+    reference_sequence: str | None = None
+    owner_team_id: uuid.UUID | None = None
+    owner_project_id: uuid.UUID | None = None
+    visibility: Visibility | None = None
+    status: RecordStatus | None = None
 
 
 class OligoCreate(BaseModel):
@@ -98,9 +118,25 @@ class OligoRead(ORMModel):
     molecular_weight_g_mol: float | None
     reverse_complement: str
     calculation_provenance: dict[str, Any]
+    description: str | None
+    notes: str | None
     visibility: Visibility
     status: RecordStatus
     created_at: datetime
+    updated_at: datetime
+
+
+class OligoUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str | None = Field(default=None, min_length=1, max_length=240)
+    oligo_type: str | None = Field(default=None, min_length=1, max_length=80)
+    description: str | None = None
+    notes: str | None = None
+    owner_team_id: uuid.UUID | None = None
+    owner_project_id: uuid.UUID | None = None
+    visibility: Visibility | None = None
+    status: RecordStatus | None = None
 
 
 class OligoCreateResult(BaseModel):
@@ -142,13 +178,39 @@ class AssayRead(ORMModel):
     name: str
     experiment_type_id: uuid.UUID
     target_id: uuid.UUID | None
+    organism_id: uuid.UUID | None
     project_id: uuid.UUID | None
+    owner_team_id: uuid.UUID | None
+    expected_product: str | None
     expected_amplicon_length: int | None
+    recommended_annealing_temperature_c: float | None
+    protocol_notes: str | None
+    method_metadata: dict[str, Any]
     visibility: Visibility
     status: RecordStatus
     version: int
     oligos: list[AssayOligoRead]
     created_at: datetime
+    updated_at: datetime
+
+
+class AssayUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str | None = Field(default=None, min_length=1, max_length=240)
+    experiment_type_id: uuid.UUID | None = None
+    target_id: uuid.UUID | None = None
+    organism_id: uuid.UUID | None = None
+    project_id: uuid.UUID | None = None
+    owner_team_id: uuid.UUID | None = None
+    expected_product: str | None = None
+    expected_amplicon_length: int | None = Field(default=None, gt=0)
+    recommended_annealing_temperature_c: float | None = None
+    protocol_notes: str | None = None
+    method_metadata: dict[str, Any] | None = None
+    visibility: Visibility | None = None
+    status: RecordStatus | None = None
+    oligos: list[AssayOligoCreate] | None = None
 
 
 class Page(BaseModel):

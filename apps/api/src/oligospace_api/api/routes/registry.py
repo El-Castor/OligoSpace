@@ -1,25 +1,28 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from oligospace_api.db.session import get_session
 from oligospace_api.models.registry import Assay, ExperimentType, Oligo, Organism, Target
-from oligospace_api.repositories.registry import list_visible
+from oligospace_api.repositories.registry import get_visible_by_public_id, list_visible
 from oligospace_api.schemas.registry import (
     AssayCreate,
     AssayRead,
+    AssayUpdate,
     ExperimentTypeCreate,
     ExperimentTypeRead,
     OligoCreate,
     OligoCreateResult,
     OligoRead,
+    OligoUpdate,
     OrganismCreate,
     OrganismRead,
     Page,
     TargetCreate,
     TargetRead,
+    TargetUpdate,
 )
 from oligospace_api.security.auth import AuthContext, get_auth_context
 from oligospace_api.services.registry import (
@@ -28,9 +31,21 @@ from oligospace_api.services.registry import (
     create_oligo,
     create_organism,
     create_target,
+    update_assay,
+    update_oligo,
+    update_target,
 )
 
 router = APIRouter(prefix="/registry", tags=["registry"])
+
+PUBLIC_ID = Path(pattern=r"^[A-Za-z]{3}-[0-9]{6,}$", max_length=32)
+
+
+def _missing(entity_type: str) -> HTTPException:
+    return HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail={"code": "not_found", "message": f"{entity_type} was not found."},
+    )
 
 
 @router.get("/experiment-types", response_model=list[ExperimentTypeRead])
@@ -75,11 +90,12 @@ async def add_organism(
 async def targets(
     limit: int = Query(default=50, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
+    q: str | None = Query(default=None, max_length=200),
     context: AuthContext = Depends(get_auth_context),
     session: AsyncSession = Depends(get_session),
 ) -> Page:
     items, total = await list_visible(
-        session, Target, context.principal, limit=limit, offset=offset
+        session, Target, context.principal, limit=limit, offset=offset, search=q
     )
     return Page(
         items=[TargetRead.model_validate(item) for item in items],
@@ -98,14 +114,39 @@ async def add_target(
     return await create_target(session, context.principal, payload)
 
 
+@router.get("/targets/{public_id}", response_model=TargetRead)
+async def target_detail(
+    public_id: str = PUBLIC_ID,
+    context: AuthContext = Depends(get_auth_context),
+    session: AsyncSession = Depends(get_session),
+) -> Target:
+    target = await get_visible_by_public_id(session, Target, context.principal, public_id)
+    if target is None:
+        raise _missing("Target")
+    return target
+
+
+@router.patch("/targets/{public_id}", response_model=TargetRead)
+async def edit_target(
+    payload: TargetUpdate,
+    public_id: str = PUBLIC_ID,
+    context: AuthContext = Depends(get_auth_context),
+    session: AsyncSession = Depends(get_session),
+) -> Target:
+    return await update_target(session, context.principal, public_id, payload)
+
+
 @router.get("/oligos", response_model=Page)
 async def oligos(
     limit: int = Query(default=50, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
+    q: str | None = Query(default=None, max_length=200),
     context: AuthContext = Depends(get_auth_context),
     session: AsyncSession = Depends(get_session),
 ) -> Page:
-    items, total = await list_visible(session, Oligo, context.principal, limit=limit, offset=offset)
+    items, total = await list_visible(
+        session, Oligo, context.principal, limit=limit, offset=offset, search=q
+    )
     return Page(
         items=[OligoRead.model_validate(item) for item in items],
         total=total,
@@ -124,14 +165,39 @@ async def add_oligo(
     return OligoCreateResult(oligo=OligoRead.model_validate(oligo), warnings=warnings)
 
 
+@router.get("/oligos/{public_id}", response_model=OligoRead)
+async def oligo_detail(
+    public_id: str = PUBLIC_ID,
+    context: AuthContext = Depends(get_auth_context),
+    session: AsyncSession = Depends(get_session),
+) -> Oligo:
+    oligo = await get_visible_by_public_id(session, Oligo, context.principal, public_id)
+    if oligo is None:
+        raise _missing("Oligo")
+    return oligo
+
+
+@router.patch("/oligos/{public_id}", response_model=OligoRead)
+async def edit_oligo(
+    payload: OligoUpdate,
+    public_id: str = PUBLIC_ID,
+    context: AuthContext = Depends(get_auth_context),
+    session: AsyncSession = Depends(get_session),
+) -> Oligo:
+    return await update_oligo(session, context.principal, public_id, payload)
+
+
 @router.get("/assays", response_model=Page)
 async def assays(
     limit: int = Query(default=50, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
+    q: str | None = Query(default=None, max_length=200),
     context: AuthContext = Depends(get_auth_context),
     session: AsyncSession = Depends(get_session),
 ) -> Page:
-    items, total = await list_visible(session, Assay, context.principal, limit=limit, offset=offset)
+    items, total = await list_visible(
+        session, Assay, context.principal, limit=limit, offset=offset, search=q
+    )
     return Page(
         items=[AssayRead.model_validate(item) for item in items],
         total=total,
@@ -147,3 +213,25 @@ async def add_assay(
     session: AsyncSession = Depends(get_session),
 ) -> Assay:
     return await create_assay(session, context.principal, payload)
+
+
+@router.get("/assays/{public_id}", response_model=AssayRead)
+async def assay_detail(
+    public_id: str = PUBLIC_ID,
+    context: AuthContext = Depends(get_auth_context),
+    session: AsyncSession = Depends(get_session),
+) -> Assay:
+    assay = await get_visible_by_public_id(session, Assay, context.principal, public_id)
+    if assay is None:
+        raise _missing("Assay")
+    return assay
+
+
+@router.patch("/assays/{public_id}", response_model=AssayRead)
+async def edit_assay(
+    payload: AssayUpdate,
+    public_id: str = PUBLIC_ID,
+    context: AuthContext = Depends(get_auth_context),
+    session: AsyncSession = Depends(get_session),
+) -> Assay:
+    return await update_assay(session, context.principal, public_id, payload)

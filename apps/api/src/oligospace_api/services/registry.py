@@ -2,12 +2,20 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
+from enum import StrEnum
+from typing import Any
 
 from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from oligospace_api.domain.permissions import Principal, can_create, can_manage_catalog
+from oligospace_api.domain.permissions import (
+    Principal,
+    ResourceScope,
+    can_create,
+    can_edit,
+    can_manage_catalog,
+)
 from oligospace_api.models.registry import (
     Assay,
     AssayOligo,
@@ -17,13 +25,17 @@ from oligospace_api.models.registry import (
     Organism,
     Target,
 )
-from oligospace_api.repositories.registry import visible_query
+from oligospace_api.repositories.registry import get_visible_by_public_id, visible_query
 from oligospace_api.schemas.registry import (
     AssayCreate,
+    AssayOligoCreate,
+    AssayUpdate,
     ExperimentTypeCreate,
     OligoCreate,
+    OligoUpdate,
     OrganismCreate,
     TargetCreate,
+    TargetUpdate,
 )
 from oligospace_api.services.public_ids import allocate_public_id
 from oligospace_api.services.sequence_analysis import (
@@ -41,14 +53,75 @@ def _require_create(principal: Principal) -> None:
         )
 
 
-def _audit(actor_id: uuid.UUID, action: str, entity_type: str, entity_id: uuid.UUID) -> AuditEvent:
+def _audit(
+    actor_id: uuid.UUID,
+    action: str,
+    entity_type: str,
+    entity_id: uuid.UUID,
+    *,
+    before: dict[str, Any] | None = None,
+    after: dict[str, Any] | None = None,
+) -> AuditEvent:
     return AuditEvent(
         occurred_at=datetime.now(UTC),
         actor_id=actor_id,
         action=action,
         entity_type=entity_type,
         entity_id=entity_id,
+        before=before,
+        after=after,
     )
+
+
+def _json_value(value: Any) -> Any:
+    if isinstance(value, uuid.UUID):
+        return str(value)
+    if isinstance(value, StrEnum):
+        return value.value
+    if isinstance(value, list):
+        return [_json_value(item) for item in value]
+    if isinstance(value, dict):
+        return {key: _json_value(item) for key, item in value.items()}
+    return value
+
+
+def _snapshot(record: Oligo | Target | Assay, fields: tuple[str, ...]) -> dict[str, Any]:
+    return {field: _json_value(getattr(record, field)) for field in fields}
+
+
+def _scope(record: Oligo | Target | Assay) -> ResourceScope:
+    project_id = record.project_id if isinstance(record, Assay) else record.owner_project_id
+    return ResourceScope(
+        organization_id=record.organization_id,
+        created_by_id=record.created_by_id,
+        visibility=record.visibility,
+        team_id=record.owner_team_id,
+        project_id=project_id,
+    )
+
+
+def _require_edit(principal: Principal, record: Oligo | Target | Assay) -> None:
+    if not can_edit(principal, _scope(record)):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"code": "forbidden", "message": "This role cannot edit this resource."},
+        )
+
+
+def _not_found(entity_type: str) -> HTTPException:
+    return HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail={"code": "not_found", "message": f"{entity_type} was not found."},
+    )
+
+
+def _reject_null_required(data: dict[str, Any], fields: tuple[str, ...]) -> None:
+    invalid = [field for field in fields if field in data and data[field] is None]
+    if invalid:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={"code": "required_field_cannot_be_null", "fields": invalid},
+        )
 
 
 async def create_organism(
@@ -154,16 +227,22 @@ async def create_oligo(
     return oligo, warnings
 
 
-async def create_assay(session: AsyncSession, principal: Principal, payload: AssayCreate) -> Assay:
-    _require_create(principal)
+async def _validate_assay_references(
+    session: AsyncSession,
+    principal: Principal,
+    *,
+    experiment_type_id: uuid.UUID,
+    target_id: uuid.UUID | None,
+    oligos: list[AssayOligoCreate],
+) -> None:
     experiment_type = await session.scalar(
         select(ExperimentType).where(
-            ExperimentType.id == payload.experiment_type_id, ExperimentType.active.is_(True)
+            ExperimentType.id == experiment_type_id, ExperimentType.active.is_(True)
         )
     )
     if experiment_type is None:
         raise HTTPException(status_code=422, detail={"code": "invalid_experiment_type"})
-    requested_roles = {association.role.value for association in payload.oligos}
+    requested_roles = {association.role.value for association in oligos}
     allowed_roles = set(experiment_type.allowed_roles)
     invalid_roles = requested_roles - allowed_roles if allowed_roles else set()
     if invalid_roles:
@@ -175,10 +254,10 @@ async def create_assay(session: AsyncSession, principal: Principal, payload: Ass
                 "allowed_roles": sorted(allowed_roles),
             },
         )
-    association_keys = {(item.oligo_id, item.role) for item in payload.oligos}
-    if len(association_keys) != len(payload.oligos):
+    association_keys = {(item.oligo_id, item.role) for item in oligos}
+    if len(association_keys) != len(oligos):
         raise HTTPException(status_code=422, detail={"code": "duplicate_oligo_role"})
-    requested_oligo_ids = {association.oligo_id for association in payload.oligos}
+    requested_oligo_ids = {association.oligo_id for association in oligos}
     accessible_oligos = set(
         (
             await session.scalars(
@@ -190,12 +269,23 @@ async def create_assay(session: AsyncSession, principal: Principal, payload: Ass
     )
     if accessible_oligos != requested_oligo_ids:
         raise HTTPException(status_code=422, detail={"code": "unknown_or_inaccessible_oligo"})
-    if payload.target_id is not None:
+    if target_id is not None:
         target = await session.scalar(
-            visible_query(Target, principal).where(Target.id == payload.target_id)
+            visible_query(Target, principal).where(Target.id == target_id)
         )
         if target is None:
             raise HTTPException(status_code=422, detail={"code": "unknown_or_inaccessible_target"})
+
+
+async def create_assay(session: AsyncSession, principal: Principal, payload: AssayCreate) -> Assay:
+    _require_create(principal)
+    await _validate_assay_references(
+        session,
+        principal,
+        experiment_type_id=payload.experiment_type_id,
+        target_id=payload.target_id,
+        oligos=payload.oligos,
+    )
 
     data = payload.model_dump(exclude={"oligos"})
     assay = Assay(
@@ -210,4 +300,175 @@ async def create_assay(session: AsyncSession, principal: Principal, payload: Ass
     await session.flush()
     session.add(_audit(principal.user_id, "create", "assay", assay.id))
     await session.commit()
+    return assay
+
+
+async def update_oligo(
+    session: AsyncSession,
+    principal: Principal,
+    public_id: str,
+    payload: OligoUpdate,
+) -> Oligo:
+    oligo = await get_visible_by_public_id(session, Oligo, principal, public_id)
+    if oligo is None:
+        raise _not_found("Oligo")
+    _require_edit(principal, oligo)
+    fields = (
+        "name",
+        "oligo_type",
+        "description",
+        "notes",
+        "owner_team_id",
+        "owner_project_id",
+        "visibility",
+        "status",
+    )
+    data = payload.model_dump(exclude_unset=True)
+    _reject_null_required(data, ("name", "oligo_type", "visibility", "status"))
+    if not data:
+        return oligo
+    before = _snapshot(oligo, fields)
+    for field, value in data.items():
+        setattr(oligo, field, value)
+    oligo.updated_by_id = principal.user_id
+    await session.flush()
+    session.add(
+        _audit(
+            principal.user_id,
+            "update",
+            "oligo",
+            oligo.id,
+            before=before,
+            after=_snapshot(oligo, fields),
+        )
+    )
+    await session.commit()
+    await session.refresh(oligo)
+    return oligo
+
+
+async def update_target(
+    session: AsyncSession,
+    principal: Principal,
+    public_id: str,
+    payload: TargetUpdate,
+) -> Target:
+    target = await get_visible_by_public_id(session, Target, principal, public_id)
+    if target is None:
+        raise _not_found("Target")
+    _require_edit(principal, target)
+    fields = (
+        "name",
+        "target_type",
+        "organism_id",
+        "reference_genome_id",
+        "gene_identifier",
+        "transcript_identifier",
+        "description",
+        "reference_sequence",
+        "owner_team_id",
+        "owner_project_id",
+        "visibility",
+        "status",
+    )
+    data = payload.model_dump(exclude_unset=True)
+    _reject_null_required(data, ("name", "target_type", "visibility", "status"))
+    if "reference_sequence" in data and data["reference_sequence"] is not None:
+        data["reference_sequence"] = normalize_sequence(data["reference_sequence"])
+    if not data:
+        return target
+    before = _snapshot(target, fields)
+    for field, value in data.items():
+        setattr(target, field, value)
+    target.updated_by_id = principal.user_id
+    await session.flush()
+    session.add(
+        _audit(
+            principal.user_id,
+            "update",
+            "target",
+            target.id,
+            before=before,
+            after=_snapshot(target, fields),
+        )
+    )
+    await session.commit()
+    await session.refresh(target)
+    return target
+
+
+async def update_assay(
+    session: AsyncSession,
+    principal: Principal,
+    public_id: str,
+    payload: AssayUpdate,
+) -> Assay:
+    assay = await get_visible_by_public_id(session, Assay, principal, public_id)
+    if assay is None:
+        raise _not_found("Assay")
+    _require_edit(principal, assay)
+    fields = (
+        "name",
+        "experiment_type_id",
+        "target_id",
+        "organism_id",
+        "project_id",
+        "owner_team_id",
+        "expected_product",
+        "expected_amplicon_length",
+        "recommended_annealing_temperature_c",
+        "protocol_notes",
+        "method_metadata",
+        "visibility",
+        "status",
+        "version",
+    )
+    data = payload.model_dump(exclude_unset=True, exclude={"oligos"})
+    _reject_null_required(data, ("name", "experiment_type_id", "visibility", "status"))
+    associations = payload.oligos if "oligos" in payload.model_fields_set else None
+    if not data and associations is None:
+        return assay
+    effective_experiment_type_id = data.get("experiment_type_id", assay.experiment_type_id)
+    effective_target_id = data.get("target_id", assay.target_id)
+    await _validate_assay_references(
+        session,
+        principal,
+        experiment_type_id=effective_experiment_type_id,
+        target_id=effective_target_id,
+        oligos=associations
+        if associations is not None
+        else [
+            AssayOligoCreate(oligo_id=item.oligo_id, role=item.role, label=item.label)
+            for item in assay.oligos
+        ],
+    )
+    before = _snapshot(assay, fields)
+    before["oligos"] = [
+        {"oligo_id": str(item.oligo_id), "role": item.role.value, "label": item.label}
+        for item in assay.oligos
+    ]
+    for field, value in data.items():
+        setattr(assay, field, value)
+    if associations is not None:
+        assay.oligos = [AssayOligo(**item.model_dump()) for item in associations]
+    assay.version += 1
+    assay.updated_by_id = principal.user_id
+    await session.flush()
+    after = _snapshot(assay, fields)
+    after["oligos"] = [
+        {"oligo_id": str(item.oligo_id), "role": item.role.value, "label": item.label}
+        for item in assay.oligos
+    ]
+    session.add(
+        _audit(
+            principal.user_id,
+            "update",
+            "assay",
+            assay.id,
+            before=before,
+            after=after,
+        )
+    )
+    await session.commit()
+    await session.refresh(assay)
     return assay

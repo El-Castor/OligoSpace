@@ -58,10 +58,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       </aside>
       <div className="workspace">
         <header className="topbar">
-          <label className="search">
+          <form className="search" action="/search" role="search">
             <span aria-hidden="true">⌕</span>
-            <input aria-label="Global search" placeholder="Search IDs, sequences, genes, assays…" disabled />
-          </label>
+            <input name="q" aria-label="Global search" placeholder="Search IDs, sequences, genes, assays…" />
+          </form>
           <div className="avatar" aria-label="Current user">LA</div>
         </header>
         <main className="content">{children}</main>

@@ -39,6 +39,18 @@ services:
     depends_on:
       api: {condition: service_healthy}
 
+  web-e2e:
+    build:
+      context: .
+      dockerfile: infra/docker/web-e2e.Dockerfile
+    profiles: ["test"]
+    environment:
+      PLAYWRIGHT_BASE_URL: http://caddy:8080
+    networks: [public]
+    depends_on:
+      caddy: {condition: service_started}
+    restart: "no"
+
   api:
     build:
       context: .
@@ -114,6 +126,43 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
+
+  postgres-test:
+    image: postgres:17.11-alpine
+    profiles: ["test"]
+    environment:
+      POSTGRES_DB: oligospace_test
+      POSTGRES_USER: oligospace_test
+      POSTGRES_PASSWORD: integration-test-only
+    tmpfs:
+      - /var/lib/postgresql/data
+    networks: [data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U oligospace_test -d oligospace_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+  api-integration-test:
+    build:
+      context: .
+      dockerfile: infra/docker/api/Dockerfile
+    profiles: ["test"]
+    command:
+      - /bin/sh
+      - -c
+      - >-
+        micromamba run --name base alembic upgrade head &&
+        micromamba run --name base pytest tests/integration
+    environment:
+      ENVIRONMENT: test
+      AUTH_MODE: development
+      DATABASE_URL: postgresql+asyncpg://oligospace_test:integration-test-only@postgres-test:5432/oligospace_test
+      OLIGOSPACE_TEST_DATABASE_URL: postgresql+asyncpg://oligospace_test:integration-test-only@postgres-test:5432/oligospace_test
+    networks: [data]
+    depends_on:
+      postgres-test: {condition: service_healthy}
+    restart: "no"
 
   redis:
     image: redis:7.4.10-alpine
