@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults: {run: {working-directory: apps/api}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -e '.[dev]'
+      - run: ruff check . ../../scripts/migration_excel
+      - run: ruff format --check . ../../scripts/migration_excel
+      - run: mypy src
+      - run: pytest
+
+  migration:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17.11-alpine
+        env:
+          POSTGRES_DB: oligospace
+          POSTGRES_USER: oligospace
+          POSTGRES_PASSWORD: test-only-password
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U oligospace -d oligospace"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    defaults: {run: {working-directory: apps/api}}
+    env:
+      DATABASE_URL: postgresql+asyncpg://oligospace:test-only-password@localhost:5432/oligospace
+      AUTH_MODE: development
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -e .
+      - run: alembic upgrade head
+      - run: alembic downgrade base
+      - run: alembic upgrade head
+
+  bioinfo-worker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build --file infra/docker/bioinfo-worker.Dockerfile --tag oligospace-bioinfo-worker:test .
+      - run: docker run --rm oligospace-bioinfo-worker:test micromamba run --name base ruff check .
+      - run: docker run --rm oligospace-bioinfo-worker:test micromamba run --name base ruff format --check .
+      - run: docker run --rm oligospace-bioinfo-worker:test micromamba run --name base mypy src
+      - run: docker run --rm oligospace-bioinfo-worker:test micromamba run --name base pytest
+      - run: docker run --rm oligospace-bioinfo-worker:test primer3_core --about
+      - run: docker run --rm oligospace-bioinfo-worker:test blastn -version
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults: {run: {working-directory: apps/web}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: "22.23.0", cache: npm, cache-dependency-path: apps/web/package-lock.json}
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test
+      - run: npm run build
+
+  compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cp .env.example .env
+      - run: |
+          sed -i 's/^POSTGRES_PASSWORD=$/POSTGRES_PASSWORD=ci-postgres-password/' .env
+          sed -i 's/^NEXTAUTH_SECRET=$/NEXTAUTH_SECRET=ci-nextauth-secret-long-enough/' .env
+          sed -i 's/^KEYCLOAK_ADMIN_PASSWORD=$/KEYCLOAK_ADMIN_PASSWORD=ci-keycloak-admin/' .env
+          sed -i 's/^KEYCLOAK_CLIENT_SECRET=$/KEYCLOAK_CLIENT_SECRET=ci-keycloak-client/' .env
+          sed -i 's/^DEVELOPMENT_USER_PASSWORD=$/DEVELOPMENT_USER_PASSWORD=ci-development-user/' .env
+          sed -i 's/^MINIO_ROOT_PASSWORD=$/MINIO_ROOT_PASSWORD=ci-minio-password/' .env
+      - run: docker compose config --quiet
+      - run: docker compose build api web bioinfo-worker

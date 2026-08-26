@@ -1,0 +1,64 @@
+{
+  "realm": "oligospace",
+  "enabled": true,
+  "displayName": "OligoSpace",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": true,
+  "rememberMe": true,
+  "roles": {
+    "realm": [
+      {"name": "admin", "description": "OligoSpace administrator"},
+      {"name": "team_manager", "description": "Team-scoped manager"},
+      {"name": "member", "description": "Registry contributor"},
+      {"name": "viewer", "description": "Read-only collaborator"}
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "oligospace-web",
+      "name": "OligoSpace web",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${KEYCLOAK_CLIENT_SECRET}",
+      "redirectUris": ["${APP_ORIGIN}/api/auth/callback/keycloak"],
+      "webOrigins": ["${APP_ORIGIN}"],
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "protocolMappers": [
+        {
+          "name": "oligospace-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "oligospace-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "oligospace-api",
+      "name": "OligoSpace API audience",
+      "enabled": true,
+      "bearerOnly": true,
+      "protocol": "openid-connect"
+    }
+  ],
+  "users": [
+    {
+      "id": "20000000-0000-0000-0000-000000000001",
+      "username": "local-admin",
+      "email": "admin@oligospace.local",
+      "firstName": "Local",
+      "lastName": "Administrator",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{"type": "password", "value": "${DEVELOPMENT_USER_PASSWORD}", "temporary": true}],
+      "realmRoles": ["admin"]
+    }
+  ]
+}

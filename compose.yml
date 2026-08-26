@@ -1,0 +1,196 @@
+name: oligospace
+
+services:
+  caddy:
+    image: caddy:2.11.4-alpine
+    restart: unless-stopped
+    environment:
+      APP_ORIGIN: ${APP_ORIGIN:-http://oligospace.localhost:8080}
+    ports:
+      - "${APP_PORT:-8080}:${APP_PORT:-8080}"
+    volumes:
+      - ./infra/proxy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      public:
+        aliases: [oligospace.localhost]
+      application:
+    depends_on:
+      web: {condition: service_started}
+      api: {condition: service_healthy}
+      keycloak: {condition: service_started}
+
+  web:
+    build:
+      context: .
+      dockerfile: infra/docker/web/Dockerfile
+    restart: unless-stopped
+    environment:
+      AUTH_MODE: ${AUTH_MODE:-development}
+      API_INTERNAL_URL: http://api:8000/api/v1
+      NEXTAUTH_URL: ${APP_ORIGIN:-http://oligospace.localhost:8080}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?Set NEXTAUTH_SECRET in .env}
+      KEYCLOAK_ISSUER: ${APP_ORIGIN:-http://oligospace.localhost:8080}/realms/oligospace
+      KEYCLOAK_CLIENT_ID: oligospace-web
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:?Set KEYCLOAK_CLIENT_SECRET in .env}
+    expose: ["3000"]
+    networks: [application, public]
+    depends_on:
+      api: {condition: service_healthy}
+
+  api:
+    build:
+      context: .
+      dockerfile: infra/docker/api/Dockerfile
+    restart: unless-stopped
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      AUTH_MODE: ${AUTH_MODE:-development}
+      DATABASE_URL: postgresql+asyncpg://oligospace:${POSTGRES_PASSWORD}@postgres:5432/oligospace
+      OIDC_ISSUER: ${APP_ORIGIN:-http://oligospace.localhost:8080}/realms/oligospace
+      OIDC_AUDIENCE: oligospace-api
+      CORS_ORIGINS: '["${APP_ORIGIN:-http://oligospace.localhost:8080}"]'
+    expose: ["8000"]
+    networks: [application, data]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      seed: {condition: service_completed_successfully}
+    healthcheck:
+      test: ["CMD", "micromamba", "run", "--name", "base", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/live')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    build:
+      context: .
+      dockerfile: infra/docker/api/Dockerfile
+    command: ["micromamba", "run", "--name", "base", "alembic", "upgrade", "head"]
+    environment:
+      DATABASE_URL: postgresql+asyncpg://oligospace:${POSTGRES_PASSWORD}@postgres:5432/oligospace
+      AUTH_MODE: development
+    networks: [data]
+    depends_on:
+      postgres: {condition: service_healthy}
+    restart: "no"
+
+  seed:
+    image: postgres:17.11-alpine
+    command: ["psql", "--set", "ON_ERROR_STOP=1", "--host", "postgres", "--username", "oligospace", "--dbname", "oligospace", "--file", "/seed/initial.sql"]
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./database/seeds:/seed:ro
+    networks: [data]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    restart: "no"
+
+  bioinfo-worker:
+    build:
+      context: .
+      dockerfile: infra/docker/bioinfo-worker.Dockerfile
+    restart: unless-stopped
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    networks: [application, data]
+    depends_on:
+      redis: {condition: service_healthy}
+
+  postgres:
+    image: postgres:17.11-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: oligospace
+      POSTGRES_USER: oligospace
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/docker/postgres-init.sql:/docker-entrypoint-initdb.d/10-keycloak.sql:ro
+    networks: [data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U oligospace -d oligospace"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7.4.10-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "60", "1", "--appendonly", "yes"]
+    volumes: ["redis_data:/data"]
+    networks: [data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.7.2
+    restart: unless-stopped
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: oligospace
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USERNAME:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?Set KEYCLOAK_ADMIN_PASSWORD in .env}
+      KC_HOSTNAME: ${APP_ORIGIN:-http://oligospace.localhost:8080}
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
+      APP_ORIGIN: ${APP_ORIGIN:-http://oligospace.localhost:8080}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      DEVELOPMENT_USER_PASSWORD: ${DEVELOPMENT_USER_PASSWORD:?Set DEVELOPMENT_USER_PASSWORD in .env}
+    volumes:
+      - ./infra/keycloak/realm-oligospace.json:/opt/keycloak/data/import/realm-oligospace.json:ro
+    expose: ["8080"]
+    networks: [application, data]
+    depends_on:
+      postgres: {condition: service_healthy}
+
+  minio:
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    restart: unless-stopped
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?Set MINIO_ROOT_USER in .env}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD in .env}
+    volumes: ["minio_data:/data"]
+    expose: ["9000", "9001"]
+    networks: [data]
+
+  backup:
+    image: postgres:17.11-alpine
+    profiles: ["operations"]
+    entrypoint: ["/backup/create-backup.sh"]
+    environment:
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGDATABASE: oligospace
+      PGUSER: oligospace
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      BACKUP_DIR: /backups
+    volumes:
+      - ./infra/backup:/backup:ro
+      - backup_data:/backups
+    networks: [data]
+    depends_on:
+      postgres: {condition: service_healthy}
+
+networks:
+  public:
+  application:
+    internal: true
+  data:
+    internal: true
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+  caddy_data:
+  caddy_config:
+  backup_data:

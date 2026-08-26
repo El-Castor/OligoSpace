@@ -1,0 +1,14 @@
+name: oligospace-bioinfo
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12.8
+  - pip=25.0
+  - pip:
+      - biopython==1.85
+      - celery[redis]==5.4.0
+      - hatchling==1.27.0
+      - mypy==1.15.0
+      - pydantic==2.10.6
+      - pytest==8.3.4
+      - ruff==0.9.7
