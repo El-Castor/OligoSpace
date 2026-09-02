@@ -68,16 +68,16 @@ in `docs/exec-plans/completed/`.
 
 | Requirement ID | Status | Relevant code/module | Tests or runtime evidence | Execution plan |
 |---|---|---|---|---|
-| EXPRUN-001 | Planned | — | — | Backlog |
-| EXPRUN-002 | Planned | — | — | Backlog |
-| EXPRUN-003 | Planned | — | — | Backlog |
-| VALID-001 | Planned | domain separation documented | — | Backlog |
-| VALID-002 | Planned | — | — | Backlog |
-| VALID-003 | Planned | — | — | Backlog |
-| VALID-004 | Planned | ExperimentType hints seeded | — | Backlog |
-| ATTACH-001 | Planned | MinIO infrastructure only | — | Backlog |
-| ATTACH-002 | Planned | security policy only | — | Backlog |
-| ATTACH-003 | Planned | — | — | Backlog |
+| EXPRUN-001 | In progress | `models/laboratory.py`, laboratory API/UI; true OligoLot relation awaits inventory | PostgreSQL laboratory integration and experiment-evidence Caddy E2E | 004, Backlog |
+| EXPRUN-002 | Verified | repeated run API/UI with Assay version snapshot | PostgreSQL laboratory integration and experiment-evidence Caddy E2E | 004 |
+| EXPRUN-003 | Verified | immutable run provenance, contextual inputs, attachments | API units, PostgreSQL laboratory integration, experiment-evidence Caddy E2E | 004 |
+| VALID-001 | Verified | separate append-oriented `Validation` model/API/UI | PostgreSQL laboratory integration and experiment-evidence Caddy E2E | 004 |
+| VALID-002 | Verified | assay-level or run-context validation with user-entered evidence | API units, PostgreSQL laboratory integration, experiment-evidence Caddy E2E | 004 |
+| VALID-003 | Verified | explicit supersession preserving prior evidence | PostgreSQL laboratory integration and experiment-evidence Caddy E2E | 004 |
+| VALID-004 | Verified | `ValidationForm` renders ExperimentType measurement guidance | experiment-evidence Caddy E2E | 004 |
+| ATTACH-001 | Verified | private MinIO upload plus PostgreSQL checksum/provenance metadata | PostgreSQL laboratory integration and real-MinIO Caddy E2E | 004 |
+| ATTACH-002 | In progress | size/type policy and mandatory pending/quarantine gate; malware scanner absent | API units, PostgreSQL rejection tests, quarantine Caddy E2E | 004, Backlog |
+| ATTACH-003 | Verified | soft removal retains metadata/object and audit history | PostgreSQL laboratory integration | 004 |
 
 ## Orders and inventory
 
@@ -100,7 +100,7 @@ in `docs/exec-plans/completed/`.
 
 | Requirement ID | Status | Relevant code/module | Tests or runtime evidence | Execution plan |
 |---|---|---|---|---|
-| SEARCH-001 | In progress | global search page, core API search, visible Project search | PostgreSQL core search and Caddy global-search E2E; inventory absent | 002, 003, Backlog |
+| SEARCH-001 | In progress | global search page/API for core registry, Projects, runs, and validations | PostgreSQL core/evidence search and Caddy global-search E2E; inventory absent | 002, 003, 004, Backlog |
 | SEARCH-002 | In progress | registry search and pagination API | PostgreSQL oligo search; filters/sorting incomplete | 002 |
 | SEARCH-003 | In progress | visible-query registry and workspace searches | permission units and four-scope PostgreSQL list matrix; exports absent | 002, 003 |
 | SEARCH-004 | In progress | exact duplicate conflict | PostgreSQL duplicate test; pre-submit suggestions incomplete | 002, Backlog |

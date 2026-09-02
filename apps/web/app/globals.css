@@ -138,6 +138,10 @@ td { padding: 15px 17px; border-top: 1px solid var(--line); font-size: 13px; ver
 
 .record-form { max-width: 980px; padding: clamp(20px, 4vw, 34px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: 0 10px 34px rgba(21,55,46,.05); }
 .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.header-actions, .section-heading { display: flex; align-items: center; gap: 10px; justify-content: space-between; }
+.inline-evidence-form, .attachment-form { display: grid; gap: 14px; }
+.attachment-form { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+.record-field pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .field { display: grid; align-content: start; gap: 8px; min-width: 0; }
 .field > span, .association-row label > span { color: #34463f; font-size: 12px; font-weight: 760; }
 .field strong { color: var(--warning); }

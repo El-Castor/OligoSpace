@@ -2,17 +2,17 @@
 
 ## Now
 
+- Select and activate the next execution plan from the remaining product requirements;
+  do not start a later phase implicitly.
 - Review the deterministic Excel preview, target decomposition, and storage
   conflicts with a data owner; require explicit approval before import writes.
-- Select and activate the next execution plan explicitly. Completing plan 003 does
-  not automatically activate ExperimentRun/Validation or any later domain.
 
 ## Next
 
-- ExperimentRun and contextual Validation with attachments.
 - Persist and expose worker jobs/results for Primer3 QC and pair compatibility.
 - Exact target-mapping persistence and interactive GeneOligoViewer.
 - Inventory, orders, hierarchical locations, events, and QR workflows.
+- Integrate malware scanning before any evidence attachment publication or download.
 
 ## Later
 

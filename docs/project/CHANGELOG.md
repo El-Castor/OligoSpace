@@ -34,6 +34,15 @@
   administrator/researcher projections with Team memberships.
 - Six concern-specific Playwright specs covering smoke, authentication, Oligos,
   Targets, Assays/search, and workspaces/administration.
+- ExperimentRun and contextual, append-oriented Validation APIs and browser workflows,
+  including assay-version snapshots, repeated runs, supersession history, audit
+  provenance, evidence-aware search, and a real awaiting-validation dashboard count.
+- Private MinIO evidence uploads with SHA-256 metadata, bounded MIME/size policy,
+  pending/quarantined publication state, retained soft-removal history, and reversible
+  Alembic revision `0003_experiment_evidence`.
+- A seventh Playwright spec covering run creation, real MinIO evidence upload,
+  quarantine display, contextual validation, supersession, global search, dashboard,
+  and browser-reload persistence through Caddy.
 
 ### Changed
 
@@ -48,6 +57,8 @@
 - PostgreSQL integration runs remove stale ephemeral databases before and after
   execution; browser tests share Caddy networking while using the public
   `oligospace.localhost` origin and cookie domain.
+- Experiments and Validation navigation now expose working registry workflows instead
+  of future-phase placeholders; unscanned evidence deliberately has no download path.
 
 ### Validation
 
@@ -72,6 +83,10 @@
 - Passed 6 split Chromium E2E specs through Caddy and a separate host-network smoke
   at `http://oligospace.localhost:8080`; host HTTP smoke also verified the login
   redirect, login page, and health endpoint.
+- Passed the complete plan-004 matrix on 2026-09-02: formatting; Ruff, mypy,
+  ESLint, and TypeScript; 21 API unit tests; 2 worker tests; web tests; Compose and
+  production runtime image builds; 4 PostgreSQL tests after migrations 0001 → 0003;
+  and all 7 Chromium specs through Caddy in 15.8 seconds.
 
 ### Data quality
 

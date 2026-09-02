@@ -16,6 +16,7 @@ export default async function DashboardPage() {
     ["My assays", summary.my_assays, "Reusable designs I created"],
     ["My projects", summary.my_projects, "Owned or explicit membership"],
     ["Team-shared oligos", summary.team_shared_oligos, "Visible records created by teammates"],
+    ["Awaiting validation", summary.awaiting_validation ?? 0, "Visible runs without a current conclusion"],
   ] as const;
   return (
     <>
@@ -28,7 +29,7 @@ export default async function DashboardPage() {
         <div className="panel"><div className="panel-heading"><h2 className="panel-title">Recent visible resources</h2><p className="panel-copy">Recently created records you can currently access.</p></div>{summary.recent_items.length ? <div className="recent-list">{summary.recent_items.map((item) => <Link href={resourceHref(item.entity_type, item.public_id)} key={`${item.entity_type}-${item.public_id}`}><span className="badge">{item.entity_type}</span><span><strong>{item.name}</strong><small>{item.public_id} · {new Date(item.created_at).toLocaleDateString("en-GB")}</small></span></Link>)}</div> : <div className="empty compact"><strong>No recent resources</strong>Create an oligo, assay, or project to start your workspace history.</div>}</div>
         <div className="panel"><div className="panel-heading"><h2 className="panel-title">My recent activity</h2><p className="panel-copy">Audit events performed by your identity.</p></div>{summary.recent_activity.length ? <div className="activity-list">{summary.recent_activity.slice(0, 8).map((item) => <div key={`${item.entity_id}-${item.occurred_at}`}><span className="action-dot" /><span><strong>{item.action.replaceAll("_", " ")} · {item.entity_type.replaceAll("_", " ")}</strong><small>{new Date(item.occurred_at).toLocaleString("en-GB")}</small></span></div>)}</div> : <div className="empty compact"><strong>No recent activity</strong>Your audited changes will appear here.</div>}</div>
       </section>
-      <section className="truthful-gap dashboard-gap"><strong>Later-domain attention</strong><span>Validation work and stock alerts remain unavailable until plans 004 and 006. OligoSpace does not invent those values.</span></section>
+      <section className="truthful-gap dashboard-gap"><strong>Later-domain attention</strong><span>Stock alerts remain unavailable until the inventory plan. OligoSpace does not invent those values.</span></section>
     </>
   );
 }

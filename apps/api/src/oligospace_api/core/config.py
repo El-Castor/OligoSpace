@@ -23,12 +23,23 @@ class Settings(BaseSettings):
     development_email: str = "admin@oligospace.local"
     development_display_name: str = "Local administrator"
     development_auth_secret: str = "development-only-change-me"
+    object_storage_endpoint: str = "minio:9000"
+    object_storage_access_key: str = "development-minio"
+    object_storage_secret_key: str = "development-minio-secret"
+    object_storage_bucket: str = "oligospace-evidence"
+    object_storage_secure: bool = False
+    attachment_max_bytes: int = 10 * 1024 * 1024
 
     def validate_runtime(self) -> None:
         if self.environment == "production" and self.auth_mode != "oidc":
             raise ValueError("AUTH_MODE must be oidc in production")
         if self.environment == "production" and "change-me" in self.database_url:
             raise ValueError("Production database credentials are not configured")
+        if self.environment == "production" and (
+            self.object_storage_access_key == "development-minio"
+            or self.object_storage_secret_key == "development-minio-secret"
+        ):
+            raise ValueError("Production object storage credentials are not configured")
 
     @property
     def oidc_jwks_url(self) -> str:

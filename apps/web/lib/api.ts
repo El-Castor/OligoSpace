@@ -75,6 +75,70 @@ export interface AssaySummary {
   updated_at: string;
 }
 
+export interface AttachmentSummary {
+  id: string;
+  public_id: string;
+  experiment_run_id: string | null;
+  validation_id: string | null;
+  object_key: string;
+  original_filename: string;
+  content_type: string;
+  size_bytes: number;
+  sha256: string;
+  uploaded_by_id: string;
+  scan_status: string;
+  publication_status: string;
+  replaces_attachment_id: string | null;
+  removed_at: string | null;
+  removed_by_id: string | null;
+  created_at: string;
+}
+
+export interface ValidationSummary {
+  id: string;
+  public_id: string;
+  assay_id: string;
+  experiment_run_id: string | null;
+  status: string;
+  conclusion: string;
+  measurements: Record<string, unknown>;
+  notes: string | null;
+  validated_by_id: string;
+  validated_at: string;
+  supersedes_validation_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ValidationDetail extends ValidationSummary {
+  attachments: AttachmentSummary[];
+}
+
+export interface ExperimentRunSummary {
+  id: string;
+  public_id: string;
+  assay_id: string;
+  assay_version: number;
+  project_id: string | null;
+  owner_team_id: string | null;
+  operator_id: string;
+  performed_at: string;
+  protocol_name: string | null;
+  protocol_version: string | null;
+  conditions: Record<string, unknown>;
+  input_metadata: Record<string, unknown>;
+  notes: string | null;
+  visibility: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ExperimentRunDetail extends ExperimentRunSummary {
+  validations: ValidationSummary[];
+  attachments: AttachmentSummary[];
+}
+
 export interface ExperimentType {
   id: string;
   name: string;
@@ -292,6 +356,10 @@ export async function apiWrite<T>(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
+}
+
+export async function apiUpload<T>(path: string, body: FormData): Promise<T> {
+  return apiRequest<T>(path, { method: "POST", body });
 }
 
 export async function apiDelete(path: string): Promise<void> {

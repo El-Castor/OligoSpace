@@ -12,7 +12,7 @@ const sections = [
       ["Oligos", "/oligos", "AT", false],
       ["Targets", "/targets", "TG", false],
       ["Assays", "/assays", "AS", false],
-      ["Experiments", "/experiments", "EX", true],
+      ["Experiments", "/experiments", "EX", false],
     ],
   },
   {
@@ -20,7 +20,7 @@ const sections = [
     items: [
       ["Inventory", "/inventory", "IN", true],
       ["Orders", "/orders", "OR", true],
-      ["Validation", "/validation", "VA", true],
+      ["Validation", "/validation", "VA", false],
     ],
   },
   {

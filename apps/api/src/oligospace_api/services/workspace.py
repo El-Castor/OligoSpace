@@ -6,7 +6,7 @@ from enum import StrEnum
 from typing import Any
 
 from fastapi import HTTPException, status
-from sqlalchemy import func, or_, select
+from sqlalchemy import exists, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from oligospace_api.domain.permissions import (
@@ -15,7 +15,8 @@ from oligospace_api.domain.permissions import (
     can_manage_project,
     can_manage_team,
 )
-from oligospace_api.models.enums import GlobalRole, Visibility
+from oligospace_api.models.enums import GlobalRole, ValidationStatus, Visibility
+from oligospace_api.models.laboratory import ExperimentRun, Validation
 from oligospace_api.models.registry import (
     Assay,
     AuditEvent,
@@ -27,6 +28,7 @@ from oligospace_api.models.registry import (
     TeamMembership,
     User,
 )
+from oligospace_api.repositories.laboratory import visible_run_query
 from oligospace_api.repositories.registry import visible_query
 from oligospace_api.repositories.workspace import (
     get_visible_project,
@@ -879,6 +881,19 @@ async def personalized_dashboard(
     )
     visible_targets = await count(visible_query(Target, principal))
     visible_projects = await count(visible_projects_query(principal))
+    has_conclusion = exists(
+        select(Validation.id).where(
+            Validation.experiment_run_id == ExperimentRun.id,
+            Validation.status.in_(
+                (
+                    ValidationStatus.PASSED,
+                    ValidationStatus.FAILED,
+                    ValidationStatus.INCONCLUSIVE,
+                )
+            ),
+        )
+    )
+    awaiting_validation = await count(visible_run_query(principal).where(~has_conclusion))
 
     recent_items: list[RecentItem] = []
     for entity_type, model, statement in (
@@ -927,6 +942,7 @@ async def personalized_dashboard(
             )
             for item in activities
         ],
+        awaiting_validation=awaiting_validation,
     )
 
 
