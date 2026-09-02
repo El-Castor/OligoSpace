@@ -1,10 +1,11 @@
 import Link from "next/link";
 
-import type { OligoSummary } from "@/lib/api";
+import { WorkspaceFields } from "@/components/WorkspaceFields";
+import type { OligoSummary, WorkspaceChoices } from "@/lib/api";
 
 type FormAction = (formData: FormData) => void | Promise<void>;
 
-export function OligoForm({ action, oligo, error }: { action: FormAction; oligo?: OligoSummary; error?: string }) {
+export function OligoForm({ action, choices, oligo, error }: { action: FormAction; choices: WorkspaceChoices; oligo?: OligoSummary; error?: string }) {
   return (
     <form className="record-form" action={action}>
       {error ? <div className="notice" role="alert">{error}</div> : null}
@@ -15,7 +16,7 @@ export function OligoForm({ action, oligo, error }: { action: FormAction; oligo?
         {oligo ? <p className="field-help field-wide" id="sequence-identity-help">Sequence is immutable because it defines biological identity and calculated provenance. Create a new oligo to register another sequence.</p> : null}
         <label className="field field-wide"><span>Description</span><textarea name="description" rows={3} defaultValue={oligo?.description ?? ""} /></label>
         <label className="field field-wide"><span>Notes</span><textarea name="notes" rows={3} defaultValue={oligo?.notes ?? ""} /></label>
-        <label className="field"><span>Visibility</span><select name="visibility" defaultValue={oligo?.visibility ?? "team"}><option value="private">Private</option><option value="team">Team</option><option value="organization">Institute</option></select></label>
+        <WorkspaceFields choices={choices} visibility={oligo?.visibility} teamId={oligo?.owner_team_id} projectId={oligo?.owner_project_id} />
         {oligo ? <label className="field"><span>Status</span><select name="status" defaultValue={oligo.status}><option value="active">Active</option><option value="deprecated">Deprecated</option><option value="archived">Archived</option></select></label> : null}
       </div>
       <div className="form-actions"><button className="primary-button" type="submit">{oligo ? "Save changes" : "Register oligo"}</button><Link className="secondary-button" href={oligo ? `/oligos/${oligo.public_id}` : "/oligos"}>Cancel</Link></div>

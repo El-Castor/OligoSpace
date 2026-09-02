@@ -15,6 +15,8 @@ export async function createOligo(formData: FormData) {
       oligo_type: requiredText(formData, "oligo_type"),
       description: optionalText(formData, "description"),
       notes: optionalText(formData, "notes"),
+      owner_team_id: optionalText(formData, "owner_team_id"),
+      owner_project_id: optionalText(formData, "owner_project_id"),
       visibility: requiredText(formData, "visibility"),
     });
   } catch (error) {
@@ -33,6 +35,8 @@ export async function updateOligo(publicId: string, formData: FormData) {
       oligo_type: requiredText(formData, "oligo_type"),
       description: optionalText(formData, "description"),
       notes: optionalText(formData, "notes"),
+      owner_team_id: optionalText(formData, "owner_team_id"),
+      owner_project_id: optionalText(formData, "owner_project_id"),
       visibility: requiredText(formData, "visibility"),
       status: requiredText(formData, "status"),
     });

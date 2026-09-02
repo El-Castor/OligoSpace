@@ -1,97 +1,99 @@
 # Project status
 
-Last updated: 2026-08-26
+Last updated: 2026-09-02
 
 ## Current phase
 
-Phase 0 audit/documentation, the Phase 1 foundation, and the Phase 2 core registry
-are complete under execution plans 001 and 002. The core registry is now usable in
-the browser through Caddy. No later execution plan has been activated and no
-production deployment exists.
+Execution plans 001 (foundation), 002 (core registry), and 003 (identity, users,
+workspaces, and administration) are complete. The development application is a
+usable multi-user core registry through Caddy. No later execution plan is active
+and no production deployment exists.
 
 ## Build verified
 
-- Source workbook located and inspected read-only; a mid-audit external file change
-  is captured with both checksums, and the current importer preview finds 93
-  importable candidates plus seven rejected invalid/example sequences.
-- Architecture, model, security, deployment, backup, bioinformatics, and UI
-  direction documented.
-- Core FastAPI registry, explicit RBAC/visibility policy, audit events, SQLAlchemy
-  models, reversible Alembic migration, and deterministic seed pass static checks.
-- Next.js workspace, OIDC boundary, Compose stack, CI, and production application
-  images build successfully. This does not establish browser functionality.
-- The Celery worker runs checksum-pinned Primer3 2.6.1 thermodynamic calculations;
-  BLAST+ 2.17.0 is installed and version-checked for later reference-backed work.
+- FastAPI identity/workspace administration, explicit membership-aware RBAC,
+  scope validation, audit events, reversible Alembic revision `0002`, and the
+  deterministic administrator/researcher seed pass formatting, lint, and strict
+  typing.
+- The Next.js login, profile, personalized dashboard, team/project/admin pages,
+  user menu/logout, project-aware forms, and project search pass ESLint,
+  TypeScript, unit checks, and the production build.
+- Production API/web images build successfully. Primer3 2.6.1 compiles and BLAST+
+  2.17.0 downloads with its pinned checksum. Build success alone is not treated as
+  browser functionality.
 
 ## API and PostgreSQL verified
 
-- The isolated PostgreSQL integration route test migrates a fresh database and
-  verifies oligo create/search/detail/metadata update, immutable sequence rejection,
-  exact duplicate rejection, target creation, assay creation/versioning, audit
-  events, persistence, and a forbidden viewer edit.
-- Core API list/create behavior from plan 001 remains covered by unit/static checks;
-  plan 002 has added public-ID detail, scoped search, and authorized PATCH routes.
+- `make test-integration` migrates a guaranteed-fresh PostgreSQL 17 database from
+  `0001` through `0002` and passes three integration tests.
+- The core registry round trip still verifies Oligo/Target/Assay creation,
+  immutable biological identity, duplicate rejection, contextual roles,
+  versioning, authorization, and audit evidence.
+- Workspace integration verifies real users, profile persistence, Team and Project
+  membership, Private/Project/Team/Institute visibility, inactive-account
+  rejection, member/admin boundaries, project persistence, and audit events.
+- The integration target now removes stale test PostgreSQL containers before and
+  after every run so interrupted runs cannot contaminate later evidence.
 
-## Service runtime verification
+## Service runtime verified
 
-- Isolated PostgreSQL migration and API integration are verified.
-- The core development path Caddy → Next.js → FastAPI → PostgreSQL is runtime
-  verified with the production web/API images and health-gated Compose startup.
-- Keycloak starts on its private network and NextAuth keeps ownership of
-  `/api/auth/*`; the interactive OIDC production flow is not yet browser-verified.
-- Worker, Redis, and MinIO are not part of the plan 002 browser journey and are not
-  claimed as runtime-verified by this milestone.
+- Caddy, production Next.js, FastAPI, PostgreSQL, migrations, and deterministic
+  seeds start through the health-gated Compose path.
+- Host HTTP smoke on `http://oligospace.localhost:8080` returns the expected root
+  login redirect, a successful login page, and `{"status":"ok"}` from
+  `/api/v1/health/live`.
+- Keycloak starts and the OIDC/token-refresh configuration is implemented, but the
+  institutional production OIDC journey is not browser-verified.
 
-## Browser workflow verification
+## Browser/E2E verified
 
-- **Verified in development through Caddy on 2026-08-26.** Playwright Chromium
-  opens the application root, observes the development identity and dashboard, and
-  completes oligo, target, assay, and global-search workflows.
-- The journey creates and edits records through the UI, associates Forward and
-  Reverse oligos with an assay, reloads the browser, and confirms the same stable
-  public records and edited values remain available from PostgreSQL.
-- The earlier browser 404 is resolved. Caddy now proxies only `/api/v1/*` to
-  FastAPI, leaves `/api/auth/*` to Next.js, dynamically resolves recreated service
-  containers, and the standalone Next.js server listens on all container
-  interfaces.
+- `make test-e2e` passes six independent Chromium specs through Caddy: smoke and
+  personalized dashboard; development login/profile/logout/second identity;
+  Oligo; Target; Assay plus global search; and Project/Team/Admin workflows.
+- The browser workflows prove UI → API → PostgreSQL → browser reload persistence,
+  Forward/Reverse Oligo association, project membership, normal-user admin denial,
+  and session return login.
+- A separate Chromium smoke using host networking passes against
+  `http://oligospace.localhost:8080`, in addition to the Compose E2E journey.
+- These statements apply to development authentication. Production Keycloak login
+  remains implemented but not browser-verified.
 
 ## In progress / incomplete
 
-- ExperimentRun/Validation, inventory/orders/QR, attachments, full-catalog search,
-  gene viewer,
-  API-to-worker job persistence, production backup execution, monitoring, and
-  hardening remain. Core-only search is complete; projects, inventory, and later
-  catalogue domains are not yet included in global search.
+- ExperimentRun/Validation, attachments, inventory/orders/QR, reference ingestion,
+  GeneOligoViewer, worker-job persistence, complete catalogue/inventory search,
+  production backup execution, monitoring, and hardening remain later work.
+- Dashboard validation and stock values remain explicit unavailable states; no
+  scientific or operational values are invented.
 
 ## Blockers and required inputs
 
 - Institutional hostname/SSO/LDAP, INRAE backup endpoint and retention approval,
-  production secrets, and reference FASTA/GFF data are not supplied.
+  production secrets, and governed reference FASTA/GFF data are not supplied.
 
 ## Known technical debt
 
-- PostgreSQL RLS and integration tests follow stabilization of permission policy.
+- PostgreSQL RLS remains defense-in-depth work after the application permission
+  policy and a safe per-request database security context are stabilized.
 - Synchronous API Tm remains the explicitly labeled Wallace screening method; the
   worker's Primer3 result is not yet persisted or exposed through an API job.
-- ESLint 9 is pinned because the Next.js 16 plugin dependency graph does not yet
-  accept ESLint 10.
+- OIDC needs an institutional browser validation with real production-like realm
+  policy, token refresh, logout, and disabled-account lifecycle.
+- ESLint 9 remains pinned until the Next.js plugin dependency graph accepts ESLint 10.
 
 ## Last validated commands
 
-- `make format PYTHON_RUNNER=container` — passed 2026-08-26.
-- `make lint typecheck test PYTHON_RUNNER=container` — passed: 15 API tests,
-  2 worker tests, web smoke test, strict Python/TypeScript checks.
-- `make compose-config` and `docker compose build api web bioinfo-worker` — passed.
-- Isolated PostgreSQL migration/seed — revision `0001_initial_registry`, 17 seeded
-  experiment types; temporary validation volume removed.
-- Read-only Excel preview — 93 importable, 7 rejected, 359 allocated-only, 0
-  imported; source SHA-256 unchanged before and after preview.
-- `make test-integration` — passed 2026-08-26 against an isolated PostgreSQL 17
-  database after applying `0001_initial_registry`.
-- `make test-e2e` — passed 2026-08-26: Playwright Chromium, 1 complete core-registry
-  journey through Caddy, including persistence after browser reload.
-- `docker compose up --build --detach caddy` — production web/API images built and
-  the core service path passed its health gates before the E2E journey.
+- `make format` via `PYTHON_RUNNER=container` — passed 2026-09-02.
+- `make lint typecheck test` via `PYTHON_RUNNER=container` — passed: 19 API
+  tests, 3 intentionally skipped integration tests in the unit invocation, 2 real
+  Primer3 worker tests, web tests, Ruff, mypy, ESLint, and TypeScript.
+- `make compose-config` — passed after the Caddy-network E2E configuration change.
+- `make test-integration` — passed: migration `0001` → `0002`, 3 PostgreSQL tests,
+  fresh test container removed after execution.
+- `make test-e2e` — passed: 6 independent Chromium specs through Caddy.
+- Host-network Chromium smoke — passed: 1 smoke spec at
+  `http://oligospace.localhost:8080`.
+- Host HTTP smoke — root `307` to login, login `200`, health `200`/`status: ok`.
 
-Database migration: `0001_initial_registry` created and applied successfully to
-PostgreSQL 17 during isolated validation.
+Database migration: `0002_identity_workspaces` is applied successfully to the
+development PostgreSQL database and to a fresh isolated PostgreSQL 17 database.

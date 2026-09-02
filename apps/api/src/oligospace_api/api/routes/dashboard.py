@@ -6,8 +6,9 @@ from sqlalchemy import Select, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from oligospace_api.db.session import get_session
-from oligospace_api.models.registry import Assay, Oligo, Project, Target
+from oligospace_api.models.registry import Assay, Oligo, Target
 from oligospace_api.repositories.registry import visible_query
+from oligospace_api.repositories.workspace import visible_projects_query
 from oligospace_api.security.auth import AuthContext, get_auth_context
 
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
@@ -36,12 +37,5 @@ async def summary(
         oligos=await _count(session, visible_query(Oligo, principal)),
         assays=await _count(session, visible_query(Assay, principal)),
         targets=await _count(session, visible_query(Target, principal)),
-        projects=int(
-            await session.scalar(
-                select(func.count(Project.id)).where(
-                    Project.organization_id == principal.organization_id
-                )
-            )
-            or 0
-        ),
+        projects=await _count(session, visible_projects_query(principal)),
     )

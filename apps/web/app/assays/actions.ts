@@ -19,6 +19,8 @@ function assayBody(formData: FormData) {
     name: requiredText(formData, "name"),
     experiment_type_id: requiredText(formData, "experiment_type_id"),
     target_id: optionalText(formData, "target_id"),
+    owner_team_id: optionalText(formData, "owner_team_id"),
+    project_id: optionalText(formData, "owner_project_id"),
     expected_product: optionalText(formData, "expected_product"),
     expected_amplicon_length: optionalNumber(formData, "expected_amplicon_length"),
     recommended_annealing_temperature_c: optionalNumber(formData, "recommended_annealing_temperature_c"),

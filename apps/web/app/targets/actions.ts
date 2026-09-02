@@ -15,6 +15,8 @@ function targetBody(formData: FormData) {
     transcript_identifier: optionalText(formData, "transcript_identifier"),
     description: optionalText(formData, "description"),
     reference_sequence: optionalText(formData, "reference_sequence"),
+    owner_team_id: optionalText(formData, "owner_team_id"),
+    owner_project_id: optionalText(formData, "owner_project_id"),
     visibility: requiredText(formData, "visibility"),
   };
 }

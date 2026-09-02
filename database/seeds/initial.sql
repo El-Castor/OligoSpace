@@ -3,14 +3,31 @@ INSERT INTO organizations (id, name, slug, active)
 VALUES ('10000000-0000-0000-0000-000000000001', 'OligoSpace Development', 'development', true)
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO users (id, oidc_subject, email, display_name, active, global_role, organization_id)
+INSERT INTO users (
+  id, oidc_subject, identity_provider, email, display_name, first_name, last_name,
+  active, global_role, organization_id
+)
 VALUES (
   '00000000-0000-0000-0000-000000000001',
   '20000000-0000-0000-0000-000000000001',
+  'keycloak',
   'admin@oligospace.local',
   'Local administrator',
+  'Local',
+  'Administrator',
   true,
   'admin',
+  '10000000-0000-0000-0000-000000000001'
+) , (
+  '00000000-0000-0000-0000-000000000002',
+  '20000000-0000-0000-0000-000000000002',
+  'keycloak',
+  'researcher@oligospace.local',
+  'Local researcher',
+  'Local',
+  'Researcher',
+  true,
+  'member',
   '10000000-0000-0000-0000-000000000001'
 )
 ON CONFLICT (id) DO NOTHING;
@@ -26,10 +43,16 @@ VALUES (
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO team_memberships (team_id, user_id, role)
-VALUES (
+VALUES
+(
   '30000000-0000-0000-0000-000000000001',
   '00000000-0000-0000-0000-000000000001',
   'admin'
+),
+(
+  '30000000-0000-0000-0000-000000000001',
+  '00000000-0000-0000-0000-000000000002',
+  'member'
 )
 ON CONFLICT (team_id, user_id) DO NOTHING;
 

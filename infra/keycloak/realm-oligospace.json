@@ -59,6 +59,17 @@
       "emailVerified": true,
       "credentials": [{"type": "password", "value": "${DEVELOPMENT_USER_PASSWORD}", "temporary": true}],
       "realmRoles": ["admin"]
+    },
+    {
+      "id": "20000000-0000-0000-0000-000000000002",
+      "username": "local-researcher",
+      "email": "researcher@oligospace.local",
+      "firstName": "Local",
+      "lastName": "Researcher",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{"type": "password", "value": "${DEVELOPMENT_USER_PASSWORD}", "temporary": true}],
+      "realmRoles": ["member"]
     }
   ]
 }

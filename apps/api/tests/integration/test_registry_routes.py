@@ -41,28 +41,25 @@ async def registry_client() -> AsyncIterator[tuple[AsyncClient, AsyncSession]]:
                 active=True,
             )
         )
-        session.add_all(
-            [
-                User(
-                    id=ADMIN_ID,
-                    oidc_subject="integration-admin",
-                    email="admin@integration.test",
-                    display_name="Integration admin",
-                    active=True,
-                    global_role=GlobalRole.ADMIN,
-                    organization_id=ORGANIZATION_ID,
-                ),
-                User(
-                    id=VIEWER_ID,
-                    oidc_subject="integration-viewer",
-                    email="viewer@integration.test",
-                    display_name="Integration viewer",
-                    active=True,
-                    global_role=GlobalRole.VIEWER,
-                    organization_id=ORGANIZATION_ID,
-                ),
-            ]
+        admin = User(
+            id=ADMIN_ID,
+            oidc_subject="integration-admin",
+            email="admin@integration.test",
+            display_name="Integration admin",
+            active=True,
+            global_role=GlobalRole.ADMIN,
+            organization_id=ORGANIZATION_ID,
         )
+        viewer_user = User(
+            id=VIEWER_ID,
+            oidc_subject="integration-viewer",
+            email="viewer@integration.test",
+            display_name="Integration viewer",
+            active=True,
+            global_role=GlobalRole.VIEWER,
+            organization_id=ORGANIZATION_ID,
+        )
+        session.add_all([admin, viewer_user])
         session.add(
             ExperimentType(
                 id=EXPERIMENT_TYPE_ID,
@@ -80,7 +77,19 @@ async def registry_client() -> AsyncIterator[tuple[AsyncClient, AsyncSession]]:
         async def session_override() -> AsyncIterator[AsyncSession]:
             yield session
 
+        admin_context = AuthContext(
+            principal=Principal(ADMIN_ID, ORGANIZATION_ID, GlobalRole.ADMIN),
+            user=admin,
+            email=admin.email,
+            display_name=admin.display_name,
+            development_identity=False,
+        )
+
+        async def auth_override() -> AuthContext:
+            return admin_context
+
         app.dependency_overrides[get_session] = session_override
+        app.dependency_overrides[get_auth_context] = auth_override
         async with AsyncClient(
             transport=ASGITransport(app=app), base_url="http://integration.test"
         ) as client:
@@ -180,7 +189,13 @@ async def test_registry_round_trip_authorization_and_audit(
         f"/api/v1/registry/oligos/{oligo['public_id']}", json={"name": "Forbidden edit"}
     )
     assert forbidden.status_code == 403
-    app.dependency_overrides.pop(get_auth_context)
+    app.dependency_overrides[get_auth_context] = lambda: AuthContext(
+        principal=Principal(ADMIN_ID, ORGANIZATION_ID, GlobalRole.ADMIN),
+        user=None,
+        email="admin@integration.test",
+        display_name="Integration admin",
+        development_identity=False,
+    )
 
     update_audits = int(
         await session.scalar(

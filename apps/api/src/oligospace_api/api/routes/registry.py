@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import uuid
+
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,12 +15,14 @@ from oligospace_api.schemas.registry import (
     AssayUpdate,
     ExperimentTypeCreate,
     ExperimentTypeRead,
+    ExperimentTypeUpdate,
     OligoCreate,
     OligoCreateResult,
     OligoRead,
     OligoUpdate,
     OrganismCreate,
     OrganismRead,
+    OrganismUpdate,
     Page,
     TargetCreate,
     TargetRead,
@@ -32,7 +36,9 @@ from oligospace_api.services.registry import (
     create_organism,
     create_target,
     update_assay,
+    update_experiment_type,
     update_oligo,
+    update_organism,
     update_target,
 )
 
@@ -69,6 +75,16 @@ async def add_experiment_type(
     return await create_experiment_type(session, context.principal, payload)
 
 
+@router.patch("/experiment-types/{experiment_type_id}", response_model=ExperimentTypeRead)
+async def edit_experiment_type(
+    payload: ExperimentTypeUpdate,
+    experiment_type_id: uuid.UUID,
+    context: AuthContext = Depends(get_auth_context),
+    session: AsyncSession = Depends(get_session),
+) -> ExperimentType:
+    return await update_experiment_type(session, context.principal, experiment_type_id, payload)
+
+
 @router.get("/organisms", response_model=list[OrganismRead])
 async def organisms(
     _: AuthContext = Depends(get_auth_context),
@@ -84,6 +100,16 @@ async def add_organism(
     session: AsyncSession = Depends(get_session),
 ) -> Organism:
     return await create_organism(session, context.principal, payload)
+
+
+@router.patch("/organisms/{organism_id}", response_model=OrganismRead)
+async def edit_organism(
+    payload: OrganismUpdate,
+    organism_id: uuid.UUID,
+    context: AuthContext = Depends(get_auth_context),
+    session: AsyncSession = Depends(get_session),
+) -> Organism:
+    return await update_organism(session, context.principal, organism_id, payload)
 
 
 @router.get("/targets", response_model=Page)

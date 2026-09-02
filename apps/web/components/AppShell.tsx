@@ -1,6 +1,9 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { UserMenu } from "@/components/UserMenu";
+import { apiGetOptional, type CurrentUser } from "@/lib/api";
+
 const sections = [
   { label: "Overview", items: [["Overview", "/", "01", false]] },
   {
@@ -23,14 +26,14 @@ const sections = [
   {
     label: "Workspace",
     items: [
-      ["Projects", "/projects", "PR", true],
-      ["Team", "/team", "TM", true],
+      ["Projects", "/projects", "PR", false],
+      ["Team", "/team", "TM", false],
     ],
   },
-  { label: "System", items: [["Admin", "/admin", "AD", true]] },
 ] as const;
 
-export function AppShell({ children }: { children: ReactNode }) {
+export async function AppShell({ children }: { children: ReactNode }) {
+  const user = await apiGetOptional<CurrentUser>("/me");
   return (
     <div className="app-shell">
       <aside className="sidebar">
@@ -54,6 +57,15 @@ export function AppShell({ children }: { children: ReactNode }) {
               ))}
             </div>
           ))}
+          {user?.role === "admin" ? (
+            <div className="nav-group">
+              <div className="nav-label">System</div>
+              <Link className="nav-link" href="/admin">
+                <span className="nav-icon" aria-hidden="true">AD</span>
+                <span>Admin</span>
+              </Link>
+            </div>
+          ) : null}
         </nav>
       </aside>
       <div className="workspace">
@@ -62,7 +74,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span aria-hidden="true">⌕</span>
             <input name="q" aria-label="Global search" placeholder="Search IDs, sequences, genes, assays…" />
           </form>
-          <div className="avatar" aria-label="Current user">LA</div>
+          <UserMenu user={user} />
         </header>
         <main className="content">{children}</main>
       </div>

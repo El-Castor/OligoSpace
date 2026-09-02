@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     development_organization_id: uuid.UUID = uuid.UUID("10000000-0000-0000-0000-000000000001")
     development_email: str = "admin@oligospace.local"
     development_display_name: str = "Local administrator"
+    development_auth_secret: str = "development-only-change-me"
 
     def validate_runtime(self) -> None:
         if self.environment == "production" and self.auth_mode != "oidc":

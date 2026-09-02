@@ -31,6 +31,19 @@ class ExperimentTypeCreate(BaseModel):
     allowed_roles: list[OligoRole] = Field(default_factory=list)
     required_metadata: dict[str, Any] = Field(default_factory=dict)
     recommended_validation_fields: dict[str, Any] = Field(default_factory=dict)
+    active: bool = True
+
+
+class ExperimentTypeUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str | None = Field(default=None, min_length=2, max_length=160)
+    slug: str | None = Field(default=None, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$", max_length=80)
+    description: str | None = None
+    allowed_roles: list[OligoRole] | None = None
+    required_metadata: dict[str, Any] | None = None
+    recommended_validation_fields: dict[str, Any] | None = None
+    active: bool | None = None
 
 
 class OrganismCreate(BaseModel):
@@ -46,6 +59,14 @@ class OrganismRead(ORMModel):
     taxonomy_id: str | None
 
 
+class OrganismUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    scientific_name: str | None = Field(default=None, min_length=2, max_length=240)
+    common_name: str | None = Field(default=None, max_length=160)
+    taxonomy_id: str | None = Field(default=None, max_length=32)
+
+
 class TargetCreate(BaseModel):
     name: str = Field(min_length=1, max_length=240)
     target_type: str = Field(default="gene", max_length=40)
@@ -57,7 +78,7 @@ class TargetCreate(BaseModel):
     reference_sequence: str | None = None
     owner_team_id: uuid.UUID | None = None
     owner_project_id: uuid.UUID | None = None
-    visibility: Visibility = Visibility.TEAM
+    visibility: Visibility = Visibility.PRIVATE
 
 
 class TargetRead(ORMModel):
@@ -71,6 +92,8 @@ class TargetRead(ORMModel):
     transcript_identifier: str | None
     description: str | None
     reference_sequence: str | None
+    owner_team_id: uuid.UUID | None
+    owner_project_id: uuid.UUID | None
     visibility: Visibility
     status: RecordStatus
     created_at: datetime
@@ -102,7 +125,7 @@ class OligoCreate(BaseModel):
     notes: str | None = None
     owner_team_id: uuid.UUID | None = None
     owner_project_id: uuid.UUID | None = None
-    visibility: Visibility = Visibility.TEAM
+    visibility: Visibility = Visibility.PRIVATE
 
 
 class OligoRead(ORMModel):
@@ -120,6 +143,8 @@ class OligoRead(ORMModel):
     calculation_provenance: dict[str, Any]
     description: str | None
     notes: str | None
+    owner_team_id: uuid.UUID | None
+    owner_project_id: uuid.UUID | None
     visibility: Visibility
     status: RecordStatus
     created_at: datetime
@@ -162,7 +187,7 @@ class AssayCreate(BaseModel):
     recommended_annealing_temperature_c: float | None = None
     protocol_notes: str | None = None
     method_metadata: dict[str, Any] = Field(default_factory=dict)
-    visibility: Visibility = Visibility.TEAM
+    visibility: Visibility = Visibility.PRIVATE
     oligos: list[AssayOligoCreate] = Field(default_factory=list)
 
 

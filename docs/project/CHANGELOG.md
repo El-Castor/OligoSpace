@@ -22,6 +22,18 @@
   contextual Forward/Reverse assay roles; expected amplicon; and global core search.
 - PostgreSQL route integration tests and a Playwright Chromium journey through
   Caddy that verifies persistence after browser reload.
+- Projected user profiles with provider metadata and account lifecycle, explicit
+  development identities backed by PostgreSQL, signed development-session headers,
+  membership-aware authorization contexts, and token refresh/logout configuration.
+- Team and Project APIs and browser workflows with stable project IDs, membership
+  roles, four visibility scopes, linked resources, audit events, and reload persistence.
+- Personalized user/team/project dashboards, accessible identity menu and profile,
+  and server-authorized administration for users, teams, projects,
+  ExperimentTypes, and organisms.
+- Reversible `0002_identity_workspaces` migration and deterministic local
+  administrator/researcher projections with Team memberships.
+- Six concern-specific Playwright specs covering smoke, authentication, Oligos,
+  Targets, Assays/search, and workspaces/administration.
 
 ### Changed
 
@@ -30,6 +42,12 @@
 - The standalone Next.js runtime listens on all container interfaces.
 - Project reporting now distinguishes build verification, service/API runtime
   verification, and browser workflow verification.
+- Core registry scope assignments now validate accessible Team/Project ownership;
+  global search includes visible Projects and all development requests require an
+  explicit signed session instead of an implicit administrator.
+- PostgreSQL integration runs remove stale ephemeral databases before and after
+  execution; browser tests share Caddy networking while using the public
+  `oligospace.localhost` origin and cookie domain.
 
 ### Validation
 
@@ -46,6 +64,14 @@
   identity, dashboard, oligo create/detail/edit, target create/detail/edit, assay
   creation and versioned edit with Forward/Reverse roles, global search, and reload
   persistence.
+- Passed the complete plan-003 repository matrix on 2026-09-02: format, Ruff,
+  mypy, ESLint, TypeScript, 19 API unit tests, 2 real Primer3 worker tests, and web
+  tests.
+- Passed 3 PostgreSQL 17 integration tests after applying both Alembic revisions on
+  a guaranteed-fresh database.
+- Passed 6 split Chromium E2E specs through Caddy and a separate host-network smoke
+  at `http://oligospace.localhost:8080`; host HTTP smoke also verified the login
+  redirect, login page, and health endpoint.
 
 ### Data quality
 

@@ -5,6 +5,8 @@ from oligospace_api.domain.permissions import (
     ResourceScope,
     can_create,
     can_edit,
+    can_manage_project,
+    can_manage_team,
     can_view,
 )
 from oligospace_api.models.enums import GlobalRole, Visibility
@@ -16,8 +18,21 @@ TEAM = uuid.uuid4()
 PROJECT = uuid.uuid4()
 
 
-def principal(role: GlobalRole = GlobalRole.MEMBER) -> Principal:
-    return Principal(USER, ORG, role, frozenset({TEAM}), frozenset({PROJECT}))
+def principal(
+    role: GlobalRole = GlobalRole.MEMBER,
+    *,
+    team_role: GlobalRole = GlobalRole.MEMBER,
+    project_role: GlobalRole = GlobalRole.MEMBER,
+) -> Principal:
+    return Principal(
+        USER,
+        ORG,
+        role,
+        frozenset({TEAM}),
+        frozenset({PROJECT}),
+        {TEAM: team_role},
+        {PROJECT: project_role},
+    )
 
 
 def test_visibility_boundaries() -> None:
@@ -41,4 +56,13 @@ def test_viewer_cannot_create_or_edit() -> None:
 
 def test_team_manager_can_edit_team_resource() -> None:
     resource = ResourceScope(ORG, OWNER, Visibility.TEAM, team_id=TEAM)
-    assert can_edit(principal(GlobalRole.TEAM_MANAGER), resource)
+    manager = principal(team_role=GlobalRole.TEAM_MANAGER)
+    assert can_edit(manager, resource)
+    assert can_manage_team(manager, TEAM)
+
+
+def test_project_manager_can_edit_project_resource() -> None:
+    resource = ResourceScope(ORG, OWNER, Visibility.PROJECT, project_id=PROJECT)
+    manager = principal(project_role=GlobalRole.TEAM_MANAGER)
+    assert can_edit(manager, resource)
+    assert can_manage_project(manager, PROJECT)

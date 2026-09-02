@@ -1,6 +1,7 @@
 import Link from "next/link";
 
-import type { AssaySummary, ExperimentType, OligoSummary, TargetSummary } from "@/lib/api";
+import { WorkspaceFields } from "@/components/WorkspaceFields";
+import type { AssaySummary, ExperimentType, OligoSummary, TargetSummary, WorkspaceChoices } from "@/lib/api";
 
 type FormAction = (formData: FormData) => void | Promise<void>;
 
@@ -11,7 +12,7 @@ const roles = [
   ["guide", "Guide"], ["donor", "Donor"], ["template", "Template"], ["other", "Other"],
 ] as const;
 
-export function AssayForm({ action, experimentTypes, oligos, targets, assay, error }: { action: FormAction; experimentTypes: ExperimentType[]; oligos: OligoSummary[]; targets: TargetSummary[]; assay?: AssaySummary; error?: string }) {
+export function AssayForm({ action, experimentTypes, oligos, targets, choices, assay, error }: { action: FormAction; experimentTypes: ExperimentType[]; oligos: OligoSummary[]; targets: TargetSummary[]; choices: WorkspaceChoices; assay?: AssaySummary; error?: string }) {
   const associations = Array.from({ length: Math.max(3, assay?.oligos.length ?? 0) }, (_, index) => assay?.oligos[index]);
   return (
     <form className="record-form" action={action}>
@@ -20,7 +21,7 @@ export function AssayForm({ action, experimentTypes, oligos, targets, assay, err
         <label className="field"><span>Name <strong aria-hidden="true">*</strong></span><input name="name" required maxLength={240} defaultValue={assay?.name} /></label>
         <label className="field"><span>Experiment type <strong aria-hidden="true">*</strong></span><select name="experiment_type_id" required defaultValue={assay?.experiment_type_id ?? ""}><option value="" disabled>Select a method</option>{experimentTypes.map((type) => <option value={type.id} key={type.id}>{type.name}</option>)}</select></label>
         <label className="field"><span>Target</span><select name="target_id" defaultValue={assay?.target_id ?? ""}><option value="">No target selected</option>{targets.map((target) => <option value={target.id} key={target.id}>{target.public_id} · {target.name}</option>)}</select></label>
-        <label className="field"><span>Visibility</span><select name="visibility" defaultValue={assay?.visibility ?? "team"}><option value="private">Private</option><option value="team">Team</option><option value="organization">Institute</option></select></label>
+        <WorkspaceFields choices={choices} visibility={assay?.visibility} teamId={assay?.owner_team_id} projectId={assay?.project_id} />
         <label className="field"><span>Expected amplicon length (bp)</span><input name="expected_amplicon_length" type="number" min="1" defaultValue={assay?.expected_amplicon_length ?? ""} /></label>
         <label className="field"><span>Annealing temperature (°C)</span><input name="recommended_annealing_temperature_c" type="number" step="0.1" defaultValue={assay?.recommended_annealing_temperature_c ?? ""} /></label>
         <label className="field field-wide"><span>Expected product</span><textarea name="expected_product" rows={2} defaultValue={assay?.expected_product ?? ""} /></label>

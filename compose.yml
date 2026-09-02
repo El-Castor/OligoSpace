@@ -31,6 +31,7 @@ services:
       API_INTERNAL_URL: http://api:8000/api/v1
       NEXTAUTH_URL: ${APP_ORIGIN:-http://oligospace.localhost:8080}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?Set NEXTAUTH_SECRET in .env}
+      DEVELOPMENT_AUTH_SECRET: ${NEXTAUTH_SECRET:?Set NEXTAUTH_SECRET in .env}
       KEYCLOAK_ISSUER: ${APP_ORIGIN:-http://oligospace.localhost:8080}/realms/oligospace
       KEYCLOAK_CLIENT_ID: oligospace-web
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:?Set KEYCLOAK_CLIENT_SECRET in .env}
@@ -45,8 +46,8 @@ services:
       dockerfile: infra/docker/web-e2e.Dockerfile
     profiles: ["test"]
     environment:
-      PLAYWRIGHT_BASE_URL: http://caddy:8080
-    networks: [public]
+      PLAYWRIGHT_BASE_URL: ${APP_ORIGIN:-http://oligospace.localhost:8080}
+    network_mode: "service:caddy"
     depends_on:
       caddy: {condition: service_started}
     restart: "no"
@@ -63,6 +64,7 @@ services:
       OIDC_ISSUER: ${APP_ORIGIN:-http://oligospace.localhost:8080}/realms/oligospace
       OIDC_AUDIENCE: oligospace-api
       CORS_ORIGINS: '["${APP_ORIGIN:-http://oligospace.localhost:8080}"]'
+      DEVELOPMENT_AUTH_SECRET: ${NEXTAUTH_SECRET:?Set NEXTAUTH_SECRET in .env}
     expose: ["8000"]
     networks: [application, data]
     depends_on:

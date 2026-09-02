@@ -1,3 +1,4 @@
+import { createHmac } from "node:crypto";
 import { getServerSession } from "next-auth";
 
 import { authOptions, developmentAuth } from "@/lib/auth";
@@ -21,6 +22,8 @@ export interface OligoSummary {
   melting_temperature_c: number | null;
   description: string | null;
   notes: string | null;
+  owner_team_id: string | null;
+  owner_project_id: string | null;
   oligo_type: string;
   reverse_complement: string;
   molecular_weight_g_mol: number | null;
@@ -42,6 +45,8 @@ export interface TargetSummary {
   transcript_identifier: string | null;
   description: string | null;
   reference_sequence: string | null;
+  owner_team_id: string | null;
+  owner_project_id: string | null;
   visibility: string;
   status: string;
   created_at: string;
@@ -76,6 +81,8 @@ export interface ExperimentType {
   slug: string;
   description: string | null;
   allowed_roles: string[];
+  required_metadata: Record<string, unknown>;
+  recommended_validation_fields: Record<string, unknown>;
   active: boolean;
 }
 
@@ -96,6 +103,120 @@ export interface DashboardSummary {
   assays: number;
   targets: number;
   projects: number;
+  awaiting_validation: number | null;
+  low_stock: number | null;
+}
+
+export interface CurrentTeam {
+  id: string;
+  name: string;
+  role: string;
+}
+
+export interface CurrentUser {
+  id: string;
+  organization_id: string;
+  organization_name: string;
+  email: string;
+  display_name: string;
+  first_name: string | null;
+  last_name: string | null;
+  avatar_url: string | null;
+  initials: string;
+  identity_provider: string;
+  external_identity_id: string;
+  active: boolean;
+  role: string;
+  development_identity: boolean;
+  teams: CurrentTeam[];
+  created_at: string;
+  last_login_at: string | null;
+}
+
+export interface UserSummary {
+  id: string;
+  external_identity_id: string;
+  identity_provider: string;
+  email: string;
+  display_name: string;
+  first_name: string | null;
+  last_name: string | null;
+  avatar_url: string | null;
+  initials: string;
+  active: boolean;
+  global_role: string;
+  organization_id: string;
+  created_at: string;
+  updated_at: string;
+  last_login_at: string | null;
+}
+
+export interface MembershipSummary {
+  user: UserSummary;
+  role: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TeamSummary {
+  id: string;
+  organization_id: string;
+  name: string;
+  description: string | null;
+  active: boolean;
+  member_count: number;
+  current_user_role: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TeamDetail extends TeamSummary {
+  members: MembershipSummary[];
+  projects: Array<{ public_id: string; name: string; status: string }>;
+  assay_count: number;
+  oligo_count: number;
+}
+
+export interface ProjectSummary {
+  id: string;
+  public_id: string;
+  organization_id: string;
+  team_id: string | null;
+  team_name: string | null;
+  name: string;
+  description: string | null;
+  visibility: string;
+  status: string;
+  created_by_id: string;
+  owner_name: string;
+  current_user_role: string | null;
+  member_count: number;
+  oligo_count: number;
+  assay_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProjectDetail extends ProjectSummary {
+  members: MembershipSummary[];
+  oligos: Array<{ public_id: string; name: string; status: string }>;
+  assays: Array<{ public_id: string; name: string; status: string }>;
+}
+
+export interface WorkspaceChoices {
+  teams: TeamSummary[];
+  projects: ProjectSummary[];
+}
+
+export interface PersonalizedDashboard {
+  my_oligos: number;
+  my_assays: number;
+  my_projects: number;
+  team_shared_oligos: number;
+  visible_targets: number;
+  visible_projects: number;
+  recent_items: Array<{ entity_type: string; public_id: string; name: string; created_at: string }>;
+  recent_activity: Array<{ action: string; entity_type: string; entity_id: string; occurred_at: string }>;
   awaiting_validation: number | null;
   low_stock: number | null;
 }
@@ -126,10 +247,22 @@ function errorDetail(payload: unknown): { code: string; message: string } {
 }
 
 async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const session = developmentAuth ? null : await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
   const headers = new Headers(init.headers);
   headers.set("Accept", "application/json");
-  if (session?.accessToken) headers.set("Authorization", `Bearer ${session.accessToken}`);
+  if (developmentAuth) {
+    const userId = session?.user?.id;
+    const secret = process.env.DEVELOPMENT_AUTH_SECRET;
+    if (!userId || !secret) {
+      throw new ApiError("An explicit development session is required.", 401, "development_session_required");
+    }
+    headers.set("X-OligoSpace-Development-User", userId);
+    headers.set("X-OligoSpace-Development-Auth", createHmac("sha256", secret).update(userId).digest("hex"));
+  } else if (session?.accessToken) {
+    headers.set("Authorization", `Bearer ${session.accessToken}`);
+  } else {
+    throw new ApiError("Authentication is required.", 401, "authentication_required");
+  }
   const response = await fetch(`${apiBase}${path}`, {
     ...init,
     headers,
@@ -138,6 +271,9 @@ async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   if (!response.ok) {
     const detail = errorDetail(await response.json().catch(() => null));
     throw new ApiError(detail.message, response.status, detail.code);
+  }
+  if (response.status === 204) {
+    return undefined as T;
   }
   return (await response.json()) as T;
 }
@@ -148,7 +284,7 @@ export async function apiGet<T>(path: string): Promise<T> {
 
 export async function apiWrite<T>(
   path: string,
-  method: "POST" | "PATCH",
+  method: "POST" | "PATCH" | "PUT",
   body: Record<string, unknown>,
 ): Promise<T> {
   return apiRequest<T>(path, {
@@ -156,6 +292,10 @@ export async function apiWrite<T>(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
+}
+
+export async function apiDelete(path: string): Promise<void> {
+  await apiRequest<unknown>(path, { method: "DELETE" });
 }
 
 export async function apiGetOptional<T>(path: string): Promise<T | null> {

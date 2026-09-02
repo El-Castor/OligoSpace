@@ -64,6 +64,7 @@ test: python-tooling web-tooling
 	cd apps/web && $(WEB_RUN) run test
 
 test-integration:
+	docker compose --profile test rm --stop --force postgres-test >/dev/null
 	@status=0; docker compose --profile test run --build --rm api-integration-test || status=$$?; docker compose --profile test rm --stop --force postgres-test >/dev/null; exit $$status
 
 test-e2e:
