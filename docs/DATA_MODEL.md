@@ -32,6 +32,28 @@ reference version, timestamp, match count, and warnings.
 JSON documents because they are catalog configuration, not core relationships.
 `Validation` belongs to an assay and optionally a run; status is contextual.
 
+## Persistent scientific jobs
+
+```text
+Oligo ────────────────> ScientificJob ──> ScientificJobAttempt (append-oriented)
+Assay + Forward/Reverse ─────┘       └──> ScientificJobResult (immutable, one-to-one)
+```
+
+`ScientificJob` is the durable request envelope and lifecycle authority. It stores a
+stable `SJOB` public ID, requester and derived visibility scope, exactly one valid
+subject shape, immutable input snapshot/digest, requested and effective parameters,
+schema versions, execution fingerprint, claim token, state, retry budget, and UTC
+timestamps. A partial unique index prevents concurrent active duplicates for one
+requester and effective request; idempotency keys are requester/institute scoped.
+
+Each claim appends a numbered `ScientificJobAttempt` with task/claim identity, lease,
+worker/tool/build provenance and bounded safe error facts. A successful job owns one
+immutable `ScientificJobResult` with typed component payload, units, warnings,
+Primer3 version/source checksum, wrapper/worker/build identity and execution times.
+Foreign keys use restrictive deletion so scientific evidence cannot be orphaned.
+Reads re-evaluate current access to the source Oligo or Assay in addition to the
+immutable visibility snapshot.
+
 ## Physical inventory
 
 ```text

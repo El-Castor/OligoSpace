@@ -2,14 +2,14 @@
 
 ## Now
 
-- Select and activate the next execution plan from the remaining product requirements;
-  do not start a later phase implicitly.
+- Complete active plan 005 validation: Chromium workflows through Caddy for Oligo QC,
+  Forward/Reverse Assay analysis, reload persistence and viewer denial; then exercise
+  worker/Redis interruption recovery and reconcile final traceability evidence.
 - Review the deterministic Excel preview, target decomposition, and storage
   conflicts with a data owner; require explicit approval before import writes.
 
 ## Next
 
-- Persist and expose worker jobs/results for Primer3 QC and pair compatibility.
 - Exact target-mapping persistence and interactive GeneOligoViewer.
 - Inventory, orders, hierarchical locations, events, and QR workflows.
 - Integrate malware scanning before any evidence attachment publication or download.
@@ -29,8 +29,7 @@
 
 ## Technical debt
 
-- Surface configurable Primer3 nearest-neighbor results from the worker while
-  retaining existing Wallace calculation provenance.
+- Introduce a separate least-privilege PostgreSQL worker role before production.
 - Generate TypeScript API types from OpenAPI after endpoint stabilization.
 - Migrate to ESLint 10 when the Next.js lint plugin dependency graph supports it.
 - Add isolated seeded fixtures per Playwright spec if parallel browser execution is

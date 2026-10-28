@@ -1,11 +1,13 @@
 import { expect, type Page } from "@playwright/test";
 
-export async function loginAs(page: Page, identity: "admin" | "member" = "admin") {
+export async function loginAs(page: Page, identity: "admin" | "member" | "viewer" = "admin") {
   await page.goto("/login");
   await expect(page.getByRole("heading", { level: 1, name: "Welcome to OligoSpace." })).toBeVisible();
   const buttonName = identity === "admin"
     ? "Sign in as local administrator"
-    : "Sign in as local researcher";
+    : identity === "member"
+      ? "Sign in as local researcher"
+      : "Sign in as local viewer";
   await page.getByRole("button", { name: buttonName }).click();
   await expect(page).toHaveURL("/");
   await expect(page.getByRole("heading", { level: 1, name: /Welcome back/ })).toBeVisible();
@@ -22,10 +24,16 @@ export function uniqueDna(seed: number, prefix: string): string {
   return `${prefix}${encoded}GCTA`;
 }
 
-export async function createOligo(page: Page, name: string, sequence: string): Promise<string> {
+export async function createOligo(
+  page: Page,
+  name: string,
+  sequence: string,
+  visibility = "private",
+): Promise<string> {
   await page.goto("/oligos/new");
   await page.locator('input[name="name"]').fill(name);
   await page.locator('textarea[name="sequence"]').fill(sequence);
+  await page.locator('select[name="visibility"]').selectOption(visibility);
   await page.getByRole("button", { name: "Register oligo" }).click();
   await expect(page).toHaveURL(/\/oligos\/OLG-[0-9]+/);
   await expect(page.getByRole("heading", { level: 1, name })).toBeVisible();

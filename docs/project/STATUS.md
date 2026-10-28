@@ -1,13 +1,15 @@
 # Project status
 
-Last updated: 2026-09-02
+Last updated: 2026-09-07
 
 ## Current phase
 
 Execution plans 001 through 004 are complete. Plan 004 added experiment runs,
 contextual validation, and quarantined evidence attachments. The development
-application is a usable multi-user registry through Caddy; no subsequent execution
-plan is active and no production deployment exists.
+application is a usable multi-user registry through Caddy. Execution plan 005,
+Persistent scientific jobs and Primer3 analysis, is approved, active, and in progress.
+Its first increment covers individual Oligo QC and Forward/Reverse
+Assay pair analysis. No production deployment exists.
 
 ## Build verified
 
@@ -71,8 +73,13 @@ plan is active and no production deployment exists.
 
 ## In progress / incomplete
 
+- Plan 005 has implemented its qualified Primer3 contract, migration 0004, persistent
+  job/attempt/result core, API/queue/worker/reconciliation path, and both browser
+  workflows. Unit, worker, PostgreSQL integration, production image, service runtime,
+  and Caddy HTTP smoke gates pass. Browser Playwright and interruption/recovery gates
+  remain pending, so the plan and browser-facing requirements are not yet complete.
 - Inventory/orders/QR, reference ingestion,
-  GeneOligoViewer, worker-job persistence, complete catalogue/inventory search,
+  GeneOligoViewer, complete catalogue/inventory search,
   production backup execution, monitoring, and hardening remain later work.
 - Stock values remain explicitly unavailable; no scientific or operational values
   are invented. Attachment malware scanning is not integrated, so all uploads remain
@@ -87,8 +94,8 @@ plan is active and no production deployment exists.
 
 - PostgreSQL RLS remains defense-in-depth work after the application permission
   policy and a safe per-request database security context are stabilized.
-- Synchronous API Tm remains the explicitly labeled Wallace screening method; the
-  worker's Primer3 result is not yet persisted or exposed through an API job.
+- Synchronous API Tm remains the explicitly labeled Wallace screening method;
+  Primer3 nearest-neighbor and structure facts use separate persistent job records.
 - OIDC needs an institutional browser validation with real production-like realm
   policy, token refresh, logout, and disabled-account lifecycle.
 - ESLint 9 remains pinned until the Next.js plugin dependency graph accepts ESLint 10.

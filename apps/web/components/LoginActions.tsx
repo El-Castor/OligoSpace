@@ -18,6 +18,9 @@ export function LoginActions({ development }: { development: boolean }) {
       <button className="secondary-button" type="button" onClick={() => signIn("development", { identity: "member", callbackUrl: "/" })}>
         Sign in as local researcher
       </button>
+      <button className="secondary-button" type="button" onClick={() => signIn("development", { identity: "viewer", callbackUrl: "/" })}>
+        Sign in as local viewer
+      </button>
       <p className="development-warning">Development only · no application password is created.</p>
     </div>
   );

@@ -18,6 +18,12 @@ const developmentIdentities = {
     email: "researcher@oligospace.local",
     role: "member",
   },
+  viewer: {
+    id: "00000000-0000-0000-0000-000000000003",
+    name: "Local viewer",
+    email: "viewer@oligospace.local",
+    role: "viewer",
+  },
 } as const;
 
 async function refreshAccessToken(token: import("next-auth/jwt").JWT) {

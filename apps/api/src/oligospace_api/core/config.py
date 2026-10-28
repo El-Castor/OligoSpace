@@ -29,6 +29,10 @@ class Settings(BaseSettings):
     object_storage_bucket: str = "oligospace-evidence"
     object_storage_secure: bool = False
     attachment_max_bytes: int = 10 * 1024 * 1024
+    redis_url: str = "redis://redis:6379/0"
+    scientific_job_max_attempts: int = 3
+    scientific_job_active_per_user: int = 5
+    scientific_job_active_per_organization: int = 100
 
     def validate_runtime(self) -> None:
         if self.environment == "production" and self.auth_mode != "oidc":

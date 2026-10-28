@@ -43,6 +43,15 @@
 - A seventh Playwright spec covering run creation, real MinIO evidence upload,
   quarantine display, contextual validation, supersession, global search, dashboard,
   and browser-reload persistence through Caddy.
+- Persistent `ScientificJob`, append-oriented attempt, and immutable Primer3 result
+  records with reversible migration `0004_scientific_jobs`, idempotent API submission,
+  visibility-aware reads, bounded retries, active-job limits, audit transitions, and
+  PostgreSQL-authoritative results.
+- Qualified Primer3 2.6.1 individual Oligo QC and Assay Forward/Reverse analysis with
+  separate nearest-neighbor Tm, hairpin, homodimer, heterodimer, end-complementarity,
+  and derived Tm-delta facts plus complete input/parameter/tool/build provenance.
+- Oligo and Assay scientific-job browser workflows with polling, explicit role
+  selection, historical/stale-version results, viewer-safe controls, and provenance.
 
 ### Changed
 
@@ -61,6 +70,12 @@
   of future-phase placeholders; unscanned evidence deliberately has no download path.
 
 ### Validation
+
+- Plan 005 validation in progress on 2026-09-07: API/web/worker lint and strict typing;
+  25 API unit tests; 7 worker tests including real Primer3 golden fixtures and error
+  boundaries; PostgreSQL 17 upgrade/downgrade/re-upgrade through migration 0004 and
+  integration tests; production API/web/worker image builds; Compose runtime health
+  and host Caddy root smoke. Playwright and interruption/recovery gates remain open.
 
 - Passed formatting, lint, strict Python/TypeScript type checks, 15 API tests,
   2 real Primer3 worker tests, web smoke test, and Next.js production build.

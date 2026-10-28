@@ -16,6 +16,11 @@ from oligospace_api.models.registry import (
     TeamMembership,
     User,
 )
+from oligospace_api.models.scientific import (
+    ScientificJob,
+    ScientificJobAttempt,
+    ScientificJobResult,
+)
 
 __all__ = [
     "Assay",
@@ -36,4 +41,7 @@ __all__ = [
     "Attachment",
     "ExperimentRun",
     "Validation",
+    "ScientificJob",
+    "ScientificJobAttempt",
+    "ScientificJobResult",
 ]

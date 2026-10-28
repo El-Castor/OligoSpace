@@ -117,11 +117,11 @@ in `docs/exec-plans/completed/`.
 |---|---|---|---|---|
 | BIO-001 | Verified | `target_mapping.py` | `test_target_mapping.py` forward/reverse/ambiguous cases | 001 |
 | BIO-002 | Planned | TargetMapping design only | — | Backlog |
-| BIO-003 | In progress | Primer3 worker tasks | 2 real Primer3 worker tests; API job persistence absent | 001, Backlog |
+| BIO-003 | In progress | persistent scientific API/worker and Oligo/Assay UI | `test_scientific_contract.py` real Primer3 fixtures; API and PostgreSQL tests; Caddy E2E pending | 001, 005 |
 | BIO-004 | Verified | Wallace service, provenance, UI label | `test_sequence_analysis.py`; PostgreSQL response | 001, 002 |
 | BIO-005 | Implemented | pinned BLAST+ worker image | image build/version check; governed databases blocked | 001, Backlog |
-| BIO-006 | Planned | Celery infrastructure only | — | Backlog |
-| BIO-007 | In progress | sequence/mapping error and warning states | sequence and mapping unit tests | 001, Backlog |
+| BIO-006 | In progress | `ScientificJob`/attempt/result, migration 0004, Celery worker/Beat | reversible PostgreSQL migration and API integration; worker/Redis recovery runtime gate pending | 005 |
+| BIO-007 | In progress | explicit scientific validation/error states and neutral UI | API boundary tests and worker timeout/output/version tests; rejected-input Caddy E2E pending | 001, 005 |
 
 ## Import, export, and audit
 

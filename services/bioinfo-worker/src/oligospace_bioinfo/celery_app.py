@@ -14,5 +14,11 @@ app.conf.update(
     result_expires=86400,
     timezone="UTC",
     enable_utc=True,
+    beat_schedule={
+        "reconcile-scientific-jobs": {
+            "task": "oligospace.reconcile_scientific_jobs",
+            "schedule": 30.0,
+        }
+    },
 )
 app.autodiscover_tasks(["oligospace_bioinfo"])

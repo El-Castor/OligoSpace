@@ -53,6 +53,7 @@ services:
     restart: "no"
 
   api:
+    image: oligospace-api:latest
     build:
       context: .
       dockerfile: infra/docker/api/Dockerfile
@@ -70,12 +71,14 @@ services:
       OBJECT_STORAGE_SECRET_KEY: ${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD in .env}
       OBJECT_STORAGE_BUCKET: oligospace-evidence
       OBJECT_STORAGE_SECURE: "false"
+      REDIS_URL: redis://redis:6379/0
     expose: ["8000"]
     networks: [application, data]
     depends_on:
       migrate: {condition: service_completed_successfully}
       seed: {condition: service_completed_successfully}
       minio: {condition: service_started}
+      redis: {condition: service_healthy}
     healthcheck:
       test: ["CMD", "micromamba", "run", "--name", "base", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/live')"]
       interval: 10s
@@ -83,9 +86,7 @@ services:
       retries: 10
 
   migrate:
-    build:
-      context: .
-      dockerfile: infra/docker/api/Dockerfile
+    image: oligospace-api:latest
     command: ["micromamba", "run", "--name", "base", "alembic", "upgrade", "head"]
     environment:
       DATABASE_URL: postgresql+asyncpg://oligospace:${POSTGRES_PASSWORD}@postgres:5432/oligospace
@@ -108,15 +109,32 @@ services:
     restart: "no"
 
   bioinfo-worker:
+    image: oligospace-bioinfo-worker:latest
     build:
       context: .
       dockerfile: infra/docker/bioinfo-worker.Dockerfile
     restart: unless-stopped
     environment:
       REDIS_URL: redis://redis:6379/0
+      DATABASE_URL: postgresql://oligospace:${POSTGRES_PASSWORD}@postgres:5432/oligospace
+      OLIGOSPACE_BUILD_ID: ${OLIGOSPACE_BUILD_ID:-development-unpinned}
     networks: [application, data]
     depends_on:
       redis: {condition: service_healthy}
+      migrate: {condition: service_completed_successfully}
+
+  scientific-scheduler:
+    image: oligospace-bioinfo-worker:latest
+    command: ["micromamba", "run", "--name", "base", "celery", "--app", "oligospace_bioinfo.celery_app:app", "beat", "--loglevel=INFO"]
+    restart: unless-stopped
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      DATABASE_URL: postgresql://oligospace:${POSTGRES_PASSWORD}@postgres:5432/oligospace
+      OLIGOSPACE_BUILD_ID: ${OLIGOSPACE_BUILD_ID:-development-unpinned}
+    networks: [data]
+    depends_on:
+      redis: {condition: service_healthy}
+      migrate: {condition: service_completed_successfully}
 
   postgres:
     image: postgres:17.11-alpine
@@ -160,6 +178,8 @@ services:
       - /bin/sh
       - -c
       - >-
+        micromamba run --name base alembic upgrade head &&
+        micromamba run --name base alembic downgrade 0003_experiment_evidence &&
         micromamba run --name base alembic upgrade head &&
         micromamba run --name base pytest tests/integration
     environment:
