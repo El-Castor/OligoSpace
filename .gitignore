@@ -19,3 +19,6 @@ build/
 *.xls
 data/private/
 backups/
+
+# Local agent tooling
+.serena/
