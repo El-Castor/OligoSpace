@@ -84,7 +84,7 @@ jobs:
       - run: docker build --file infra/docker/bioinfo-worker.Dockerfile --tag oligospace-bioinfo-worker:test .
       - run: docker run --rm oligospace-bioinfo-worker:test micromamba run --name base ruff check .
       - run: docker run --rm oligospace-bioinfo-worker:test micromamba run --name base ruff format --check .
-      - run: docker run --rm oligospace-bioinfo-worker:test micromamba run --name base mypy src
+      - run: docker run --rm oligospace-bioinfo-worker:test micromamba run --name base mypy src tests
       - run: docker run --rm oligospace-bioinfo-worker:test micromamba run --name base pytest
       - run: docker run --rm oligospace-bioinfo-worker:test primer3_core --about
       - run: docker run --rm oligospace-bioinfo-worker:test blastn -version

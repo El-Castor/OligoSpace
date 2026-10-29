@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import subprocess
+import time
 from datetime import UTC, datetime
 from typing import Any
 
+import psycopg
 import pytest
 
 from oligospace_bioinfo import tasks
@@ -59,7 +62,7 @@ def _install(
     attempt_row: tuple[Any, ...] | None,
 ) -> FakeCursor:
     cursor = FakeCursor(job_row, attempt_row)
-    monkeypatch.setattr(tasks.psycopg, "connect", lambda *args, **kwargs: FakeConnection(cursor))
+    monkeypatch.setattr(psycopg, "connect", lambda *args, **kwargs: FakeConnection(cursor))
     return cursor
 
 
@@ -113,7 +116,7 @@ def test_current_attempt_failure_reports_retry(monkeypatch: pytest.MonkeyPatch) 
 
 def test_tool_timeout_is_bounded_by_attempt_lease(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("SCIENTIFIC_TOOL_TIMEOUT_SECONDS", "30")
-    token = tasks._attempt_deadline.set(tasks.time.monotonic() + 10)
+    token = tasks._attempt_deadline.set(time.monotonic() + 10)
     try:
         assert 0 < tasks._tool_timeout() <= 10
     finally:
@@ -125,8 +128,8 @@ def test_exhausted_lease_stops_before_running_tool(monkeypatch: pytest.MonkeyPat
     def forbidden(*args: object, **kwargs: object) -> None:
         raise AssertionError("Primer3 must not start after the lease is exhausted.")
 
-    monkeypatch.setattr(tasks.subprocess, "run", forbidden)
-    token = tasks._attempt_deadline.set(tasks.time.monotonic() - 1)
+    monkeypatch.setattr(subprocess, "run", forbidden)
+    token = tasks._attempt_deadline.set(time.monotonic() - 1)
     try:
         with pytest.raises(tasks.ScientificToolError) as raised:
             tasks._run_tool(["oligotm", "ACGT"])

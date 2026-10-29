@@ -95,7 +95,7 @@ def test_tool_failures_are_safely_classified(monkeypatch: pytest.MonkeyPatch) ->
     def timeout(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
         raise subprocess.TimeoutExpired(cmd=["oligotm"], timeout=30)
 
-    monkeypatch.setattr(tasks.subprocess, "run", timeout)
+    monkeypatch.setattr(subprocess, "run", timeout)
     with pytest.raises(tasks.ScientificToolError) as timed_out:
         tasks._run_tool(["oligotm", "ACGT"])
     assert timed_out.value.code == "tool_timeout"

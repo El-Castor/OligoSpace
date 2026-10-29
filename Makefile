@@ -56,7 +56,7 @@ lint: python-tooling web-tooling
 
 typecheck: python-tooling web-tooling
 	cd apps/api && $(API_RUN) mypy src
-	cd services/bioinfo-worker && $(BIOINFO_RUN) mypy src
+	cd services/bioinfo-worker && $(BIOINFO_RUN) mypy src tests
 	cd apps/web && $(WEB_RUN) run typecheck
 
 test: python-tooling web-tooling
