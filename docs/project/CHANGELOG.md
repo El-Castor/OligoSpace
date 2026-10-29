@@ -52,6 +52,8 @@
   and derived Tm-delta facts plus complete input/parameter/tool/build provenance.
 - Oligo and Assay scientific-job browser workflows with polling, explicit role
   selection, historical/stale-version results, viewer-safe controls, and provenance.
+- ADR-0006 recording PostgreSQL-authoritative scientific job state, lease-fenced
+  attempts, and lease-bounded tool timeouts.
 
 ### Changed
 
