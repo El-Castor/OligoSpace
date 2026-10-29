@@ -181,12 +181,13 @@ services:
         micromamba run --name base alembic upgrade head &&
         micromamba run --name base alembic downgrade 0003_experiment_evidence &&
         micromamba run --name base alembic upgrade head &&
-        micromamba run --name base pytest tests/integration
+        micromamba run --name base pytest -rs tests/integration
     environment:
       ENVIRONMENT: test
       AUTH_MODE: development
       DATABASE_URL: postgresql+asyncpg://oligospace_test:integration-test-only@postgres-test:5432/oligospace_test
       OLIGOSPACE_TEST_DATABASE_URL: postgresql+asyncpg://oligospace_test:integration-test-only@postgres-test:5432/oligospace_test
+      OLIGOSPACE_REQUIRE_INTEGRATION: "1"
     networks: [data]
     depends_on:
       postgres-test: {condition: service_healthy}

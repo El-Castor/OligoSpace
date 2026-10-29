@@ -56,8 +56,8 @@ def context_for(user: User) -> AuthContext:
 
 
 @pytest.fixture
-async def laboratory_client() -> AsyncIterator[LaboratoryFixture]:
-    engine = create_async_engine(os.environ["OLIGOSPACE_TEST_DATABASE_URL"])
+async def laboratory_client(integration_database_url: str) -> AsyncIterator[LaboratoryFixture]:
+    engine = create_async_engine(integration_database_url)
     sessions = async_sessionmaker(engine, expire_on_commit=False)
     unique = uuid.uuid4().hex
     async with sessions() as session:

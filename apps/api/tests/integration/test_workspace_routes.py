@@ -65,8 +65,8 @@ def unique_dna() -> str:
 
 
 @pytest.fixture
-async def workspace_client() -> AsyncIterator[WorkspaceFixture]:
-    engine = create_async_engine(os.environ["OLIGOSPACE_TEST_DATABASE_URL"])
+async def workspace_client(integration_database_url: str) -> AsyncIterator[WorkspaceFixture]:
+    engine = create_async_engine(integration_database_url)
     sessions = async_sessionmaker(engine, expire_on_commit=False)
     unique = uuid.uuid4().hex
     async with sessions() as session:
