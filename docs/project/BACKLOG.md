@@ -2,9 +2,9 @@
 
 ## Now
 
-- Complete active plan 005 validation: Chromium workflows through Caddy for Oligo QC,
-  Forward/Reverse Assay analysis, reload persistence and viewer denial; then exercise
-  worker/Redis interruption recovery and reconcile final traceability evidence.
+- Complete active plan 005 validation: exercise worker/Redis interruption recovery
+  and reconcile final traceability evidence (Chromium scientific-job workflows passed
+  2026-10-29).
 - Review the deterministic Excel preview, target decomposition, and storage
   conflicts with a data owner; require explicit approval before import writes.
 
@@ -33,4 +33,4 @@
 - Generate TypeScript API types from OpenAPI after endpoint stabilization.
 - Migrate to ESLint 10 when the Next.js lint plugin dependency graph supports it.
 - Add isolated seeded fixtures per Playwright spec if parallel browser execution is
-  enabled; the current independent specs run serially against persistent development data.
+  enabled; the current specs run serially against one shared, ephemeral E2E stack.

@@ -68,8 +68,22 @@
   `oligospace.localhost` origin and cookie domain.
 - Experiments and Validation navigation now expose working registry workflows instead
   of future-phase placeholders; unscanned evidence deliberately has no download path.
+- Scientific-job submission for Assay pairs now requires visibility of both paired
+  Oligos, not only the Assay.
+- `make test-e2e` runs in an isolated `oligospace-e2e` Compose project with tmpfs
+  storage, no host port, and public placeholders from `infra/e2e/e2e.env`; it never
+  reads `.env` and is torn down after every run, so development data is untouched.
+- CI gains an `integration` job running PostgreSQL integration tests with an Alembic
+  downgrade/upgrade round-trip; `OLIGOSPACE_REQUIRE_INTEGRATION=1` fails on skips.
+- Web unit tests report through the Node test runner.
 
 ### Validation
+
+- Plan 005 validation on 2026-10-29: format/lint/typecheck; API 25 passed (7
+  PostgreSQL tests delegated); worker 7 passed; web 2 passed; integration 7 passed with
+  0 skips and Alembic round-trip; 10 Chromium tests in 8 specs including both
+  scientific-job workflows in the isolated E2E stack; dev and E2E Compose configs;
+  GitHub CI green on `f7fff83`. Interruption/recovery gates remain open.
 
 - Plan 005 validation in progress on 2026-09-07: API/web/worker lint and strict typing;
   25 API unit tests; 7 worker tests including real Primer3 golden fixtures and error
