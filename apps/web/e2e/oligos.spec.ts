@@ -11,7 +11,7 @@ test("oligo list, creation, detail, metadata edit, and reload persistence work",
   const suffix = run.toString(36);
   const name = `E2E oligo ${suffix}`;
   await createOligo(page, name, uniqueDna(run, "ACG"));
-  await expect(page.getByText("Calculation provenance")).toBeVisible();
+  await expect(page.getByText("Wallace screening provenance")).toBeVisible();
   await page.getByRole("link", { name: "Edit metadata" }).click();
   await page.locator('textarea[name="notes"]').fill(`Persisted oligo note ${suffix}`);
   await page.getByRole("button", { name: "Save changes" }).click();

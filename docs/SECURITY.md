@@ -18,8 +18,24 @@ marked in responses and must never be enabled in externally reachable deployment
 - PostgreSQL/Redis private; MinIO console and Keycloak administration private.
 - Secrets supplied outside Git, with startup validation in production.
 - File size/type checks plus malware scanning integration point before publishing.
-- Rate limits at proxy/API for authentication-sensitive and expensive operations.
+- API active-job limits per authenticated requester and institute for expensive
+  scientific operations; infrastructure-level request throttling remains a deployment
+  hardening item.
 - Structured audit events exclude bearer tokens, cookies, secrets, and file bodies.
+
+## Scientific worker controls
+
+Scientific submission and retry authorization is enforced server-side. Viewers may
+read results already visible to them but cannot consume compute. Job scope is derived
+from the source record and cannot be broadened by clients; reads also require current
+source access so a historical visibility snapshot cannot leak a narrowed record.
+
+Celery messages contain only a job UUID and claim token. Primer3 is invoked with an
+argument list and timeout, never a shell or arbitrary user option. Attempt diagnostics
+and audit records contain stable IDs, digests, states and safe bounded errors—not
+sequences, broker/database URLs, environment dumps, tokens or raw unrestricted logs.
+The worker currently uses the application database credential in Compose; a separate
+least-privilege PostgreSQL role is required before production deployment.
 
 ## Remaining hardening
 

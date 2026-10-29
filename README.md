@@ -86,6 +86,24 @@ the pinned container toolchains:
 make format lint typecheck test PYTHON_RUNNER=container
 ```
 
+`PYTHON_RUNNER=conda` (default) uses the `oligospace-api` and `oligospace-bioinfo`
+environments plus host npm; `PYTHON_RUNNER=container` builds the
+`oligospace-*-tooling` images and mounts the checkout read-write for formatting.
+Neither runner touches a database: PostgreSQL-backed tests are skipped by
+`make test` and run by `make test-integration`, which uses a throwaway tmpfs
+`postgres-test` service, round-trips Alembic (`upgrade head` → `downgrade
+0003_experiment_evidence` → `upgrade head`), and fails if any integration test is
+skipped.
+
+`make test-e2e` runs Playwright against a separate Compose project
+(`oligospace-e2e`, `compose.e2e.yml`, including the scientific worker and
+scheduler) configured only from the public placeholders
+in `infra/e2e/e2e.env`. It never reads `.env`, publishes no host port, stores
+PostgreSQL, Redis, MinIO, and Caddy state on tmpfs, tags its images
+`oligospace-e2e-*`, and removes its containers and volumes when it finishes. Dev
+data, volumes, and images are never shared with it; never point E2E tests at real
+experimental data.
+
 Preview the immutable source workbook with:
 
 ```bash

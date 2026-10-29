@@ -1,13 +1,16 @@
 # Project status
 
-Last updated: 2026-09-02
+Last updated: 2026-10-29
 
 ## Current phase
 
-Execution plans 001 through 004 are complete. Plan 004 added experiment runs,
-contextual validation, and quarantined evidence attachments. The development
-application is a usable multi-user registry through Caddy; no subsequent execution
-plan is active and no production deployment exists.
+Execution plans 001 through 005 are complete. Plan 004 added experiment runs,
+contextual validation, and quarantined evidence attachments. Plan 005, Persistent
+scientific jobs and Primer3 analysis, completed on 2026-10-29 with individual Oligo QC
+and Forward/Reverse Assay pair analysis, including validated worker/Redis interruption
+and reconciliation recovery. The development application is a usable multi-user
+registry through Caddy. No execution plan is active; Plan 006 has not been activated.
+No production deployment exists.
 
 ## Build verified
 
@@ -28,7 +31,9 @@ plan is active and no production deployment exists.
 ## API and PostgreSQL verified
 
 - `make test-integration` migrates a guaranteed-fresh PostgreSQL 17 database from
-  `0001` through `0003` and passes four integration tests.
+  `0001` through `0004`, round-trips Alembic (head → `0003_experiment_evidence` →
+  head), and passes seven integration tests with zero skips enforced by
+  `OLIGOSPACE_REQUIRE_INTEGRATION=1`. The CI `integration` job runs the same target.
 - The core registry round trip still verifies Oligo/Target/Assay creation,
   immutable biological identity, duplicate rejection, contextual roles,
   versioning, authorization, and audit evidence.
@@ -54,9 +59,12 @@ plan is active and no production deployment exists.
 
 ## Browser/E2E verified
 
-- `make test-e2e` passes seven independent Chromium specs through Caddy: smoke and
+- `make test-e2e` passes 10 Chromium tests in 8 spec files through Caddy: smoke and
   personalized dashboard; development login/profile/logout/second identity;
-  Oligo; Target; Assay plus global search; and Project/Team/Admin workflows.
+  Oligo; Target; Assay plus global search; Project/Team/Admin workflows; evidence;
+  and scientific jobs. It runs in the isolated `oligospace-e2e` Compose project
+  (tmpfs storage, no host port, public placeholders from `infra/e2e/e2e.env`, never
+  reads `.env`) that is torn down after every run.
 - The browser workflows prove UI → API → PostgreSQL → browser reload persistence,
   Forward/Reverse Oligo association, project membership, normal-user admin denial,
   and session return login.
@@ -71,8 +79,17 @@ plan is active and no production deployment exists.
 
 ## In progress / incomplete
 
+- Plan 005 is complete (2026-10-29). Interruption/recovery scenarios A (worker
+  kill), B1/B2 (Redis restart and Redis outage at submission), and C (stuck-job
+  reconciliation) passed on the isolated `oligospace-e2e` stack. Scenario C first
+  exposed a stale attempt committing success (C0); attempt fencing and a
+  lease-bounded tool timeout fixed it and C1/C2 were retested. Evidence:
+  `docs/project/PLAN_005_RECOVERY_EVIDENCE.md`. Residual risks (no lease heartbeat,
+  claim token not rotated, Celery task id reused on retry) are tracked in the backlog.
+- The Plan 005 recovery fixes and evidence commits are local only: not pushed, no CI
+  run yet, and branches 002–005 are not merged into `main`.
 - Inventory/orders/QR, reference ingestion,
-  GeneOligoViewer, worker-job persistence, complete catalogue/inventory search,
+  GeneOligoViewer, complete catalogue/inventory search,
   production backup execution, monitoring, and hardening remain later work.
 - Stock values remain explicitly unavailable; no scientific or operational values
   are invented. Attachment malware scanning is not integrated, so all uploads remain
@@ -87,25 +104,36 @@ plan is active and no production deployment exists.
 
 - PostgreSQL RLS remains defense-in-depth work after the application permission
   policy and a safe per-request database security context are stabilized.
-- Synchronous API Tm remains the explicitly labeled Wallace screening method; the
-  worker's Primer3 result is not yet persisted or exposed through an API job.
+- Synchronous API Tm remains the explicitly labeled Wallace screening method;
+  Primer3 nearest-neighbor and structure facts use separate persistent job records.
 - OIDC needs an institutional browser validation with real production-like realm
   policy, token refresh, logout, and disabled-account lifecycle.
 - ESLint 9 remains pinned until the Next.js plugin dependency graph accepts ESLint 10.
 
 ## Last validated commands
 
-- `make format` via `PYTHON_RUNNER=container` — passed 2026-09-02.
-- `make lint typecheck test` via `PYTHON_RUNNER=container` — passed: 21 API
-  tests, 4 intentionally skipped integration tests in the unit invocation, 2 real
-  Primer3 worker tests, web tests, Ruff, mypy, ESLint, and TypeScript.
-- `make compose-config` — passed after the Caddy-network E2E configuration change.
-- `make test-integration` — passed: migration `0001` → `0003`, 4 PostgreSQL tests,
-  fresh test container removed after execution.
-- `make test-e2e` — passed: 7 independent Chromium specs through Caddy in 15.8 s.
-- Host-network Chromium smoke — passed: 1 smoke spec at
-  `http://oligospace.localhost:8080`.
-- Host HTTP smoke — root `307` to login, login `200`, health `200`/`status: ok`.
+All on 2026-10-29 via `PYTHON_RUNNER=container` unless noted:
 
-Database migration: `0003_experiment_evidence` is applied successfully to the
-development PostgreSQL database and to a fresh isolated PostgreSQL 17 database.
+- `make format lint typecheck` — passed (Ruff, mypy, ESLint, TypeScript).
+- `make test` — passed: API 25 passed, 7 skipped (PostgreSQL tests delegated to
+  `make test-integration`); bioinfo worker 14 passed (including 7 attempt-fencing
+  tests); web 2 passed, 0 skipped.
+- `make test-integration` — passed: 7 passed, 0 skipped; Alembic round-trip OK;
+  fresh test container removed after execution.
+- `make test-e2e` — passed: 10 passed, 0 failed, 0 skipped in 14.3 s in the
+  isolated `oligospace-e2e` project. Dev database row counts, containers, volumes,
+  and images were identical before and after the run.
+- `make compose-config` — passed for the dev and E2E configurations.
+- Interruption/recovery scenarios A, B1, B2, C1, C2 on `oligospace-e2e` — passed;
+  six jobs ended `succeeded` with exactly one result each (C0 defect fixed).
+- GitHub CI on `f7fff83` — backend, frontend, bioinfo-worker, migration,
+  integration, and compose jobs succeeded. `529fc2d` and later local commits have no
+  CI run (not pushed).
+- Host-network Chromium smoke (2026-09-07) — passed: 1 smoke spec at
+  `http://oligospace.localhost:8080`.
+- Host HTTP smoke (2026-09-07) — root `307` to login, login `200`, health
+  `200`/`status: ok`.
+
+Database migration: `0004_scientific_jobs` is applied to the development PostgreSQL
+database (observed) and to a fresh isolated PostgreSQL 17 database, including the
+downgrade/upgrade round-trip.

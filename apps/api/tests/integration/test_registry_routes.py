@@ -29,8 +29,10 @@ EXPERIMENT_TYPE_ID = uuid.UUID("40000000-0000-0000-0000-000000000001")
 
 
 @pytest.fixture
-async def registry_client() -> AsyncIterator[tuple[AsyncClient, AsyncSession]]:
-    engine = create_async_engine(os.environ["OLIGOSPACE_TEST_DATABASE_URL"])
+async def registry_client(
+    integration_database_url: str,
+) -> AsyncIterator[tuple[AsyncClient, AsyncSession]]:
+    engine = create_async_engine(integration_database_url)
     sessions = async_sessionmaker(engine, expire_on_commit=False)
     async with sessions() as session:
         session.add(

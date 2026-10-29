@@ -285,6 +285,67 @@ export interface PersonalizedDashboard {
   low_stock: number | null;
 }
 
+export interface ScientificAttemptSummary {
+  id: string;
+  attempt_number: number;
+  state: string;
+  started_at: string;
+  completed_at: string | null;
+  retryable: boolean;
+  tool_version: string | null;
+  worker_version: string | null;
+  wrapper_contract_version: string | null;
+  build_identity: string | null;
+  error_code: string | null;
+  error_summary: string | null;
+}
+
+export interface ScientificResultSummary {
+  result_schema_version: string;
+  payload: Record<string, unknown>;
+  warnings: Array<Record<string, unknown>>;
+  algorithm: string;
+  tool_version: string;
+  tool_source_sha256: string;
+  worker_version: string;
+  wrapper_contract_version: string;
+  build_identity: string;
+  started_at: string;
+  completed_at: string;
+  executed_at: string;
+}
+
+export interface ScientificJobSummary {
+  id: string;
+  public_id: string;
+  requester_id: string;
+  kind: string;
+  state: string;
+  oligo_id: string | null;
+  assay_id: string | null;
+  forward_oligo_id: string | null;
+  reverse_oligo_id: string | null;
+  assay_version: number | null;
+  input_snapshot: Record<string, unknown>;
+  input_sha256: string;
+  requested_parameters: Record<string, unknown>;
+  effective_parameters: Record<string, unknown>;
+  parameter_schema_version: string;
+  execution_fingerprint: string;
+  celery_task_id: string | null;
+  attempt_count: number;
+  max_attempts: number;
+  queued_at: string;
+  started_at: string | null;
+  completed_at: string | null;
+  last_error_code: string | null;
+  last_error_summary: string | null;
+  created_at: string;
+  updated_at: string;
+  attempts: ScientificAttemptSummary[];
+  result: ScientificResultSummary | null;
+}
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -350,10 +411,11 @@ export async function apiWrite<T>(
   path: string,
   method: "POST" | "PATCH" | "PUT",
   body: Record<string, unknown>,
+  headers?: HeadersInit,
 ): Promise<T> {
   return apiRequest<T>(path, {
     method,
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...Object.fromEntries(new Headers(headers)) },
     body: JSON.stringify(body),
   });
 }

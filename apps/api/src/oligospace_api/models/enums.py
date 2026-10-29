@@ -67,3 +67,22 @@ class AttachmentPublicationStatus(StrEnum):
     PUBLISHED = "published"
     REJECTED = "rejected"
     REMOVED = "removed"
+
+
+class ScientificJobKind(StrEnum):
+    OLIGO_PRIMER3_QC = "oligo_primer3_qc"
+    ASSAY_PRIMER3_PAIR_COMPATIBILITY = "assay_primer3_pair_compatibility"
+
+
+class ScientificJobStatus(StrEnum):
+    QUEUED = "queued"
+    RUNNING = "running"
+    RETRYING = "retrying"
+    SUCCEEDED = "succeeded"
+    FAILED = "failed"
+
+
+class ScientificAttemptStatus(StrEnum):
+    RUNNING = "running"
+    SUCCEEDED = "succeeded"
+    FAILED = "failed"

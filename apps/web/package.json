@@ -10,7 +10,7 @@
     "start": "next start --hostname 0.0.0.0",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types tests/registry-format.test.mjs",
+    "test": "node --experimental-strip-types --test --test-reporter=spec \"tests/**/*.test.mjs\"",
     "test:e2e": "playwright test"
   },
   "dependencies": {

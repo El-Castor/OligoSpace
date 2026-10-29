@@ -29,6 +29,17 @@ VALUES (
   true,
   'member',
   '10000000-0000-0000-0000-000000000001'
+), (
+  '00000000-0000-0000-0000-000000000003',
+  '20000000-0000-0000-0000-000000000003',
+  'keycloak',
+  'viewer@oligospace.local',
+  'Local viewer',
+  'Local',
+  'Viewer',
+  true,
+  'viewer',
+  '10000000-0000-0000-0000-000000000001'
 )
 ON CONFLICT (id) DO NOTHING;
 
