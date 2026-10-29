@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+import hashlib
+import hmac
+import uuid
 from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
 from typing import cast
 
 import jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, Header, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt import PyJWKClient
 from sqlalchemy import select
@@ -26,6 +30,10 @@ class AuthContext:
     email: str
     display_name: str
     development_identity: bool
+
+
+def development_signature(user_id: str, secret: str) -> str:
+    return hmac.new(secret.encode(), user_id.encode(), hashlib.sha256).hexdigest()
 
 
 def _role_from_claims(claims: dict[str, object]) -> GlobalRole:
@@ -66,22 +74,40 @@ def _decode_token(token: str, settings: Settings) -> dict[str, object]:
 
 async def get_auth_context(
     credentials: HTTPAuthorizationCredentials | None = Depends(bearer),
+    development_user: str | None = Header(default=None, alias="X-OligoSpace-Development-User"),
+    development_auth: str | None = Header(default=None, alias="X-OligoSpace-Development-Auth"),
     session: AsyncSession = Depends(get_session),
     settings: Settings = Depends(get_settings),
 ) -> AuthContext:
     if settings.auth_mode == "development":
-        principal = Principal(
-            user_id=settings.development_user_id,
-            organization_id=settings.development_organization_id,
-            role=GlobalRole.ADMIN,
+        if development_user is None or development_auth is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail={
+                    "code": "development_session_required",
+                    "message": "An explicit development session is required.",
+                },
+            )
+        expected = development_signature(development_user, settings.development_auth_secret)
+        if not hmac.compare_digest(expected, development_auth):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail={"code": "invalid_development_session", "message": "Session rejected."},
+            )
+        try:
+            development_user_id = uuid.UUID(development_user)
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail={"code": "invalid_development_session", "message": "Session rejected."},
+            ) from exc
+        user = await session.scalar(
+            select(User).where(
+                User.id == development_user_id,
+                User.organization_id == settings.development_organization_id,
+            )
         )
-        return AuthContext(
-            principal=principal,
-            user=None,
-            email=settings.development_email,
-            display_name=settings.development_display_name,
-            development_identity=True,
-        )
+        return await _context_for_user(session, user, development_identity=True)
 
     if credentials is None:
         raise HTTPException(
@@ -92,26 +118,19 @@ async def get_auth_context(
     claims = _decode_token(credentials.credentials, settings)
     subject = str(claims["sub"])
     user = await session.scalar(select(User).where(User.oidc_subject == subject))
-    if user is None or not user.active:
+    if user is None:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={"code": "account_not_provisioned", "message": "Account is not active."},
         )
+    if not user.active:
+        raise _disabled_account()
 
-    team_ids = frozenset(
-        (
-            await session.scalars(
-                select(TeamMembership.team_id).where(TeamMembership.user_id == user.id)
-            )
-        ).all()
-    )
-    project_ids = frozenset(
-        (
-            await session.scalars(
-                select(ProjectMembership.project_id).where(ProjectMembership.user_id == user.id)
-            )
-        ).all()
-    )
+    user.identity_provider = str(settings.oidc_issuer).rstrip("/")
+    user.email = str(claims.get("email") or user.email)
+    user.display_name = str(claims.get("name") or user.display_name)
+    user.first_name = str(claims["given_name"]) if claims.get("given_name") else user.first_name
+    user.last_name = str(claims["family_name"]) if claims.get("family_name") else user.last_name
     claimed_role = _role_from_claims(claims)
     # The more restrictive role wins until explicit role-mapping policy is configured.
     role_order = {
@@ -121,10 +140,66 @@ async def get_auth_context(
         GlobalRole.ADMIN: 3,
     }
     role = min((claimed_role, user.global_role), key=lambda candidate: role_order[candidate])
+    return await _context_for_user(session, user, development_identity=False, effective_role=role)
+
+
+def _disabled_account() -> HTTPException:
+    return HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail={"code": "account_disabled", "message": "This account is disabled."},
+    )
+
+
+async def _context_for_user(
+    session: AsyncSession,
+    user: User | None,
+    *,
+    development_identity: bool,
+    effective_role: GlobalRole | None = None,
+) -> AuthContext:
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"code": "account_not_provisioned", "message": "Account is not provisioned."},
+        )
+    if not user.active:
+        raise _disabled_account()
+
+    team_rows = (
+        await session.execute(
+            select(TeamMembership.team_id, TeamMembership.role).where(
+                TeamMembership.user_id == user.id
+            )
+        )
+    ).all()
+    project_rows = (
+        await session.execute(
+            select(ProjectMembership.project_id, ProjectMembership.role).where(
+                ProjectMembership.user_id == user.id
+            )
+        )
+    ).all()
+    team_roles = {team_id: role for team_id, role in team_rows}
+    project_roles = {project_id: role for project_id, role in project_rows}
+
+    now = datetime.now(UTC)
+    if user.last_login_at is None or user.last_login_at < now - timedelta(minutes=15):
+        user.last_login_at = now
+        await session.commit()
+        await session.refresh(user)
+
     return AuthContext(
-        principal=Principal(user.id, user.organization_id, role, team_ids, project_ids),
+        principal=Principal(
+            user.id,
+            user.organization_id,
+            effective_role or user.global_role,
+            frozenset(team_roles),
+            frozenset(project_roles),
+            team_roles,
+            project_roles,
+        ),
         user=user,
         email=user.email,
         display_name=user.display_name,
-        development_identity=False,
+        development_identity=development_identity,
     )

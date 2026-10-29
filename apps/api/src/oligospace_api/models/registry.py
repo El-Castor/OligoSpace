@@ -40,8 +40,12 @@ class User(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "users"
 
     oidc_subject: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)
+    identity_provider: Mapped[str] = mapped_column(String(80), nullable=False, default="keycloak")
     email: Mapped[str] = mapped_column(String(320), nullable=False, unique=True)
     display_name: Mapped[str] = mapped_column(String(160), nullable=False)
+    first_name: Mapped[str | None] = mapped_column(String(120))
+    last_name: Mapped[str | None] = mapped_column(String(120))
+    avatar_url: Mapped[str | None] = mapped_column(Text)
     active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     global_role: Mapped[GlobalRole] = mapped_column(
         database_enum(GlobalRole, "global_role"), nullable=False, default=GlobalRole.MEMBER
@@ -49,6 +53,7 @@ class User(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     organization_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("organizations.id", ondelete="RESTRICT"), nullable=False, index=True
     )
+    last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class Team(UUIDPrimaryKeyMixin, TimestampMixin, Base):
@@ -90,10 +95,16 @@ class Project(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     public_id: Mapped[str] = mapped_column(String(32), nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     description: Mapped[str | None] = mapped_column(Text)
+    visibility: Mapped[Visibility] = mapped_column(
+        database_enum(Visibility, "project_visibility"),
+        nullable=False,
+        default=Visibility.PRIVATE,
+    )
     status: Mapped[RecordStatus] = mapped_column(
         database_enum(RecordStatus, "record_status"), nullable=False, default=RecordStatus.ACTIVE
     )
     created_by_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
+    updated_by_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
 
 
 class ProjectMembership(TimestampMixin, Base):

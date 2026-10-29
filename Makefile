@@ -7,7 +7,7 @@ API_TOOLING_IMAGE ?= oligospace-api-tooling
 BIOINFO_TOOLING_IMAGE ?= oligospace-bioinfo-tooling
 WEB_TOOLING_IMAGE ?= oligospace-web-tooling
 
-.PHONY: dev-env dev stop logs python-tooling web-tooling format lint typecheck test test-local migrate seed import-oligos compose-config backup restore-test
+.PHONY: dev-env dev stop logs python-tooling web-tooling format lint typecheck test test-integration test-e2e test-local migrate seed import-oligos compose-config backup restore-test
 
 ifeq ($(PYTHON_RUNNER),container)
 API_RUN = docker run --rm --volume "$(CURDIR):/workspace" --workdir /workspace/apps/api --env PYTHONPATH=/workspace/apps/api/src $(API_TOOLING_IMAGE) micromamba run --name base
@@ -62,6 +62,15 @@ test: python-tooling web-tooling
 	cd apps/api && $(API_RUN) pytest tests
 	cd services/bioinfo-worker && $(BIOINFO_RUN) pytest
 	cd apps/web && $(WEB_RUN) run test
+
+test-integration:
+	docker compose --profile test rm --stop --force postgres-test >/dev/null
+	@status=0; docker compose --profile test run --build --rm api-integration-test || status=$$?; docker compose --profile test rm --stop --force postgres-test >/dev/null; exit $$status
+
+test-e2e:
+	docker compose up --build --detach caddy
+	docker compose --profile test build web-e2e
+	docker compose --profile test run --rm --no-deps web-e2e
 
 test-local: python-tooling
 	cd apps/api && $(API_RUN) pytest -q tests

@@ -1,3 +1,4 @@
+from oligospace_api.models.laboratory import Attachment, ExperimentRun, Validation
 from oligospace_api.models.registry import (
     Assay,
     AssayOligo,
@@ -32,4 +33,7 @@ __all__ = [
     "Team",
     "TeamMembership",
     "User",
+    "Attachment",
+    "ExperimentRun",
+    "Validation",
 ]

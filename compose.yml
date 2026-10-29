@@ -31,6 +31,7 @@ services:
       API_INTERNAL_URL: http://api:8000/api/v1
       NEXTAUTH_URL: ${APP_ORIGIN:-http://oligospace.localhost:8080}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?Set NEXTAUTH_SECRET in .env}
+      DEVELOPMENT_AUTH_SECRET: ${NEXTAUTH_SECRET:?Set NEXTAUTH_SECRET in .env}
       KEYCLOAK_ISSUER: ${APP_ORIGIN:-http://oligospace.localhost:8080}/realms/oligospace
       KEYCLOAK_CLIENT_ID: oligospace-web
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:?Set KEYCLOAK_CLIENT_SECRET in .env}
@@ -38,6 +39,18 @@ services:
     networks: [application, public]
     depends_on:
       api: {condition: service_healthy}
+
+  web-e2e:
+    build:
+      context: .
+      dockerfile: infra/docker/web-e2e.Dockerfile
+    profiles: ["test"]
+    environment:
+      PLAYWRIGHT_BASE_URL: ${APP_ORIGIN:-http://oligospace.localhost:8080}
+    network_mode: "service:caddy"
+    depends_on:
+      caddy: {condition: service_started}
+    restart: "no"
 
   api:
     build:
@@ -51,11 +64,18 @@ services:
       OIDC_ISSUER: ${APP_ORIGIN:-http://oligospace.localhost:8080}/realms/oligospace
       OIDC_AUDIENCE: oligospace-api
       CORS_ORIGINS: '["${APP_ORIGIN:-http://oligospace.localhost:8080}"]'
+      DEVELOPMENT_AUTH_SECRET: ${NEXTAUTH_SECRET:?Set NEXTAUTH_SECRET in .env}
+      OBJECT_STORAGE_ENDPOINT: minio:9000
+      OBJECT_STORAGE_ACCESS_KEY: ${MINIO_ROOT_USER:?Set MINIO_ROOT_USER in .env}
+      OBJECT_STORAGE_SECRET_KEY: ${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD in .env}
+      OBJECT_STORAGE_BUCKET: oligospace-evidence
+      OBJECT_STORAGE_SECURE: "false"
     expose: ["8000"]
     networks: [application, data]
     depends_on:
       migrate: {condition: service_completed_successfully}
       seed: {condition: service_completed_successfully}
+      minio: {condition: service_started}
     healthcheck:
       test: ["CMD", "micromamba", "run", "--name", "base", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/live')"]
       interval: 10s
@@ -114,6 +134,43 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
+
+  postgres-test:
+    image: postgres:17.11-alpine
+    profiles: ["test"]
+    environment:
+      POSTGRES_DB: oligospace_test
+      POSTGRES_USER: oligospace_test
+      POSTGRES_PASSWORD: integration-test-only
+    tmpfs:
+      - /var/lib/postgresql/data
+    networks: [data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U oligospace_test -d oligospace_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+  api-integration-test:
+    build:
+      context: .
+      dockerfile: infra/docker/api/Dockerfile
+    profiles: ["test"]
+    command:
+      - /bin/sh
+      - -c
+      - >-
+        micromamba run --name base alembic upgrade head &&
+        micromamba run --name base pytest tests/integration
+    environment:
+      ENVIRONMENT: test
+      AUTH_MODE: development
+      DATABASE_URL: postgresql+asyncpg://oligospace_test:integration-test-only@postgres-test:5432/oligospace_test
+      OLIGOSPACE_TEST_DATABASE_URL: postgresql+asyncpg://oligospace_test:integration-test-only@postgres-test:5432/oligospace_test
+    networks: [data]
+    depends_on:
+      postgres-test: {condition: service_healthy}
+    restart: "no"
 
   redis:
     image: redis:7.4.10-alpine

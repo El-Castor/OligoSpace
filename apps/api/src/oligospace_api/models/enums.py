@@ -45,3 +45,25 @@ class OligoRole(StrEnum):
     DONOR = "donor"
     TEMPLATE = "template"
     OTHER = "other"
+
+
+class ValidationStatus(StrEnum):
+    PENDING = "pending"
+    PASSED = "passed"
+    FAILED = "failed"
+    INCONCLUSIVE = "inconclusive"
+    SUPERSEDED = "superseded"
+
+
+class AttachmentScanStatus(StrEnum):
+    PENDING = "pending"
+    CLEAN = "clean"
+    INFECTED = "infected"
+    ERROR = "error"
+
+
+class AttachmentPublicationStatus(StrEnum):
+    QUARANTINED = "quarantined"
+    PUBLISHED = "published"
+    REJECTED = "rejected"
+    REMOVED = "removed"

@@ -5,8 +5,8 @@ locate, and reuse primers, probes, oligonucleotides, and experimental assays acr
 research teams.
 
 The project is deliberately honest about its maturity. The current milestone is a
-documented, containerized foundation: core registry model/API, OIDC boundary,
-scientific sequence services, migration preview, and an initial research workspace.
+browser-verified, containerized core registry: model/API, OIDC boundary, scientific
+sequence services, migration preview, and usable oligo/target/assay workflows.
 Inventory, experiment validation, attachments, global search, gene visualization,
 and production backup automation are designed and tracked but not yet complete.
 
@@ -33,8 +33,9 @@ See [ARCHITECTURE.md](ARCHITECTURE.md),
   target mapping with ambiguity reporting.
 - Preview-only Excel migration framework and an evidence-backed report for the
   existing workbook; the source is never modified.
-- Next.js research workspace with dashboard, oligo/target/assay lists, responsive
-  navigation, truthful empty states, and Keycloak session integration.
+- Next.js research workspace with dashboard, oligo/target/assay search, create,
+  detail, and authorized edit workflows, contextual assay roles, global core search,
+  responsive navigation, truthful empty states, and Keycloak session integration.
 - Compose stack for web/API/worker/PostgreSQL/Redis/Keycloak/MinIO/Caddy, plus seed,
   migration, CI, and guarded backup/restore-test scaffolds.
 
@@ -73,6 +74,8 @@ make format
 make lint
 make typecheck
 make test
+make test-integration
+make test-e2e
 make compose-config
 ```
 
@@ -108,7 +111,7 @@ accepted until restored and smoke-tested; see
 ## Roadmap
 
 The ordered roadmap and known gaps live in [BACKLOG.md](docs/project/BACKLOG.md).
-The completed foundation contract is
-[001-initial-mvp.md](docs/exec-plans/completed/001-initial-mvp.md). The next active
-plan will cover the first end-to-end registry workflows; screenshots will be added
-once those authenticated workflows are complete.
+Completed execution plans are
+[001-initial-mvp.md](docs/exec-plans/completed/001-initial-mvp.md) and
+[002-core-registry-workflows.md](docs/exec-plans/completed/002-core-registry-workflows.md).
+No later phase is active until its execution plan is explicitly activated.

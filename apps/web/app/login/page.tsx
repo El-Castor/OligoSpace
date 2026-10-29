@@ -1,15 +1,24 @@
-"use client";
+import { LoginActions } from "@/components/LoginActions";
+import { developmentAuth } from "@/lib/auth";
 
-import { signIn } from "next-auth/react";
-
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
   return (
     <div className="login-shell">
       <section className="login-card">
         <p className="eyebrow">Secure laboratory workspace</p>
         <h1>Welcome to OligoSpace.</h1>
-        <p>Sign in through the configured identity provider. OligoSpace never stores your password.</p>
-        <button className="primary-button" type="button" onClick={() => signIn("keycloak", { callbackUrl: "/" })}>Continue with institutional identity</button>
+        <p>
+          {developmentAuth
+            ? "Choose an explicit local identity. These sessions use real projected users and permissions from PostgreSQL."
+            : "Sign in through the configured identity provider. OligoSpace never stores your password."}
+        </p>
+        {error ? <div className="notice" role="alert">Authentication failed or expired. Please sign in again.</div> : null}
+        <LoginActions development={developmentAuth} />
       </section>
     </div>
   );

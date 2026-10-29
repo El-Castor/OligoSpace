@@ -11,7 +11,7 @@ export function RegistryTable({
 }) {
   return (
     <div className="table-card">
-      <div className="table-tools"><span>{count} records visible</span><span>Filters · Columns</span></div>
+      <div className="table-tools"><span>{count} records visible</span></div>
       {count ? (
         <table>
           <thead><tr>{columns.map((column) => <th key={column}>{column}</th>)}</tr></thead>

@@ -3,7 +3,7 @@ import { withAuth } from "next-auth/middleware";
 export default withAuth({
   pages: { signIn: "/login" },
   callbacks: {
-    authorized: ({ token }) => process.env.AUTH_MODE === "development" || Boolean(token),
+    authorized: ({ token }) => Boolean(token) && token?.error !== "RefreshAccessTokenError",
   },
 });
 

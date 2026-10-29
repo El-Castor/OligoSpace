@@ -13,6 +13,52 @@
 - Celery bioinformatics worker with Primer3 2.6.1 Tm/hairpin/homodimer facts and
   BLAST+ 2.17.0 executables, pinned and verified for ARM64/x86_64 images.
 - Optional container-backed `make` toolchain for format, lint, typecheck, and tests.
+- Canonical product requirement catalogue with stable domain IDs and a living
+  requirement-to-code/test/plan traceability matrix.
+- Public-ID detail and authorized metadata-update APIs for oligos, targets, and
+  assays, with visibility-scoped search, immutable oligo identity, audit snapshots,
+  and assay version increments.
+- Browser forms and workflows for core registry create, search, detail, and edit;
+  contextual Forward/Reverse assay roles; expected amplicon; and global core search.
+- PostgreSQL route integration tests and a Playwright Chromium journey through
+  Caddy that verifies persistence after browser reload.
+- Projected user profiles with provider metadata and account lifecycle, explicit
+  development identities backed by PostgreSQL, signed development-session headers,
+  membership-aware authorization contexts, and token refresh/logout configuration.
+- Team and Project APIs and browser workflows with stable project IDs, membership
+  roles, four visibility scopes, linked resources, audit events, and reload persistence.
+- Personalized user/team/project dashboards, accessible identity menu and profile,
+  and server-authorized administration for users, teams, projects,
+  ExperimentTypes, and organisms.
+- Reversible `0002_identity_workspaces` migration and deterministic local
+  administrator/researcher projections with Team memberships.
+- Six concern-specific Playwright specs covering smoke, authentication, Oligos,
+  Targets, Assays/search, and workspaces/administration.
+- ExperimentRun and contextual, append-oriented Validation APIs and browser workflows,
+  including assay-version snapshots, repeated runs, supersession history, audit
+  provenance, evidence-aware search, and a real awaiting-validation dashboard count.
+- Private MinIO evidence uploads with SHA-256 metadata, bounded MIME/size policy,
+  pending/quarantined publication state, retained soft-removal history, and reversible
+  Alembic revision `0003_experiment_evidence`.
+- A seventh Playwright spec covering run creation, real MinIO evidence upload,
+  quarantine display, contextual validation, supersession, global search, dashboard,
+  and browser-reload persistence through Caddy.
+
+### Changed
+
+- Caddy now sends only `/api/v1/*` to FastAPI, preserves NextAuth `/api/auth/*`, and
+  dynamically resolves recreated Compose containers.
+- The standalone Next.js runtime listens on all container interfaces.
+- Project reporting now distinguishes build verification, service/API runtime
+  verification, and browser workflow verification.
+- Core registry scope assignments now validate accessible Team/Project ownership;
+  global search includes visible Projects and all development requests require an
+  explicit signed session instead of an implicit administrator.
+- PostgreSQL integration runs remove stale ephemeral databases before and after
+  execution; browser tests share Caddy networking while using the public
+  `oligospace.localhost` origin and cookie domain.
+- Experiments and Validation navigation now expose working registry workflows instead
+  of future-phase placeholders; unscanned evidence deliberately has no download path.
 
 ### Validation
 
@@ -21,6 +67,26 @@
 - Applied `0001_initial_registry` and 17 seed records to isolated PostgreSQL 17;
   removed the temporary validation stack after verification.
 - Regenerated the read-only Excel preview with an unchanged source checksum.
+- Passed the complete required repository checks on 2026-08-26: formatting, lint,
+  strict type checks, 15 API unit tests (2 integration tests skipped there), 2
+  worker tests, web tests, and production web/API image builds.
+- Passed 2 PostgreSQL 17 integration tests against a fresh Alembic migration.
+- Passed the Playwright core-registry journey through Caddy: root, development
+  identity, dashboard, oligo create/detail/edit, target create/detail/edit, assay
+  creation and versioned edit with Forward/Reverse roles, global search, and reload
+  persistence.
+- Passed the complete plan-003 repository matrix on 2026-09-02: format, Ruff,
+  mypy, ESLint, TypeScript, 19 API unit tests, 2 real Primer3 worker tests, and web
+  tests.
+- Passed 3 PostgreSQL 17 integration tests after applying both Alembic revisions on
+  a guaranteed-fresh database.
+- Passed 6 split Chromium E2E specs through Caddy and a separate host-network smoke
+  at `http://oligospace.localhost:8080`; host HTTP smoke also verified the login
+  redirect, login page, and health endpoint.
+- Passed the complete plan-004 matrix on 2026-09-02: formatting; Ruff, mypy,
+  ESLint, and TypeScript; 21 API unit tests; 2 worker tests; web tests; Compose and
+  production runtime image builds; 4 PostgreSQL tests after migrations 0001 → 0003;
+  and all 7 Chromium specs through Caddy in 15.8 seconds.
 
 ### Data quality
 
