@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Select, func, or_, select
+from sqlalchemy import Select, and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -25,7 +25,11 @@ def visible_scientific_jobs(principal: Principal) -> Select[tuple[ScientificJob]
     return statement.where(
         or_(
             ScientificJob.oligo_id.in_(visible_oligos),
-            ScientificJob.assay_id.in_(visible_assays),
+            and_(
+                ScientificJob.assay_id.in_(visible_assays),
+                ScientificJob.forward_oligo_id.in_(visible_oligos),
+                ScientificJob.reverse_oligo_id.in_(visible_oligos),
+            ),
         )
     )
 

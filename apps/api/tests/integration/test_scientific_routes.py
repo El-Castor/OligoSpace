@@ -112,10 +112,12 @@ async def scientific_client() -> AsyncIterator[ScientificFixture]:
     await engine.dispose()
 
 
-async def create_oligo(client: AsyncClient, name: str, sequence: str) -> dict[str, object]:
+async def create_oligo(
+    client: AsyncClient, name: str, sequence: str, visibility: str = "organization"
+) -> dict[str, object]:
     response = await client.post(
         "/api/v1/registry/oligos",
-        json={"name": name, "sequence": sequence, "visibility": "organization"},
+        json={"name": name, "sequence": sequence, "visibility": visibility},
     )
     assert response.status_code == 201, response.text
     return response.json()["oligo"]
@@ -211,6 +213,46 @@ async def test_persistent_jobs_idempotency_pair_roles_rbac_and_audit(
         json={"oligo_public_id": forward["public_id"]},
     )
     assert forbidden.status_code == 403
+
+
+async def test_pair_job_hidden_when_viewer_cannot_see_pair_oligo(
+    scientific_client: ScientificFixture,
+) -> None:
+    fixture = scientific_client
+    forward = await create_oligo(fixture.client, "Visible forward", "ATGCGTACGTTAGCGTACGA")
+    reverse = await create_oligo(
+        fixture.client, "Private reverse", "TCGTACGCTAACGTACGCAT", visibility="private"
+    )
+    assay_response = await fixture.client.post(
+        "/api/v1/registry/assays",
+        json={
+            "name": "Assay with private reverse",
+            "experiment_type_id": str(fixture.experiment_type.id),
+            "visibility": "organization",
+            "oligos": [
+                {"oligo_id": forward["id"], "role": "forward_primer"},
+                {"oligo_id": reverse["id"], "role": "reverse_primer"},
+            ],
+        },
+    )
+    assert assay_response.status_code == 201, assay_response.text
+    assay = assay_response.json()
+    job_response = await fixture.client.post(
+        "/api/v1/scientific-jobs/assay-primer3-pair",
+        json={"assay_public_id": assay["public_id"]},
+    )
+    assert job_response.status_code == 202, job_response.text
+    job = job_response.json()
+
+    async def viewer_override() -> AuthContext:
+        return context_for(fixture.viewer)
+
+    app.dependency_overrides[get_auth_context] = viewer_override
+    detail = await fixture.client.get(f"/api/v1/scientific-jobs/{job['public_id']}")
+    assert detail.status_code == 404
+    listing = await fixture.client.get("/api/v1/scientific-jobs")
+    assert listing.status_code == 200
+    assert job["public_id"] not in {item["public_id"] for item in listing.json()["items"]}
 
 
 async def test_unsupported_sequence_has_explicit_unavailable_error(
