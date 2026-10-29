@@ -4,12 +4,13 @@ Last updated: 2026-10-29
 
 ## Current phase
 
-Execution plans 001 through 004 are complete. Plan 004 added experiment runs,
-contextual validation, and quarantined evidence attachments. The development
-application is a usable multi-user registry through Caddy. Execution plan 005,
-Persistent scientific jobs and Primer3 analysis, is approved, active, and in progress.
-Its first increment covers individual Oligo QC and Forward/Reverse
-Assay pair analysis. No production deployment exists.
+Execution plans 001 through 005 are complete. Plan 004 added experiment runs,
+contextual validation, and quarantined evidence attachments. Plan 005, Persistent
+scientific jobs and Primer3 analysis, completed on 2026-10-29 with individual Oligo QC
+and Forward/Reverse Assay pair analysis, including validated worker/Redis interruption
+and reconciliation recovery. The development application is a usable multi-user
+registry through Caddy. No execution plan is active; Plan 006 has not been activated.
+No production deployment exists.
 
 ## Build verified
 
@@ -78,12 +79,15 @@ Assay pair analysis. No production deployment exists.
 
 ## In progress / incomplete
 
-- Plan 005 has implemented its qualified Primer3 contract, migration 0004, persistent
-  job/attempt/result core, API/queue/worker/reconciliation path, and both browser
-  workflows. Unit, worker, PostgreSQL integration, production image, service runtime,
-  and Caddy HTTP smoke gates pass. Browser Playwright for both scientific-job
-  workflows passes in the isolated E2E stack (2026-10-29). Interruption/recovery
-  gates remain pending, so the plan is not yet complete.
+- Plan 005 is complete (2026-10-29). Interruption/recovery scenarios A (worker
+  kill), B1/B2 (Redis restart and Redis outage at submission), and C (stuck-job
+  reconciliation) passed on the isolated `oligospace-e2e` stack. Scenario C first
+  exposed a stale attempt committing success (C0); attempt fencing and a
+  lease-bounded tool timeout fixed it and C1/C2 were retested. Evidence:
+  `docs/project/PLAN_005_RECOVERY_EVIDENCE.md`. Residual risks (no lease heartbeat,
+  claim token not rotated, Celery task id reused on retry) are tracked in the backlog.
+- The Plan 005 recovery fixes and evidence commits are local only: not pushed, no CI
+  run yet, and branches 002–005 are not merged into `main`.
 - Inventory/orders/QR, reference ingestion,
   GeneOligoViewer, complete catalogue/inventory search,
   production backup execution, monitoring, and hardening remain later work.
@@ -112,15 +116,19 @@ All on 2026-10-29 via `PYTHON_RUNNER=container` unless noted:
 
 - `make format lint typecheck` — passed (Ruff, mypy, ESLint, TypeScript).
 - `make test` — passed: API 25 passed, 7 skipped (PostgreSQL tests delegated to
-  `make test-integration`); bioinfo worker 7 passed; web 2 passed, 0 skipped.
+  `make test-integration`); bioinfo worker 14 passed (including 7 attempt-fencing
+  tests); web 2 passed, 0 skipped.
 - `make test-integration` — passed: 7 passed, 0 skipped; Alembic round-trip OK;
   fresh test container removed after execution.
-- `make test-e2e` — passed: 10 passed, 0 failed, 0 skipped in 17.9 s in the
+- `make test-e2e` — passed: 10 passed, 0 failed, 0 skipped in 14.3 s in the
   isolated `oligospace-e2e` project. Dev database row counts, containers, volumes,
   and images were identical before and after the run.
 - `make compose-config` — passed for the dev and E2E configurations.
+- Interruption/recovery scenarios A, B1, B2, C1, C2 on `oligospace-e2e` — passed;
+  six jobs ended `succeeded` with exactly one result each (C0 defect fixed).
 - GitHub CI on `f7fff83` — backend, frontend, bioinfo-worker, migration,
-  integration, and compose jobs succeeded.
+  integration, and compose jobs succeeded. `529fc2d` and later local commits have no
+  CI run (not pushed).
 - Host-network Chromium smoke (2026-09-07) — passed: 1 smoke spec at
   `http://oligospace.localhost:8080`.
 - Host HTTP smoke (2026-09-07) — root `307` to login, login `200`, health

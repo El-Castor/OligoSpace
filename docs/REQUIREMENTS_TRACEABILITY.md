@@ -117,11 +117,11 @@ in `docs/exec-plans/completed/`.
 |---|---|---|---|---|
 | BIO-001 | Verified | `target_mapping.py` | `test_target_mapping.py` forward/reverse/ambiguous cases | 001 |
 | BIO-002 | Planned | TargetMapping design only | — | Backlog |
-| BIO-003 | In progress | persistent scientific API/worker and Oligo/Assay UI | `test_scientific_contract.py` real Primer3 fixtures; API and PostgreSQL tests; Caddy E2E pending | 001, 005 |
+| BIO-003 | Verified | persistent scientific API/worker and Oligo/Assay UI | `test_scientific_contract.py` real Primer3 fixtures; API and PostgreSQL tests; Caddy E2E `apps/web/e2e/scientific-jobs.spec.ts`; `docs/project/PLAN_005_RECOVERY_EVIDENCE.md` | 001, 005 |
 | BIO-004 | Verified | Wallace service, provenance, UI label | `test_sequence_analysis.py`; PostgreSQL response | 001, 002 |
 | BIO-005 | Implemented | pinned BLAST+ worker image | image build/version check; governed databases blocked | 001, Backlog |
-| BIO-006 | In progress | `ScientificJob`/attempt/result, migration 0004, Celery worker/Beat | reversible PostgreSQL migration and API integration; worker/Redis recovery runtime gate pending | 005 |
-| BIO-007 | In progress | explicit scientific validation/error states and neutral UI | API boundary tests and worker timeout/output/version tests; rejected-input Caddy E2E pending | 001, 005 |
+| BIO-006 | In progress | `ScientificJob`/attempt/result, migration 0004, Celery worker/Beat | reversible PostgreSQL migration and API integration; worker kill, Redis restart and stuck-job reconciliation on `oligospace-e2e` (`docs/project/PLAN_005_RECOVERY_EVIDENCE.md`, scenarios A/B1/B2/C); `test_attempt_fencing.py` | 005 |
+| BIO-007 | Verified | explicit scientific validation/error states and neutral UI | API boundary tests and worker timeout/output/version tests; Caddy E2E `scientific-jobs.spec.ts` "Primer3 rejects ambiguous DNA without creating a scientific result" | 001, 005 |
 
 ## Import, export, and audit
 

@@ -1,16 +1,16 @@
 # Execution plan 005: Persistent scientific jobs and Primer3 analysis
 
-- Status: active — implementation in progress
+- Status: completed
 - Proposed: 2026-09-03
 - Activated: 2026-09-03
+- Completed: 2026-10-29
 - Depends on: completed execution plans 001, 002, 003, and 004
 - Primary requirements: `BIO-003`, `BIO-004`, `BIO-006`, and `BIO-007`
 - Supporting requirements: `OLIGO-004`, `OLIGO-005`, `ASSAY-002`, `ASSAY-004`,
   `ASSAY-006`, `AUTH-003`, `AUTH-004`, `SEARCH-003`, `AUDIT-001`, `AUDIT-002`,
   `DEPLOY-001`, `DEPLOY-002`, and `DEPLOY-003`
 
-This is the canonical active execution plan. Its scope is approved and implementation
-is in progress. Nothing in this plan changes the completed status or historical
+This execution plan is completed; see the Outcome section. Nothing in this plan changes the completed status or historical
 outcome of plans 001–004.
 
 The first implementation milestone qualified Primer3 2.6.1 CLI modes, supported
@@ -701,3 +701,32 @@ or a generalized scientific workflow model beyond these two Primer3 job kinds.
    Caddy, including reload persistence for both workflows.
 9. Update project documentation and traceability, record evidence, and move the plan
    to completed only after every completion gate passes.
+
+## Validation evidence
+
+- Interruption and recovery ran on 2026-10-29 against the isolated `oligospace-e2e`
+  Compose project only; the development stack was not restarted or modified. Full
+  evidence: `docs/project/PLAN_005_RECOVERY_EVIDENCE.md`.
+- Scenario A (worker SIGKILL during an attempt), B1 (Redis restart after completion),
+  B2 (Redis unavailable at submission, 503 then idempotent replay) and C (stuck job
+  reconciliation) pass. PostgreSQL kept the full job history; Redis messages and
+  Celery result keys were lost on restart, as expected, without losing any result.
+- Scenario C0 found a defect: a superseded attempt committed success after
+  reconciliation had started attempt 2, leaving attempt 2 `running`. Fixed by attempt
+  fencing (`FOR UPDATE` on job/attempt, `stale_attempt_rejected` audit, `SKIP LOCKED`
+  reconcile with `worker_lost`/`redispatch` audit) and by bounding the tool timeout by
+  the attempt lease (`lease_exhausted`). C1 and C2 confirm consistent transitions,
+  one result per job and, with both fixes, no overlapping execution.
+- Regression tests: `services/bioinfo-worker/tests/test_attempt_fencing.py` (7 tests).
+- Gates: format, lint and typecheck exit 0; API 25 passed / 7 skipped, worker 14
+  passed, web 2 passed; PostgreSQL integration 7 passed; Caddy E2E 10 passed;
+  Compose configuration valid. GitHub CI is green on `975a8ae` and `f7fff83`; later
+  local commits are not pushed and have no CI run yet.
+
+## Outcome
+
+Persistent Primer3 scientific jobs are implemented and validated, including worker,
+Redis and reconciliation recovery. Plan 005 is complete. Residual risks, tracked in
+the backlog and not blocking: no lease heartbeat, claim token not rotated per
+attempt, Celery task id reused across retries, pre-existing mypy errors on worker
+test monkeypatches, and no local-execution runbook. Plan 006 was not activated.

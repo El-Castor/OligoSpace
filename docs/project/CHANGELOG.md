@@ -76,6 +76,13 @@
 - CI gains an `integration` job running PostgreSQL integration tests with an Alembic
   downgrade/upgrade round-trip; `OLIGOSPACE_REQUIRE_INTEGRATION=1` fails on skips.
 - Web unit tests report through the Node test runner.
+- Scientific-job attempts are fenced: the worker locks job and attempt rows and
+  commits a result or failure only for the current running attempt; superseded
+  attempts are closed as `stale_attempt` and audited as `stale_attempt_rejected`.
+- The Primer3 tool timeout is bounded by the attempt lease (minus 5 s); an exhausted
+  lease raises retryable `lease_exhausted` before the tool starts.
+- Reconciliation locks with `SKIP LOCKED`, audits `worker_lost` and `redispatch`, and
+  records the new Celery task id.
 
 ### Validation
 
@@ -83,7 +90,12 @@
   PostgreSQL tests delegated); worker 7 passed; web 2 passed; integration 7 passed with
   0 skips and Alembic round-trip; 10 Chromium tests in 8 specs including both
   scientific-job workflows in the isolated E2E stack; dev and E2E Compose configs;
-  GitHub CI green on `f7fff83`. Interruption/recovery gates remain open.
+  GitHub CI green on `f7fff83`.
+- Plan 005 interruption/recovery on 2026-10-29 (`oligospace-e2e` only): worker kill
+  (A), Redis restart after completion (B1) and Redis outage at submission (B2) passed;
+  stuck-job reconciliation exposed a stale attempt committing success (C0), fixed by
+  attempt fencing and lease-bounded tool timeouts, then passed (C1, C2). After the
+  fixes: worker 14 passed, E2E 10 passed in 14.3 s. Plan 005 completed.
 
 - Plan 005 validation in progress on 2026-09-07: API/web/worker lint and strict typing;
   25 API unit tests; 7 worker tests including real Primer3 golden fixtures and error

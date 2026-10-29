@@ -2,9 +2,12 @@
 
 ## Now
 
-- Complete active plan 005 validation: exercise worker/Redis interruption recovery
-  and reconcile final traceability evidence (Chromium scientific-job workflows passed
-  2026-10-29).
+- Human gates: authorize push of the Plan 005 branch (CI on the recovery fixes), then
+  merge plans 002–005 into `main` with CI green.
+- Candidate R1 batch (proposal from the 975a8ae audit, not approved): R1-04 visibility
+  enforcement (AUTH-004/SEARCH-003), R1-03 Assay negative authorization matrix
+  (ASSAY-004), R1-05 audit coverage without data leakage (AUDIT-001/002), R1-02
+  lifecycle E2E.
 - Review the deterministic Excel preview, target decomposition, and storage
   conflicts with a data owner; require explicit approval before import writes.
 
@@ -30,6 +33,10 @@
 ## Technical debt
 
 - Introduce a separate least-privilege PostgreSQL worker role before production.
+- Scientific jobs: add lease heartbeat/renewal, rotate the claim token per attempt, and
+  use a fresh Celery task id per retry (Plan 005 residual risks).
+- Fix pre-existing mypy errors on monkeypatches in the bioinfo-worker tests.
+- Write a local-execution runbook for scientific jobs and the E2E stack.
 - Generate TypeScript API types from OpenAPI after endpoint stabilization.
 - Migrate to ESLint 10 when the Next.js lint plugin dependency graph supports it.
 - Add isolated seeded fixtures per Playwright spec if parallel browser execution is
