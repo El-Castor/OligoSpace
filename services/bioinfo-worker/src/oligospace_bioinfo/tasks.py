@@ -3,7 +3,9 @@ from __future__ import annotations
 import os
 import re
 import subprocess
+import time
 import uuid
+from contextvars import ContextVar
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -20,6 +22,10 @@ PRIMER3_SOURCE_SHA256 = "805cef7ef39607cd40f0f5bb8b32e35e20007153a0a55131dd430ce
 WRAPPER_CONTRACT_VERSION = "primer3-cli-v1"
 RESULT_SCHEMA_VERSION = "primer3-results-v1"
 _UNAMBIGUOUS_DNA = re.compile(r"^[ACGT]+$")
+# Tool calls stop this long before the claimed lease expires, so reconciliation never
+# observes an expired lease while the owning attempt can still be executing Primer3.
+LEASE_SAFETY_MARGIN_SECONDS = 5.0
+_attempt_deadline: ContextVar[float | None] = ContextVar("attempt_deadline", default=None)
 
 
 class ScientificToolError(RuntimeError):
@@ -36,6 +42,23 @@ def _database_url() -> str:
     ).replace("postgresql+asyncpg://", "postgresql://", 1)
 
 
+def _lease_seconds() -> int:
+    return int(os.environ.get("SCIENTIFIC_JOB_LEASE_SECONDS", "120"))
+
+
+def _tool_timeout() -> float:
+    timeout = float(os.environ.get("SCIENTIFIC_TOOL_TIMEOUT_SECONDS", "30"))
+    deadline = _attempt_deadline.get()
+    if deadline is None:
+        return timeout
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise ScientificToolError(
+            "lease_exhausted", "Attempt lease exhausted before Primer3 completed.", retryable=True
+        )
+    return min(timeout, remaining)
+
+
 def _run_tool(arguments: list[str]) -> str:
     try:
         completed = subprocess.run(
@@ -43,7 +66,7 @@ def _run_tool(arguments: list[str]) -> str:
             check=True,
             capture_output=True,
             text=True,
-            timeout=float(os.environ.get("SCIENTIFIC_TOOL_TIMEOUT_SECONDS", "30")),
+            timeout=_tool_timeout(),
         )
     except subprocess.TimeoutExpired as exc:
         raise ScientificToolError(
@@ -228,7 +251,7 @@ def primer3_analysis(
 
 def _claim(job_id: str, claim_token: str, task_id: str | None) -> dict[str, Any] | None:
     now = datetime.now(UTC)
-    lease = now + timedelta(seconds=int(os.environ.get("SCIENTIFIC_JOB_LEASE_SECONDS", "120")))
+    lease = now + timedelta(seconds=_lease_seconds())
     with (
         psycopg.connect(_database_url(), row_factory=dict_row) as connection,
         connection.cursor() as cursor,
@@ -269,14 +292,57 @@ def _claim(job_id: str, claim_token: str, task_id: str | None) -> dict[str, Any]
         return job
 
 
-def _succeed(job: dict[str, Any], analysis: dict[str, Any]) -> None:
+def _lock_current_attempt(cursor: Any, job: dict[str, Any], now: datetime) -> bool:
+    """Lock the job and attempt; reject completion from a superseded attempt."""
+    cursor.execute(
+        "SELECT state, attempt_count FROM scientific_jobs WHERE id=%s FOR UPDATE", (job["id"],)
+    )
+    job_row = cursor.fetchone()
+    cursor.execute(
+        "SELECT state FROM scientific_job_attempts WHERE id=%s FOR UPDATE", (job["attempt_id"],)
+    )
+    attempt_row = cursor.fetchone()
+    attempt_state = None if attempt_row is None else attempt_row[0]
+    if (
+        job_row is not None
+        and job_row[0] == "running"
+        and int(job_row[1]) == int(job["attempt_number"])
+        and attempt_state == "running"
+    ):
+        return True
+    if attempt_state == "running":
+        cursor.execute(
+            """UPDATE scientific_job_attempts SET state='failed', completed_at=%s,
+                   retryable=false, error_code='stale_attempt',
+                   error_summary='Attempt superseded before completion.' WHERE id=%s""",
+            (now, job["attempt_id"]),
+        )
+    cursor.execute(
+        """INSERT INTO audit_events
+               (id, occurred_at, actor_id, action, entity_type, entity_id, before, after)
+               VALUES (%s,%s,NULL,'stale_attempt_rejected','scientific_job',%s,%s,%s)""",
+        (
+            uuid.uuid4(),
+            now,
+            job["id"],
+            Jsonb(
+                {
+                    "state": None if job_row is None else job_row[0],
+                    "attempt_count": None if job_row is None else job_row[1],
+                }
+            ),
+            Jsonb({"attempt_number": job["attempt_number"], "attempt_state": attempt_state}),
+        ),
+    )
+    return False
+
+
+def _succeed(job: dict[str, Any], analysis: dict[str, Any]) -> bool:
     provenance = analysis["provenance"]
     now = datetime.now(UTC)
     with psycopg.connect(_database_url()) as connection, connection.cursor() as cursor:
-        cursor.execute("SELECT state FROM scientific_jobs WHERE id=%s FOR UPDATE", (job["id"],))
-        row = cursor.fetchone()
-        if row is None or row[0] != "running":
-            return
+        if not _lock_current_attempt(cursor, job, now):
+            return False
         cursor.execute(
             """INSERT INTO scientific_job_results
                    (job_id, result_schema_version, payload, warnings, algorithm, tool_version,
@@ -330,9 +396,10 @@ def _succeed(job: dict[str, Any], analysis: dict[str, Any]) -> None:
                 Jsonb({"state": "succeeded", "public_id": job["public_id"]}),
             ),
         )
+    return True
 
 
-def _fail(job: dict[str, Any], error: ScientificToolError) -> bool:
+def _fail(job: dict[str, Any], error: ScientificToolError) -> str:
     now = datetime.now(UTC)
     retrying = error.retryable and int(job["attempt_number"]) < int(job["max_attempts"])
     state = "retrying" if retrying else "failed"
@@ -340,6 +407,8 @@ def _fail(job: dict[str, Any], error: ScientificToolError) -> bool:
         now + timedelta(seconds=min(60, 2 ** int(job["attempt_number"]))) if retrying else None
     )
     with psycopg.connect(_database_url()) as connection, connection.cursor() as cursor:
+        if not _lock_current_attempt(cursor, job, now):
+            return "stale"
         cursor.execute(
             """UPDATE scientific_job_attempts SET state='failed', completed_at=%s,
                    retryable=%s, error_code=%s, error_summary=%s WHERE id=%s""",
@@ -377,7 +446,7 @@ def _fail(job: dict[str, Any], error: ScientificToolError) -> bool:
                 Jsonb({"state": state, "error_code": error.code}),
             ),
         )
-    return retrying
+    return state
 
 
 @app.task(bind=True, name="oligospace.scientific_job", max_retries=2)  # type: ignore[misc]
@@ -388,19 +457,27 @@ def scientific_job_task(self: Task, job_id: str, claim_token: str) -> dict[str, 
         raise self.retry(exc=exc, countdown=5) from exc
     if job is None:
         return {"state": "noop", "job_id": job_id}
+    deadline = _attempt_deadline.set(
+        time.monotonic() + _lease_seconds() - LEASE_SAFETY_MARGIN_SECONDS
+    )
     try:
         analysis = primer3_analysis(job["kind"], job["input_snapshot"], job["effective_parameters"])
-        _succeed(job, analysis)
+        if not _succeed(job, analysis):
+            return {"state": "stale_attempt_rejected", "job_id": job_id}
         return {"state": "succeeded", "job_id": job_id}
     except ScientificToolError as exc:
-        retrying = _fail(job, exc)
-        if retrying:
+        outcome = _fail(job, exc)
+        if outcome == "stale":
+            return {"state": "stale_attempt_rejected", "job_id": job_id}
+        if outcome == "retrying":
             countdown = min(60, 2 ** int(job["attempt_number"]))
             raise self.retry(exc=exc, countdown=countdown) from exc
         return {"state": "failed", "job_id": job_id, "error_code": exc.code}
     except Exception:
         _fail(job, ScientificToolError("worker_error", "The worker failed safely."))
         raise
+    finally:
+        _attempt_deadline.reset(deadline)
 
 
 @app.task(name="oligospace.reconcile_scientific_jobs")  # type: ignore[misc]
@@ -416,7 +493,7 @@ def reconcile_scientific_jobs() -> dict[str, int]:
             """SELECT id, claim_token FROM scientific_jobs
                    WHERE (state='queued' AND queued_at < %s)
                       OR (state='retrying' AND next_retry_at <= %s)
-                   ORDER BY created_at LIMIT 100""",
+                   ORDER BY created_at LIMIT 100 FOR UPDATE SKIP LOCKED""",
             (now - timedelta(seconds=30), now),
         )
         due = cursor.fetchall()
@@ -425,11 +502,12 @@ def reconcile_scientific_jobs() -> dict[str, int]:
                           a.id AS attempt_id
                    FROM scientific_jobs j JOIN scientific_job_attempts a ON a.job_id=j.id
                    WHERE j.state='running' AND a.state='running' AND a.lease_expires_at < %s
-                   FOR UPDATE OF j, a""",
+                   FOR UPDATE OF j, a SKIP LOCKED""",
             (now,),
         )
         for expired in cursor.fetchall():
             retrying = expired["attempt_count"] < expired["max_attempts"]
+            state = "retrying" if retrying else "failed"
             cursor.execute(
                 """UPDATE scientific_job_attempts SET state='failed', completed_at=%s,
                        retryable=true, error_code='worker_lost',
@@ -441,20 +519,50 @@ def reconcile_scientific_jobs() -> dict[str, int]:
                        completed_at=%s, last_error_code='worker_lost',
                        last_error_summary='Worker lease expired.', updated_at=%s WHERE id=%s""",
                 (
-                    "retrying" if retrying else "failed",
+                    state,
                     now if retrying else None,
                     None if retrying else now,
                     now,
                     expired["id"],
                 ),
             )
+            cursor.execute(
+                """INSERT INTO audit_events
+                       (id, occurred_at, actor_id, action, entity_type, entity_id, before, after)
+                       VALUES (%s,%s,NULL,'worker_lost','scientific_job',%s,%s,%s)""",
+                (
+                    uuid.uuid4(),
+                    now,
+                    expired["id"],
+                    Jsonb({"state": "running", "attempt_number": expired["attempt_count"]}),
+                    Jsonb({"state": state, "error_code": "worker_lost"}),
+                ),
+            )
             if retrying:
                 due.append(expired)
             recovered += 1
     for job in due:
-        app.send_task("oligospace.scientific_job", args=[str(job["id"]), job["claim_token"]])
+        result = app.send_task(
+            "oligospace.scientific_job", args=[str(job["id"]), job["claim_token"]]
+        )
+        _record_redispatch(job["id"], str(result.id))
         dispatched += 1
     return {"dispatched": dispatched, "recovered": recovered}
+
+
+def _record_redispatch(job_id: Any, task_id: str) -> None:
+    now = datetime.now(UTC)
+    with psycopg.connect(_database_url()) as connection, connection.cursor() as cursor:
+        cursor.execute(
+            "UPDATE scientific_jobs SET celery_task_id=%s, updated_at=%s WHERE id=%s",
+            (task_id, now, job_id),
+        )
+        cursor.execute(
+            """INSERT INTO audit_events
+                   (id, occurred_at, actor_id, action, entity_type, entity_id, before, after)
+                   VALUES (%s,%s,NULL,'redispatch','scientific_job',%s,%s,%s)""",
+            (uuid.uuid4(), now, job_id, Jsonb({}), Jsonb({"celery_task_id": task_id})),
+        )
 
 
 def primer3_qc(sequence: str, **parameters: float) -> dict[str, Any]:
