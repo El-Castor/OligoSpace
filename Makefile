@@ -6,6 +6,7 @@ PYTHON_RUNNER ?= conda
 API_TOOLING_IMAGE ?= oligospace-api-tooling
 BIOINFO_TOOLING_IMAGE ?= oligospace-bioinfo-tooling
 WEB_TOOLING_IMAGE ?= oligospace-web-tooling
+E2E_COMPOSE = docker compose --project-name oligospace-e2e --file compose.yml --file compose.e2e.yml --env-file infra/e2e/e2e.env
 
 .PHONY: dev-env dev stop logs python-tooling web-tooling format lint typecheck test test-integration test-e2e test-local migrate seed import-oligos compose-config backup restore-test
 
@@ -68,9 +69,8 @@ test-integration:
 	@status=0; docker compose --profile test run --build --rm api-integration-test || status=$$?; docker compose --profile test rm --stop --force postgres-test >/dev/null; exit $$status
 
 test-e2e:
-	docker compose up --build --detach caddy
-	docker compose --profile test build web-e2e
-	docker compose --profile test run --rm --no-deps web-e2e
+	$(E2E_COMPOSE) --profile test down --volumes --remove-orphans
+	@status=0; { $(E2E_COMPOSE) up --build --detach caddy bioinfo-worker scientific-scheduler && $(E2E_COMPOSE) --profile test build web-e2e && $(E2E_COMPOSE) --profile test run --rm --no-deps web-e2e; } || status=$$?; $(E2E_COMPOSE) --profile test down --volumes --remove-orphans; exit $$status
 
 test-local: python-tooling
 	cd apps/api && $(API_RUN) pytest -q tests
@@ -87,6 +87,7 @@ import-oligos:
 
 compose-config:
 	docker compose config --quiet
+	$(E2E_COMPOSE) --profile test config --quiet
 
 backup:
 	docker compose --profile operations run --rm backup
