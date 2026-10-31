@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### 2026-10-31 — UI-02 shell and navigation
+
+- Applied prototype petroleum rail, outline brand/icons, grouped active inset
+  navigation and aligned token-based headers to the production shell.
+- Added mobile modal navigation, skip link, keyboard cycle, Escape/focus return
+  and resize handling; improved user-menu keyboard dismissal.
+- Preserved server identity/role condition, routes, team links, logout and all
+  scientific content/contracts. Added role/responsive/contrast/navigation checks.
+
 ### 2026-10-31 — Scientific Soft UI production foundations
 
 - Centralized approved semantic design tokens and applied them to existing

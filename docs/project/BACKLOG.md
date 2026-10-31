@@ -2,6 +2,11 @@
 
 ## Now
 
+- UI-02 implements the real shell/sidebar/header/menu migration after approved
+  PR #10. Five-width, keyboard, role and functional regression evidence is tracked
+  in `docs/design/UI_02_SHELL_NAVIGATION.md` and its delivery PR. Integrate only
+  with green CI; stop before the next graphical lot for the user's validation.
+
 - Scientific Soft UI lot 1: real production tokens/primitives implemented on
   `codex/soft-ui-tokens-primitives`, with before/after route captures and regression
   gates. Await green-CI merge; report `docs/design/SOFT_UI_TOKENS_PRIMITIVES.md`.

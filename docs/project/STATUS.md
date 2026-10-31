@@ -4,6 +4,17 @@ Last updated: 2026-10-31
 
 ## Current phase
 
+### UI-02 — production shell and navigation
+
+Following the user's validation of PR #10, UI-02 migrates AppShell presentation,
+petroleum sidebar, grouped active navigation, headers and user menu. Mobile
+navigation is now available through a native modal with explicit keyboard cycle,
+Escape/focus return and resize closure. Existing `/me`, role menus, links,
+logout, server actions and scientific children remain unchanged. Delivery branch:
+`codex/ui-02-shell-navigation`; evidence and limits:
+`docs/design/UI_02_SHELL_NAVIGATION.md`. Integration uses a green-CI merge commit.
+No subsequent graphical lot is started; next work awaits this lot's validation.
+
 ### Scientific Soft UI — first production lot
 
 User authorized production token/primitives integration from `d563165`, using
