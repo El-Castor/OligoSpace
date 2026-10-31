@@ -17,6 +17,13 @@
   --blue: var(--primary);
   --cyan: #20a6b5;
   --sage: #5a9884;
+  --rail: #456d76;
+  --rail-deep: #345761;
+  --rail-text: #eaf3f4;
+  --rail-muted: #e0edf0;
+  --rail-accent: #91dce3;
+  --rail-active: #176b79;
+  --shadow-nav-active: inset 2px 2px 5px #105461, inset -2px -2px 5px #27818d;
   --success: #13664f;
   --success-soft: #e0f0e9;
   --warning: #805000;

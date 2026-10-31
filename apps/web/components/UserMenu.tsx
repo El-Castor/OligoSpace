@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import type { CurrentUser } from "@/lib/api";
 
 export function UserMenu({ user }: { user: CurrentUser | null }) {
   const [signingOut, setSigningOut] = useState(false);
+  const menu = useRef<HTMLDetailsElement>(null);
 
   async function logout() {
     setSigningOut(true);
@@ -19,7 +20,14 @@ export function UserMenu({ user }: { user: CurrentUser | null }) {
 
   if (!user) return <div className="avatar" aria-label="No active user">?</div>;
   return (
-    <details className="user-menu">
+    <details className="user-menu" ref={menu} onKeyDown={(event) => {
+      if (event.key === "Escape") {
+        menu.current?.removeAttribute("open");
+        menu.current?.querySelector("summary")?.focus();
+      }
+    }} onBlur={(event) => {
+      if (!event.currentTarget.contains(event.relatedTarget)) menu.current?.removeAttribute("open");
+    }}>
       <summary className="avatar" aria-label="Current user">{user.initials}</summary>
       <div className="user-popover">
         <div className="user-identity">
