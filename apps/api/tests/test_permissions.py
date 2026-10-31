@@ -54,6 +54,12 @@ def test_viewer_cannot_create_or_edit() -> None:
     assert not can_edit(viewer, resource)
 
 
+def test_viewer_cannot_edit_even_as_creator_or_project_manager() -> None:
+    viewer = principal(GlobalRole.VIEWER, project_role=GlobalRole.TEAM_MANAGER)
+    assert not can_edit(viewer, ResourceScope(ORG, USER, Visibility.PRIVATE))
+    assert not can_edit(viewer, ResourceScope(ORG, OWNER, Visibility.PROJECT, project_id=PROJECT))
+
+
 def test_team_manager_can_edit_team_resource() -> None:
     resource = ResourceScope(ORG, OWNER, Visibility.TEAM, team_id=TEAM)
     manager = principal(team_role=GlobalRole.TEAM_MANAGER)

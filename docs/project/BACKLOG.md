@@ -2,6 +2,12 @@
 
 ## Now
 
+- R1-04 is merged in PR #3 (`a352312`, merge `069323f`), with 12 green CI checks.
+  R1-03 is the current batch; after its integration continue R1-05, then R1-02.
+  This supersedes the earlier uncommitted R1-04 note below.
+- D2 and D9 are confirmed: execute R1-06 (disable pilot uploads), then R1-07
+  (minimal visibility-filtered CSV with audit) after the current Plan 006 batches.
+
 - 2026-10-31: Plan 006 activated by the user's continuation request. R1-04 visibility
   enforcement (AUTH-004/SEARCH-003) is validated locally (111 PostgreSQL cases and
   11 E2E tests); changes are uncommitted on `codex/plan-006-r1-visibility`.

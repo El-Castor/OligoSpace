@@ -59,7 +59,7 @@ in `docs/exec-plans/completed/`.
 | ASSAY-001 | Verified | assay create/search/detail/edit API and pages | PostgreSQL route integration; Caddy create/detail/reload E2E | 001, 002 |
 | ASSAY-002 | Verified | `AssayOligo`, contextual-role form | PostgreSQL association integration; Forward/Reverse Caddy E2E | 001, 002 |
 | ASSAY-003 | Implemented | separate Oligo/AssayOligo/Assay models | ADR-0004 and schema validation | 001 |
-| ASSAY-004 | Implemented | `_validate_assay_references` | Valid association integration; negative matrix incomplete | 001, 002 |
+| ASSAY-004 | Verified | `_validate_assay_references` | R1-03 create/update negative matrix; independent-session no-side-effect checks; positive two-role/replacement cases; `docs/project/R1_03_ASSAY_MATRIX.md` | 001, 002, 006 |
 | ASSAY-005 | Verified | expected product/amplicon API and UI | Expected amplicon asserted by Caddy E2E | 002 |
 | ASSAY-006 | Verified | version increment and before/after audit | PostgreSQL version/audit integration | 002 |
 | ASSAY-007 | In progress | search/detail/edit/status workflows | PostgreSQL API and Caddy edit/version/reload E2E; archive path untested | 002 |

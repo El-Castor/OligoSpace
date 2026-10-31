@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### 2026-10-31 — R1-03 assay integrity
+
+- Added the positive/negative ASSAY-004 matrix with independent-session checks
+  for rejected-operation atomicity and persisted associations/version/lifecycle/audit.
+- Global viewer role now prevents registry edits even for creators or contextual
+  managers; identical assay metadata/association PATCH no longer invents a version.
+- R1-04 integrated in PR #3 (`a352312`, merge `069323f`), CI green.
+
 ### 2026-10-31 — Plan 006 and R1-04
 
 - Confirmed plans 001–005 are merged in main at `82e5ff4`; superseded stale

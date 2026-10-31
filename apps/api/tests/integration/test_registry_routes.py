@@ -201,7 +201,9 @@ async def test_registry_round_trip_authorization_and_audit(
 
     update_audits = int(
         await session.scalar(
-            select(func.count()).select_from(AuditEvent).where(AuditEvent.action == "update")
+            select(func.count())
+            .select_from(AuditEvent)
+            .where(AuditEvent.action == "update", AuditEvent.actor_id == ADMIN_ID)
         )
         or 0
     )

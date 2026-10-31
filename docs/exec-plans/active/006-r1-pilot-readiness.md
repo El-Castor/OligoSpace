@@ -57,6 +57,12 @@ move this plan to completed only after its functional scope is validated.
 
 ## Progress
 
+- R1-04 integrated via PR #3: commit `a352312`, merge `069323f`; all 12 CI checks
+  passed. Expanded suggestion regression brings PostgreSQL total to 111.
+- R1-03 implementation: 39 new PostgreSQL cases, viewer bypass and no-op version
+  fixes; 150 integration and 11 existing Chromium cases pass. Quality gates and
+  integration must be completed before moving to R1-05.
+
 - 2026-10-31: activated; main merge verified locally; R1-04 regression tests added.
 - 2026-10-31: R1-04 validated locally: format/lint/typecheck/unit checks, 91 real
   PostgreSQL tests and 11 Chromium E2E tests pass. Two hidden-ID leaks fixed;

@@ -4,6 +4,23 @@ Last updated: 2026-10-31
 
 ## Current phase
 
+### Plan 006 delivery ledger (latest state)
+
+- R1-04: integrated via PR #3, commit `a352312`, merge `069323f`; 12 CI checks
+  passed on the exact head. Local evidence: 111 PostgreSQL, 11 Chromium, 25 API /
+  14 worker / 2 web unit tests, format/lint/typecheck. No protection/ruleset on
+  main was reported by GitHub; no rule or bypass setting was changed.
+- R1-03: backend matrix and fixes under validation on
+  `codex/plan-006-r1-assay-integrity`. See `R1_03_ASSAY_MATRIX.md`. Viewer ownership /
+  contextual-manager edit bypass and artificial no-op versions were reproduced
+  before their fixes. PostgreSQL validation: 150 passed; Chromium: 11 passed;
+  API/worker/web units: 26/14/2; format/lint/typecheck passed. Scoped review found
+  no blocking issue. PR/merge remains to be performed after CI.
+- D2/D9 confirmed by the user: R1-06 pilot uploads disabled, then mandatory R1-07
+  minimal CSV. Execute after R1-05/R1-02. Mac mini deployment remains deferred.
+
+This dated ledger supersedes the earlier pre-commit R1-04 state below.
+
 Execution plans 001 through 005 are complete and integrated into `main`:
 local `main` and `origin/main` both pointed to merge commit `82e5ff4` when this
 session started (PR #2; recovery fixes and ADR-0006 included). This supersedes the

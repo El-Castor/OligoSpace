@@ -74,7 +74,7 @@ def can_manage_project(principal: Principal, project_id: uuid.UUID) -> bool:
 
 
 def can_edit(principal: Principal, resource: ResourceScope) -> bool:
-    if not can_view(principal, resource):
+    if principal.role is GlobalRole.VIEWER or not can_view(principal, resource):
         return False
     return (
         principal.role is GlobalRole.ADMIN
