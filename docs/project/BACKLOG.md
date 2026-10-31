@@ -2,6 +2,9 @@
 
 ## Now
 
+- R1-03 integrated via PR #4 (`8a2169a`, merge `400ce69`), all 12 CI checks green.
+  Current batch R1-05; next R1-02, then confirmed R1-06/R1-07.
+
 - R1-04 is merged in PR #3 (`a352312`, merge `069323f`), with 12 green CI checks.
   R1-03 is the current batch; after its integration continue R1-05, then R1-02.
   This supersedes the earlier uncommitted R1-04 note below.

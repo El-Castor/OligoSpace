@@ -4,6 +4,7 @@ import os
 
 import pytest
 from sqlalchemy.engine import make_url
+from test_laboratory_routes import laboratory_client as laboratory_client
 from test_workspace_routes import workspace_client as workspace_client
 
 TEST_DATABASE_ENV = "OLIGOSPACE_TEST_DATABASE_URL"

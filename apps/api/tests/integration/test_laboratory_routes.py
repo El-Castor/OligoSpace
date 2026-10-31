@@ -208,9 +208,23 @@ async def test_run_validation_attachment_supersession_and_persistence(
     )
     assert persisted_attachment is not None
     assert persisted_attachment.sha256 == hashlib.sha256(evidence).hexdigest()
-    run_count = await fixture.session.scalar(select(func.count()).select_from(ExperimentRun))
+    run_count = await fixture.session.scalar(
+        select(func.count())
+        .select_from(ExperimentRun)
+        .where(ExperimentRun.assay_id == fixture.assay.id)
+    )
     assert int(run_count or 0) == 2
-    assert int(await fixture.session.scalar(select(func.count()).select_from(Validation)) or 0) == 2
+    assert (
+        int(
+            await fixture.session.scalar(
+                select(func.count())
+                .select_from(Validation)
+                .where(Validation.assay_id == fixture.assay.id)
+            )
+            or 0
+        )
+        == 2
+    )
     dashboard = await client.get("/api/v1/workspace/dashboard")
     assert dashboard.status_code == 200
     assert dashboard.json()["awaiting_validation"] == 1
