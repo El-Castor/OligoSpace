@@ -6,6 +6,20 @@ Last updated: 2026-10-31
 
 ### Plan 006 delivery ledger (latest state)
 
+- R1-05 integrated via PR #5: commit `c882e3d`, merge `537fa9c`; push and PR CI
+  succeeded. Local evidence: 189 PostgreSQL / 11 Chromium / 35 API / 14 worker /
+  2 web unit tests; format/lint/typecheck passed.
+- R1-02: four full Chromium lifecycle journeys added, plus PostgreSQL stable-ID,
+  exact Assay association, version and audit checks. All 15 Chromium tests pass;
+  PostgreSQL suite has 193 cases. No production code defect found or changed.
+  Delivery branch `codex/plan-006-r1-lifecycle` follows the same green-CI merge gate.
+- Plan 006 functional implementation and execution validation are complete; its
+  outcome is in `docs/exec-plans/completed/006-r1-pilot-readiness.md`. GitHub PRs
+  and the session checkpoint record integration SHAs. Next: R1-06, then R1-07;
+  execution preparation is in BACKLOG, using the existing lot decomposition.
+
+### Earlier checkpoints (superseded by the delivery ledger above)
+
 - R1-03 integrated via PR #4: commit `8a2169a`, merge `400ce69`; all 12 CI checks
   passed. R1-05 is now the active branch `codex/plan-006-r1-audit`.
 - R1-05 adds the mutation/audit matrix, validated request correlation, recursive
@@ -35,7 +49,7 @@ Execution plans 001 through 005 are complete and integrated into `main`:
 local `main` and `origin/main` both pointed to merge commit `82e5ff4` when this
 session started (PR #2; recovery fixes and ADR-0006 included). This supersedes the
 2026-10-29 unpushed/unmerged report; live GitHub CI has not been queried here.
-Plan 006 is active at `docs/exec-plans/active/006-r1-pilot-readiness.md`, following
+Plan 006 was activated at `docs/exec-plans/completed/006-r1-pilot-readiness.md`, following
 the user's 2026-10-31 authorization. R1-04 is the first batch, then R1-03,
 R1-05 and R1-02. R1-01 is covered by completed Plan 005 recovery evidence.
 
@@ -74,7 +88,7 @@ No production deployment exists.
 
 - `make test-integration` migrates a guaranteed-fresh PostgreSQL 17 database from
   `0001` through `0004`, round-trips Alembic (head → `0003_experiment_evidence` →
-  head), and passes 111 integration tests with zero skips enforced by
+  head), and passes 193 integration tests with zero skips enforced by
   `OLIGOSPACE_REQUIRE_INTEGRATION=1`. The CI `integration` job runs the same target.
 - The core registry round trip still verifies Oligo/Target/Assay creation,
   immutable biological identity, duplicate rejection, contextual roles,
@@ -101,10 +115,11 @@ No production deployment exists.
 
 ## Browser/E2E verified
 
-- `make test-e2e` passes 11 Chromium tests in 9 spec files through Caddy: smoke and
+- `make test-e2e` passes 15 Chromium tests in 10 spec files through Caddy: smoke and
   personalized dashboard; development login/profile/logout/second identity;
   Oligo; Target; Assay plus global search; Project/Team/Admin workflows; evidence;
-  scientific jobs, and cross-project visibility. It runs in the isolated `oligospace-e2e` Compose project
+  scientific jobs, cross-project visibility and four lifecycle journeys. It runs
+  in the isolated `oligospace-e2e` Compose project
   (tmpfs storage, no host port, public placeholders from `infra/e2e/e2e.env`, never
   reads `.env`) that is torn down after every run.
 - The browser workflows prove UI → API → PostgreSQL → browser reload persistence,
@@ -128,7 +143,7 @@ No production deployment exists.
   lease-bounded tool timeout fixed it and C1/C2 were retested. Evidence:
   `docs/project/PLAN_005_RECOVERY_EVIDENCE.md`. Residual risks (no lease heartbeat,
   claim token not rotated, Celery task id reused on retry) are tracked in the backlog.
-- Plan 006: R1-04 implementation is validated locally (ready for commit/PR).
+- Plan 006: R1-04 implementation is integrated via PR #3.
   It adds a four-scope, four-role PostgreSQL matrix for Oligos,
   Targets and Assays, database-projected memberships, search and list totals,
   association choices, detail and dashboard counts, and membership revocation.
@@ -137,7 +152,8 @@ No production deployment exists.
   Exact sequence uniqueness remains institute-wide; a generic 409 still reveals
   a registration conflict but no inaccessible record identifier or metadata.
 - R1-03 negative Assay matrix, R1-05 mutation/audit coverage and R1-02 lifecycle
-  browser acceptance remain pending in Plan 006. They do not depend on the Mac mini.
+  browser acceptance are implemented and validated; see the delivery ledger.
+  R1-06/R1-07 are next and do not depend on the Mac mini.
 - Inventory/orders/QR, reference ingestion,
   GeneOligoViewer, complete catalogue/inventory search,
   production backup execution, monitoring, and hardening remain later work.
@@ -162,7 +178,7 @@ No production deployment exists.
   Hiding unavailable controls is UI follow-up, not the authorization boundary.
 - ESLint 9 remains pinned until the Next.js plugin dependency graph accepts ESLint 10.
 
-## Latest validation (2026-10-31)
+## R1-04 validation snapshot (2026-10-31)
 
 - `make format lint typecheck test PYTHON_RUNNER=container` — exit 0. API:
   25 passed, 111 integration cases skipped in the unit-only invocation; worker:

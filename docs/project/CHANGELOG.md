@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### 2026-10-31 — R1-02 lifecycle acceptance
+
+- Added four complete Chromium lifecycle journeys for Oligos, Targets, Assays and
+  Projects: deprecate/archive, reload, search and retained identity.
+- Added independent PostgreSQL proofs of stable identity, exact Assay associations,
+  audit transitions, invalid status/ID-change rejection, and archived Oligo duplicate
+  protection. No production code change was needed.
+- R1-05 merged in PR #5 (`c882e3d`, merge `537fa9c`), CI green. Plan 006 functional
+  scope validated; existing R1-06/R1-07 execution prepared with confirmed D2/D9.
+
 ### 2026-10-31 — R1-05 audit evidence
 
 - Added persisted MVP mutation/audit coverage, request correlation and concurrent
