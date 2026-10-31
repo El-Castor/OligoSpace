@@ -2,7 +2,7 @@
 
 - Activated: 2026-10-31, by the user's development-continuation request.
 - Base: `82e5ff4` on `main`, including merged plans 001–005 (PRs #1/#2).
-- Status: active; first batch R1-04.
+- Status: functional implementation and execution validation completed 2026-10-31.
 - Specifications: `docs/PRODUCT_SPEC.md`, `docs/DATA_MODEL.md`, `docs/SECURITY.md`.
 - Prior decomposition: `docs/audit/2026-10-28/08_EXECUTION_BACKLOG.md` (historical proposal).
 
@@ -56,6 +56,25 @@ PostgreSQL, browser and deployment verification. Close only completed batches;
 move this plan to completed only after its functional scope is validated.
 
 ## Progress
+
+### Outcome
+
+- R1-04: `a352312`, PR #3, merge `069323f`, 12 green CI checks; 111 PostgreSQL /
+  11 Chromium cases at delivery.
+- R1-03: `8a2169a`, PR #4, merge `400ce69`, 12 green CI checks; 150 PostgreSQL /
+  11 Chromium cases. Viewer bypass and no-op version inflation fixed.
+- R1-05: `c882e3d`, PR #5, merge `537fa9c`, push/PR CI green; 189 PostgreSQL /
+  11 Chromium cases. Missing correlation, structured sensitive audit facts and
+  revoked-resource activity disclosure corrected, without rewriting history.
+- R1-02: final delivery on `codex/plan-006-r1-lifecycle`; four Chromium lifecycle
+  journeys and four PostgreSQL identity/audit cases; suite now 193 PostgreSQL and
+  15 Chromium cases. Exact association preservation checked. Production behavior
+  required no further correction. GitHub CI and merge are recorded by the PR;
+  only green-CI merge commits are authorized. No deployment acceptance is implied.
+- Required quality gates and unit suites retained throughout. R1-06/R1-07 are
+  prepared in BACKLOG with confirmed D2/D9; no new roadmap or host dependency.
+
+### Earlier progress snapshots
 
 - R1-03 integrated in PR #4, commit `8a2169a`, merge `400ce69`, 12 green CI checks.
 - R1-05 active: audit mutation matrix, API request correlation, recursive credential

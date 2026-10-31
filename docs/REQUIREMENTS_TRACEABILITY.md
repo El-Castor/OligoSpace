@@ -28,7 +28,7 @@ in `docs/exec-plans/completed/`.
 | TEAM-001 | In progress | workspace Team CRUD API and admin/team pages | PostgreSQL create and detail tests; activation browser path untested | 003 |
 | TEAM-002 | Verified | TeamMembership CRUD, role-aware principal, visibility policy | permission units; PostgreSQL membership/403/visibility; Team Caddy E2E | 001, 003 |
 | TEAM-003 | In progress | Team detail dashboard and visible resource counts | Caddy Team/project view; validation/inventory summaries unavailable | 003 |
-| PROJECT-001 | In progress | Project CRUD, stable IDs, status, visibility, migration `0002` | PostgreSQL create; Caddy create/detail/reload; archive path untested | 003 |
+| PROJECT-001 | Verified | Project CRUD, stable IDs, status, visibility, migration `0002` | R1-02 Chromium deprecate/archive/search/reload; PostgreSQL retained identity, rejected ID change and audit transitions | 003, 006 |
 | PROJECT-002 | Verified | ProjectMembership CRUD and server permission policy | PostgreSQL membership/visibility/403; membership and denial Caddy E2E | 001, 003 |
 | PROJECT-003 | In progress | project links on Targets/Oligos/Assays and scope-aware forms | core form build/E2E plus Project linked-resource view; later domains absent | 001, 002, 003 |
 | PROJECT-004 | In progress | Project detail dashboard, participants, linked resources, counts | Project create/membership/reload Caddy E2E; evidence/stock states unavailable | 003 |
@@ -44,7 +44,7 @@ in `docs/exec-plans/completed/`.
 | GENOME-003 | Planned | — | — | Backlog |
 | TARGET-001 | Verified | target API/services and web create form | PostgreSQL create integration; Caddy create/detail E2E | 002 |
 | TARGET-002 | In progress | target schema/form avoids inference | Sequence normalization tests; source provenance incomplete | 002, Backlog |
-| TARGET-003 | In progress | target search/detail/update/status and audit | Caddy create/detail/edit/reload E2E; deprecate/archive path untested | 002 |
+| TARGET-003 | Verified | target search/detail/update/status and audit | R1-02 Chromium deprecate/archive/search/reload; PostgreSQL stable ID and audit transitions | 002, 006 |
 | TARGET-004 | Planned | target/assay FK only | — | Backlog |
 | OLIGO-001 | Verified | oligo API/services and web create/detail forms | PostgreSQL route integration; Caddy create/detail/reload E2E | 001, 002 |
 | OLIGO-002 | Verified | update schema forbids sequence; edit form read-only | PostgreSQL PATCH sequence rejection | 002 |
@@ -52,7 +52,7 @@ in `docs/exec-plans/completed/`.
 | OLIGO-004 | Verified | sequence metrics service and detail UI | `test_sequence_analysis.py`; PostgreSQL response validation | 001, 002 |
 | OLIGO-005 | Verified | `calculation_provenance` and provenance UI | Unit assertions plus PostgreSQL serialized response | 001, 002 |
 | OLIGO-006 | Verified | duplicate/reverse-complement checks | sequence duplicate unit tests; PostgreSQL exact-duplicate integration | 001, 002 |
-| OLIGO-007 | In progress | list/search/detail/edit/status routes and pages | PostgreSQL search/update/audit and Caddy list/detail/edit/reload; archive path untested | 002 |
+| OLIGO-007 | Verified | list/search/detail/edit/status routes and pages | R1-02 Chromium deprecate/archive/search/reload; PostgreSQL archived duplicate rejection, retained ID and audit transitions | 002, 006 |
 | EXPTYPE-001 | Implemented | model, seed, admin create/update routes and controls | seed/runtime plus static/type/build validation; no mutation E2E | 001, 003 |
 | EXPTYPE-002 | In progress | assay role validation | PostgreSQL valid-role integration; required metadata not enforced | 001, 002 |
 | EXPTYPE-003 | Implemented | active filter, admin active-state control, restrictive assay FK | Migration/schema and build validation; deactivation behavior test incomplete | 001, 003 |
@@ -62,7 +62,7 @@ in `docs/exec-plans/completed/`.
 | ASSAY-004 | Verified | `_validate_assay_references` | R1-03 create/update negative matrix; independent-session no-side-effect checks; positive two-role/replacement cases; `docs/project/R1_03_ASSAY_MATRIX.md` | 001, 002, 006 |
 | ASSAY-005 | Verified | expected product/amplicon API and UI | Expected amplicon asserted by Caddy E2E | 002 |
 | ASSAY-006 | Verified | version increment and before/after audit | PostgreSQL version/audit integration | 002 |
-| ASSAY-007 | In progress | search/detail/edit/status workflows | PostgreSQL API and Caddy edit/version/reload E2E; archive path untested | 002 |
+| ASSAY-007 | Verified | search/detail/edit/status workflows | R1-02 Chromium deprecate/archive/search/reload; PostgreSQL versions, exact association identity, stable ID and audit transitions; R1-03 role matrix | 002, 006 |
 
 ## Experiment evidence and attachments
 

@@ -2,6 +2,15 @@
 
 ## Now
 
+- Plan 006 functional batches are implemented and locally validated; R1-04/#3,
+  R1-03/#4 and R1-05/#5 are merged with green CI. R1-02 is the final delivery
+  branch, with 193 PostgreSQL / 15 Chromium cases. See GitHub for its integration.
+- Next execution: R1-06 then R1-07, using the confirmed D2/D9 decisions and the
+  preparation below. No host prerequisite; Mac mini deployment remains deferred.
+
+The older progress entries below are retained as dated checkpoints and superseded
+by the state above.
+
 - R1-03 integrated via PR #4 (`8a2169a`, merge `400ce69`), all 12 CI checks green.
   Current batch R1-05; next R1-02, then confirmed R1-06/R1-07.
 
@@ -64,3 +73,40 @@
 - Plan 005 recovery scenarios cover R1-01. No new host is needed to continue R1-04,
   R1-03, R1-05 or R1-02. R1-08/09 host execution and R1-11 human pilot acceptance
   retain their specific future prerequisites.
+
+## Execution preparation — existing R1-06 and R1-07 batches
+
+D2/D9 were explicitly confirmed by the user on 2026-10-31. This is execution
+preparation for the existing lots, not a new roadmap. Execute each on its own
+branch, with demonstrated-defect fixes, tests, quality checks, commit/PR and green
+CI merge commit; no force push, squash/rebase or protection bypass.
+
+### R1-06 — uploads disabled for the pilot
+
+- Add an explicit server-enforced pilot upload policy, disabled by default in
+  the pilot configuration. Preserve development/test upload coverage through an
+  explicit setting; production must fail closed. Do not change existing networks
+  or create a production service to verify this policy.
+- Refuse disabled uploads with a stable 403/501 problem and clear message before
+  storing file bytes/objects or creating an Attachment. Hide the form or explain
+  its unavailability; UI visibility is not the permission boundary.
+- Retain existing quarantined records and their audit history, without enabling
+  publication/download. Regression: disabled upload has no DB/object mutation or
+  success audit; enabled dev/test path remains quarantined and audited; Chromium
+  verifies the pilot explanation. Run existing evidence and permission tests.
+
+### R1-07 — mandatory minimal CSV export
+
+- Export visible search results server-side, reusing the current list/search
+  policies and filters. Define the small implemented entity set and column contract
+  explicitly in this batch before coding; preserve stable public IDs, status and
+  type, with no sensitive/internal fields or invented scientific results.
+- Handle CSV quoting, Unicode, empty results and spreadsheet formula injection;
+  enforce a documented size/pagination bound and a truthful row count. Browser
+  download uses the authenticated session and appropriate CSV content headers.
+- Audit the successful export with actor, timestamp, request correlation, safe
+  filter facts and row count; do not copy the CSV body or raw credentials into audit.
+- Reuse R1-04 audiences/scopes for non-leakage and compare parsed CSV rows with the
+  visible API query; verify PostgreSQL audit persistence and the Chromium download.
+  Run full relevant gates before PR integration. This lot has no dependency on the
+  Mac mini, institutional OIDC, backup endpoints or a production deployment.
