@@ -73,6 +73,7 @@ h1 { margin: 0; font-size: var(--text-heading); font-weight: 750; letter-spacing
 h2, h3 { font-weight: 700; }
 .lede { max-width: 740px; margin: 12px 0 0; color: var(--muted); line-height: 1.6; }
 .page-header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); margin-bottom: var(--space-8); }
+.page-header > .primary-button { flex-shrink: 0; white-space: nowrap; }
 .primary-button, .secondary-button {
   display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
   min-height: 42px; padding: 10px var(--space-4); border: 1px solid var(--control-border);
