@@ -2,6 +2,20 @@
 
 ## Now
 
+- R1-06 and R1-07 are integrated via #7/#8 (`da58b47`/`7278fed`), each after
+  12 green CI checks. Completed policy/CSV contracts are documented in
+  `R1_06_UPLOAD_POLICY.md` and `R1_07_CSV_EXPORT.md`; 198 PostgreSQL and16 Chromium
+  tests pass, along with52/14/2 units and quality gates.
+- Official Soft UI reference remains on its remote prototype branch at `1aeec1a`,
+  without merge. Shared-component migration is prepared in
+  `docs/design/SOFT_UI_INTEGRATION_PREPARATION.md`; no global redesign is active.
+  Next visual candidate is only scoped tokens/primitives in a reversible PR.
+- Pilot work still open: R1-08/09 host-dependent operational qualification,
+  R1-10 owner-curated data and R1-11 human acceptance. No host access authorized.
+
+The completed R1-06/R1-07 preparation and earlier dated progress below are retained
+as historical context; this entry supersedes their pending status.
+
 - R1-06 merged via #7 (`bb91c20` / `da58b47`),12 green CI checks. R1-07 oligo
   export implemented and under final delivery checks; contract and limitations in
   `R1_07_CSV_EXPORT.md`. Next after green-CI merge: shared-component design

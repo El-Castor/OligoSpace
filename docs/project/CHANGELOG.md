@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### 2026-10-31 — MVP batches integrated; design migration prepared
+
+- Integrated R1-06 (#7, `da58b47`) and R1-07 (#8, `7278fed`) by merge commit after
+  green CI; preserved the official Soft UI reference remotely without merging it.
+- Documented independent shared-component PR boundaries, invariant scientific
+  contracts, regression gates and rollback. No graphical implementation change.
+
 ### 2026-10-31 — R1-07 scientific CSV
 
 - Added authenticated filtered oligo CSV and browser download using the current
