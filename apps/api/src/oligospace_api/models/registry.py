@@ -14,10 +14,13 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    event,
 )
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.engine import Connection
+from sqlalchemy.orm import Mapped, Mapper, mapped_column, relationship
 
+from oligospace_api.core.audit import request_id_context, safe_audit_facts
 from oligospace_api.db.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
 from oligospace_api.models.enums import (
     GlobalRole,
@@ -310,3 +313,10 @@ class AuditEvent(UUIDPrimaryKeyMixin, Base):
     before: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     after: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     request_id: Mapped[str | None] = mapped_column(String(80))
+
+
+@event.listens_for(AuditEvent, "before_insert")
+def prepare_audit_event(_: Mapper[AuditEvent], __: Connection, record: AuditEvent) -> None:
+    record.request_id = record.request_id or request_id_context.get()
+    record.before = safe_audit_facts(record.before)
+    record.after = safe_audit_facts(record.after)

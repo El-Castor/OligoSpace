@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### 2026-10-31 — R1-05 audit evidence
+
+- Added persisted MVP mutation/audit coverage, request correlation and concurrent
+  request isolation tests. Redact structured credential/file-body fields at API
+  audit insertion; retain prior history unchanged.
+- Fixed dashboard recent-activity UUID disclosure after project access revocation
+  using current resource visibility before event ordering/limiting.
+- R1-03 integrated via PR #4 (`8a2169a`, merge `400ce69`), CI green.
+
 ### 2026-10-31 — R1-03 assay integrity
 
 - Added the positive/negative ASSAY-004 matrix with independent-session checks

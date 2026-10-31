@@ -135,8 +135,8 @@ in `docs/exec-plans/completed/`.
 | EXPORT-001 | Planned | — | — | Backlog |
 | EXPORT-002 | Planned | — | — | Backlog |
 | EXPORT-003 | Planned | audit model only | — | Backlog |
-| AUDIT-001 | In progress | `AuditEvent`, registry and workspace services | PostgreSQL registry/user/team/project/membership audit integration; later domains absent | 001, 002, 003 |
-| AUDIT-002 | In progress | safe audit helpers and before/after snapshots | workspace/core audit counts and secret-free serializers; correlation ID absent | 001, 002, 003 |
+| AUDIT-001 | In progress | `AuditEvent`, API insertion boundary and mutation services | R1-05 persisted core/workspace/evidence/job matrix; later import/export/inventory mutations absent | 001, 002, 003, 006 |
+| AUDIT-002 | In progress | request correlation, recursive structured-fact redaction, safe before/after snapshots | R1-05 actor/time/action/entity/correlation and no-file-body/no-header checks; nested credentials, concurrent requests and revoked-activity regression; async worker events retain job/attempt correlation | 001, 002, 003, 006 |
 | AUDIT-003 | Planned | — | — | Backlog |
 
 ## Deployment and continuity

@@ -57,6 +57,11 @@ move this plan to completed only after its functional scope is validated.
 
 ## Progress
 
+- R1-03 integrated in PR #4, commit `8a2169a`, merge `400ce69`, 12 green CI checks.
+- R1-05 active: audit mutation matrix, API request correlation, recursive credential
+  redaction and current-visibility filtering of own recent activity. Scope and
+  limitations documented in `docs/project/R1_05_AUDIT_COVERAGE.md`.
+
 - R1-04 integrated via PR #3: commit `a352312`, merge `069323f`; all 12 CI checks
   passed. Expanded suggestion regression brings PostgreSQL total to 111.
 - R1-03 implementation: 39 new PostgreSQL cases, viewer bypass and no-op version

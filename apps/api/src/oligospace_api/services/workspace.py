@@ -28,6 +28,7 @@ from oligospace_api.models.registry import (
     TeamMembership,
     User,
 )
+from oligospace_api.repositories.audit import visible_own_activity
 from oligospace_api.repositories.laboratory import visible_run_query
 from oligospace_api.repositories.registry import visible_query
 from oligospace_api.repositories.workspace import (
@@ -918,10 +919,7 @@ async def personalized_dashboard(
     activities = list(
         (
             await session.scalars(
-                select(AuditEvent)
-                .where(AuditEvent.actor_id == principal.user_id)
-                .order_by(AuditEvent.occurred_at.desc())
-                .limit(10)
+                visible_own_activity(principal).order_by(AuditEvent.occurred_at.desc()).limit(10)
             )
         ).all()
     )

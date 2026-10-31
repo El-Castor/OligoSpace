@@ -6,6 +6,16 @@ Last updated: 2026-10-31
 
 ### Plan 006 delivery ledger (latest state)
 
+- R1-03 integrated via PR #4: commit `8a2169a`, merge `400ce69`; all 12 CI checks
+  passed. R1-05 is now the active branch `codex/plan-006-r1-audit`.
+- R1-05 adds the mutation/audit matrix, validated request correlation, recursive
+  structured-fact redaction and visibility-filtered recent activity after revocation.
+  Regressions were reproduced before fixes. Coverage and limitations:
+  `R1_05_AUDIT_COVERAGE.md`. Validated locally: 189 PostgreSQL tests, 35 API /
+  14 worker / 2 web unit tests, 11 isolated Chromium tests, format/lint/typecheck.
+  Review credential-alias finding reproduced (3 failed tests), fixed and verified.
+  PR/CI integration remains next; no history or schema rewrite.
+
 - R1-04: integrated via PR #3, commit `a352312`, merge `069323f`; 12 CI checks
   passed on the exact head. Local evidence: 111 PostgreSQL, 11 Chromium, 25 API /
   14 worker / 2 web unit tests, format/lint/typecheck. No protection/ruleset on

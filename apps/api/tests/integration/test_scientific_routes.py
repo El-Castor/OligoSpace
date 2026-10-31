@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from oligospace_api.db.session import get_session
 from oligospace_api.domain.permissions import Principal
 from oligospace_api.main import app
-from oligospace_api.models.enums import GlobalRole
+from oligospace_api.models.enums import GlobalRole, ScientificJobStatus
 from oligospace_api.models.registry import AuditEvent, ExperimentType, Organization, User
 from oligospace_api.models.scientific import ScientificJob
 from oligospace_api.security.auth import AuthContext, get_auth_context
@@ -201,6 +201,32 @@ async def test_persistent_jobs_idempotency_pair_roles_rbac_and_audit(
         or 0
     )
     assert submits == 2
+
+    # API submission and explicit retry must carry request correlation, without
+    # copying the broker claim credential into the audit payload.
+    job = await fixture.session.get(ScientificJob, uuid.UUID(first_job["id"]))
+    assert job is not None
+    job.state = ScientificJobStatus.FAILED
+    job.last_error_code = "worker_lost"
+    await fixture.session.commit()
+    retry = await fixture.client.post(
+        f"/api/v1/scientific-jobs/{first_job['public_id']}/retry",
+        headers={"X-Request-ID": "scientific-retry-audit"},
+    )
+    assert retry.status_code == 200, retry.text
+    async with async_sessionmaker(fixture.session.bind)() as audit_session:
+        audit = await audit_session.scalar(
+            select(AuditEvent).where(AuditEvent.entity_id == job.id, AuditEvent.action == "retry")
+        )
+        assert audit is not None
+        assert audit.actor_id == fixture.admin.id
+        assert audit.request_id == "scientific-retry-audit"
+        assert audit.before == {"state": "failed"}
+        assert audit.after == {"state": "queued", "attempt_count": 0}
+        persisted_job = await audit_session.get(ScientificJob, job.id)
+        assert persisted_job is not None
+        assert persisted_job.state is ScientificJobStatus.QUEUED
+        assert job.claim_token not in str(audit.after)
 
     async def viewer_override() -> AuthContext:
         return context_for(fixture.viewer)

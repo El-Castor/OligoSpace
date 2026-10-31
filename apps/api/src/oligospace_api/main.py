@@ -1,12 +1,16 @@
+import uuid
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.middleware.base import RequestResponseEndpoint
+from starlette.responses import Response
 
 from oligospace_api import __version__
 from oligospace_api.api.router import api_router
+from oligospace_api.core.audit import REQUEST_ID_PATTERN, request_id_context
 from oligospace_api.core.config import get_settings
 from oligospace_api.core.logging import configure_logging
 from oligospace_api.services.sequence_analysis import InvalidSequenceError
@@ -34,6 +38,19 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "X-Request-ID", "Idempotency-Key"],
 )
+
+
+@app.middleware("http")
+async def correlate_request(request: Request, call_next: RequestResponseEndpoint) -> Response:
+    supplied = request.headers.get("X-Request-ID", "")
+    request_id = supplied if REQUEST_ID_PATTERN.fullmatch(supplied) else str(uuid.uuid4())
+    token = request_id_context.set(request_id)
+    try:
+        response = await call_next(request)
+        response.headers["X-Request-ID"] = request_id
+        return response
+    finally:
+        request_id_context.reset(token)
 
 
 @app.exception_handler(InvalidSequenceError)
