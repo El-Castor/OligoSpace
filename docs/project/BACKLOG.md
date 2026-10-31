@@ -2,6 +2,11 @@
 
 ## Now
 
+- R1-06 implementation complete: fail-closed pilot uploads, retained quarantine,
+  policy-driven UI; tests 39/14/2 units,195 PostgreSQL,15 Chromium. PR/green CI
+  integration pending. Next: R1-07 minimal scientific CSV. Prototype `1aeec1a`
+  is backed up remotely and approved as official visual reference, not merged.
+
 - Plan 006 functional batches are implemented and locally validated; R1-04/#3,
   R1-03/#4 and R1-05/#5 are merged with green CI. R1-02 is the final delivery
   branch, with 193 PostgreSQL / 15 Chromium cases. See GitHub for its integration.

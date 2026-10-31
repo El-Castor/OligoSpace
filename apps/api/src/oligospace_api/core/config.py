@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     object_storage_bucket: str = "oligospace-evidence"
     object_storage_secure: bool = False
     attachment_max_bytes: int = 10 * 1024 * 1024
+    uploads_enabled: bool = False
     redis_url: str = "redis://redis:6379/0"
     scientific_job_max_attempts: int = 3
     scientific_job_active_per_user: int = 5
@@ -44,6 +45,10 @@ class Settings(BaseSettings):
             or self.object_storage_secret_key == "development-minio-secret"
         ):
             raise ValueError("Production object storage credentials are not configured")
+
+    @property
+    def uploads_allowed(self) -> bool:
+        return self.environment != "production" and self.uploads_enabled
 
     @property
     def oidc_jwks_url(self) -> str:

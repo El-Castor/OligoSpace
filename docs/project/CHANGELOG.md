@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### 2026-10-31 — R1-06 pilot uploads
+
+- Default-disabled upload setting; production cannot opt in. Authenticated
+  effective policy drives the server-rendered UI, which fails closed.
+- Refused uploads read no file body in the handler and create no object,
+  Attachment or success audit. Existing evidence remains quarantined and intact.
+- Added denial/retention regressions and kept explicit dev/test quarantine tests.
+
 ### 2026-10-31 — R1-02 lifecycle acceptance
 
 - Added four complete Chromium lifecycle journeys for Oligos, Targets, Assays and
