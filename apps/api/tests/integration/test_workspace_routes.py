@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import csv
+import io
 import os
 import uuid
 from collections.abc import AsyncIterator
@@ -443,6 +445,13 @@ async def test_registry_visibility_matrix(
             expected.add("project")
     expected_ids = {records[scope]["public_id"] for scope in expected}
 
+    if entity == "oligos":
+        exported = await client.get("/api/v1/registry/oligos/export.csv", params={"q": marker})
+        assert exported.status_code == 200
+        exported_rows = list(csv.DictReader(io.StringIO(exported.content.decode("utf-8-sig"))))
+        assert {row["public_id"] for row in exported_rows} == expected_ids
+        assert int(exported.headers["x-export-row-count"]) == len(expected_ids)
+
     # Unfiltered association choices and filtered global search use the same API.
     for params in ({}, {"q": marker}, {"q": marker, "limit": 1}, {"q": marker, "offset": 1}):
         response = await client.get(f"/api/v1/registry/{entity}", params=params)
@@ -496,5 +505,11 @@ async def test_registry_visibility_matrix(
         assert choices.json()["total"] == remaining
         search = await client.get(f"/api/v1/registry/{entity}", params={"q": record["name"]})
         assert search.json()["total"] == 0
+        if entity == "oligos":
+            exported = await client.get(
+                "/api/v1/registry/oligos/export.csv", params={"q": record["public_id"]}
+            )
+            assert exported.status_code == 200
+            assert list(csv.DictReader(io.StringIO(exported.content.decode("utf-8-sig")))) == []
         summary = await client.get("/api/v1/dashboard/summary")
         assert summary.json()[entity] == remaining

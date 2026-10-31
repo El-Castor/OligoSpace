@@ -400,11 +400,18 @@ async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   if (response.status === 204) {
     return undefined as T;
   }
+  if (response.headers.get("content-type")?.startsWith("text/csv")) {
+    return response as T;
+  }
   return (await response.json()) as T;
 }
 
 export async function apiGet<T>(path: string): Promise<T> {
   return apiRequest<T>(path);
+}
+
+export async function apiCsv(path: string): Promise<Response> {
+  return apiRequest<Response>(path);
 }
 
 export async function apiWrite<T>(
