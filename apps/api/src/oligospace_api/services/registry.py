@@ -568,6 +568,13 @@ async def update_assay(
         ],
     )
     before = _snapshot(assay, fields)
+    associations_unchanged = associations is None or {
+        (item.oligo_id, item.role): item.label for item in associations
+    } == {(item.oligo_id, item.role): item.label for item in assay.oligos}
+    if associations_unchanged and all(
+        getattr(assay, field) == value for field, value in data.items()
+    ):
+        return assay
     before["oligos"] = [
         {"oligo_id": str(item.oligo_id), "role": item.role.value, "label": item.label}
         for item in assay.oligos
