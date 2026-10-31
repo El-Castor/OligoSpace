@@ -4,6 +4,30 @@ Last updated: 2026-10-31
 
 ## Current phase
 
+### MVP functional delivery and official design reference
+
+- R1-06: `bb91c20`, PR #7, merge `da58b47`; 12 push/PR CI checks succeeded.
+  Uploads fail closed in the pilot; existing evidence is retained.
+- R1-07: `ecce1a9`, PR #8, merge `7278fed`; 12 push/PR CI checks succeeded.
+  Authenticated visible/search-filtered oligo CSV includes stored provenance,
+  formula protection, safe correlated audit and explicit bounds.
+- Final functional verification: format/lint/typecheck pass; 52 API / 14 worker /
+  2 web unit tests; 198 real PostgreSQL cases with migration round-trip; 16 Chromium
+  E2E journeys. Isolated test containers were removed; no development data target.
+- Official design reference: remote branch `codex/scientific-soft-ui-prototype`,
+  `1aeec1a2135d006d700286a506242d2a51142c99`, user-approved iteration 02.
+  No secrets/real scientific data/temporary artifacts were found in its scoped
+  source, fixtures and captured UI review. Prototype push CI succeeded; no PR/merge.
+  Its sole local container was stopped without affecting other services.
+- Progressive graphical integration is prepared in
+  `docs/design/SOFT_UI_INTEGRATION_PREPARATION.md`. No visual production component
+  has been migrated. Next candidate: scoped tokens/shared primitives, separate PR.
+- Remaining pilot acceptance: R1-08 backup/restore, R1-09 TLS/session qualification
+  when hosting is available; R1-10 curated data approved by its owner; R1-11 human
+  scientific acceptance. Mac mini remains unavailable and uncontacted.
+
+This ledger supersedes earlier pre-integration snapshots below.
+
 ### R1-06 integrated; R1-07 delivery
 
 R1-06: commit `bb91c20`, PR #7, merge `da58b47`, all 12 push/PR CI checks green.
