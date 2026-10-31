@@ -9,6 +9,7 @@ export function RegistrySearch({ action, query }: { action: string; query: strin
         <button className="secondary-button" type="submit">Search</button>
         {query ? <Link className="text-link" href={action}>Clear</Link> : null}
       </div>
+      {query ? <p className="active-query">Active search: <strong>{query}</strong></p> : null}
     </form>
   );
 }

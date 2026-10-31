@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-11-01 — UI-04 scientific tables
+
+Shared scientific registry tables gain labeled horizontal scrolling, true compact
+density, copyable IDs/DNA, full-value disclosure and aligned numeric fields.
+Projects reuse the table; search shows its active query; existing API pagination
+is navigable. Loading/error/denied/empty states remain distinct. Membership
+removal now confirms before the unchanged server action. No backend/schema,
+permissions, CSV or scientific workflow changes. Delivery pending user review;
+no merge authorization for this lot.
+
 ## Unreleased
 
 ### 2026-10-31 — UI-03 cards and content surfaces

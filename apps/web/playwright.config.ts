@@ -9,6 +9,7 @@ export default defineConfig({
   timeout: 60_000,
   expect: { timeout: 10_000 },
   use: {
+    launchOptions: { args: ["--unsafely-treat-insecure-origin-as-secure=http://caddy:8080"] },
     baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://caddy:8080",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
