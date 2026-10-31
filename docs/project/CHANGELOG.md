@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### 2026-10-31 — Scientific Soft UI production foundations
+
+- Centralized approved semantic design tokens and applied them to existing
+  production CSS primitives: palette, typography, fields, badges, raised surfaces,
+  buttons, focus, alert/invalid/disabled states and reduced motion.
+- Preserved component contracts and all scientific/security workflows; added
+  responsive/keyboard/contrast/error E2E evidence on the real application routes.
+
 ### 2026-10-31 — MVP batches integrated; design migration prepared
 
 - Integrated R1-06 (#7, `da58b47`) and R1-07 (#8, `7278fed`) by merge commit after

@@ -2,6 +2,11 @@
 
 ## Now
 
+- Scientific Soft UI lot 1: real production tokens/primitives implemented on
+  `codex/soft-ui-tokens-primitives`, with before/after route captures and regression
+  gates. Await green-CI merge; report `docs/design/SOFT_UI_TOKENS_PRIMITIVES.md`.
+  Do not start the next shell/navigation lot before the user's review.
+
 - R1-06 and R1-07 are integrated via #7/#8 (`da58b47`/`7278fed`), each after
   12 green CI checks. Completed policy/CSV contracts are documented in
   `R1_06_UPLOAD_POLICY.md` and `R1_07_CSV_EXPORT.md`; 198 PostgreSQL and16 Chromium
