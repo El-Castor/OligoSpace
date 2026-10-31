@@ -121,6 +121,7 @@ async def laboratory_client(integration_database_url: str) -> AsyncIterator[Labo
         app.dependency_overrides[get_session] = session_override
         app.dependency_overrides[get_auth_context] = admin_override
         app.dependency_overrides[get_object_storage] = storage_override
+        app.dependency_overrides[get_settings] = lambda: Settings(uploads_enabled=True)
         async with AsyncClient(
             transport=ASGITransport(app=app), base_url="http://integration.test"
         ) as client:
@@ -237,7 +238,9 @@ async def test_run_validation_attachment_supersession_and_persistence(
     )
     assert unsupported.status_code == 415
 
-    app.dependency_overrides[get_settings] = lambda: Settings(attachment_max_bytes=4)
+    app.dependency_overrides[get_settings] = lambda: Settings(
+        attachment_max_bytes=4, uploads_enabled=True
+    )
     oversized = await client.post(
         f"/api/v1/laboratory/run/{first_run['public_id']}/attachments",
         files={"file": ("oversized.txt", b"12345", "text/plain")},
@@ -263,3 +266,56 @@ async def test_run_validation_attachment_supersession_and_persistence(
     app.dependency_overrides[get_auth_context] = viewer_override
     forbidden = await client.post("/api/v1/laboratory/runs", json=run_payload)
     assert forbidden.status_code == 403
+
+
+@pytest.mark.parametrize("parent_type", ["run", "validation"])
+async def test_pilot_policy_retains_existing_evidence_without_writes(
+    laboratory_client: LaboratoryFixture,
+    parent_type: str,
+) -> None:
+    f = laboratory_client
+    run = (
+        await f.client.post(
+            "/api/v1/laboratory/runs",
+            json={
+                "assay_id": str(f.assay.id),
+                "performed_at": "2026-10-31T09:00:00Z",
+                "visibility": "organization",
+            },
+        )
+    ).json()
+    existing = await f.client.post(
+        f"/api/v1/laboratory/run/{run['public_id']}/attachments",
+        files={"file": ("retained.txt", b"retained evidence", "text/plain")},
+    )
+    assert existing.status_code == 201
+    before_objects = dict(f.storage.objects)
+    before_audit = set((await f.session.scalars(select(AuditEvent.id))).all())
+    before_attachments = set((await f.session.scalars(select(Attachment.id))).all())
+    app.dependency_overrides[get_settings] = lambda: Settings()
+    policy = await f.client.get("/api/v1/laboratory/upload-policy")
+    assert policy.json() == {"uploads_enabled": False}
+
+    async def admin_identity() -> AuthContext:
+        return context_for(f.admin)
+
+    async def viewer_identity() -> AuthContext:
+        return context_for(f.viewer)
+
+    for identity in [admin_identity, viewer_identity]:
+        app.dependency_overrides[get_auth_context] = identity
+        result = await f.client.post(
+            f"/api/v1/laboratory/{parent_type}/HIDDEN/attachments",
+            files={"file": ("refused.txt", b"must not persist", "text/plain")},
+        )
+        assert result.status_code == 403
+        assert result.json()["detail"]["code"] == "uploads_disabled"
+    assert f.storage.objects == before_objects
+    assert set((await f.session.scalars(select(AuditEvent.id))).all()) == before_audit
+    assert set((await f.session.scalars(select(Attachment.id))).all()) == before_attachments
+    retained = await f.session.scalar(
+        select(Attachment).where(Attachment.public_id == existing.json()["public_id"])
+    )
+    assert retained is not None
+    assert retained.publication_status.value == "quarantined"
+    assert retained.sha256 == hashlib.sha256(b"retained evidence").hexdigest()

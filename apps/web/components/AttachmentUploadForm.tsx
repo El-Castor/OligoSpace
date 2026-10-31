@@ -1,6 +1,10 @@
+import { apiGetOptional } from "@/lib/api";
+
 type FormAction = (formData: FormData) => void | Promise<void>;
 
-export function AttachmentUploadForm({ action, error }: { action: FormAction; error?: string }) {
+export async function AttachmentUploadForm({ action, error }: { action: FormAction; error?: string }) {
+  const policy = await apiGetOptional<{ uploads_enabled: boolean }>("/laboratory/upload-policy");
+  if (!policy?.uploads_enabled) return <div className="notice" role="status">Evidence uploads are disabled for the pilot. Existing evidence is retained.</div>;
   return (
     <form className="attachment-form" action={action}>
       {error ? <div className="notice" role="alert">{error}</div> : null}

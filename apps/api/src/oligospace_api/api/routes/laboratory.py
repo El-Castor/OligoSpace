@@ -39,6 +39,14 @@ from oligospace_api.services.object_storage import ObjectStorage, get_object_sto
 router = APIRouter(prefix="/laboratory", tags=["laboratory"])
 
 
+@router.get("/upload-policy")
+async def upload_policy(
+    context: AuthContext = Depends(get_auth_context),
+    settings: Settings = Depends(get_settings),
+) -> dict[str, bool]:
+    return {"uploads_enabled": settings.uploads_allowed}
+
+
 def _missing(entity_type: str) -> HTTPException:
     return HTTPException(
         status_code=404,
@@ -156,6 +164,16 @@ async def upload_attachment(
     storage: ObjectStorage = Depends(get_object_storage),
     settings: Settings = Depends(get_settings),
 ) -> AttachmentRead:
+    if not settings.uploads_allowed:
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "code": "uploads_disabled",
+                "message": (
+                    "Evidence uploads are disabled for the pilot. Existing evidence is retained."
+                ),
+            },
+        )
     body = await file.read(settings.attachment_max_bytes + 1)
     attachment = await create_attachment(
         session,

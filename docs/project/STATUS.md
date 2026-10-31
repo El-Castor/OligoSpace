@@ -4,6 +4,15 @@ Last updated: 2026-10-31
 
 ## Current phase
 
+### R1-06 — pilot upload policy
+
+Prototype reference `1aeec1a` is preserved remotely on
+`codex/scientific-soft-ui-prototype`, without merge; its container is stopped.
+R1-06 disables uploads by default and unconditionally in production, with an
+authenticated policy-driven UI and retained existing evidence. Local validation:
+39 API / 14 worker / 2 web units, 195 PostgreSQL, 15 Chromium; format/lint/typecheck
+and Compose configuration pass. PR/CI integration is the next gate, then R1-07.
+
 ### Plan 006 delivery ledger (latest state)
 
 - R1-05 integrated via PR #5: commit `c882e3d`, merge `537fa9c`; push and PR CI

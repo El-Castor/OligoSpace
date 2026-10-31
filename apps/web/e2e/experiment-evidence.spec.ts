@@ -38,17 +38,10 @@ test("experiment runs, contextual validation, quarantine, supersession, search, 
   const firstRunId = new URL(firstRunUrl).pathname.split("/").at(-1) ?? "";
   await expect(page.getByText("v1", { exact: true })).toBeVisible();
 
-  await page.locator('input[name="file"]').setInputFiles({
-    name: `run-evidence-${suffix}.csv`,
-    mimeType: "text/csv",
-    buffer: Buffer.from("lane,sample,result\n1,A,weak\n"),
-  });
-  await page.getByRole("button", { name: "Upload to quarantine" }).click();
-  await expect(page.getByRole("status")).toHaveText("Evidence stored privately in quarantine.");
-  await expect(page.getByText(`run-evidence-${suffix}.csv`)).toBeVisible();
-  await expect(page.getByText("quarantined", { exact: true })).toBeVisible();
+  await expect(page.getByRole("status")).toHaveText("Evidence uploads are disabled for the pilot. Existing evidence is retained.");
+  await expect(page.locator('input[type="file"]')).toHaveCount(0);
   await page.reload();
-  await expect(page.getByText(`run-evidence-${suffix}.csv`)).toBeVisible();
+  await expect(page.getByRole("status")).toContainText("uploads are disabled");
 
   await page.getByRole("link", { name: "Add validation" }).click();
   await expect(page.getByText(/Method guidance:.*gel_validation/)).toBeVisible();
