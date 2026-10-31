@@ -4,6 +4,16 @@ Last updated: 2026-10-31
 
 ## Current phase
 
+### Isolated Scientific Soft UI prototype — 2026-10-31
+
+Branch `codex/scientific-soft-ui-prototype` contains a separate development-only
+Next.js root at `apps/web/prototype`. The user approved the palette and structure
+as the future identity. Iteration 02 strengthens elevation, nuances the sidebar,
+uses synthetic plant examples and verifies monospace/copy and compact tables.
+No production page, scientific workflow, API or authentication rule changed.
+Design system, migration proposal and visual evidence live in `docs/design/`.
+No merge is authorized; R1-06 then R1-07 remain the next functional batches.
+
 ### Plan 006 delivery ledger (latest state)
 
 - R1-05 integrated via PR #5: commit `c882e3d`, merge `537fa9c`; push and PR CI

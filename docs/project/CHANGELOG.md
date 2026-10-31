@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### 2026-10-31 — Isolated Scientific Soft UI prototype
+
+- Added a development-only Next.js prototype with centralized tokens, fictional
+  local interactions, state examples and no backend dependency.
+- Refined paired shadows and sidebar; synthetic Brachypodium/Arabidopsis data,
+  monospace sequence copy and true compact table density.
+- Added Chromium interaction/accessibility checks, preserved baseline/revised
+  screenshots and three design/migration documents. Production pages, scientific
+  workflows and main remain unchanged; no visual migration or merge performed.
+
 ### 2026-10-31 — R1-02 lifecycle acceptance
 
 - Added four complete Chromium lifecycle journeys for Oligos, Targets, Assays and

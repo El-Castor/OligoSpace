@@ -2,6 +2,12 @@
 
 ## Now
 
+- Scientific Soft UI: isolated prototype and iteration 02 delivered on
+  `codex/scientific-soft-ui-prototype`; palette/structure approved for the future
+  identity. Production migration awaits separate authorization. Design proposals
+  and baseline/revised evidence are in `docs/design/`. Functional R1-06/R1-07
+  retain priority; no functional roadmap change.
+
 - Plan 006 functional batches are implemented and locally validated; R1-04/#3,
   R1-03/#4 and R1-05/#5 are merged with green CI. R1-02 is the final delivery
   branch, with 193 PostgreSQL / 15 Chromium cases. See GitHub for its integration.

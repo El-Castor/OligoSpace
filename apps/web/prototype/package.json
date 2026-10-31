@@ -1,0 +1,6 @@
+{
+  "name": "@oligospace/soft-ui-prototype",
+  "private": true,
+  "type": "module",
+  "description": "Development-only visual sandbox; uses the parent web dependencies."
+}
