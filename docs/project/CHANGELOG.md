@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### 2026-10-31 — R1-07 scientific CSV
+
+- Added authenticated filtered oligo CSV and browser download using the current
+  session and visibility policy. Stored metric provenance accompanies values.
+- UTF-8 BOM, quoting, formula neutralization, explicit limits and row-count/schema
+  headers; empty results retain headers, oversized exports fail without truncation.
+- Audit records generation, actor/correlation and safe count/filter facts without
+  CSV data. Added parsed-content, permission/revocation, persistence and download tests.
+
 ### 2026-10-31 — R1-06 pilot uploads
 
 - Default-disabled upload setting; production cannot opt in. Authenticated

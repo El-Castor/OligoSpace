@@ -3,6 +3,7 @@ from __future__ import annotations
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
+from fastapi.responses import Response
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -29,6 +30,7 @@ from oligospace_api.schemas.registry import (
     TargetUpdate,
 )
 from oligospace_api.security.auth import AuthContext, get_auth_context
+from oligospace_api.services.csv_export import export_oligos
 from oligospace_api.services.registry import (
     create_assay,
     create_experiment_type,
@@ -189,6 +191,26 @@ async def add_oligo(
 ) -> OligoCreateResult:
     oligo, warnings = await create_oligo(session, context.principal, payload)
     return OligoCreateResult(oligo=OligoRead.model_validate(oligo), warnings=warnings)
+
+
+@router.get("/oligos/export.csv")
+async def oligos_csv(
+    q: str | None = Query(default=None, max_length=200),
+    context: AuthContext = Depends(get_auth_context),
+    session: AsyncSession = Depends(get_session),
+) -> Response:
+    body, count = await export_oligos(session, context.principal, q)
+    return Response(
+        body,
+        media_type="text/csv; charset=utf-8",
+        headers={
+            "Content-Disposition": 'attachment; filename="oligos.csv"',
+            "Cache-Control": "no-store",
+            "X-Content-Type-Options": "nosniff",
+            "X-Export-Row-Count": str(count),
+            "X-Export-Schema": "oligos-csv/v1",
+        },
+    )
 
 
 @router.get("/oligos/{public_id}", response_model=OligoRead)

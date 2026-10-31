@@ -2,6 +2,11 @@
 
 ## Now
 
+- R1-06 merged via #7 (`bb91c20` / `da58b47`),12 green CI checks. R1-07 oligo
+  export implemented and under final delivery checks; contract and limitations in
+  `R1_07_CSV_EXPORT.md`. Next after green-CI merge: shared-component design
+  migration preparation, plus existing R1-08/09/10/11 prerequisites and acceptance.
+
 - R1-06 implementation complete: fail-closed pilot uploads, retained quarantine,
   policy-driven UI; tests 39/14/2 units,195 PostgreSQL,15 Chromium. PR/green CI
   integration pending. Next: R1-07 minimal scientific CSV. Prototype `1aeec1a`

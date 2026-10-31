@@ -4,6 +4,15 @@ Last updated: 2026-10-31
 
 ## Current phase
 
+### R1-06 integrated; R1-07 delivery
+
+R1-06: commit `bb91c20`, PR #7, merge `da58b47`, all 12 push/PR CI checks green.
+R1-07 implements oligo CSV using existing search/visibility, stored provenance,
+UTF-8 BOM, formula neutralization, bounded generation and correlated safe audit.
+Validation: 52 API / 14 worker / 2 web unit tests; 198 PostgreSQL cases including
+CSV in the R1-04 matrix; 16 Chromium E2E. Format/lint/typecheck and runtime builds
+pass. PR/CI integration remains the gate; no scientific data or schema change.
+
 ### R1-06 — pilot upload policy
 
 Prototype reference `1aeec1a` is preserved remotely on
