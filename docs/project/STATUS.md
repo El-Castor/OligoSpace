@@ -4,6 +4,16 @@ Last updated: 2026-10-31
 
 ## Current phase
 
+### UI-03 — cards, panels and surfaces
+
+UI-02 integration was confirmed remotely: PR #11, merge `5598ebd`, 12 green
+checks. UI-03 on `codex/ui-03-surfaces-panels` changes only production surface
+CSS/tokens: stronger balanced elevation, natural panel/card/detail heights,
+clearer statistics and metadata. No backend, React contracts, scientific data
+or UI-02 navigation change. Comparable empty/sparse/full real-route evidence:
+`docs/design/UI_03_SURFACES.md`. 23 Chromium and198 PostgreSQL cases pass;
+integration follows the exact-head green-CI merge gate. No UI-04/05/06 started.
+
 ### UI-02 — production shell and navigation
 
 Following the user's validation of PR #10, UI-02 migrates AppShell presentation,

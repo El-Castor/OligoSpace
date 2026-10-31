@@ -2,6 +2,12 @@
 
 ## Now
 
+- UI-03 implements real shared surfaces after validated UI-02. Dashboard panels
+  now size independently to content, metadata is clearer, and no metrics or
+  information are added/removed. Evidence and rollback: `docs/design/UI_03_SURFACES.md`.
+  23 Chromium/198 PostgreSQL cases pass; use green-CI PR integration and report
+  before starting any later graphical lot.
+
 - UI-02 implements the real shell/sidebar/header/menu migration after approved
   PR #10. Five-width, keyboard, role and functional regression evidence is tracked
   in `docs/design/UI_02_SHELL_NAVIGATION.md` and its delivery PR. Integrate only

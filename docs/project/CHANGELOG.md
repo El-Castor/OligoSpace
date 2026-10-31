@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### 2026-10-31 — UI-03 cards and content surfaces
+
+- Centralized moderate panel elevation across existing shared outer surfaces;
+  retained UI-02 navigation and dense table structure.
+- Removed stretched dashboard panel heights and artificial card/detail minimums;
+  improved the same five statistics' hierarchy and secondary metadata readability.
+- Added comparable empty/sparse/full API-backed scenarios, natural-height and
+  contrast checks, retaining all business/security/scientific regression journeys.
+
 ### 2026-10-31 — UI-02 shell and navigation
 
 - Applied prototype petroleum rail, outline brand/icons, grouped active inset
