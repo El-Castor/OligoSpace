@@ -102,13 +102,15 @@ test("scientific tables retain real data, density, copy, search and pagination",
   await page.goto("/oligos?q=TableSpec");
   for (const width of [320, 390, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
+    await page.goto("/oligos?q=TableSpec");
+    await expect(page.getByText("Loading records", { exact: true })).toHaveCount(0);
+    if ([390, 768].includes(width)) await capture(`oligos-${width}`);
     if (!before) {
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       const scroll = page.getByRole("region", { name: "Oligos data" });
       await scroll.focus(); await expect(scroll).toBeFocused();
       await page.keyboard.press("ArrowRight");
     }
-    if ([390, 768].includes(width)) await capture(`oligos-${width}`);
   }
   await page.getByLabel("Current user").click();
   await page.getByRole("button", { name: "Logout", exact: true }).click();
