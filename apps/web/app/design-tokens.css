@@ -1,0 +1,49 @@
+/* Scientific Soft UI, approved prototype 1aeec1a / iteration 02.
+   Production semantic tokens; existing class/component contracts consume these. */
+:root {
+  color-scheme: light;
+  --canvas: #e9eef0;
+  --surface: #f1f5f6;
+  --surface-soft: #e4edf0;
+  --field: #fafcfc;
+  --ink: #253a43;
+  --muted: #52666f;
+  --line: #d2dde1;
+  --control-border: #778b94;
+  --primary: #176b79;
+  --primary-dark: #105663;
+  --primary-soft: #d5edf0;
+  --on-primary: #ffffff;
+  --blue: var(--primary);
+  --cyan: #20a6b5;
+  --sage: #5a9884;
+  --success: #13664f;
+  --success-soft: #e0f0e9;
+  --warning: #805000;
+  --warning-soft: #fff0ce;
+  --danger: #973a26;
+  --danger-soft: #fff0e7;
+  --focus: #075362;
+  --focus-on-dark: #b5edf1;
+  --disabled: #dce5e8;
+  --disabled-ink: #52666f;
+  --shadow-raised: 7px 7px 16px #c6d0d6, -7px -7px 16px #ffffff;
+  --shadow-control: 4px 4px 8px #c4cfd5, -4px -4px 8px #ffffff;
+  --shadow-inset: inset 2px 2px 5px #b7cbd0, inset -2px -2px 5px #ffffff;
+  --radius-control: 8px;
+  --radius: 12px;
+  --radius-major: 18px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --text-small: 12px;
+  --text-control: 14px;
+  --text-heading: clamp(30px, 3vw, 38px);
+  --motion: 140ms;
+}

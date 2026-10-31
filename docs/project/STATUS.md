@@ -4,6 +4,19 @@ Last updated: 2026-10-31
 
 ## Current phase
 
+### Scientific Soft UI — first production lot
+
+User authorized production token/primitives integration from `d563165`, using
+prototype `1aeec1a` as reference. Branch `codex/soft-ui-tokens-primitives` adopts
+the semantic palette, typography, spacing/elevation/radius tokens and existing
+button/field/badge/focus/error/disabled classes. Only production CSS changes;
+no React/server-action/API/permission/schema contract change. Before/after real
+route captures and tests are described in `docs/design/SOFT_UI_TOKENS_PRIMITIVES.md`.
+Local verification: 18 Chromium, 198 PostgreSQL and 52/14/2 unit tests pass;
+format/lint/typecheck and production builds pass. PR/CI integration is the gate.
+Next shell/navigation lot requires this report's
+review before proceeding; no global migration is active.
+
 ### MVP functional delivery and official design reference
 
 - R1-06: `bb91c20`, PR #7, merge `da58b47`; 12 push/PR CI checks succeeded.
