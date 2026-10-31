@@ -1,15 +1,30 @@
 # Project status
 
-Last updated: 2026-10-29
+Last updated: 2026-10-31
 
 ## Current phase
 
-Execution plans 001 through 005 are complete. Plan 004 added experiment runs,
+Execution plans 001 through 005 are complete and integrated into `main`:
+local `main` and `origin/main` both pointed to merge commit `82e5ff4` when this
+session started (PR #2; recovery fixes and ADR-0006 included). This supersedes the
+2026-10-29 unpushed/unmerged report; live GitHub CI has not been queried here.
+Plan 006 is active at `docs/exec-plans/active/006-r1-pilot-readiness.md`, following
+the user's 2026-10-31 authorization. R1-04 is the first batch, then R1-03,
+R1-05 and R1-02. R1-01 is covered by completed Plan 005 recovery evidence.
+
+The Mac mini is unavailable. No connection, audit, installation, network change,
+or deployment on that machine is authorized. Functional development proceeds
+independently. The sole preparatory hosting deliverable is
+`docs/deployment/PILOT_HOSTING_PLAN.md`: isolated dev/pilot Compose environments,
+private access, OIDC/TLS, versioned multiarchitecture images, secrets, backups and
+future Linux migration. Its deployment checklist is unexecuted.
+
+Plan 004 added experiment runs,
 contextual validation, and quarantined evidence attachments. Plan 005, Persistent
 scientific jobs and Primer3 analysis, completed on 2026-10-29 with individual Oligo QC
 and Forward/Reverse Assay pair analysis, including validated worker/Redis interruption
 and reconciliation recovery. The development application is a usable multi-user
-registry through Caddy. No execution plan is active; Plan 006 has not been activated.
+registry through Caddy.
 No production deployment exists.
 
 ## Build verified
@@ -32,7 +47,7 @@ No production deployment exists.
 
 - `make test-integration` migrates a guaranteed-fresh PostgreSQL 17 database from
   `0001` through `0004`, round-trips Alembic (head → `0003_experiment_evidence` →
-  head), and passes seven integration tests with zero skips enforced by
+  head), and passes 111 integration tests with zero skips enforced by
   `OLIGOSPACE_REQUIRE_INTEGRATION=1`. The CI `integration` job runs the same target.
 - The core registry round trip still verifies Oligo/Target/Assay creation,
   immutable biological identity, duplicate rejection, contextual roles,
@@ -59,10 +74,10 @@ No production deployment exists.
 
 ## Browser/E2E verified
 
-- `make test-e2e` passes 10 Chromium tests in 8 spec files through Caddy: smoke and
+- `make test-e2e` passes 11 Chromium tests in 9 spec files through Caddy: smoke and
   personalized dashboard; development login/profile/logout/second identity;
   Oligo; Target; Assay plus global search; Project/Team/Admin workflows; evidence;
-  and scientific jobs. It runs in the isolated `oligospace-e2e` Compose project
+  scientific jobs, and cross-project visibility. It runs in the isolated `oligospace-e2e` Compose project
   (tmpfs storage, no host port, public placeholders from `infra/e2e/e2e.env`, never
   reads `.env`) that is torn down after every run.
 - The browser workflows prove UI → API → PostgreSQL → browser reload persistence,
@@ -86,8 +101,16 @@ No production deployment exists.
   lease-bounded tool timeout fixed it and C1/C2 were retested. Evidence:
   `docs/project/PLAN_005_RECOVERY_EVIDENCE.md`. Residual risks (no lease heartbeat,
   claim token not rotated, Celery task id reused on retry) are tracked in the backlog.
-- The Plan 005 recovery fixes and evidence commits are local only: not pushed, no CI
-  run yet, and branches 002–005 are not merged into `main`.
+- Plan 006: R1-04 implementation is validated locally (ready for commit/PR).
+  It adds a four-scope, four-role PostgreSQL matrix for Oligos,
+  Targets and Assays, database-projected memberships, search and list totals,
+  association choices, detail and dashboard counts, and membership revocation.
+  Two identifier leaks were reproduced in exact-duplicate conflicts and
+  reverse-complement suggestions and corrected using the existing visibility policy.
+  Exact sequence uniqueness remains institute-wide; a generic 409 still reveals
+  a registration conflict but no inaccessible record identifier or metadata.
+- R1-03 negative Assay matrix, R1-05 mutation/audit coverage and R1-02 lifecycle
+  browser acceptance remain pending in Plan 006. They do not depend on the Mac mini.
 - Inventory/orders/QR, reference ingestion,
   GeneOligoViewer, complete catalogue/inventory search,
   production backup execution, monitoring, and hardening remain later work.
@@ -108,9 +131,36 @@ No production deployment exists.
   Primer3 nearest-neighbor and structure facts use separate persistent job records.
 - OIDC needs an institutional browser validation with real production-like realm
   policy, token refresh, logout, and disabled-account lifecycle.
+- Read-only users can currently see the Oligo edit link/form; the API rejects edits.
+  Hiding unavailable controls is UI follow-up, not the authorization boundary.
 - ESLint 9 remains pinned until the Next.js plugin dependency graph accepts ESLint 10.
 
-## Last validated commands
+## Latest validation (2026-10-31)
+
+- `make format lint typecheck test PYTHON_RUNNER=container` — exit 0. API:
+  25 passed, 111 integration cases skipped in the unit-only invocation; worker:
+  14 passed; web: 2 passed. PostgreSQL cases executed separately below.
+- `make test-integration` — exit 0: 111 passed, 0 failed, 0 skipped; fresh PostgreSQL
+  17 database, migrations 0001–0004 and downgrade/upgrade round-trip; test container
+  removed afterward. The 104 new cases comprise 72 registry matrix cases and 32
+  exact/reverse suggestion checks across four scopes and owner/member/unrelated/foreign identities.
+- `make test-e2e` — exit 0: 11 Chromium tests, 0 failed, 0 skipped, in 9 specs
+  through Caddy on the isolated `oligospace-e2e` stack, then teardown. The new test
+  checks two projects, private/institute records, search counts, reload, assay
+  choices, inaccessible detail and server-denied edits with unchanged data.
+- `make compose-config` — exit 0 for existing dev/E2E definitions. No deployment
+  configuration was changed. API/web/worker runtime builds passed as part of E2E.
+- Regression evidence before the fix: 2 failures disclosed hidden Oligo public IDs
+  in exact-duplicate and reverse-complement responses; the existing 7 cases passed.
+- Scoped independent code review found no Critical/Important issues. Team revocation,
+  post-revocation dashboard counts and nonzero pagination offset were added after
+  review. Direct suggestion checks for member identities and foreign organizations now
+  also verify persisted effects and institute-scoped uniqueness.
+- No new live GitHub CI result, OIDC pilot qualification, Mac mini inspection,
+  backup execution or Linux migration is claimed. Development data was not used
+  as a test target; no before/after row-count comparison was repeated this session.
+
+## Previous validation evidence (2026-10-29)
 
 All on 2026-10-29 via `PYTHON_RUNNER=container` unless noted:
 

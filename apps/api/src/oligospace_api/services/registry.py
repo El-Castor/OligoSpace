@@ -15,6 +15,7 @@ from oligospace_api.domain.permissions import (
     can_create,
     can_edit,
     can_manage_catalog,
+    can_view,
 )
 from oligospace_api.models.registry import (
     Assay,
@@ -277,17 +278,21 @@ async def create_oligo(
         )
     )
     if exact is not None:
+        detail = {
+            "code": "exact_duplicate_sequence",
+            "message": "This sequence cannot be registered. Contact a registry administrator.",
+        }
+        if can_view(principal, _scope(exact)):
+            detail.update(
+                message="This sequence already exists in OligoSpace; reuse the existing oligo.",
+                existing_public_id=exact.public_id,
+            )
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail={
-                "code": "exact_duplicate_sequence",
-                "message": "This sequence already exists in OligoSpace; reuse the existing oligo.",
-                "existing_public_id": exact.public_id,
-            },
+            detail=detail,
         )
     reverse_match = await session.scalar(
-        select(Oligo).where(
-            Oligo.organization_id == principal.organization_id,
+        visible_query(Oligo, principal).where(
             Oligo.normalized_sequence == reverse_complement(metrics.normalized_sequence),
         )
     )

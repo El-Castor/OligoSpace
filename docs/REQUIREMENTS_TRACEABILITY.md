@@ -20,7 +20,7 @@ in `docs/exec-plans/completed/`.
 | AUTH-001 | Implemented | `apps/web/lib/auth.ts`, NextAuth route, Keycloak realm | Development login E2E; institutional OIDC browser flow not exercised | 001, 003 |
 | AUTH-002 | Verified | signed development session, production runtime guard | `test_auth.py`; auth/logout/second-identity Caddy E2E | 003 |
 | AUTH-003 | Verified | `domain/permissions.py`, registry/workspace services | permission units; PostgreSQL admin/member 403 integration; admin-denial E2E | 001, 002, 003 |
-| AUTH-004 | In progress | visibility queries and scope validation across registry/workspaces | four-scope PostgreSQL integration; complete search/export leakage matrix absent | 001, 002, 003 |
+| AUTH-004 | In progress | visibility queries and scope validation across registry/workspaces; visibility-filtered reuse hints | Plan 006 four-scope/four-role core registry matrix, membership revocation and cross-project E2E; export not implemented | 001, 002, 003, 006 |
 | AUTH-005 | In progress | `security/auth.py`, token refresh, secure cookies, CORS, Caddy headers | disabled-account PostgreSQL test and development session E2E; production OIDC absent | 001, 003 |
 | USER-001 | Verified | expanded User model, `/me`, profile API/page | PostgreSQL profile test; profile save/reload Caddy E2E | 001, 003 |
 | USER-002 | In progress | inactive-user rejection and preserved relational authorship | disabled-account PostgreSQL test; authored-history lifecycle not yet explicit | 003 |
@@ -102,7 +102,7 @@ in `docs/exec-plans/completed/`.
 |---|---|---|---|---|
 | SEARCH-001 | In progress | global search page/API for core registry, Projects, runs, and validations | PostgreSQL core/evidence search and Caddy global-search E2E; inventory absent | 002, 003, 004, Backlog |
 | SEARCH-002 | In progress | registry search and pagination API | PostgreSQL oligo search; filters/sorting incomplete | 002 |
-| SEARCH-003 | In progress | visible-query registry and workspace searches | permission units and four-scope PostgreSQL list matrix; exports absent | 002, 003 |
+| SEARCH-003 | In progress | visible-query registry and workspace searches; duplicate/reverse hints respect current visibility | Plan 006 core list/detail/search/counts/choices matrix and cross-project E2E; exports absent | 002, 003, 006 |
 | SEARCH-004 | In progress | exact duplicate conflict | PostgreSQL duplicate test; pre-submit suggestions incomplete | 002, Backlog |
 | VIEW-001 | Planned | mapping service only | — | Backlog |
 | VIEW-002 | Planned | — | — | Backlog |
