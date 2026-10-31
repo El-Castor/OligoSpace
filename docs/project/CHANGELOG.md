@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+### 2026-10-31 — Plan 006 and R1-04
+
+- Confirmed plans 001–005 are merged in main at `82e5ff4`; superseded stale
+  unpushed/unmerged status without changing historical validation evidence.
+- Activated Plan 006 for R1 development, starting with the four-scope registry
+  visibility matrix and cross-project search/association browser regression.
+- Fixed inaccessible Oligo identifiers appearing in exact-duplicate conflict
+  payloads and reverse-complement suggestions. Visible matches retain reuse hints;
+  institute-wide uniqueness remains enforced for hidden exact duplicates.
+- Added the sole preparatory hosting plan at `docs/deployment/PILOT_HOSTING_PLAN.md`.
+  No Mac mini access, installation, networking change or deployment was performed.
+- Validation: format/lint/typecheck/unit checks, 91 PostgreSQL tests (0 skipped),
+  11 isolated Chromium E2E tests and existing Compose validation pass locally.
+
 ### Added
 
 - Phase 0 source audit and persistent architecture/security/product documentation.
