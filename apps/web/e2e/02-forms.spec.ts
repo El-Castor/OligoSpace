@@ -154,6 +154,13 @@ test("assay errors preserve repeated associations and numeric inputs before real
   await page.reload();
   await expect(page.locator('input[name="expected_amplicon_length"]')).toHaveValue("186");
   await expect(page.locator('input[name="recommended_annealing_temperature_c"]')).toHaveValue("61.3");
-  await expect(page.locator('select[name="oligo_id"]').nth(0)).toHaveValue(forwardValue!);
-  await expect(page.locator('select[name="oligo_id"]').nth(1)).toHaveValue(reverseValue!);
+  // Associations are a set of (Oligo, role), not an API-ordered list. Verify the
+  // persisted scientific pairing even when PostgreSQL returns the rows reversed.
+  for (const [role, oligoId] of [["forward_primer", forwardValue!], ["reverse_primer", reverseValue!]]) {
+    const row = page.locator(".association-row").filter({
+      has: page.locator(`select[name="role"] option[value="${role}"]:checked`),
+    });
+    await expect(row).toHaveCount(1);
+    await expect(row.locator('select[name="oligo_id"]')).toHaveValue(oligoId);
+  }
 });
