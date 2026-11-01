@@ -1,3 +1,6 @@
+import { ScientificForm } from "@/components/ScientificForm";
+import { FormSection } from "@/components/FormSection";
+import { SubmitButton } from "@/components/SubmitButton";
 import Link from "next/link";
 
 import type { ProjectSummary, TeamSummary } from "@/lib/api";
@@ -16,13 +19,14 @@ export function ProjectForm({
   error?: string;
 }) {
   return (
-    <form className="record-form" action={action}>
-      {error ? <div className="notice" role="alert">{error}</div> : null}
-      <div className="form-grid">
+    <ScientificForm action={action} error={error}>
+      <FormSection title="Project identity" description="Visibility and membership remain enforced by the server.">
         <label className="field">
           <span>Name <strong aria-hidden="true">*</strong></span>
           <input name="name" required maxLength={200} defaultValue={project?.name} />
         </label>
+      </FormSection>
+      <FormSection title="Access and lifecycle" description="Membership and visibility remain server-enforced.">
         <label className="field">
           <span>Owning team</span>
           <select name="team_id" defaultValue={project?.team_id ?? ""}>
@@ -54,11 +58,11 @@ export function ProjectForm({
           <span>Description</span>
           <textarea name="description" rows={5} defaultValue={project?.description ?? ""} />
         </label>
-      </div>
+      </FormSection>
       <div className="form-actions">
-        <button className="primary-button" type="submit">{project ? "Save project" : "Create project"}</button>
+        <SubmitButton>{project ? "Save project" : "Create project"}</SubmitButton>
         <Link className="secondary-button" href={project ? `/projects/${project.public_id}` : "/projects"}>Cancel</Link>
       </div>
-    </form>
+    </ScientificForm>
   );
 }

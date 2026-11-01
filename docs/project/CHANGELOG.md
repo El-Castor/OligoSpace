@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-11-01 — UI-04 integration and UI-05 forms
+
+UI-04 PR13 merged by merge commit985d506 after user approval and12 green checks.
+UI-05 groups scientific fields by purpose, improves label/help hierarchy and
+adds shared pending/error feedback. Drafts are temporary in-memory submissions
+scoped to route/identity, never browser storage; immutable/hidden credentials
+and scientific context are excluded. Viewer scientific submit forms are read-only.
+Existing actions, schema, units and Primer3 jobs unchanged. UI-05 pending review;
+no UI-06 work.
+
 ## 2026-11-01 — UI-04 scientific tables
 
 Shared scientific registry tables gain labeled horizontal scrolling, true compact
