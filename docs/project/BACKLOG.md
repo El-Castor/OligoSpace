@@ -1,5 +1,15 @@
 # Backlog
 
+## UI-05 — implementation awaiting review
+
+UI-04 is integrated through PR13/main985d506. UI-05 modernizes existing
+scientific create/edit and supporting settings forms with shared primitives.
+Validate exact payloads/units, redirect errors/drafts, pending/read-only states,
+roles, lifecycle and Primer3 regressions. No new scientific field or backend
+capability. Supersession error redirects retain their existing limitation; reopen
+from the original evidence, never reconstruct hidden context. User capture/report
+approval required before UI-05 merge. UI-06 remains deferred.
+
 ## UI-04 — awaiting visual/functional review
 
 Implement scientific tables/list presentation on the dedicated UI-04 branch.

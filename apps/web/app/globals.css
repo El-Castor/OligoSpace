@@ -151,6 +151,27 @@ td { padding: 15px 17px; border-top: 1px solid var(--line); font-size: 13px; ver
 .field-wide { grid-column: 1 / -1; }
 .sequence-input { font-family: var(--font-mono); letter-spacing: .04em; }
 .form-actions { display: flex; gap: 11px; align-items: center; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line); }
+.form-section { min-width: 0; margin: var(--space-6) 0 0; padding: var(--space-6); border: 1px solid var(--line); border-radius: var(--radius); background: var(--field); }
+.form-section > legend { padding: 0 var(--space-2); color: var(--primary-dark); font-size: 18px; font-weight: 750; }
+.form-section-help { margin: 0 0 var(--space-6); color: var(--muted); font-size: var(--text-metadata); line-height: 1.6; }
+.form-conventions, .form-dirty, .form-pending { color: var(--muted); font-size: var(--text-metadata); line-height: 1.5; margin: 0 0 var(--space-4); }
+.form-dirty { color: var(--primary-dark); }
+.form-pending { padding: var(--space-3); background: var(--primary-soft); border-radius: var(--radius-control); }
+.form-error strong, .form-error > span { display: block; }
+.form-error > span { margin-top: var(--space-2); }
+.record-form .field > span, .record-form .association-row label > span { font-size: var(--text-control); line-height: 1.5; }
+.record-form .field small, .record-form .field-help { font-size: var(--text-metadata); line-height: 1.6; }
+.record-form input, .record-form select, .record-form textarea { font: inherit; }
+.record-form .sequence-input { font-family: var(--font-mono); line-height: 1.7; }
+.record-form .field :is(input, select, textarea):focus-visible { border-color: var(--focus); }
+.record-form .field :is(input, select, textarea):user-invalid { border-color: var(--danger); outline: 2px solid var(--danger); outline-offset: 2px; }
+.record-form .form-actions { flex-wrap: wrap; }
+.association-fieldset { min-width: 0; }
+.inline-admin-form label > span, .admin-row label > span, .scientific-parameters label > span { font-size: var(--text-metadata); line-height: 1.5; }
+@media (max-width: 640px) {
+  .form-section { padding: var(--space-4); }
+  .record-form .form-actions > :is(a, button) { width: 100%; justify-content: center; text-align: center; }
+}
 
 .record-details { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; padding: 1px; border: 1px solid var(--line); border-radius: var(--radius-major); overflow: hidden; background: var(--line); }
 .record-field { min-width: 0; padding: 17px 18px; background: var(--surface); }

@@ -1,5 +1,16 @@
 # Project status
 
+### UI-05 — scientific forms and editors
+
+UI-04 PR #13 merged at `985d506` after explicit user visual/technical approval,
+unchanged head `c0bb4ff`,12 successful checks and no conflict. UI-05 branch
+`codex/ui-05-scientific-forms` adds shared fieldset sections, pending submits,
+focused error summaries and transient same-route form drafts. Existing API,
+scientific constraints, server actions and UI-02/03/04 presentation remain.
+Viewer scientific submissions are suppressed using /me; resource permissions
+remain enforced by the API. Report: `docs/design/UI_05_SCIENTIFIC_FORMS.md`.
+UI-05 PR must remain unmerged until explicit user approval; UI-06 not started.
+
 ### UI-04 — scientific tables and lists
 
 UI-03 was visually approved and integrated via PR #12, merge `1faf7ba`.
@@ -11,7 +22,7 @@ registry failures no longer masquerade as empty results. No backend/schema or
 UI-02 navigation changes. Report: `docs/design/UI_04_SCIENTIFIC_TABLES.md`.
 PR must remain unmerged until user reviews captures and report; UI-05/06 deferred.
 
-Last updated: 2026-10-31
+Last updated: 2026-11-01
 
 ## Current phase
 

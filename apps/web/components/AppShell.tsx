@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { ShellNavigation, ShellLocation } from "@/components/ShellNavigation";
 import { ShellIcon } from "@/components/ShellIcon";
 import { UserMenu } from "@/components/UserMenu";
+import { FormDraftProvider } from "@/components/FormDraftProvider";
 import { apiGetOptional, type CurrentUser } from "@/lib/api";
 
 export async function AppShell({ children }: { children: ReactNode }) {
@@ -20,7 +21,7 @@ export async function AppShell({ children }: { children: ReactNode }) {
           </form>
           <UserMenu user={user} />
         </header>
-        <main className="content" id="main-content" tabIndex={-1}>{children}</main>
+        <main className="content" id="main-content" tabIndex={-1}><FormDraftProvider key={user?.id ?? "anonymous"}>{children}</FormDraftProvider></main>
       </div>
     </div>
   );

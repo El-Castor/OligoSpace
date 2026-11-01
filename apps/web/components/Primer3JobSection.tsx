@@ -1,3 +1,4 @@
+import { SubmitButton } from "@/components/SubmitButton";
 import Link from "next/link";
 
 import { ScientificJobAutoRefresh } from "@/components/ScientificJobAutoRefresh";
@@ -128,7 +129,7 @@ export function Primer3JobSection({
           <label><span>dNTP</span><input name="dntp_conc_mM" type="number" min="0" max="100" step="0.1" defaultValue="0.6" /><small>mM</small></label>
           <label><span>Oligo concentration</span><input name="dna_conc_nM" type="number" min="0.1" max="100000" step="0.1" defaultValue="50" /><small>nM</small></label>
           <label><span>Maximum loop</span><input name="max_loop" type="number" min="0" max="100" defaultValue="30" /><small>nt</small></label>
-          <button className="primary-button" type="submit">Run Primer3 analysis</button>
+          <SubmitButton className="primary-button">Run Primer3 analysis</SubmitButton>
         </form>
       ) : null}
       <p className="scientific-disclaimer">

@@ -1,3 +1,5 @@
+import { ScientificFormFrame } from "@/components/ScientificFormFrame";
+import { SubmitButton } from "@/components/SubmitButton";
 import { PageHeader } from "@/components/PageHeader";
 import { updateProfile } from "@/app/workspace/actions";
 import { apiGet, type CurrentUser } from "@/lib/api";
@@ -13,8 +15,8 @@ export default async function ProfilePage({
     <>
       <PageHeader eyebrow="Identity" title="Your profile" description="Your OIDC subject remains immutable. Profile changes are stored in OligoSpace and audited." />
       {updated ? <div className="success-notice" role="status">Profile updated and audited.</div> : null}
-      <form className="record-form" action={updateProfile}>
-        {error ? <div className="notice" role="alert">{error}</div> : null}
+      <ScientificFormFrame action={updateProfile} error={error} legend={false}>
+
         <div className="profile-summary">
           <div className="profile-avatar" aria-hidden="true">{user.initials}</div>
           <div><strong>{user.display_name}</strong><span>{user.email}</span><small>{user.organization_name} · {user.role.replaceAll("_", " ")}</small></div>
@@ -28,8 +30,8 @@ export default async function ProfilePage({
           <div className="field"><span>Identity provider</span><code>{user.identity_provider}</code></div>
           <div className="field"><span>External identity ID</span><code>{user.external_identity_id}</code></div>
         </div>
-        <div className="form-actions"><button className="primary-button" type="submit">Save profile</button></div>
-      </form>
+        <div className="form-actions"><SubmitButton className="primary-button">Save profile</SubmitButton></div>
+      </ScientificFormFrame>
     </>
   );
 }
