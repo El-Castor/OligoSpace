@@ -1,0 +1,327 @@
+{
+  "name": "${PILOT_PROJECT:?required outside Git}",
+  "services": {
+    "postgres": {
+      "image": "${POSTGRES_IMAGE:?required outside Git}",
+      "restart": "unless-stopped",
+      "networks": [
+        "data"
+      ],
+      "environment": {
+        "POSTGRES_DB": "postgres",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "${POSTGRES_BOOTSTRAP_PASSWORD:?required outside Git}"
+      },
+      "volumes": [
+        "postgres_data:/var/lib/postgresql/data"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "pg_isready -U postgres -d postgres"
+        ],
+        "interval": "2s",
+        "timeout": "3s",
+        "retries": 30
+      }
+    },
+    "migrate": {
+      "image": "${API_IMAGE:?required outside Git}",
+      "restart": "no",
+      "networks": [
+        "data"
+      ],
+      "profiles": [
+        "operations"
+      ],
+      "command": [
+        "micromamba",
+        "run",
+        "--name",
+        "base",
+        "alembic",
+        "upgrade",
+        "head"
+      ],
+      "environment": {
+        "ENVIRONMENT": "production",
+        "AUTH_MODE": "oidc",
+        "UPLOADS_ENABLED": "false",
+        "DATABASE_URL": "${MIGRATION_DATABASE_URL:?required outside Git}",
+        "OIDC_ISSUER": "${OIDC_ISSUER:?required outside Git}",
+        "OIDC_AUDIENCE": "${OIDC_AUDIENCE:?required outside Git}",
+        "CORS_ORIGINS": "[\"${APP_ORIGIN:?required outside Git}\"]",
+        "OBJECT_STORAGE_ENDPOINT": "object-store:9000",
+        "OBJECT_STORAGE_ACCESS_KEY": "${S3_ACCESS_KEY:?required outside Git}",
+        "OBJECT_STORAGE_SECRET_KEY": "${S3_SECRET_KEY:?required outside Git}",
+        "OBJECT_STORAGE_BUCKET": "${S3_BUCKET:?required outside Git}",
+        "OBJECT_STORAGE_SECURE": "false",
+        "REDIS_URL": "${REDIS_URL:?required outside Git}"
+      },
+      "depends_on": {
+        "postgres": {
+          "condition": "service_healthy"
+        }
+      }
+    },
+    "redis": {
+      "image": "${REDIS_IMAGE:?required outside Git}",
+      "restart": "unless-stopped",
+      "networks": [
+        "data"
+      ],
+      "command": [
+        "redis-server",
+        "--appendonly",
+        "yes",
+        "--requirepass",
+        "${REDIS_PASSWORD:?required outside Git}"
+      ],
+      "environment": {
+        "REDISCLI_AUTH": "${REDIS_PASSWORD:?required outside Git}"
+      },
+      "volumes": [
+        "redis_data:/data"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "redis-cli",
+          "ping"
+        ],
+        "interval": "5s",
+        "timeout": "3s",
+        "retries": 20
+      }
+    },
+    "object-store": {
+      "image": "${MINIO_IMAGE:?required outside Git}",
+      "restart": "unless-stopped",
+      "networks": [
+        "data"
+      ],
+      "command": [
+        "server",
+        "/data",
+        "--console-address",
+        ":9001"
+      ],
+      "environment": {
+        "MINIO_ROOT_USER": "${S3_ADMIN_USER:?required outside Git}",
+        "MINIO_ROOT_PASSWORD": "${S3_ADMIN_PASSWORD:?required outside Git}"
+      },
+      "volumes": [
+        "object_data:/data"
+      ]
+    },
+    "keycloak": {
+      "image": "${KEYCLOAK_IMAGE:?required outside Git}",
+      "restart": "unless-stopped",
+      "networks": [
+        "application",
+        "data"
+      ],
+      "command": [
+        "--config-file=/etc/oligospace/keycloak.conf",
+        "start"
+      ],
+      "environment": {
+        "KC_DB": "postgres",
+        "KC_DB_URL": "jdbc:postgresql://postgres:5432/keycloak",
+        "KC_DB_USERNAME": "${KEYCLOAK_DB_USER:?required outside Git}",
+        "KC_DB_PASSWORD": "${KEYCLOAK_DB_PASSWORD:?required outside Git}",
+        "KC_HOSTNAME": "${APP_ORIGIN:?required outside Git}",
+        "KC_HTTP_ENABLED": "true",
+        "KC_PROXY_HEADERS": "xforwarded",
+        "KC_HTTP_RELATIVE_PATH": "/"
+      },
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "${KEYCLOAK_CONFIG:?required outside Git}",
+          "target": "/etc/oligospace/keycloak.conf",
+          "read_only": true
+        }
+      ],
+      "depends_on": {
+        "postgres": {
+          "condition": "service_healthy"
+        }
+      }
+    },
+    "api": {
+      "image": "${API_IMAGE:?required outside Git}",
+      "restart": "unless-stopped",
+      "networks": [
+        "application",
+        "data",
+        "egress"
+      ],
+      "environment": {
+        "ENVIRONMENT": "production",
+        "AUTH_MODE": "oidc",
+        "UPLOADS_ENABLED": "false",
+        "DATABASE_URL": "${APP_DATABASE_URL:?required outside Git}",
+        "OIDC_ISSUER": "${OIDC_ISSUER:?required outside Git}",
+        "OIDC_AUDIENCE": "${OIDC_AUDIENCE:?required outside Git}",
+        "CORS_ORIGINS": "[\"${APP_ORIGIN:?required outside Git}\"]",
+        "OBJECT_STORAGE_ENDPOINT": "object-store:9000",
+        "OBJECT_STORAGE_ACCESS_KEY": "${S3_ACCESS_KEY:?required outside Git}",
+        "OBJECT_STORAGE_SECRET_KEY": "${S3_SECRET_KEY:?required outside Git}",
+        "OBJECT_STORAGE_BUCKET": "${S3_BUCKET:?required outside Git}",
+        "OBJECT_STORAGE_SECURE": "false",
+        "REDIS_URL": "${REDIS_URL:?required outside Git}"
+      },
+      "depends_on": {
+        "postgres": {
+          "condition": "service_healthy"
+        },
+        "redis": {
+          "condition": "service_healthy"
+        },
+        "object-store": {
+          "condition": "service_started"
+        }
+      },
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "micromamba",
+          "run",
+          "--name",
+          "base",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/live')"
+        ],
+        "interval": "10s",
+        "timeout": "5s",
+        "retries": 12
+      }
+    },
+    "web": {
+      "image": "${WEB_IMAGE:?required outside Git}",
+      "restart": "unless-stopped",
+      "networks": [
+        "application",
+        "egress"
+      ],
+      "environment": {
+        "AUTH_MODE": "oidc",
+        "API_INTERNAL_URL": "http://api:8000/api/v1",
+        "NEXTAUTH_URL": "${APP_ORIGIN:?required outside Git}",
+        "NEXTAUTH_SECRET": "${NEXTAUTH_SECRET:?required outside Git}",
+        "KEYCLOAK_ISSUER": "${OIDC_ISSUER:?required outside Git}",
+        "KEYCLOAK_CLIENT_ID": "${OIDC_CLIENT_ID:?required outside Git}",
+        "KEYCLOAK_CLIENT_SECRET": "${OIDC_CLIENT_SECRET:?required outside Git}"
+      },
+      "depends_on": {
+        "api": {
+          "condition": "service_healthy"
+        }
+      }
+    },
+    "bioinfo-worker": {
+      "image": "${WORKER_IMAGE:?required outside Git}",
+      "restart": "unless-stopped",
+      "networks": [
+        "data"
+      ],
+      "environment": {
+        "DATABASE_URL": "${WORKER_DATABASE_URL:?required outside Git}",
+        "REDIS_URL": "${REDIS_URL:?required outside Git}",
+        "OLIGOSPACE_BUILD_ID": "${BUILD_ID:?required outside Git}"
+      },
+      "depends_on": {
+        "postgres": {
+          "condition": "service_healthy"
+        },
+        "redis": {
+          "condition": "service_healthy"
+        }
+      }
+    },
+    "scientific-scheduler": {
+      "image": "${WORKER_IMAGE:?required outside Git}",
+      "restart": "unless-stopped",
+      "networks": [
+        "data"
+      ],
+      "environment": {
+        "DATABASE_URL": "${WORKER_DATABASE_URL:?required outside Git}",
+        "REDIS_URL": "${REDIS_URL:?required outside Git}",
+        "OLIGOSPACE_BUILD_ID": "${BUILD_ID:?required outside Git}"
+      },
+      "command": [
+        "micromamba",
+        "run",
+        "--name",
+        "base",
+        "celery",
+        "--app",
+        "oligospace_bioinfo.celery_app:app",
+        "beat",
+        "--loglevel=INFO"
+      ],
+      "depends_on": {
+        "postgres": {
+          "condition": "service_healthy"
+        },
+        "redis": {
+          "condition": "service_healthy"
+        }
+      }
+    },
+    "caddy": {
+      "image": "${CADDY_IMAGE:?required outside Git}",
+      "restart": "unless-stopped",
+      "networks": [
+        "ingress",
+        "application"
+      ],
+      "ports": [
+        {
+          "target": 443,
+          "published": "443",
+          "host_ip": "${INGRESS_IP:?required outside Git}",
+          "protocol": "tcp"
+        }
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "${TLS_CONFIG:?required outside Git}",
+          "target": "/etc/caddy/Caddyfile",
+          "read_only": true
+        },
+        "caddy_data:/data",
+        "caddy_config:/config"
+      ],
+      "depends_on": {
+        "web": {
+          "condition": "service_started"
+        },
+        "keycloak": {
+          "condition": "service_started"
+        }
+      }
+    }
+  },
+  "networks": {
+    "ingress": {},
+    "egress": {},
+    "application": {
+      "internal": true
+    },
+    "data": {
+      "internal": true
+    }
+  },
+  "volumes": {
+    "postgres_data": {},
+    "redis_data": {},
+    "object_data": {},
+    "caddy_data": {},
+    "caddy_config": {}
+  }
+}
