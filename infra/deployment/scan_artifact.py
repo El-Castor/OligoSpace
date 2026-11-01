@@ -16,6 +16,33 @@ import tempfile
 SCANNER = "aquasec/trivy@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c"
 
 
+def failure_diagnostics(message, exit_code):
+    # Fixed vocabulary only: no untrusted error text, paths, matches or URLs.
+    categories = (
+        "archive",
+        "cache",
+        "certificate",
+        "connection",
+        "database",
+        "access denied",
+        "invalid",
+        "manifest",
+        "no such file",
+        "oci",
+        "permission denied",
+        "platform",
+        "timeout",
+        "unauthorized",
+        "unsupported",
+    )
+    return {
+        "exit_code": exit_code,
+        "error_categories": [
+            category for category in categories if category in message.lower()
+        ],
+    }
+
+
 def summarize(raw):
     severity = Counter()
     identifiers = set()
@@ -90,6 +117,7 @@ def main():
                 "gate": "not_verified",
                 "reason": "scanner_execution_failed",
                 "scanner": SCANNER,
+                **failure_diagnostics(result.stderr + result.stdout, result.returncode),
             }
         else:
             report = summarize(json.loads(raw_path.read_text()))

@@ -39,10 +39,6 @@ jobs:
         run: |
           test "$(uname -m)" = "$CPU"
           python3 infra/deployment/build_local.py --context default --builder deploy02-native --architecture "$ARCH" --role "$ROLE" --load-test-images --output "$RUNNER_TEMP/oci"
-      - name: Collect real scan evidence (findings are not accepted)
-        run: |
-          artifact=$(find "$RUNNER_TEMP/oci" -name '*.oci.tar' -print -quit)
-          python3 infra/deployment/scan_artifact.py --context default --archive "$artifact" --output "$RUNNER_TEMP/oci/scan.json"
       - name: Native real Primer3 and worker regressions
         if: matrix.role == 'worker'
         env:
@@ -64,6 +60,10 @@ jobs:
             python3 infra/deployment/qualify_storage.py --context default --source "$source" --target "$target" --api-image "oligospace-qualification/api:$(git rev-parse HEAD)" --output "$RUNNER_TEMP/storage/$source-to-$target" || status=1
           done
           exit "$status"
+      - name: Collect real scan evidence (findings are not accepted)
+        run: |
+          artifact=$(find "$RUNNER_TEMP/oci" -name '*.oci.tar' -print -quit)
+          python3 infra/deployment/scan_artifact.py --context default --archive "$artifact" --output "$RUNNER_TEMP/oci/scan.json"
       - name: Retain sanitized evidence only, never OCI images or raw scan matches
         if: always()
         uses: actions/upload-artifact@v4

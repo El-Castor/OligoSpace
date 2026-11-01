@@ -5,6 +5,20 @@ import unittest
 
 
 class ScanTests(unittest.TestCase):
+    def test_failure_diagnostics_expose_only_fixed_categories(self):
+        path = Path(__file__).resolve().parents[1] / "scan_artifact.py"
+        spec = importlib.util.spec_from_file_location("scan_artifact", path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        report = module.failure_diagnostics(
+            "private-match-value failed database archive permission denied", 1
+        )
+        self.assertEqual(report["exit_code"], 1)
+        self.assertEqual(
+            report["error_categories"], ["archive", "database", "permission denied"]
+        )
+        self.assertNotIn("private-match-value", json.dumps(report))
+
     def test_secret_matches_never_enter_sanitized_reports(self):
         path = Path(__file__).resolve().parents[1] / "scan_artifact.py"
         self.assertTrue(path.exists())

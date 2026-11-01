@@ -158,7 +158,7 @@ report/database evidence must be inspected before any release decision.
 
 ## 5. Architectures and scientific evidence
 
-The new PR workflow prepares six native jobs (three roles × ARM64/AMD64), verifies
+Draft [PR18](https://github.com/El-Castor/OligoSpace/pull/18) runs six native jobs (three roles × ARM64/AMD64), verifies
 runner CPU, exports OCI and runs worker tests plus unchanged real Primer3 analysis.
 Public [GitHub runner documentation](https://docs.github.com/en/actions/reference/runners/github-hosted-runners)
 provides native `ubuntu-24.04` and `ubuntu-24.04-arm` runners; workflow availability
@@ -171,9 +171,13 @@ absolute tolerance 1e-6, relative tolerance zero; it reports each delta. No chan
 to Primer3/scientific rules is made. Aggregation produces offline OCI indexes
 binding both role manifests. They are not published/pullable multiarch releases.
 
-Current status: **no fresh build, emulated run, native run, cross-architecture
-comparison or release digest has been established for DEPLOY-02**. CI remains
-pending collection of the draft PR results. Never substitute DEPLOY-01 evidence for
+First draft PR CI at `23b99d7` (run `41342999866`) produced API native build and
+structurally verified OCI evidence, including ARM64 revision/platform/SBOM/
+provenance. Its scan execution failed without a detailed safe diagnostic, so S3
+and science steps after it were not executed. This is not scan acceptance or
+runtime storage qualification. The workflow now runs independent SDK/science
+checks before the scan and retains fixed error categories, never raw diagnostics;
+scan failure still fails the job. New-revision native results remain pending. Never substitute DEPLOY-01 evidence for
 this revision. Images/archives are not uploaded as public Actions artifacts;
 sanitary evidence reports only have seven-day retention.
 
@@ -194,7 +198,7 @@ be recalled by later revocation. No historical MinIO image is republished.
 
 ## 7. Validation, review and remaining gates
 
-- Local static suite: 27 tests passed using Python 3.12.2, including both
+- Local static suite: 28 tests passed using Python 3.12.2, including both
   candidate Compose resolutions and unavailable-engine fail-closed evidence;
   Ruff 0.9.7 lint/format and `make compose-config` pass. The required combined
   `make format lint typecheck test PYTHON_RUNNER=container` attempt fails at its
