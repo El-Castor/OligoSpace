@@ -61,7 +61,7 @@ which case caused the failure. No raw match is retained or disclosed. Local Mac 
 | Metadata / content-types / SHA256 | Data checks reached before late gate failure in CI | Verified in native CI self-restore | Full new suite unverified |
 | Restart / independent logical restore | Both restarts/restore reached before late gate failure | Both restarts/independent restore pass in CI | Historical limited test only |
 | Cross-provider migration | Both directions execute data checks but overall gate fails | Same cross-provider reserve; no volume-format reuse | Real export/migration prohibited |
-| RAM and allocated disk | Partial after-PUT snapshots ~59–76 MiB; no final disk measurement | ~5–7 MiB snapshots; ~4.4 MB allocated across two instances plus exchange | Current cache/resource use unverified |
+| RAM and allocated disk (6a31dd5 samples only) | Partial after-PUT snapshots ~59–76 MiB; no final disk measurement | ~5–7 MiB snapshots; ~4.4 MB allocated across two instances plus exchange | Current cache/resource use unverified |
 | 16 GB Mac mini / ~66 GiB historical free | Capacity not accepted; Docker VM plus full app must be measured | Same; no single-node redundancy or production suitability inferred | No inspection of actual Mac mini |
 | Linux AMD64 / INRAE | Descriptor available; whole-host/institutional acceptance pending | Native SDK CI passes; INRAE host/operations and multi-node topology remain unqualified | No maintained future target recommended |
 | Operating obligations | Preserve notices; patch/scans, monitoring, backup and off-host restore owner needed | Preserve AGPL notices/source obligations for redistribution or modified network service; same operational work | No internal maintenance ownership approved |
