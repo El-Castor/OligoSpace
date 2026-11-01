@@ -9,6 +9,7 @@ import argparse
 import io
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import tarfile
@@ -35,6 +36,15 @@ def validate_builder(info: dict, context: str, environment: dict) -> bool:
     )
 
 
+def parse_builder(text: str) -> dict:
+    drivers = re.findall(r"^Driver:\s+(\S+)\s*$", text, re.MULTILINE)
+    endpoints = re.findall(r"^Endpoint:\s+(\S+)\s*$", text, re.MULTILINE)
+    return {
+        "Driver": drivers[0] if len(drivers) == 1 else "invalid",
+        "Nodes": [{"Endpoint": endpoint} for endpoint in endpoints],
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--context", required=True)
@@ -51,10 +61,8 @@ def main() -> None:
     )[0]["Endpoints"]["docker"]["Host"]
     if not endpoint.startswith("unix://"):
         parser.error("local unix context required")
-    info = json.loads(
-        subprocess.check_output(
-            docker + ["buildx", "inspect", args.context, "--format", "{{json .}}"]
-        )
+    info = parse_builder(
+        subprocess.check_output(docker + ["buildx", "inspect", args.context], text=True)
     )
     if not validate_builder(info, args.context, os.environ):
         parser.error("explicit local docker builder required; overrides refused")
