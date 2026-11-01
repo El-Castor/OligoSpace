@@ -1,4 +1,4 @@
-FROM mambaorg/micromamba:2.4.0 AS primer3-builder
+FROM mambaorg/micromamba:2.4.0@sha256:10bd2dd2e7bfae77e529c76a71f4126c222d74e99b908abc6e210da9eda0f6af AS primer3-builder
 
 ARG PRIMER3_VERSION=2.6.1
 
@@ -17,7 +17,7 @@ RUN set -eu; \
     install -m 0755 "/tmp/primer3-${PRIMER3_VERSION}/src/oligotm" /opt/primer3/bin/oligotm; \
     install -m 0755 "/tmp/primer3-${PRIMER3_VERSION}/src/ntthal" /opt/primer3/bin/ntthal
 
-FROM mambaorg/micromamba:2.4.0
+FROM mambaorg/micromamba:2.4.0@sha256:10bd2dd2e7bfae77e529c76a71f4126c222d74e99b908abc6e210da9eda0f6af
 
 ARG TARGETARCH
 ARG BLAST_VERSION=2.17.0

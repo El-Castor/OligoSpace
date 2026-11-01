@@ -1,0 +1,13 @@
+name: GHCR proposal (no publication)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 infra/deployment/ghcr_plan.py --repository "$GITHUB_REPOSITORY" --source "$GITHUB_SHA"

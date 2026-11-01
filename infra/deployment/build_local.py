@@ -22,7 +22,15 @@ DOCKERFILES = {
 }
 
 
-def validate_builder(info: dict, context: str, environment: dict) -> bool:
+def loaded_image_matches(loaded: dict, proof: dict) -> bool:
+    return loaded.get("Id") == proof.get("config_digest") and loaded.get(
+        "RootFS", {}
+    ).get("Layers") == proof.get("rootfs_diff_ids")
+
+
+def validate_builder(
+    info: dict, context: str, environment: dict, endpoint: str = ""
+) -> bool:
     if any(
         environment.get(key)
         for key in ("DOCKER_HOST", "BUILDX_BUILDER", "BUILDKIT_HOST")
@@ -30,9 +38,9 @@ def validate_builder(info: dict, context: str, environment: dict) -> bool:
         return False
     nodes = info.get("Nodes", [])
     return (
-        info.get("Driver") == "docker"
+        info.get("Driver") in ("docker", "docker-container")
         and len(nodes) == 1
-        and nodes[0].get("Endpoint") == context
+        and nodes[0].get("Endpoint") in {context, endpoint}
     )
 
 
@@ -50,6 +58,9 @@ def main() -> None:
     parser.add_argument("--context", required=True)
     parser.add_argument("--architecture", choices=["arm64", "amd64"], required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--builder")
+    parser.add_argument("--role", choices=DOCKERFILES)
+    parser.add_argument("--load-test-images", action="store_true")
     args = parser.parse_args()
     repo = Path(__file__).resolve().parents[2]
     output = args.output.resolve()
@@ -61,10 +72,11 @@ def main() -> None:
     )[0]["Endpoints"]["docker"]["Host"]
     if not endpoint.startswith("unix://"):
         parser.error("local unix context required")
+    builder = args.builder or args.context
     info = parse_builder(
-        subprocess.check_output(docker + ["buildx", "inspect", args.context], text=True)
+        subprocess.check_output(docker + ["buildx", "inspect", builder], text=True)
     )
-    if not validate_builder(info, args.context, os.environ):
+    if not validate_builder(info, args.context, os.environ, endpoint):
         parser.error("explicit local docker builder required; overrides refused")
     subprocess.run(["git", "diff", "--quiet", "HEAD"], cwd=repo, check=True)
     sha = subprocess.check_output(
@@ -80,10 +92,24 @@ def main() -> None:
         "images": {},
         "shared_roles": {"migrate": "api", "scheduler": "worker"},
     }
+    server_arch = subprocess.check_output(
+        docker + ["info", "--format", "{{.Architecture}}"], text=True
+    ).strip()
+    native = {
+        "aarch64": "arm64",
+        "arm64": "arm64",
+        "x86_64": "amd64",
+        "amd64": "amd64",
+    }.get(server_arch)
+    manifest["mode"] = (
+        "native_build" if native == args.architecture else "emulated_build_only"
+    )
     with tempfile.TemporaryDirectory(prefix="oligospace-deploy01-build-") as directory:
         with tarfile.open(fileobj=io.BytesIO(archive)) as source:
             source.extractall(directory, filter="data")
         for role, file in DOCKERFILES.items():
+            if args.role and role != args.role:
+                continue
             artifact = output / f"{role}-{sha}-{args.architecture}.oci.tar"
             metadata = output / f"{role}-{sha}-{args.architecture}.metadata.json"
             subprocess.run(
@@ -92,7 +118,7 @@ def main() -> None:
                     "buildx",
                     "build",
                     "--builder",
-                    args.context,
+                    builder,
                     "--platform",
                     "linux/" + args.architecture,
                     "--file",
@@ -102,7 +128,7 @@ def main() -> None:
                     "--label",
                     "org.opencontainers.image.revision=" + sha,
                     "--provenance=mode=max",
-                    "--sbom=true",
+                    "--sbom=generator=docker/buildkit-syft-scanner@sha256:873a7458c3c8ac8e32c7b796c10e1600b07b963d2aa000a72a2d97aaaa2d6315",
                     "--metadata-file",
                     str(metadata),
                     "--output",
@@ -117,6 +143,48 @@ def main() -> None:
                 "artifact": artifact.name,
                 "metadata": metadata.name,
             }
+            from oci import verify_oci
+
+            proof = verify_oci(artifact, args.architecture, sha)
+            proof["role"] = role
+            (output / f"{role}-oci-report.json").write_text(
+                json.dumps(proof, indent=2) + "\n"
+            )
+            if args.load_test_images:
+                subprocess.run(
+                    docker
+                    + [
+                        "buildx",
+                        "build",
+                        "--builder",
+                        builder,
+                        "--platform",
+                        "linux/" + args.architecture,
+                        "--file",
+                        str(Path(directory) / file),
+                        "--label",
+                        "org.opencontainers.image.revision=" + sha,
+                        "--tag",
+                        f"oligospace-qualification/{role}:{sha}",
+                        "--provenance=false",
+                        "--load",
+                        directory,
+                    ],
+                    check=True,
+                )
+                loaded = json.loads(
+                    subprocess.check_output(
+                        docker
+                        + [
+                            "image",
+                            "inspect",
+                            f"oligospace-qualification/{role}:{sha}",
+                        ],
+                        text=True,
+                    )
+                )[0]
+                if not loaded_image_matches(loaded, proof):
+                    raise ValueError("loaded_image_does_not_match_verified_oci")
     (output / "qualification-manifest.json").write_text(
         json.dumps(manifest, indent=2) + "\n"
     )
