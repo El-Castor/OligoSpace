@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-11-01 — PR16 integrated; DEPLOY-01 isolated foundation
+
+Merged approved documentation via PR16/`ab0ec42`, then added independent pilot
+configuration contract, safe static diagnostics, disposable-only bounded PostgreSQL
+bootstrap and migration, local tracked-source OCI/SBOM/provenance export, release
+gates and CI qualification. MinIO substitution remains blocked by ADR-0007;
+cached artifact tests do not establish maintenance or registry availability.
+Independent review's host-volume, elevated-role, builder and stderr-evidence
+findings corrected with failing-then-passing tests. Existing application unchanged;
+one E2E check now verifies exact role/Oligo pairs without an unspecified SQL order.
+No Mac mini, tunnel, real database, Docker volume deletion or deployment action.
+
 ## 2026-11-01 — PR #16 documentation review corrections
 
 Retain existing Cloudflare Zero Trust/WARP as user-reported infrastructure, with

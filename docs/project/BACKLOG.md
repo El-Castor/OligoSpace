@@ -1,5 +1,16 @@
 # Backlog
 
+## DEPLOY-01 — review foundation, retain unqualified gates
+
+User authorized PR16 merge (`ab0ec42`) and DEPLOY-01 implementation only, not merge
+or real deployment. Review independent Compose, static policy/doctor, guarded
+disposable bootstrap, OCI build/manifest contract and qualification tests.
+Storage decision ADR-0007 remains proposed/blocked: no implicit supplier/format
+change. Authorized registry, native cross-platform release evidence, production
+identity/TLS/MFA/RLS/security review, complete restore and real-target installer
+remain open. Preserve R1-08/09/10/11 and user-data protections. See
+`../deployment/DEPLOY_01_IMPLEMENTATION.md` for actual results and acceptance limits.
+
 ## PR #16 — four documentation corrections, no implementation
 
 Review the corrected Cloudflare/SSH/HTTPS/OIDC boundaries, bootstrap/update order,

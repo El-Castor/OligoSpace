@@ -1,5 +1,21 @@
 # Project status
 
+## DEPLOY-01 — foundation delivered for review, pilot gates still open
+
+PR16 merged at `ab0ec42144dbc34629b2675cc67b4364d5abc820` after exact approved
+`6aba60a`,12 successful checks and no conflict. main synchronized; dedicated
+`codex/deploy-01-reproducible-foundation` implements independent required-digest
+pilot definition, static refusals, guarded disposable bootstrap/migrations,
+local OCI build/export and release evidence gates. No activated pilot or ready
+installer. Report: `../deployment/DEPLOY_01_IMPLEMENTATION.md`.
+
+Storage maintenance/registry decision remains blocked (proposed ADR-0007);
+cached ARM64 MinIO compatibility and isolated PG/runtime tests do not close R1-08/09.
+No scientific/frontend logic, existing Compose, real host/tunnel/network/volume,
+or existing secret changed. The sole web edit is a demonstrated E2E association
+ordering assumption, replaced by exact persisted (Oligo,role) checks.
+DEPLOY-01 PR must remain unmerged pending review; no Mac mini contact/deployment.
+
 ## PR #16 — documentation corrections awaiting review
 
 The user approved the general strategy and requested four documentation-only
