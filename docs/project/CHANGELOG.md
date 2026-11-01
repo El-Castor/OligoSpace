@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-11-01 — DEPLOY-02 qualification
+
+PR17 merged as `75179a52da0d929922c904ff6df06d94eb7a1a67`. Added isolated
+S3 compatibility/restore and OCI/native-CI qualification tooling without registry
+publication or deployment. AIStor remains blocked by explicit user decision.
+21 static tests pass; runtime/scans/native evidence and GitHub CI remain pending.
+See [report](../deployment/DEPLOY_02_STORAGE_RELEASE_IMAGES.md).
+
 ## 2026-11-01 — PR16 integrated; DEPLOY-01 isolated foundation
 
 Merged approved documentation via PR16/`ab0ec42`, then added independent pilot

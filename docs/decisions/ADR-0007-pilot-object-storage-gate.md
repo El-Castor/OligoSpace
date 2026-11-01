@@ -1,7 +1,27 @@
 # ADR-0007 — Pilot object-storage artifact and maintenance gate
 
 - Status: **proposed / decision blocked**, not an accepted provider replacement.
-- Date: 2026-11-01. Workstream DEPLOY-01, following approved PR16 plan.
+- Date: 2026-11-01. Workstreams DEPLOY-01/02, following approved PR16 plan.
+
+## DEPLOY-02 qualification update
+
+The user explicitly chose **leave AIStor blocked for this PR**. No license is
+requested, agreement accepted, account created, image downloaded or AIStor runtime
+executed. Public manifest inspection establishes ARM64/AMD64 descriptors, not
+license eligibility or application compatibility. Free-edition licensing,
+single-node scope, missing SLA and paid-only encryption/replication require a
+separate institutional decision. This supersedes any assumption that AIStor
+qualification can proceed automatically.
+
+SeaweedFS 4.51 is an additional candidate, not an approved replacement. Public
+source/license and both platform manifests were inspected. Synthetic independent
+S3-instance tests are prepared, but runtime qualification remains unverified while
+the local Docker daemon is unavailable. Historical MinIO cache observations below
+belong to DEPLOY-01 and have not been re-established in this session.
+
+See [DEPLOY-02 evidence and limitations](../deployment/DEPLOY_02_STORAGE_RELEASE_IMAGES.md).
+The proposed decision below remains unchanged: no provider substitution and no
+ready release until the owner accepts a qualified option.
 
 ## Context and evidence
 

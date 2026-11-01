@@ -1,5 +1,17 @@
 # Project status
 
+## DEPLOY-02 — qualification in progress (2026-11-01)
+
+PR17 merged at `75179a52da0d929922c904ff6df06d94eb7a1a67` after exact-head
+validation and 14 green checks, superseding earlier PR17 review holds below.
+DEPLOY-02 adds disposable S3/OCI/native-CI qualification tooling; no deployment
+or provider substitution. User explicitly leaves AIStor blocked for this PR.
+Local static tests/Compose resolution pass; Docker runtime and GitHub publication
+are unavailable, so S3, native builds, scans and CI remain unverified.
+See [qualification report](../deployment/DEPLOY_02_STORAGE_RELEASE_IMAGES.md).
+No ready pilot, accepted storage decision or authorization to merge DEPLOY-02.
+
+
 ## DEPLOY-01 — foundation delivered for review, pilot gates still open
 
 PR16 merged at `ab0ec42144dbc34629b2675cc67b4364d5abc820` after exact approved
