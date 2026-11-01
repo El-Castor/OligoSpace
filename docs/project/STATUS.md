@@ -1,5 +1,16 @@
 # Project status
 
+### UI-06 — scientific workflows
+
+UI-05 PR14 merged at `eb7f2b2` after explicit user approval, unchanged
+`fb6b661`,12 successful checks and no conflict. UI-06 branch
+`codex/ui-06-scientific-workflows` harmonizes real Primer3 QC/pair jobs, stored
+input/results, attempts, errors, timestamps and bounded refresh feedback.
+No backend/API/worker/scheduler/schema or idempotency change. Report:
+`docs/design/UI_06_SCIENTIFIC_WORKFLOWS.md`. Before/after use the same persisted
+job rows and identical values. UI-06 PR must remain unmerged pending explicit
+user visual/functional approval.
+
 ### UI-05 — scientific forms and editors
 
 UI-04 PR #13 merged at `985d506` after explicit user visual/technical approval,

@@ -1,84 +1,8 @@
 import { SubmitButton } from "@/components/SubmitButton";
-import Link from "next/link";
+import { ScientificJobCard } from "@/components/ScientificJobCard";
 
 import { ScientificJobAutoRefresh } from "@/components/ScientificJobAutoRefresh";
 import type { ScientificJobSummary } from "@/lib/api";
-
-type ComponentFact = {
-  state?: string;
-  value?: number;
-  units?: string;
-  method?: string;
-  tool_mode?: string;
-};
-
-function fact(value: unknown): ComponentFact | null {
-  return typeof value === "object" && value !== null ? (value as ComponentFact) : null;
-}
-
-function object(value: unknown): Record<string, unknown> | null {
-  return typeof value === "object" && value !== null
-    ? (value as Record<string, unknown>)
-    : null;
-}
-
-function FactCard({ label, value }: { label: string; value: unknown }) {
-  const item = fact(value);
-  return (
-    <div className="scientific-fact">
-      <span>{label}</span>
-      {item?.state === "available" ? (
-        <strong>
-          {Number(item.value).toFixed(2)} {item.units === "degC" ? "°C" : item.units}
-        </strong>
-      ) : (
-        <strong>{item?.state ?? "unavailable"}</strong>
-      )}
-      <small>
-        {item?.method ?? "No method returned"}
-        {item?.tool_mode ? ` · ${item.tool_mode}` : ""}
-      </small>
-    </div>
-  );
-}
-
-function Result({ job }: { job: ScientificJobSummary }) {
-  if (!job.result) return null;
-  const payload = job.result.payload;
-  if (job.kind === "oligo_primer3_qc") {
-    return (
-      <div className="scientific-results">
-        <FactCard label="Primer3 nearest-neighbor Tm" value={payload.nearest_neighbor_tm} />
-        <FactCard label="Hairpin" value={payload.hairpin} />
-        <FactCard label="Homodimer" value={payload.homodimer} />
-      </div>
-    );
-  }
-  const forward = object(payload.forward);
-  const reverse = object(payload.reverse);
-  return (
-    <>
-      <h3>Forward primer</h3>
-      <div className="scientific-results">
-        <FactCard label="Nearest-neighbor Tm" value={forward?.nearest_neighbor_tm} />
-        <FactCard label="Hairpin" value={forward?.hairpin} />
-        <FactCard label="Homodimer" value={forward?.homodimer} />
-      </div>
-      <h3>Reverse primer</h3>
-      <div className="scientific-results">
-        <FactCard label="Nearest-neighbor Tm" value={reverse?.nearest_neighbor_tm} />
-        <FactCard label="Hairpin" value={reverse?.hairpin} />
-        <FactCard label="Homodimer" value={reverse?.homodimer} />
-      </div>
-      <h3>Pair facts</h3>
-      <div className="scientific-results">
-        <FactCard label="Absolute Tm delta" value={payload.tm_delta} />
-        <FactCard label="Heterodimer" value={payload.heterodimer} />
-        <FactCard label="3′ end complementarity" value={payload.end_complementarity} />
-      </div>
-    </>
-  );
-}
 
 export function Primer3JobSection({
   title,
@@ -105,7 +29,7 @@ export function Primer3JobSection({
       <h2>{title}</h2>
       <p>{description}</p>
       {action ? (
-        <form action={action} className="scientific-parameters">
+        <form action={action} className="scientific-parameters" aria-label="Primer3 parameters">
           {pairChoices ? (
             <>
               <label>
@@ -139,35 +63,7 @@ export function Primer3JobSection({
       {jobs.length ? (
         <div className="scientific-jobs">
           {jobs.map((job) => (
-            <article key={job.public_id} className="scientific-job">
-              <div className="section-heading">
-                <h3><Link className="text-link" href={`/scientific-jobs/${job.public_id}`}>{job.public_id}</Link></h3>
-                <span className="badge">{job.state}</span>
-              </div>
-              {currentVersion && job.assay_version !== currentVersion ? (
-                <div className="notice">This result belongs to Assay version {job.assay_version}; the current version is {currentVersion}.</div>
-              ) : null}
-              {job.last_error_summary ? (
-                <div className="notice" role="alert">{job.last_error_code}: {job.last_error_summary}</div>
-              ) : null}
-              <Result job={job} />
-              <details>
-                <summary>Parameters and provenance</summary>
-                <pre>{JSON.stringify({
-                  input_sha256: job.input_sha256,
-                  parameters: job.effective_parameters,
-                  attempts: job.attempts,
-                  result: job.result ? {
-                    tool_version: job.result.tool_version,
-                    tool_source_sha256: job.result.tool_source_sha256,
-                    worker_version: job.result.worker_version,
-                    wrapper_contract_version: job.result.wrapper_contract_version,
-                    build_identity: job.result.build_identity,
-                    executed_at: job.result.executed_at,
-                  } : null,
-                }, null, 2)}</pre>
-              </details>
-            </article>
+            <ScientificJobCard key={job.public_id} job={job} currentVersion={currentVersion} />
           ))}
         </div>
       ) : (

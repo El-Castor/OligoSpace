@@ -14,12 +14,12 @@ test("Primer3 Oligo QC and Assay pair results persist through Caddy reloads", as
   await page.getByRole("button", { name: "Run Primer3 analysis" }).click();
   await expect(page).toHaveURL(new RegExp(`/oligos/${forwardId}\\?scientific_job=SJOB-`));
   const oligoJob = page.locator(".scientific-job").first();
-  await expect(oligoJob.getByText("succeeded", { exact: true })).toBeVisible({ timeout: 90_000 });
+  await expect(oligoJob.getByRole("status", { name: "Execution state: succeeded" })).toBeVisible({ timeout: 90_000 });
   await expect(oligoJob.getByText("Primer3 nearest-neighbor Tm", { exact: true })).toBeVisible();
   await expect(oligoJob.getByText("Hairpin", { exact: true })).toBeVisible();
   await expect(oligoJob.getByText("Homodimer", { exact: true })).toBeVisible();
   await page.reload();
-  await expect(oligoJob.getByText("succeeded", { exact: true })).toBeVisible();
+  await expect(oligoJob.getByRole("status", { name: "Execution state: succeeded" })).toBeVisible();
 
   const reverseId = await createOligo(page, reverseName, uniqueDna(run + 1, "TGC"));
   const targetName = `Primer3 target ${suffix}`;
@@ -37,12 +37,12 @@ test("Primer3 Oligo QC and Assay pair results persist through Caddy reloads", as
   await page.getByRole("button", { name: "Run Primer3 analysis" }).click();
   await expect(page).toHaveURL(/\/assays\/ASY-[0-9]+\?scientific_job=SJOB-/);
   const pairJob = page.locator(".scientific-job").first();
-  await expect(pairJob.getByText("succeeded", { exact: true })).toBeVisible({ timeout: 90_000 });
+  await expect(pairJob.getByRole("status", { name: "Execution state: succeeded" })).toBeVisible({ timeout: 90_000 });
   await expect(pairJob.getByText("Absolute Tm delta", { exact: true })).toBeVisible();
   await expect(pairJob.getByText("Heterodimer", { exact: true })).toBeVisible();
   await expect(pairJob.getByText("3′ end complementarity", { exact: true })).toBeVisible();
   await page.reload();
-  await expect(pairJob.getByText("succeeded", { exact: true })).toBeVisible();
+  await expect(pairJob.getByRole("status", { name: "Execution state: succeeded" })).toBeVisible();
 });
 
 test("viewer can read institute results but cannot submit or discover private jobs", async ({ page }) => {
@@ -56,7 +56,7 @@ test("viewer can read institute results but cannot submit or discover private jo
   );
   await page.getByRole("button", { name: "Run Primer3 analysis" }).click();
   const sharedJob = page.locator(".scientific-job").first();
-  await expect(sharedJob.getByText("succeeded", { exact: true })).toBeVisible({ timeout: 90_000 });
+  await expect(sharedJob.getByRole("status", { name: "Execution state: succeeded" })).toBeVisible({ timeout: 90_000 });
   const sharedJobHref = await sharedJob.getByRole("link").getAttribute("href");
 
   const privateId = await createOligo(
@@ -66,13 +66,13 @@ test("viewer can read institute results but cannot submit or discover private jo
   );
   await page.getByRole("button", { name: "Run Primer3 analysis" }).click();
   const privateJob = page.locator(".scientific-job").first();
-  await expect(privateJob.getByText("succeeded", { exact: true })).toBeVisible({ timeout: 90_000 });
+  await expect(privateJob.getByRole("status", { name: "Execution state: succeeded" })).toBeVisible({ timeout: 90_000 });
   const privateJobHref = await privateJob.getByRole("link").getAttribute("href");
 
   await page.context().clearCookies();
   await loginAs(page, "viewer");
   await page.goto(`/oligos/${sharedId}`);
-  await expect(page.locator(".scientific-job").first().getByText("succeeded", { exact: true })).toBeVisible();
+  await expect(page.locator(".scientific-job").first().getByRole("status", { name: "Execution state: succeeded" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Run Primer3 analysis" })).toHaveCount(0);
   await page.goto(sharedJobHref ?? "/");
   await expect(page.getByText("Persisted scientific request, execution state, result and reproducibility provenance.")).toBeVisible();
