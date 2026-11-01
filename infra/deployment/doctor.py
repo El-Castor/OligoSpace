@@ -8,7 +8,7 @@ import stat
 import subprocess
 
 from policy import validate
-from release import blockers
+from release import blockers, image_contract_matches
 
 
 def main() -> int:
@@ -54,13 +54,16 @@ def main() -> int:
         )
         if result.returncode:
             raise ValueError("compose_preflight_failed")
-        rules = validate(json.loads(result.stdout))
+        config = json.loads(result.stdout)
+        rules = validate(config)
         manifest = (
             json.loads(args.release_evidence.read_text())
             if args.release_evidence
             else {}
         )
         pending = blockers(manifest)
+        if not image_contract_matches(config, manifest):
+            pending.append("manifest_config_images")
         print(
             json.dumps(
                 {

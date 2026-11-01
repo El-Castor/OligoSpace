@@ -15,6 +15,8 @@ import tempfile
 import time
 import uuid
 
+from evidence import credentials_absent_from_logs
+
 BODY = b"OligoSpace disposable quarantine evidence\x00\xff"
 KEY = "quarantine/original-object.bin"
 
@@ -171,9 +173,10 @@ def main() -> None:
         else:
             raise RuntimeError("object_restart_failed")
         client("restore")
-        logs = run("logs", container)
-        assert not any(
-            credentials[k] in logs for k in ("MINIO_ROOT_USER", "MINIO_ROOT_PASSWORD")
+        assert credentials_absent_from_logs(
+            docker,
+            container,
+            [credentials[k] for k in ("MINIO_ROOT_USER", "MINIO_ROOT_PASSWORD")],
         )
         report = {
             "scope": "cached_arm64_minio_only",

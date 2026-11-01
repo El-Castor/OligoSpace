@@ -19,6 +19,15 @@ GATES = (
 )
 
 
+def image_contract_matches(config: dict, manifest: dict) -> bool:
+    aliases = {"bioinfo-worker": "worker", "scientific-scheduler": "scheduler"}
+    expected = manifest.get("images", {})
+    return bool(config.get("services")) and all(
+        service.get("image") == expected.get(aliases.get(name, name))
+        for name, service in config["services"].items()
+    )
+
+
 def blockers(manifest: dict) -> list[str]:
     failed = []
     if not re.fullmatch(r"[a-f0-9]{40}", str(manifest.get("source", ""))):

@@ -16,8 +16,8 @@ jobs:
       - run: docker build --file infra/docker/api/Dockerfile --tag oligospace-deploy01-api-test .
       - name: Deployment tooling lint
         run: |
-          docker run --rm --volume "$PWD/infra/deployment:/deployment:ro" --workdir /deployment oligospace-deploy01-api-test micromamba run --name base ruff check .
-          docker run --rm --volume "$PWD/infra/deployment:/deployment:ro" --workdir /deployment oligospace-deploy01-api-test micromamba run --name base ruff format --check .
+          docker run --rm --volume "$PWD/infra/deployment:/deployment:ro" --workdir /deployment oligospace-deploy01-api-test micromamba run --name base ruff check --no-cache .
+          docker run --rm --volume "$PWD/infra/deployment:/deployment:ro" --workdir /deployment oligospace-deploy01-api-test micromamba run --name base ruff format --no-cache --check .
       - name: Disposable bootstrap and persistence only
         env:
           DEPLOY_TEST_API_IMAGE: oligospace-deploy01-api-test

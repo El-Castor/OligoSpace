@@ -16,6 +16,8 @@ import tempfile
 import time
 import uuid
 
+from evidence import credentials_absent_from_logs
+
 
 def main() -> None:
     project = "oligospace-deploy01-test-" + uuid.uuid4().hex[:12]
@@ -233,8 +235,11 @@ def main() -> None:
                 "image", "inspect", pgimage, apiimage, "--format", "{{json .}}"
             ).splitlines()[0]
         ).get("Architecture")
-        logs = run("logs", container)
-        if any(value in logs for key, value in env.items() if "PASSWORD" in key):
+        if not credentials_absent_from_logs(
+            ["docker", "--context", context],
+            container,
+            [value for key, value in env.items() if "PASSWORD" in key],
+        ):
             raise RuntimeError("credential_in_database_logs")
         evidence["checks"].append("no_generated_password_in_database_logs")
         (directory / "report.json").write_text(json.dumps(evidence, indent=2) + "\n")
