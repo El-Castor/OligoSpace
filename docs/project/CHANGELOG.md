@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-11-01 — DEPLOY-02 qualification
+
+PR17 merged as `75179a52da0d929922c904ff6df06d94eb7a1a67`. Added isolated
+S3 compatibility/restore and OCI/native-CI qualification tooling without registry
+publication or deployment. Superseding user decision excludes AIStor and makes
+SeaweedFS priority 1, Garage priority 2, historical MinIO compatibility-only. Added
+Garage persistent configuration and four logical restore scenarios; both platform
+manifests verified. 29 static tests pass. PR18 remains DRAFT: actual native CI
+builds and Primer3 comparison pass; Garage independent restore passes ARM64/AMD64,
+SeaweedFS scenarios fail their credential-log gate, image scan execution fails on
+OCI archive/manifest handling. Application CI is green at tested code ddfd0c2;
+release stays blocked. Linux snapshots do not qualify the Mac mini. Local Docker
+remains unavailable; no host, pilot Compose, provider, real object or network change.
+See [report](../deployment/DEPLOY_02_STORAGE_RELEASE_IMAGES.md).
+
 ## 2026-11-01 — PR16 integrated; DEPLOY-01 isolated foundation
 
 Merged approved documentation via PR16/`ab0ec42`, then added independent pilot

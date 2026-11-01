@@ -1,5 +1,22 @@
 # Backlog
 
+## DEPLOY-02 — qualification in progress (2026-11-01)
+
+PR17 merged at `75179a52da0d929922c904ff6df06d94eb7a1a67` after exact-head
+validation and 14 green checks, superseding earlier PR17 review holds below.
+DEPLOY-02 adds disposable S3/OCI/native-CI qualification tooling; no deployment
+or provider substitution. New owner directive: SeaweedFS first (Apache-2.0),
+Garage second (AGPLv3), historical MinIO compatibility-only; AIStor excluded.
+Both immutable manifests include ARM64/AMD64; runtime prechecks are blocked.
+29 static tests cover candidate Compose resolution and fail-closed reporting.
+Local static tests/Compose resolution pass. Docker runtime is unavailable;
+GitHub publication resumed after initial timeouts. PR18 is DRAFT. At 6a31dd5, six OCI builds, application CI and Primer3 native
+comparison pass; Garage self-restore passes on ARM64/AMD64. SeaweedFS scenarios
+fail their credential-log gate (confirmed ddfd0c2); scans fail execution. No storage/pilot acceptance.
+See [qualification report](../deployment/DEPLOY_02_STORAGE_RELEASE_IMAGES.md).
+No ready pilot, accepted storage decision or authorization to merge DEPLOY-02.
+
+
 ## DEPLOY-01 — review foundation, retain unqualified gates
 
 User authorized PR16 merge (`ab0ec42`) and DEPLOY-01 implementation only, not merge

@@ -101,6 +101,17 @@ existant et stockage objet ; aucun composant n’a été changé.
 
 ### Stockage objet : contrôle public préalable, pas de changement de fournisseur
 
+Actualisation DEPLOY-02 : le choix utilisateur exige du stockage open source
+gratuit et maintenu sans licence commerciale/activation. SeaweedFS passe premier,
+Garage second ; MinIO historique ne sert que de compatibilité, AIStor est exclu.
+Les anciennes options ci-dessous sont historiques, pas des recommandations
+actuelles. Voir [ADR-0007](../decisions/ADR-0007-pilot-object-storage-gate.md).
+Manifests ARM64/AMD64 vérifiés ; CI native 6a31dd5 : restauration indépendante
+Garage réussie sur les deux architectures, scénarios SeaweedFS en échec au gate
+final. Snapshots mémoire limités, capacité réelle non qualifiée ; Docker local
+reste indisponible. Aucun
+fournisseur, Compose pilote, objet réel ou réseau n’est modifié.
+
 La référence utilisée reste `minio/minio:RELEASE.2025-09-07T16-13-09Z` dans
 `compose.yml`. Le plan §5 consigne les sources publiques consultées : source Git
 exacte disponible, API Docker Hub 404 et registres Docker Hub/Quay 401 lors de la

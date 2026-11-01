@@ -1,4 +1,4 @@
-FROM mambaorg/micromamba:2.4.0
+FROM mambaorg/micromamba:2.4.0@sha256:10bd2dd2e7bfae77e529c76a71f4126c222d74e99b908abc6e210da9eda0f6af
 
 USER root
 COPY envs/api.yml /tmp/environment.yml

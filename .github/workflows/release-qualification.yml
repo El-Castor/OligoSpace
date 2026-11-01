@@ -1,0 +1,97 @@
+name: Release image qualification (no publication)
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  native-image:
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [api, web, worker]
+        architecture: [amd64, arm64]
+        include:
+          - architecture: amd64
+            runner: ubuntu-24.04
+            cpu: x86_64
+          - architecture: arm64
+            runner: ubuntu-24.04-arm
+            cpu: aarch64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: docker/setup-buildx-action@v3
+        with:
+          name: deploy02-native
+          driver: docker-container
+      - name: Verify native runner and build tracked source only
+        env:
+          ROLE: ${{ matrix.role }}
+          ARCH: ${{ matrix.architecture }}
+          CPU: ${{ matrix.cpu }}
+        run: |
+          test "$(uname -m)" = "$CPU"
+          python3 infra/deployment/build_local.py --context default --builder deploy02-native --architecture "$ARCH" --role "$ROLE" --load-test-images --output "$RUNNER_TEMP/oci"
+      - name: Native real Primer3 and worker regressions
+        if: matrix.role == 'worker'
+        env:
+          ARCH: ${{ matrix.architecture }}
+        run: |
+          source_sha=$(git rev-parse HEAD)
+          image="oligospace-qualification/worker:$source_sha"
+          docker run --rm "$image" micromamba run --name base pytest
+          docker run --rm --volume "$PWD/infra/deployment:/qualification:ro" "$image" micromamba run --name base python /qualification/science_probe.py --source "$source_sha" --architecture "$ARCH" > "$RUNNER_TEMP/oci/science.json"
+      - name: Independent open-source S3 candidates and logical cross-restores
+        if: matrix.role == 'api'
+        run: |
+          docker pull chrislusf/seaweedfs@sha256:f7a49e3f3972ebed5be2ed4befa4a0c68eb7bdddba6e692d42729ceb545134b8
+          docker pull dxflrs/garage@sha256:677e5b758e4425a325b811c425c026bf35a4bf42f7ddbaa773de3f4fd779a5a5
+          status=0
+          for pair in seaweedfs:seaweedfs garage:garage seaweedfs:garage garage:seaweedfs; do
+            source=${pair%:*}
+            target=${pair#*:}
+            python3 infra/deployment/qualify_storage.py --context default --source "$source" --target "$target" --api-image "oligospace-qualification/api:$(git rev-parse HEAD)" --output "$RUNNER_TEMP/storage/$source-to-$target" || status=1
+          done
+          exit "$status"
+      - name: Collect real scan evidence (findings are not accepted)
+        run: |
+          artifact=$(find "$RUNNER_TEMP/oci" -name '*.oci.tar' -print -quit)
+          python3 infra/deployment/scan_artifact.py --context default --archive "$artifact" --output "$RUNNER_TEMP/oci/scan.json"
+      - name: Retain sanitized evidence only, never OCI images or raw scan matches
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qualification-${{ matrix.architecture }}-${{ matrix.role }}
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/oci/*-oci-report.json
+            ${{ runner.temp }}/oci/qualification-manifest.json
+            ${{ runner.temp }}/oci/scan.json
+            ${{ runner.temp }}/oci/science.json
+            ${{ runner.temp }}/storage/**/storage-report.json
+  compare-evidence:
+    needs: native-image
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: qualification-*
+          path: ${{ runner.temp }}/reports
+      - run: python3 infra/deployment/collect_reports.py --input "$RUNNER_TEMP/reports" --output "$RUNNER_TEMP/combined"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: offline-multiarch-comparison
+          retention-days: 7
+          path: ${{ runner.temp }}/combined

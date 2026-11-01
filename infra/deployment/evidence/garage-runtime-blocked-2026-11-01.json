@@ -1,0 +1,21 @@
+{
+  "schema": "s3-qualification/v1",
+  "project": "oligospace-deploy02-test-034ef99eaf04",
+  "source": "garage",
+  "target": "garage",
+  "status": "blocked",
+  "checks": [],
+  "images": {
+    "garage": "dxflrs/garage@sha256:677e5b758e4425a325b811c425c026bf35a4bf42f7ddbaa773de3f4fd779a5a5"
+  },
+  "observed_at": "2026-11-01T19:31:49.037802+00:00",
+  "application_adapter_exercised": false,
+  "sdk": {
+    "name": "minio",
+    "required_version": "7.2.20"
+  },
+  "resource_samples": {},
+  "stage": "engine_availability",
+  "failure": "qualification_failed_details_suppressed",
+  "cleanup": "passed"
+}
