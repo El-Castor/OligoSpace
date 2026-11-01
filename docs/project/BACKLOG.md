@@ -1,5 +1,13 @@
 # Backlog
 
+## UI-04 — awaiting visual/functional review
+
+Implement scientific tables/list presentation on the dedicated UI-04 branch.
+Preserve search/CSV/permissions, expose existing API pagination, validate density,
+copy, long/missing values and real-role journeys. No configurable sort or new
+business filters without API support. User review of report/captures is required
+before merge; UI-05/06 remain unstarted.
+
 ## Now
 
 - UI-03 implements real shared surfaces after validated UI-02. Dashboard panels

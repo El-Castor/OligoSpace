@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { removeTeamMember, setTeamMember, updateTeam } from "@/app/workspace/actions";
+import { ConfirmRemoveButton } from "@/components/ConfirmRemoveButton";
 import { PageHeader } from "@/components/PageHeader";
 import { apiGetOptional, type TeamDetail, type UserSummary } from "@/lib/api";
 
@@ -28,7 +29,7 @@ export default async function TeamDetailPage({ params, searchParams }: { params:
       </section>
       <section className="workspace-grid">
         <div className="panel workspace-panel"><div className="panel-heading"><h2 className="panel-title">Members and roles</h2><p className="panel-copy">Permissions are enforced by FastAPI, not by this page.</p></div>
-          <div className="member-list">{team.members.map((membership) => <div className="member-row" key={membership.user.id}><span className="member-avatar">{membership.user.initials}</span><span><strong>{membership.user.display_name}</strong><small>{membership.user.email}</small></span><span className="badge">{membership.role.replaceAll("_", " ")}</span>{canManage ? <form action={removeTeamMember.bind(null, team.id, membership.user.id)}><button className="text-button" type="submit">Remove</button></form> : null}</div>)}</div>
+          <div className="member-list">{team.members.map((membership) => <div className="member-row" key={membership.user.id}><span className="member-avatar">{membership.user.initials}</span><span><strong>{membership.user.display_name}</strong><small>{membership.user.email}</small></span><span className="badge">{membership.role.replaceAll("_", " ")}</span>{canManage ? <form action={removeTeamMember.bind(null, team.id, membership.user.id)}><ConfirmRemoveButton /></form> : null}</div>)}</div>
           {canManage && candidates ? <form className="inline-admin-form" action={setTeamMember.bind(null, team.id)}><label><span>User</span><select name="user_id" required><option value="">Select user</option>{candidates.map((user) => <option value={user.id} key={user.id}>{user.display_name} · {user.email}</option>)}</select></label><label><span>Role</span><select name="role" defaultValue="member"><option value="admin">Admin</option><option value="team_manager">Team manager</option><option value="member">Member</option><option value="viewer">Viewer</option></select></label><button className="secondary-button" type="submit">Add or update</button></form> : null}
         </div>
         <div className="panel workspace-panel"><div className="panel-heading"><h2 className="panel-title">Team projects</h2><p className="panel-copy">Only projects visible to you are listed.</p></div><div className="linked-groups">{team.projects.length ? team.projects.map((project) => <Link href={`/projects/${project.public_id}`} key={project.public_id}>{project.public_id} · {project.name}</Link>) : <p>No team projects yet.</p>}</div><div className="truthful-gap"><strong>Later-domain attention</strong><span>Validation and stock alerts remain unavailable until their execution plans are implemented.</span></div></div>

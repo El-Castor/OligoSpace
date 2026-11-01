@@ -214,6 +214,45 @@ body:has(.login-shell) .content { max-width: none; padding: 0; }
 .profile-summary span, .profile-summary small { color: var(--muted); font-size: 12px; }
 .field code { padding: 11px; border-radius: 9px; background: var(--surface-soft); overflow-wrap: anywhere; }
 .table-subline { display: block; margin-top: 5px; color: var(--muted); }
+/* Scientific data remains a semantic table; only this region scrolls. */
+.scientific-table { margin-top: var(--space-4); min-width: 0; }
+.scientific-table .table-tools { gap: var(--space-3); flex-wrap: wrap; color: var(--ink); font-size: var(--text-metadata); }
+.table-scroll { overflow-x: auto; max-width: 100%; }
+.scientific-table table { min-width: 640px; }
+.scientific-table th { padding: 14px 18px; background: var(--surface-soft); color: var(--primary-dark); font-size: var(--text-small); letter-spacing: .02em; text-transform: none; white-space: nowrap; }
+.scientific-table td { padding: 16px 18px; background: var(--field); line-height: 1.5; }
+.scientific-table tbody tr:hover td, .scientific-table tbody tr:focus-within td { background: var(--surface-hover); }
+.scientific-table[data-density="compact"] td { padding: 8px 12px; font-size: var(--text-small); }
+.scientific-table[data-density="compact"] th { padding: 9px 12px; }
+.scientific-table .numeric { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.scientific-table th:nth-last-child(1) { min-width: 100px; }
+.density-control { display: flex; border: 1px solid var(--control-border); border-radius: var(--radius-control); overflow: hidden; }
+.density-control button { padding: 9px 12px; color: var(--primary-dark); background: var(--field); border: 0; font: inherit; cursor: pointer; }
+.density-control button[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); box-shadow: var(--shadow-inset); }
+.density-control button:focus-visible { outline-offset: -3px; }
+.scientific-value { display: block; min-width: 120px; max-width: 220px; }
+.value-line { display: flex; gap: var(--space-2); align-items: baseline; }
+.value-preview { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1; }
+.value-preview.value-complete { overflow: visible; white-space: normal; overflow-wrap: anywhere; }
+.scientific-value.sequence { max-width: 300px; min-width: 300px; font-family: var(--font-mono); }
+.scientific-table .public-id .scientific-value { min-width: 140px; max-width: none; }
+.scientific-table .public-id .value-preview { overflow: visible; text-overflow: clip; flex: none; }
+.scientific-table .public-id .value-line { align-items: center; }
+.registry-search-row input { min-height: 42px; flex: 1 0 auto; }
+.full-value { margin-top: var(--space-1); font-size: var(--text-small); }
+.full-value summary { color: var(--primary-dark); cursor: pointer; width: fit-content; }
+.full-value > span { display: block; overflow-wrap: anywhere; white-space: normal; padding: var(--space-2) 0; }
+.copy-control { display: inline-grid; justify-items: start; }
+.copy-button { font: inherit; font-size: var(--text-small); padding: 4px 6px; border: 1px solid var(--control-border); border-radius: 6px; color: var(--primary-dark); background: var(--field); cursor: pointer; }
+.copy-feedback { font: 12px/1.4 var(--font-body); color: var(--muted); max-width: 180px; white-space: normal; }
+.copy-feedback:empty { display: none; }
+.table-pagination { display: flex; gap: var(--space-6); padding: var(--space-4); color: var(--muted); font-size: var(--text-metadata); }
+.table-pagination a { color: var(--primary-dark); text-decoration: underline; }
+.active-query { margin-bottom: 0; font-size: var(--text-metadata); overflow-wrap: anywhere; color: var(--muted); }
+.table-state { margin: var(--space-4); }
+
+.member-row small, .admin-row small, .admin-link-row small, .table-subline { font-size: var(--text-metadata); line-height: 1.5; }
+.linked-groups a, .search-result { overflow-wrap: anywhere; }
 
 .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 17px; }
 .workspace-card { display: grid; gap: 9px; padding: 23px; border: 1px solid var(--line); border-radius: var(--radius-major); background: var(--surface); }
@@ -324,3 +363,6 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
   body:has(.mobile-navigation[open]) { overflow: hidden; }
 }
 body:has(.login-shell) .navigation-toggle, body:has(.login-shell) .skip-content { display: none; }
+
+/* List rows keep their existing role-aware forms and actions. */
+.member-row, .admin-row, .admin-link-row { background: var(--surface); }

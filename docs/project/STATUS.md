@@ -1,5 +1,16 @@
 # Project status
 
+### UI-04 — scientific tables and lists
+
+UI-03 was visually approved and integrated via PR #12, merge `1faf7ba`.
+UI-04 branch `codex/ui-04-scientific-tables` migrates the shared registry table,
+project list, existing list metadata and confirmation of membership removal.
+Small client controls add real compact density, ID/DNA copy and full-value
+inspection. Existing server q/limit/offset and CSV contracts stay intact;
+registry failures no longer masquerade as empty results. No backend/schema or
+UI-02 navigation changes. Report: `docs/design/UI_04_SCIENTIFIC_TABLES.md`.
+PR must remain unmerged until user reviews captures and report; UI-05/06 deferred.
+
 Last updated: 2026-10-31
 
 ## Current phase

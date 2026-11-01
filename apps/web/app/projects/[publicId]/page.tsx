@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { removeProjectMember, setProjectMember } from "@/app/workspace/actions";
+import { ConfirmRemoveButton } from "@/components/ConfirmRemoveButton";
 import { PageHeader } from "@/components/PageHeader";
 import { apiGetOptional, type ProjectDetail, type UserSummary } from "@/lib/api";
 
@@ -33,7 +34,7 @@ export default async function ProjectDetailPage({ params, searchParams }: { para
       </dl>
       <section className="workspace-grid">
         <div className="panel workspace-panel"><div className="panel-heading"><h2 className="panel-title">Members</h2><p className="panel-copy">Explicit project roles control project-visible records.</p></div>
-          <div className="member-list">{project.members.map((membership) => <div className="member-row" key={membership.user.id}><span className="member-avatar">{membership.user.initials}</span><span><strong>{membership.user.display_name}</strong><small>{membership.user.email}</small></span><span className="badge">{membership.role.replaceAll("_", " ")}</span>{canManage && membership.user.id !== project.created_by_id ? <form action={removeProjectMember.bind(null, project.public_id, membership.user.id)}><button className="text-button" type="submit">Remove</button></form> : null}</div>)}</div>
+          <div className="member-list">{project.members.map((membership) => <div className="member-row" key={membership.user.id}><span className="member-avatar">{membership.user.initials}</span><span><strong>{membership.user.display_name}</strong><small>{membership.user.email}</small></span><span className="badge">{membership.role.replaceAll("_", " ")}</span>{canManage && membership.user.id !== project.created_by_id ? <form action={removeProjectMember.bind(null, project.public_id, membership.user.id)}><ConfirmRemoveButton /></form> : null}</div>)}</div>
           {canManage && candidates ? <form className="inline-admin-form" action={setProjectMember.bind(null, project.public_id)}><label><span>User</span><select name="user_id" required><option value="">Select user</option>{candidates.map((user) => <option value={user.id} key={user.id}>{user.display_name} · {user.email}</option>)}</select></label><label><span>Role</span><select name="role" defaultValue="member"><option value="admin">Admin</option><option value="team_manager">Team manager</option><option value="member">Member</option><option value="viewer">Viewer</option></select></label><button className="secondary-button" type="submit">Add or update</button></form> : null}
         </div>
         <div className="panel workspace-panel"><div className="panel-heading"><h2 className="panel-title">Linked resources</h2><p className="panel-copy">Persisted project relationships only.</p></div><div className="linked-groups"><h3>Oligos</h3>{project.oligos.length ? project.oligos.map((item) => <Link href={`/oligos/${item.public_id}`} key={item.public_id}>{item.public_id} · {item.name}</Link>) : <p>No linked oligos.</p>}<h3>Assays</h3>{project.assays.length ? project.assays.map((item) => <Link href={`/assays/${item.public_id}`} key={item.public_id}>{item.public_id} · {item.name}</Link>) : <p>No linked assays.</p>}</div></div>
