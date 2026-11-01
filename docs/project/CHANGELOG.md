@@ -7,9 +7,12 @@ S3 compatibility/restore and OCI/native-CI qualification tooling without registr
 publication or deployment. Superseding user decision excludes AIStor and makes
 SeaweedFS priority 1, Garage priority 2, historical MinIO compatibility-only. Added
 Garage persistent configuration and four logical restore scenarios; both platform
-manifests verified. 28 static tests pass; runtime/scans/native evidence and GitHub
-CI remain pending. Docker is unavailable; GitHub publication resumed after initial
-connection timeouts.
+manifests verified. 29 static tests pass. PR18 remains DRAFT: actual native CI
+builds and Primer3 comparison pass; Garage independent restore passes ARM64/AMD64,
+SeaweedFS scenarios fail their credential-log gate, image scan execution fails on
+OCI archive/manifest handling. Application CI is green at tested code ddfd0c2;
+release stays blocked. Linux snapshots do not qualify the Mac mini. Local Docker
+remains unavailable; no host, pilot Compose, provider, real object or network change.
 See [report](../deployment/DEPLOY_02_STORAGE_RELEASE_IMAGES.md).
 
 ## 2026-11-01 — PR16 integrated; DEPLOY-01 isolated foundation

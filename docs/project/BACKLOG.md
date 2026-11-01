@@ -8,10 +8,11 @@ DEPLOY-02 adds disposable S3/OCI/native-CI qualification tooling; no deployment
 or provider substitution. New owner directive: SeaweedFS first (Apache-2.0),
 Garage second (AGPLv3), historical MinIO compatibility-only; AIStor excluded.
 Both immutable manifests include ARM64/AMD64; runtime prechecks are blocked.
-28 static tests cover candidate Compose resolution and fail-closed reporting.
+29 static tests cover candidate Compose resolution and fail-closed reporting.
 Local static tests/Compose resolution pass. Docker runtime is unavailable;
-GitHub publication resumed after initial timeouts. S3, native builds, scans
-and draft PR CI remain unverified pending actual evidence.
+GitHub publication resumed after initial timeouts. PR18 is DRAFT. At 6a31dd5, six OCI builds, application CI and Primer3 native
+comparison pass; Garage self-restore passes on ARM64/AMD64. SeaweedFS scenarios
+fail their credential-log gate (confirmed ddfd0c2); scans fail execution. No storage/pilot acceptance.
 See [qualification report](../deployment/DEPLOY_02_STORAGE_RELEASE_IMAGES.md).
 No ready pilot, accepted storage decision or authorization to merge DEPLOY-02.
 

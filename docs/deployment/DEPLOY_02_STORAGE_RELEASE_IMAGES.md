@@ -109,13 +109,13 @@ Actual precheck receipts (both nonzero, no completed S3 check):
 - [SeaweedFS runtime blocked](../../infra/deployment/evidence/seaweedfs-runtime-blocked-2026-11-01.json).
 - [Garage runtime blocked](../../infra/deployment/evidence/garage-runtime-blocked-2026-11-01.json).
 
-**Runtime qualification remains blocked:** local `desktop-linux` Docker daemon
+**Local runtime qualification remains blocked:** local `desktop-linux` Docker daemon
 is unavailable. Initial GitHub shell requests timed out; branch publication
 subsequently succeeded. No service was restarted.
 Neither candidate's adapter/SDK scenario, persistence, restore or native runtime
-passed in this session. There is no new MinIO runtime or real migration result.
+passed locally; subsequent remote CI results are recorded below. There is no new MinIO runtime or real migration result.
 
-RAM/disk: **not measured**. The runner records Docker memory snapshots after PUT
+RAM/disk: **not measured on the Mac mini**; Linux CI snapshots follow below. The runner records Docker memory snapshots after PUT
 and after restore/restart, plus allocated temporary disk bytes. This small corpus
 cannot prove peak working set, concurrency, backup disk headroom or whole-pilot
 capacity. Compare on the same engine/architecture/corpus, include Docker VM and
@@ -131,6 +131,47 @@ empty approved Linux target, new credentials/policies, verified keys/types/metad
 hashes, coherent relational/quarantine references, original retained and reversible
 cutover after recovery acceptance. Neither byte-copying internal volumes nor using
 an AMD64 manifest alone proves migration safety. No actual migration is authorized.
+
+### Observed native CI results at 6a31dd5 (supersede local-only status above)
+
+[Run 41343480403](https://github.com/El-Castor/OligoSpace/actions/runs/41343480403),
+source `6a31dd5b19540879c0fa9cc72b7a718d1de6626c`; retained
+[qualification summary](../../infra/deployment/evidence/ci-6a31dd5-qualification-summary.json).
+
+| Scenario | ARM64 runner | AMD64 runner |
+|---|---|---|
+| Garage → independent Garage | Passed, including adapter, hashes/types/metadata, both restarts, denial, log/network checks and cleanup | Passed, same checks |
+| SeaweedFS → independent SeaweedFS | Failed in final log/network/resource gate | Failed in same phase |
+| SeaweedFS → Garage | Data/restore calls completed, overall final gate failed | Same |
+| Garage → SeaweedFS | Data/restore calls completed, overall final gate failed | Same |
+
+All failed reports retain `status=failed`; reaching the final phase is evidence of
+prior synchronous data checks, not a complete qualification. The first report
+suppresses the exact exception. Re-execution at `ddfd0c2`,
+[run 41344277644](https://github.com/El-Castor/OligoSpace/actions/runs/41344277644),
+[retained gates](../../infra/deployment/evidence/ci-ddfd0c2-storage-gates.json),
+identifies `secret_log_gate` in all six SeaweedFS-involving cases and confirms
+Garage self-restore passes on both architectures. The check includes access-key
+identifiers and secret values and also refuses log-read failures; this is not yet
+a finding that a secret value specifically was leaked. Diagnose that distinction
+before accepting or changing logging configuration. No raw server
+log or credential value is uploaded. No provider is approved from these results.
+
+Actual Docker snapshots: Garage ~5–7 MiB, SeaweedFS ~59–76 MiB (partial after-PUT
+samples). Garage test-root allocation totals 4,423,680 bytes on ARM64 and
+4,456,448 bytes on AMD64, including two stores plus logical exchange/config; this
+excludes images/engine and is not a per-instance footprint. SeaweedFS disk/final
+measurements were not reached. These are tiny synthetic workloads on independent
+Linux runners (~16 GB RAM/4 CPUs), not measurements of the Mac mini or peak load.
+
+All six role/architecture OCI structures validate. Both real Primer3 runs use
+2.6.1 and identical inputs/parameters: nine compared numeric facts have maximum
+absolute difference 0.0 (allowed 1e-6). Manual aggregation of retained reports
+passes while explicitly keeping `release=blocked`; the automatic aggregate job
+was skipped because its dependencies failed. Four scan reports fail execution
+with categories `archive`, `manifest`, `oci`; API scans were not reached after S3
+failure. No vulnerability acceptance is inferred. Existing application CI and
+deployment-contract jobs passed at this SHA; no fresh E2E run is claimed.
 
 ## 4. Image construction and supply-chain checks
 
@@ -198,7 +239,7 @@ be recalled by later revocation. No historical MinIO image is republished.
 
 ## 7. Validation, review and remaining gates
 
-- Local static suite: 28 tests passed using Python 3.12.2, including both
+- Local static suite: 29 tests passed using Python 3.12.2, including both
   candidate Compose resolutions and unavailable-engine fail-closed evidence;
   Ruff 0.9.7 lint/format and `make compose-config` pass. The required combined
   `make format lint typecheck test PYTHON_RUNNER=container` attempt fails at its
@@ -208,9 +249,10 @@ be recalled by later revocation. No historical MinIO image is republished.
   negative tests are included. A new independent review found premature passed
   status on late measurement/cleanup failure; both cases were reproduced failing,
   corrected and verified passing. Runtime behavior remains unverified.
-- Full application container checks, integration/E2E, builds, S3 scenarios,
-  scans and native scientific comparison remain unverified here because Docker
-  is unavailable. Existing suites are retained; no fresh pass is claimed.
+- Local application/container checks remain blocked by Docker. Remote CI evidence
+  above establishes builds, application/integration checks and scientific comparison
+  at its exact SHA, plus Garage self-restore. SeaweedFS gates, scans and full pilot
+  qualification remain open; no fresh E2E success is claimed.
 - Initial GitHub shell requests timed out; branch publication subsequently
   succeeded. Draft PR CI is pending; no native/runtime/scan success is claimed
   until its exact-head reports have been inspected.

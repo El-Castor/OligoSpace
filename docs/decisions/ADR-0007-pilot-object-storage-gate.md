@@ -32,8 +32,19 @@ Current receipts and runtime blockers are retained under
 [`infra/deployment/evidence`](../../infra/deployment/evidence/).
 Docker local engine is unavailable and was not restarted. Both candidate
 prechecks returned nonzero, `status=blocked`, `stage=engine_availability`, no
-completed checks and `application_adapter_exercised=false`. No RAM, disk, S3 or
-native runtime success can be inferred from manifests or unit tests.
+completed checks and `application_adapter_exercised=false`. Those are local
+prechecks, superseded for Linux qualification by actual CI at `6a31dd5`, run
+[41343480403](https://github.com/El-Castor/OligoSpace/actions/runs/41343480403).
+[Retained summary](../../infra/deployment/evidence/ci-6a31dd5-qualification-summary.json)
+contains all eight S3 reports and measured snapshots. Garage self-restore passes
+on native ARM64/AMD64. All six scenarios involving SeaweedFS fail in the final
+log/network/resource phase after the data/restart/restore calls; their full gate
+is not passed. A repeat at `ddfd0c2` ([run](https://github.com/El-Castor/OligoSpace/actions/runs/41344277644),
+[retained gates](../../infra/deployment/evidence/ci-ddfd0c2-storage-gates.json))
+confirms `secret_log_gate` in all six SeaweedFS-involving scenarios and Garage
+self-restore passes again on both architectures. This helper tests both access-key
+identifiers and secrets, and fails on unreadable logs: it does not yet isolate
+which case caused the failure. No raw match is retained or disclosed. Local Mac runtime and actual host capacity remain unqualified.
 
 ## Comparative matrix — 2026-11-01
 
@@ -43,18 +54,18 @@ native runtime success can be inferred from manifests or unit tests.
 | Commercial license / activation | None required by the selected community source/launch contract [S1,S2] | None required by source/launch contract; RPC/S3 secrets are credentials, not activation [G1,G2] | No new licensing action; compatibility-only |
 | Maintenance evidence | Release 4.51, 2026-10-25; active release work [S3] | Release 2.5.0, 2026-10-24; earlier 2.4.1 in September [G3] | Upstream no longer maintained [M1] |
 | OCI source and version | `chrislusf/seaweedfs:4.51`, publicly inspected | `dxflrs/garage:v2.5.0`, publicly inspected | Historical tag; anonymous inspection blocked 401 |
-| ARM64 / AMD64 | Both Linux descriptors verified; execution unverified | Both Linux descriptors verified; execution unverified | Historical ARM64 DEPLOY-01 only; AMD64 unverified |
-| Current SDK operations | Documented S3; real adapter and recovery tests prepared; runtime blocked | Required S3 endpoints documented [G4]; real adapter tests prepared; runtime blocked | Limited historical DEPLOY-01 proof, not replayed |
+| ARM64 / AMD64 | Both descriptors verified; CI scenarios fail credential-log gate | Both descriptors verified; native self-restore passes in CI | Historical ARM64 DEPLOY-01 only; AMD64 unverified |
+| Current SDK operations | Real adapter/data operations execute in CI, final gate fails | Actual SDK/adapter and self-restore pass in both CI architectures [G4] | Limited historical DEPLOY-01 proof, not replayed |
 | Single-host Compose | `mini` combines services; fresh `/data` bind and private network [S2] | Single-node SQLite config, `/data/meta` and `/data/objects`, private network; upstream reserves this mode for tests [G2,G5] | Existing definition unchanged |
 | Region/bootstrap | SDK creates bucket; no precreated test bucket | `us-east-1` matches unchanged SDK; default key may create buckets; no default bucket [G6] | Existing SDK contract |
-| Metadata / content-types / SHA256 | Test prepared, blocked | Test prepared, blocked | Full new suite unverified |
-| Restart / independent logical restore | Test prepared, blocked | Test prepared, blocked | Historical limited test only |
-| Cross-provider migration | Both synthetic export/import directions prepared, blocked | Same; never reuse another provider's volume format | Real export/migration prohibited |
-| RAM and allocated disk | No measurement; two snapshot collection points prepared | No measurement; same corpus and snapshot scope | Current cache/resource use unverified |
+| Metadata / content-types / SHA256 | Data checks reached before late gate failure in CI | Verified in native CI self-restore | Full new suite unverified |
+| Restart / independent logical restore | Both restarts/restore reached before late gate failure | Both restarts/independent restore pass in CI | Historical limited test only |
+| Cross-provider migration | Both directions execute data checks but overall gate fails | Same cross-provider reserve; no volume-format reuse | Real export/migration prohibited |
+| RAM and allocated disk | Partial after-PUT snapshots ~59–76 MiB; no final disk measurement | ~5–7 MiB snapshots; ~4.4 MB allocated across two instances plus exchange | Current cache/resource use unverified |
 | 16 GB Mac mini / ~66 GiB historical free | Capacity not accepted; Docker VM plus full app must be measured | Same; no single-node redundancy or production suitability inferred | No inspection of actual Mac mini |
-| Linux AMD64 / INRAE | Descriptor available; native test and institutional acceptance pending | Descriptor available; same; multi-node recommendation adds topology/ops work | No maintained future target recommended |
+| Linux AMD64 / INRAE | Descriptor available; whole-host/institutional acceptance pending | Native SDK CI passes; INRAE host/operations and multi-node topology remain unqualified | No maintained future target recommended |
 | Operating obligations | Preserve notices; patch/scans, monitoring, backup and off-host restore owner needed | Preserve AGPL notices/source obligations for redistribution or modified network service; same operational work | No internal maintenance ownership approved |
-| Recommendation | First qualification candidate; conditional pilot recommendation only | Keep second; explicit upstream single-node warning weighs against this pilot | Compatibility reference only |
+| Recommendation | First by owner priority; credential-log gate must be investigated before acceptance | S3 contract passes, but upstream single-node warning still blocks unconditional pilot acceptance | Compatibility reference only |
 
 Recent releases establish activity, not a security support SLA. Neither candidate
 has a paid dependency in this proposed test contract. Bundled dependency notices,
@@ -86,7 +97,10 @@ entry point fit the owner's constraints with fewer licensing/topology burdens.
 Keep Garage as a serious alternative but do not ignore its upstream warning:
 one-node test success cannot approve a production pilot. Three containers on the
 same Mac do not create independent failure domains. This recommendation is
-provisional while runtime, capacity, restore and security evidence is missing.
+provisional: SeaweedFS has an unresolved credential-log qualification failure, Garage has
+a documented single-node production reserve, and full capacity/security/backup
+evidence remains incomplete. A passing Garage synthetic contract does not silently
+switch the owner's priority or approve its pilot adoption.
 
 Before final selection: run identical SDK and real adapter scenarios on independent
 instances, validate all persisted bytes/types/metadata/hashes after restarts and

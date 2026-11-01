@@ -223,8 +223,9 @@ d’architecture, ce qui remplace les options exploratoires historiques ci-desso
 La matrice et la recommandation provisoire sont dans
 [ADR-0007](../decisions/ADR-0007-pilot-object-storage-gate.md), les preuves dans
 [DEPLOY-02](DEPLOY_02_STORAGE_RELEASE_IMAGES.md). Les manifests ARM64/AMD64 des
-deux candidats sont vérifiés ; exécution SDK, restauration et consommation restent
-bloquées faute de moteur local disponible. Aucun fournisseur final n’est choisi ;
+deux candidats sont vérifiés. CI native 6a31dd5 : Garage réussit sa restauration
+indépendante ARM64/AMD64 ; SeaweedFS atteint puis échoue au gate final. Des
+snapshots mémoire limités sont disponibles ; la capacité réelle reste non qualifiée. Aucun fournisseur final n’est choisi ;
 le Compose pilote, les objets et les réseaux restent inchangés.
 
 `compose.yml` référence exactement
