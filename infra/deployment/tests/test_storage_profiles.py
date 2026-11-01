@@ -10,6 +10,20 @@ import unittest
 
 
 class StorageProfileTests(unittest.TestCase):
+    def test_failure_gate_does_not_expose_raw_exception_values(self):
+        path = Path(__file__).resolve().parents[1]
+        sys.path.insert(0, str(path))
+        import qualify_storage
+
+        self.assertEqual(
+            qualify_storage.safe_failure(ValueError("secret_log_gate")),
+            "secret_log_gate",
+        )
+        self.assertNotIn(
+            "private-test-value",
+            qualify_storage.safe_failure(RuntimeError("private-test-value")),
+        )
+
     def profile_module(self):
         path = Path(__file__).resolve().parents[1] / "storage_profiles.py"
         spec = importlib.util.spec_from_file_location("storage_profiles", path)

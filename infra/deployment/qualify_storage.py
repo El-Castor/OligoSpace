@@ -20,6 +20,12 @@ from evidence import credentials_absent_from_logs
 from storage_profiles import IMAGES, compose_definition, prepare
 
 
+def safe_failure(error):
+    allowed = {"secret_log_gate", "network_publication", "internal_network_required"}
+    reason = str(error)
+    return reason if reason in allowed else "qualification_failed_details_suppressed"
+
+
 def cleanup_disposable(run, containers, network, envfiles):
     failures = 0
     try:
@@ -369,11 +375,11 @@ def main():
             p.stat().st_blocks * 512 for p in root.rglob("*") if p.is_file()
         )
         report["status"] = "passed"
-    except Exception:
+    except Exception as error:
         report["status"] = (
             "blocked" if report["stage"] == "engine_availability" else "failed"
         )
-        report["failure"] = "qualification_failed_details_suppressed"
+        report["failure"] = safe_failure(error)
         raise
     finally:
         # Never print raw exceptions/logs/config; preserve only a sanitized report.
