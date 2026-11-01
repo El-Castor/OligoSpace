@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-11-01 — UI-05 integration and UI-06 workflows
+
+UI-05 merged via PR14 at eb7f2b2 after user approval and12 successful checks.
+UI-06 shares scientific job cards with actual state/date/error/attempt history,
+persisted sequence snapshots and exact clipboard copies of IDs/DNA/result JSON.
+Primer3 numerical precision and units remain unchanged. Automatic refresh retains
+1500ms/40-read limit and clearly reports its pause, with manual status refresh.
+Source navigation and explicit service failure presentation preserve private-job
+404. No backend or scientific workflow changes; UI-06 pending user review.
+
 ## 2026-11-01 — UI-04 integration and UI-05 forms
 
 UI-04 PR13 merged by merge commit985d506 after user approval and12 green checks.

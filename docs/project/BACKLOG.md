@@ -1,5 +1,14 @@
 # Backlog
 
+## UI-06 — scientific workflow review
+
+UI-05 is integrated via PR14/main eb7f2b2. UI-06 completes the approved shared
+scientific interface lot only: actual job states, values/units, sequences,
+provenance, error/history and bounded manual/automatic read refresh.
+No new retry/cancel/design/mapping operation or fabricated progress.
+User approval of captures/report required before merge. Real-device/reader
+qualification, institutional OIDC and outstanding pilot operations remain distinct.
+
 ## UI-05 — implementation awaiting review
 
 UI-04 is integrated through PR13/main985d506. UI-05 modernizes existing
