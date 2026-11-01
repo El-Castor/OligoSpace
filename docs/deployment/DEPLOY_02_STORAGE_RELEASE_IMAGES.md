@@ -110,7 +110,8 @@ Actual precheck receipts (both nonzero, no completed S3 check):
 - [Garage runtime blocked](../../infra/deployment/evidence/garage-runtime-blocked-2026-11-01.json).
 
 **Runtime qualification remains blocked:** local `desktop-linux` Docker daemon
-is unavailable, and GitHub shell requests still time out. No service was restarted.
+is unavailable. Initial GitHub shell requests timed out; branch publication
+subsequently succeeded. No service was restarted.
 Neither candidate's adapter/SDK scenario, persistence, restore or native runtime
 passed in this session. There is no new MinIO runtime or real migration result.
 
@@ -172,7 +173,7 @@ binding both role manifests. They are not published/pullable multiarch releases.
 
 Current status: **no fresh build, emulated run, native run, cross-architecture
 comparison or release digest has been established for DEPLOY-02**. CI remains
-pending until push/PR access succeeds. Never substitute DEPLOY-01 evidence for
+pending collection of the draft PR results. Never substitute DEPLOY-01 evidence for
 this revision. Images/archives are not uploaded as public Actions artifacts;
 sanitary evidence reports only have seven-day retention.
 
@@ -206,8 +207,9 @@ be recalled by later revocation. No historical MinIO image is republished.
 - Full application container checks, integration/E2E, builds, S3 scenarios,
   scans and native scientific comparison remain unverified here because Docker
   is unavailable. Existing suites are retained; no fresh pass is claimed.
-- GitHub shell push/PR attempts timed out; until successful publication, no
-  DEPLOY-02 PR number, CI run or green-check claim is available.
+- Initial GitHub shell requests timed out; branch publication subsequently
+  succeeded. Draft PR CI is pending; no native/runtime/scan success is claimed
+  until its exact-head reports have been inspected.
 
 Open gates: final owner selection of qualified open-source storage;
 SDK/restore/cross-provider qualification; measured capacity;

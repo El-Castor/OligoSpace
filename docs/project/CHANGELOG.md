@@ -8,7 +8,8 @@ publication or deployment. Superseding user decision excludes AIStor and makes
 SeaweedFS priority 1, Garage priority 2, historical MinIO compatibility-only. Added
 Garage persistent configuration and four logical restore scenarios; both platform
 manifests verified. 27 static tests pass; runtime/scans/native evidence and GitHub
-CI remain pending because Docker/GitHub shell access are unavailable.
+CI remain pending. Docker is unavailable; GitHub publication resumed after initial
+connection timeouts.
 See [report](../deployment/DEPLOY_02_STORAGE_RELEASE_IMAGES.md).
 
 ## 2026-11-01 — PR16 integrated; DEPLOY-01 isolated foundation

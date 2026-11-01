@@ -9,8 +9,9 @@ or provider substitution. New owner directive: SeaweedFS first (Apache-2.0),
 Garage second (AGPLv3), historical MinIO compatibility-only; AIStor excluded.
 Both immutable manifests include ARM64/AMD64; runtime prechecks are blocked.
 27 static tests cover candidate Compose resolution and fail-closed reporting.
-Local static tests/Compose resolution pass; Docker runtime and GitHub publication
-are unavailable, so S3, native builds, scans and CI remain unverified.
+Local static tests/Compose resolution pass. Docker runtime is unavailable;
+GitHub publication resumed after initial timeouts. S3, native builds, scans
+and draft PR CI remain unverified pending actual evidence.
 See [qualification report](../deployment/DEPLOY_02_STORAGE_RELEASE_IMAGES.md).
 No ready pilot, accepted storage decision or authorization to merge DEPLOY-02.
 
