@@ -66,7 +66,8 @@ def read_object(client, bucket: str, key: str) -> bytes:
         response.release_conn()
 
 
-def verify(client, bucket: str) -> None:
+def verify(client, bucket: str, expected_metadata=None) -> None:
+    expected_metadata = META if expected_metadata is None else expected_metadata
     if {obj.object_name for obj in client.list_objects(bucket, recursive=True)} != set(
         CASES
     ):
@@ -81,7 +82,9 @@ def verify(client, bucket: str) -> None:
             or info.content_type != content_type
         ):
             raise ValueError("object_content_mismatch")
-        if any(metadata.get("x-amz-meta-" + k) != v for k, v in META.items()):
+        if any(
+            metadata.get("x-amz-meta-" + k) != v for k, v in expected_metadata.items()
+        ):
             raise ValueError("object_metadata_mismatch")
 
 

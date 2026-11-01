@@ -216,6 +216,17 @@ Les mises à jour du moteur/VM restent des maintenances communes planifiées.
 
 ### Contrôle préalable du stockage objet (référence actuelle, non changée)
 
+**Décision DEPLOY-02 du 2026-11-01 :** stockage open source, gratuit, maintenu,
+sans licence commerciale ni activation. SeaweedFS est prioritaire, Garage second ;
+MinIO historique reste une référence de compatibilité. AIStor est exclu du choix
+d’architecture, ce qui remplace les options exploratoires historiques ci-dessous.
+La matrice et la recommandation provisoire sont dans
+[ADR-0007](../decisions/ADR-0007-pilot-object-storage-gate.md), les preuves dans
+[DEPLOY-02](DEPLOY_02_STORAGE_RELEASE_IMAGES.md). Les manifests ARM64/AMD64 des
+deux candidats sont vérifiés ; exécution SDK, restauration et consommation restent
+bloquées faute de moteur local disponible. Aucun fournisseur final n’est choisi ;
+le Compose pilote, les objets et les réseaux restent inchangés.
+
 `compose.yml` référence exactement
 `minio/minio:RELEASE.2025-09-07T16-13-09Z`, sans digest. L’intégration existante
 utilise le SDK Python MinIO (`services/object_storage.py`) : test/création de
@@ -240,7 +251,8 @@ maintenance ; qualifier l’API existante et la restauration d’un jeu d’obje
 acceptés.** Les tests historiques ou un cache local ne prouvent pas sa future
 disponibilité reproductible. Aucun cache/image local n’a été inspecté ici.
 
-Options dont l’existence est vérifiée, **pas des remplacements qualifiés** :
+Options historiques explorées avant la décision open source ci-dessus,
+**pas des candidats retenus ni des remplacements qualifiés** :
 
 - Source exacte MinIO disponible : envisager une construction contrôlée et un
   registre approuvé après autorisation. Responsabilité interne de maintenance,

@@ -5,7 +5,10 @@
 PR17 merged at `75179a52da0d929922c904ff6df06d94eb7a1a67` after exact-head
 validation and 14 green checks, superseding earlier PR17 review holds below.
 DEPLOY-02 adds disposable S3/OCI/native-CI qualification tooling; no deployment
-or provider substitution. User explicitly leaves AIStor blocked for this PR.
+or provider substitution. New owner directive: SeaweedFS first (Apache-2.0),
+Garage second (AGPLv3), historical MinIO compatibility-only; AIStor excluded.
+Both immutable manifests include ARM64/AMD64; runtime prechecks are blocked.
+27 static tests cover candidate Compose resolution and fail-closed reporting.
 Local static tests/Compose resolution pass; Docker runtime and GitHub publication
 are unavailable, so S3, native builds, scans and CI remain unverified.
 See [qualification report](../deployment/DEPLOY_02_STORAGE_RELEASE_IMAGES.md).

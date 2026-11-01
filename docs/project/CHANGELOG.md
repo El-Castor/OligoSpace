@@ -4,8 +4,11 @@
 
 PR17 merged as `75179a52da0d929922c904ff6df06d94eb7a1a67`. Added isolated
 S3 compatibility/restore and OCI/native-CI qualification tooling without registry
-publication or deployment. AIStor remains blocked by explicit user decision.
-21 static tests pass; runtime/scans/native evidence and GitHub CI remain pending.
+publication or deployment. Superseding user decision excludes AIStor and makes
+SeaweedFS priority 1, Garage priority 2, historical MinIO compatibility-only. Added
+Garage persistent configuration and four logical restore scenarios; both platform
+manifests verified. 27 static tests pass; runtime/scans/native evidence and GitHub
+CI remain pending because Docker/GitHub shell access are unavailable.
 See [report](../deployment/DEPLOY_02_STORAGE_RELEASE_IMAGES.md).
 
 ## 2026-11-01 — PR16 integrated; DEPLOY-01 isolated foundation

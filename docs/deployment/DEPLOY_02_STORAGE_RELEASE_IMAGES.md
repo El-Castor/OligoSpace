@@ -6,6 +6,24 @@
 Qualification only: no pilot deployment, real-object migration, registry image
 publication or automatic merge of DEPLOY-02. Personal `assests/` is untouched.
 
+## Revised execution scope — user decision, 2026-11-01
+
+The owner now requires open-source, no-fee storage without commercial licensing or
+activation keys. SeaweedFS is priority 1, Garage priority 2; historical MinIO is a
+compatibility reference only. AIStor is excluded from the architectural shortlist,
+superseding the earlier pending-license hold retained in Git history. This authorizes tests,
+not a final provider selection or pilot Compose substitution.
+
+Execution: inspect pinned Garage/SeaweedFS sources and manifests; extend the
+existing disposable contract to both providers and both logical cross-import
+directions; generate isolated Compose definitions with persistent fresh data paths;
+test refusal/configuration/backup safeguards locally; run real S3/resource/native
+scenarios only on an available authorized container engine; update ADR-0007,
+comparative evidence and memory, independent review, then draft PR without merge.
+Key review cases: SDK-created bucket (not precreated), matching default region,
+Garage metadata and data persistence, credential-free logs/config cleanup, failed
+runtime evidence never promoted to a pass. Existing branch is retained as requested.
+
 ## 1. Application contract and preservation
 
 The real adapter `apps/api/src/oligospace_api/services/object_storage.py` uses
@@ -20,92 +38,98 @@ Qualification adds GET/stat/list and user metadata for logical backup/restore;
 these are test/recovery requirements, not newly delivered user features. Object
 versioning, tags, ACLs, replication, retention locks and multipart workflows are
 not qualified. An S3-compatible endpoint never implies compatible internal disks.
-Never attach a historical MinIO volume to AIStor or SeaweedFS. Any future migration
+Never attach a historical MinIO volume to Garage or SeaweedFS. Any future migration
 must export/import logically and reconcile database references, keys, bytes,
 content-types and hashes, preserving originals until acceptance.
 
-## 2. Candidates and evidence
+## 2. Open-source candidates and current recommendation
 
-Public manifest receipts, exact index/platform digests and inspection failures:
-[`public-images-2026-11-01.json`](../../infra/deployment/evidence/public-images-2026-11-01.json).
-Manifest availability proves neither a working runtime nor trusted signatures.
+The authoritative comparative matrix, all three platform digests per candidate,
+source licenses, maintenance observations, migration implications and provisional
+recommendation are in [ADR-0007](../decisions/ADR-0007-pilot-object-storage-gate.md).
+The user-approved priority is **SeaweedFS, then Garage**. Neither provider has
+been selected for the pilot. MinIO Community is compatibility-only; AIStor is
+excluded from the architectural shortlist, not merely awaiting an activation key.
+Earlier AIStor metadata is retained as history and is no longer queried by the
+current inventory tool.
 
-| Criterion | Historical MinIO | AIStor Free | SeaweedFS 4.51 |
-|---|---|---|---|
-| OCI availability | Public anonymous inspection 401; historical cache only | Public manifest inspected | Public manifest inspected |
-| ARM64 | Historical DEPLOY-01 local run, not reverified now | Descriptor verified; execution blocked | Descriptor verified; execution unverified |
-| AMD64 | Non verified | Descriptor verified; execution blocked | Descriptor verified; execution unverified |
-| License | AGPL; redistribution review needed | Proprietary Free agreement; active license required | Apache-2.0 source license verified |
-| Maintenance | Upstream states no longer maintained | Vendor distribution; Free has no SLA | Release 4.51 dated 2026-10-25; no project SLA established |
-| MinIO SDK compatibility | Historical limited DEPLOY-01 evidence | Non verified | Non verified; synthetic runner prepared |
-| Metadata preservation | Full suite non verified | Blocked | Non verified |
-| Independent restore | Full suite non verified | Blocked | Non verified |
-| RAM/disk | Current measurements unavailable | Unavailable | Unavailable |
-| Migration risk | Archive/provenance/patch ownership unresolved | License and logical format migration unresolved | Logical migration and API edges unresolved |
-| Operating cost | Internal security maintenance uncosted | No license fee does not imply no operating cost | Single-server maintenance/backup burden uncosted |
-| Recommendation | Do not qualify as maintained release | Leave blocked by explicit user decision | Candidate for tests, not approved replacement |
+Fresh public manifest receipts:
+[`public-open-source-images-2026-11-01.json`](../../infra/deployment/evidence/public-open-source-images-2026-11-01.json).
+Both candidates have Linux ARM64 and AMD64 descriptors. SeaweedFS 4.51 is pinned
+to `sha256:f7a49e3f3972ebed5be2ed4befa4a0c68eb7bdddba6e692d42729ceb545134b8`;
+Garage 2.5.0 to `sha256:677e5b758e4425a325b811c425c026bf35a4bf42f7ddbaa773de3f4fd779a5a5`.
+Public source/manifest inspection is not runtime, signature or scan qualification.
 
-### Historical artifact
+Source evidence supports community operation without activation/commercial
+licensing: [SeaweedFS Apache-2.0](https://github.com/seaweedfs/seaweedfs/blob/4.51/LICENSE)
+and [Garage AGPLv3](https://github.com/deuxfleurs-org/garage/blob/v2.5.0/LICENSE).
+Credentials/RPC secrets still need protection; they are not activation keys.
+Image dependency notices and SBOM/scans remain open. Recent releases demonstrate
+activity, not a contractual security support SLA. AGPL redistribution/modified
+network-service obligations must be retained for a future INRAE distribution.
 
-Reference `minio/minio:RELEASE.2025-09-07T16-13-09Z`; historical cache digest
-`sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e`.
-The source tag and local ARM64 observation recorded in DEPLOY-01 do not prove
-current availability, AMD64 support, redistribution rights or maintenance.
-[Upstream](https://github.com/minio/minio) is not a supported release guarantee.
-An internal archive or source build would require explicit licensing, provenance,
-patch ownership and cost acceptance; neither is authorized or implemented here.
-
-### AIStor Free — explicit hold
-
-The user chose **“Laisser AIStor bloqué pour cette PR”**. No agreement accepted,
-account created, license requested, image downloaded or AIStor runtime executed.
-Public metadata only: `quay.io/minio/aistor/minio:RELEASE.2026-09-19T17-05-25Z`,
-index `sha256:107cf2014a9583c74c11e3cdbd6903d89c2244355886b89ce532f4ecae9c23f3`.
-Both Linux platform descriptors exist; Docker Compose/SDK/restore/resource
-compatibility remains unverified.
-
-The [container guide](https://docs.min.io/aistor/installation/container/install/)
-requires a license file passed with `--license`; its example is not a release pin.
-The [Free agreement](https://www.min.io/legal/aistor-free-agreement) covers
-research/educational use under commercial terms, with redistribution restrictions;
-institutional acceptance is not inferred from technical suitability.
-The [license documentation](https://docs.min.io/aistor/operations/licenses/)
-describes single-node Free operation without SLA and paid-only capabilities
-including encryption at rest and replication. Renewal/expiry, secrets handling,
-recovery and security exceptions require review before reconsidering this hold.
-
-### SeaweedFS — candidate C
-
-[Release 4.51](https://github.com/seaweedfs/seaweedfs/releases/tag/4.51),
-[Apache-2.0 license](https://github.com/seaweedfs/seaweedfs/blob/4.51/LICENSE),
-[official usage](https://github.com/seaweedfs/seaweedfs/blob/4.51/README.md),
-[S3 API documentation](https://github.com/seaweedfs/seaweedfs/wiki/Amazon-S3-API).
-Image `chrislusf/seaweedfs@sha256:f7a49e3f3972ebed5be2ed4befa4a0c68eb7bdddba6e692d42729ceb545134b8`.
-The disposable runner uses `mini -dir=/data` with explicit bind/name and generated
-AWS credentials. Its internal services increase operational complexity; no ports
-are published. A fresh independent data directory per instance is mandatory.
-A recent release and documented S3 operations are evidence for investigation,
-not production acceptance. No Compose pilot provider or storage format changes.
+For the single-host pilot, SeaweedFS remains the first qualification candidate.
+Garage's [single-node guide](https://garagehq.deuxfleurs.fr/documentation/quick-start/)
+explicitly excludes production use without redundancy; that reserve remains even
+if all tests pass. Adding replicas on one Mac does not create failure independence.
+No final architecture choice is inferred from candidate priority.
 
 ## 3. Synthetic qualification and actual results
 
-`infra/deployment/s3_contract.py` and `qualify_storage.py` prepare three synthetic
-binary objects with Unicode/special keys, SHA256, content-types and user metadata.
-They test bucket creation, PUT/GET/stat/list, restart persistence, logical export,
-restore into a second independently credentialed instance, target restart and
-comparison. They check bad credentials, logs and absence of published ports.
-Disposable directories/network/containers are uniquely identified; cleanup always
-attempts generated credential removal, including when another cleanup fails.
-No existing volume or user data is mounted. Logical exports are test-only and do
-not constitute a coherent production database/identity/object backup.
+`storage_profiles.py` prepares digest-pinned Compose services, each with new data
+paths, its own generated credentials, no host ports and a unique internal test
+network created/checked by the harness. Compose uses that network by explicit
+name; it never attaches to an existing application network. Garage persists both
+`/data/meta` and `/data/objects`, uses SQLite with fsync, a protected read-only
+configuration, region `us-east-1` matching the unchanged SDK, and only bootstraps an
+access key. The SDK must create the bucket. Default INFO bootstrap logs include
+an access key, so the test explicitly sets `RUST_LOG=warn` and still checks both
+log streams for every generated S3/RPC secret. No admin/web ports are enabled for
+Garage's test configuration.
 
-**Runtime results: blocked locally.** Docker daemon is unavailable; it was not
-restarted. Historical cached images and previous OCI exports were not assumed
-available. SeaweedFS tests are prepared for disposable native CI runners; no
-successful S3 runtime or cross-provider migration is claimed. AIStor is explicitly
-blocked by user decision. No RAM/disk consumption measurement is available.
-The real Mac mini has 16 GB RAM and historical ~66 GiB free, shared with other
-users: two full stacks cannot be approved without actual capacity/margin checks.
+`qualify_storage.py` requires SDK 7.2.20. It first calls the unchanged application
+`ObjectStorage.put` and reads persisted keys/bytes/content-types back through S3.
+Then `s3_contract.py` adds user metadata and verifies SHA256 and binary/Unicode/
+special-character keys, list/GET/stat, source restart, logical export, restore to
+a second independently credentialed store, target restart, original preservation
+and bad-credential denial. Restores verify all exported hashes before writing.
+It records bounded engine/image architecture facts and labels native-container
+execution separately from emulation/unknown status.
+
+Prepared scenarios: SeaweedFS → SeaweedFS, Garage → Garage, SeaweedFS → Garage and
+Garage → SeaweedFS. Native API CI jobs prepare all four sequentially on each Linux
+architecture; no source volume is mounted into another provider. Clients run
+with the host UID so private exchange files remain accessible on Linux. Cleanup
+attempts every created container/network and removes generated credential/config
+files even after another cleanup error. Temporary synthetic data is retained
+outside Git for inspection; no Docker volume deletion is used.
+
+Actual precheck receipts (both nonzero, no completed S3 check):
+
+- [SeaweedFS runtime blocked](../../infra/deployment/evidence/seaweedfs-runtime-blocked-2026-11-01.json).
+- [Garage runtime blocked](../../infra/deployment/evidence/garage-runtime-blocked-2026-11-01.json).
+
+**Runtime qualification remains blocked:** local `desktop-linux` Docker daemon
+is unavailable, and GitHub shell requests still time out. No service was restarted.
+Neither candidate's adapter/SDK scenario, persistence, restore or native runtime
+passed in this session. There is no new MinIO runtime or real migration result.
+
+RAM/disk: **not measured**. The runner records Docker memory snapshots after PUT
+and after restore/restart, plus allocated temporary disk bytes. This small corpus
+cannot prove peak working set, concurrency, backup disk headroom or whole-pilot
+capacity. Compare on the same engine/architecture/corpus, include Docker VM and
+other application services, then run a representative bounded workload before
+accepting the 16 GB Mac mini. Historical ~66 GiB free is not current capacity;
+other users' data must be preserved. Do not approve simultaneous complete dev and
+pilot stacks without measurement. Compose resolution alone does not qualify
+Docker Desktop file-sharing, fsync or macOS resources. Native Linux CI would not
+constitute an actual Mac mini test.
+
+Future INRAE migration is logical and provider-independent at the object contract:
+empty approved Linux target, new credentials/policies, verified keys/types/metadata/
+hashes, coherent relational/quarantine references, original retained and reversible
+cutover after recovery acceptance. Neither byte-copying internal volumes nor using
+an AMD64 manifest alone proves migration safety. No actual migration is authorized.
 
 ## 4. Image construction and supply-chain checks
 
@@ -169,26 +193,32 @@ be recalled by later revocation. No historical MinIO image is republished.
 
 ## 7. Validation, review and remaining gates
 
-- Local static suite: 21 tests passed using Python 3.12.2, including offline
-  Compose resolution; Ruff 0.9.7 lint/format passed; `make compose-config` passed.
+- Local static suite: 27 tests passed using Python 3.12.2, including both
+  candidate Compose resolutions and unavailable-engine fail-closed evidence;
+  Ruff 0.9.7 lint/format and `make compose-config` pass. The required combined
+  `make format lint typecheck test PYTHON_RUNNER=container` attempt fails at its
+  Docker tooling-build prerequisite; those application checks did not run.
 - Independent source review identified Linux exchange-directory ownership,
   exported-versus-loaded image binding and interrupted cleanup issues; fixes and
-  negative tests are included. Runtime behavior remains unverified.
+  negative tests are included. A new independent review found premature passed
+  status on late measurement/cleanup failure; both cases were reproduced failing,
+  corrected and verified passing. Runtime behavior remains unverified.
 - Full application container checks, integration/E2E, builds, S3 scenarios,
   scans and native scientific comparison remain unverified here because Docker
   is unavailable. Existing suites are retained; no fresh pass is claimed.
 - GitHub shell push/PR attempts timed out; until successful publication, no
   DEPLOY-02 PR number, CI run or green-check claim is available.
 
-Open gates: authorized maintained storage decision; AIStor institutional/license
-review (explicit hold); SDK/restore/cross-provider qualification; measured capacity;
+Open gates: final owner selection of qualified open-source storage;
+SDK/restore/cross-provider qualification; measured capacity;
 native image builds and scientific comparison; complete scans and risk handling;
 registry ownership/retention/trust; real OIDC/TLS/security gates and coherent
 identity/database/object recovery from the pilot plan. No accepted deferral is
 inferred. ADR-0007 stays proposed and the release stays blocked.
 
 Recommendation: review the tooling separately from architecture acceptance;
-qualify SeaweedFS synthetically when execution becomes available, retain the
-AIStor hold, and ask the owner to select storage only after evidence review.
+qualify SeaweedFS first and Garage second on the same synthetic contract when
+execution becomes available; AIStor is excluded. Ask the owner to select storage
+only after evidence review.
 No provider, license, format, pilot deployment or registry publication is approved
 by this report. DEPLOY-02 must remain draft and unmerged.

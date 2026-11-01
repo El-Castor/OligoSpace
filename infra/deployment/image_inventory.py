@@ -14,8 +14,8 @@ import urllib.request
 
 REFERENCES = {
     "minio_historical": "minio/minio:RELEASE.2025-09-07T16-13-09Z",
-    "aistor": "quay.io/minio/aistor/minio:RELEASE.2026-09-19T17-05-25Z",
     "seaweedfs": "chrislusf/seaweedfs:4.51",
+    "garage": "dxflrs/garage:v2.5.0",
     "postgres": "postgres:17.11-alpine",
     "redis": "redis:7.4.10-alpine",
     "keycloak": "quay.io/keycloak/keycloak:26.7.2",
