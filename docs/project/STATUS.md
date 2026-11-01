@@ -1,5 +1,16 @@
 # Project status
 
+## PR #16 — documentation corrections awaiting review
+
+The user approved the general strategy and requested four documentation-only
+corrections: existing Cloudflare/WARP access (historical user report, application
+HTTPS/OIDC unqualified), separate initial/update procedures, SECURITY-linked gates
+with no implicit deferral, and explicit MinIO provenance/availability/maintenance
+plus the real 16 GB RAM / historical ~66 GiB capacity constraint. The two main
+documents incorporate these corrections. No host, tunnel, Docker configuration,
+object data, volume or secret change; PR #16 remains DRAFT and must not be merged.
+Public registry metadata/source consultation does not qualify a MinIO runtime.
+
 ## Current handoff — UI-06 integrated; qualification preparation only
 
 2026-11-01: user approved UI-06 visually/functionally and authorized PR #15.

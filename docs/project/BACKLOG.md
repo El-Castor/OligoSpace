@@ -1,5 +1,14 @@
 # Backlog
 
+## PR #16 — four documentation corrections, no implementation
+
+Review the corrected Cloudflare/SSH/HTTPS/OIDC boundaries, bootstrap/update order,
+SECURITY gate decisions (including RLS with no accepted deferral), and MinIO image
+availability/maintenance/ARM64/S3 restoration. Measure future capacity on the
+16 GB Mac mini (historical ~66 GiB free) before assuming simultaneous stacks;
+preserve other users' data. No operational qualification is claimed. PR #16 stays
+DRAFT/non-merged; no next functional or hosting lot is started.
+
 ## Current next action — qualification dossier review
 
 2026-11-01: UI-06 was explicitly approved and PR #15 merged at `9852bdd`,

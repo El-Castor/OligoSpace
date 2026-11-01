@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-11-01 — PR #16 documentation review corrections
+
+Retain existing Cloudflare Zero Trust/WARP as user-reported infrastructure, with
+separate SSH/private-network/HTTPS/OIDC qualification and optional Tailscale only.
+Separate first installation and update, qualify database readiness before one-shot
+migration, and link security gates to SECURITY.md with explicit proof/decision
+states. Record public MinIO metadata limits and maintenance risks, plus measured
+capacity requirements for the 16 GB Mac mini and preserved co-user data.
+Documentation and tracking only; no infrastructure or functional change, no merge.
+
 ## 2026-11-01 — UI-06 approved and integrated; MVP qualification proposed
 
 User approved UI-06 visually/functionally. PR #15 exact head `535454e` merged

@@ -2,8 +2,9 @@
 
 Date : 2026-11-01. Référence applicative : `main` au merge commit
 `9852bdd704dc2658dd2941eeae8adb56f8ddc759` (UI-06, PR #15).
-**Statut : revue documentaire ciblée et protocole proposé ; aucune mise en
-service autorisée ou attestée.** Aucun nouveau développement fonctionnel.
+**Statut : stratégie générale approuvée, corrections documentaires PR #16 ;
+qualification applicative et ouverture non autorisées ni attestées.**
+Aucun nouveau développement fonctionnel ou d’hébergement.
 
 ## 1. Périmètre et méthode
 
@@ -20,9 +21,28 @@ d'exploitation reste centralisé dans
 [PILOT_HOSTING_PLAN.md](../deployment/PILOT_HOSTING_PLAN.md), notamment §8.
 
 Aucun hôte distant, Mac mini, équipement réseau ou service de production n'a été
-contacté/configuré. Aucun secret, fichier Excel source, donnée scientifique réelle
+contacté/configuré dans cette étape. Aucun secret, fichier Excel source, donnée scientifique réelle
 ou volume n'a été modifié. L'exécution future des protocoles exige une autorisation
 distincte ; approuver ce document ne prouve pas leur succès.
+
+### Contexte hôte et réseau corrigé sur déclaration utilisateur
+
+Mac mini Apple Silicon, **16 Go RAM**, espace libre historiquement proche de
+**66 Gio**, autres comptes utilisateurs dont les données doivent être préservées.
+Cloudflare Zero Trust existe déjà : tunnel `mac-mini-maison` annoncé Healthy
+lors de vérifications antérieures, route privée `192.168.1.31/32`, WARP sur
+MacBook et SSH distant testé avec succès. Ce sont des informations fournies par
+l’utilisateur, non revérifiées ici ; elles supersèdent l’hypothèse antérieure
+d’un accès Tailscale à installer. Le succès SSH/réseau privé ne prouve pas le proxy
+HTTPS ni OIDC applicatif. Tailscale reste une alternative, sans substitution.
+
+Restent non vérifiés : DNS et chaîne TLS sur client/hôte/conteneurs, origine
+canonique/callbacks/issuer, restrictions réseau/ports/LAN et révocation d’un accès
+déjà établi, comptes OIDC et récupération des accès. Pas de présomption de double
+pile Docker simultanée : mesurer mémoire/swap/disque au repos et en pic, marge et
+croissance en préservant les autres utilisateurs. Le §2 du plan fixe ce contrôle ;
+si marge insuffisante, déporter dev/build ou planifier la pile dev arrêtée, sans
+modifier le pilote ni supprimer des données.
 
 ## 2. Intégration et preuves disponibles
 
@@ -70,6 +90,48 @@ BLAST, scanner de pièces jointes ou export multi-format. Tout élargissement du
 pilote à ces capacités demande une décision explicite et des preuves spécifiques.
 
 ## 4. Écarts documentaires et risques à faire examiner
+
+**Réserves de la première revue indépendante traitées dans les documents :**
+le plan §8.4 sépare désormais installation vierge (bases prêtes avant migration,
+sans backup/release antérieurs supposés) et mise à jour (préchargement, stabilisation,
+santé des bases, backup incluant Keycloak/objets, migration unique, recette/retour).
+Son §9 raccorde les gates à SECURITY.md ; cette correction documentaire ne prouve
+pas leur réalisation. Les sections 2/4/5 détaillent capacité réelle, Cloudflare
+existant et stockage objet ; aucun composant n’a été changé.
+
+### Stockage objet : contrôle public préalable, pas de changement de fournisseur
+
+La référence utilisée reste `minio/minio:RELEASE.2025-09-07T16-13-09Z` dans
+`compose.yml`. Le plan §5 consigne les sources publiques consultées : source Git
+exacte disponible, API Docker Hub 404 et registres Docker Hub/Quay 401 lors de la
+lecture du tag/manifest. **Disponibilité téléchargeable, digest et ARM64 non
+confirmés**, sans conclure à une disparition de tout artefact. Le dépôt officiel
+annonce ne plus être maintenu ; un tag historique n’est pas une politique de
+correctifs. Ces observations ne concernent aucun cache local ou Mac mini.
+
+Bloquant avant pilote : artefact reproductible et provenance/version/digest,
+support ARM64, scans/maintenance acceptés, compatibilité du SDK S3 existant et
+restauration des objets avec clés/contenu/content-type/checksums. Les options
+source MinIO figée ou offre AIStor ont une existence publique vérifiée, **pas une
+compatibilité opérationnelle validée**. Une construction interne implique sa
+maintenance ; le Dockerfile historique hérite de `latest` et n’est pas une recette
+reproductible prête. Toute adoption/migration demande décision, tests et retour
+arrière ; aucun fournisseur, format disque, objet ou endpoint n’est changé ici.
+
+### Gates de sécurité et traitement des reports
+
+La matrice complète du plan §9 couvre modèle de menace, MFA/comptes, OIDC réel,
+TLS/origine, secrets/rotation, privilèges, scans images/dépendances, RLS, incident,
+restauration/récupération des accès et isolation/refus hors périmètre. Elle sépare
+**prouvé** (preuve datée et portée exacte), **non vérifié**, **bloquant**, **report
+demandé**, **report explicitement accepté**. Les tests fonctionnels existants ne
+qualifient pas les contrôles opérationnels. À ce stade aucun report n’est demandé
+ou accepté par ce dossier ; les gates non réalisés restent bloquants avant
+ouverture. Pour RLS notamment, le backlog « plus tard » ne vaut pas dérogation à
+SECURITY.md : réaliser ou obtenir une décision habilitée, compensée, datée et
+réexaminable. L’approbation de la stratégie générale ne constitue pas ce report.
+
+### Autres limites conservées
 
 1. **Traçabilité vieillissante.** `REQUIREMENTS_TRACEABILITY.md` dit encore que
    l'export n'existe pas et marque EXPORT-001/003 « Planned ». R1-07 prouve un
@@ -128,12 +190,15 @@ flag. Ne pas lancer ces recettes par défaut contre `.env` ou une base utilisate
 d'une validation graphique utilisateur ; le pilote hébergé n'est pas qualifié.**
 Ce constat n'est ni un refus scientifique ni une acceptation d'exploitation.
 
-- [ ] Confirmer le périmètre pilote et ses exclusions, notamment D2/D9.
+- [ ] Confirmer le périmètre pilote et ses exclusions, notamment D2/D9 (stratégie
+  générale approuvée ; recette/exclusions opérationnelles encore à signer).
 - [ ] Désigner responsables et jeu de recette pour R1-08 à R1-11.
 - [ ] Approuver RPO/RTO, rétention, accès privé et identité ; aucune valeur proposée
   ne devient une exigence approuvée sans décision.
 - [ ] Arbitrer la dette asynchrone et les limites scientifiques avant usage réel.
 - [ ] Revoir le plan reproductible §8 du document d'hébergement.
+- [ ] Valider les gates SECURITY.md (§9), la source/maintenance MinIO et la marge
+  RAM/disque réelle ; aucun report de sécurité implicite.
 - [ ] Autoriser séparément le prochain lot d'implémentation ou de qualification.
 
 Aucune de ces cases n'est cochée par la fusion de UI-06. Prochaine action : revue
