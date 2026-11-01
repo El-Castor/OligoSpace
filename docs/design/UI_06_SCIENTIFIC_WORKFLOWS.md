@@ -4,6 +4,14 @@
 head fb6b661,12 green checks/no conflict. UI-06 starts from synchronized main.
 UI-06 delivery stops at an open PR pending explicit visual/functional approval.
 
+**Integration update — 2026-11-01:** the user subsequently approved the visual
+and functional report and explicitly authorized PR #15. Exact head
+`535454ef6a12de0815dec8ef21546695625fb9a8` retained,12 checks
+`COMPLETED/SUCCESS`, `CLEAN/MERGEABLE`; merged by merge commit
+`9852bdd704dc2658dd2941eeae8adb56f8ddc759`. main synchronized by fast-forward.
+This approval supersedes the review hold recorded below; no subsequent functional
+lot is authorized. Next work is documentation-only MVP qualification preparation.
+
 ## Scoped inventory and design
 
 | Existing surface | Actual contract | UI-06 presentation |

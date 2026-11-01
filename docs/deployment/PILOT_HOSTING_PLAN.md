@@ -273,3 +273,128 @@ et documenter les écritures perdues depuis le point de restauration.
 - [ ] Répétition Linux et règles INRAE planifiées avant la migration réelle.
 
 Toutes les cases restent à exécuter. Aucun déploiement n’est attesté par ce document.
+
+## 8. Plan de déploiement reproductible — préparation après UI-06
+
+Ajout du 2026-11-01, **à revoir avant toute implémentation**. La référence
+applicative intégrée est `9852bdd704dc2658dd2941eeae8adb56f8ddc759` (PR #15).
+Le [dossier de qualification MVP](../project/MVP_QUALIFICATION_AUDIT.md) sépare
+les preuves acquises des recettes R1-08 à R1-11. Les sections précédentes restent
+la référence d'architecture ; cette section précise les livrables et l'ordre des
+opérations futures. Aucun fichier Compose pilote, script, workflow de publication,
+secret, installation ou service supplémentaire n'est créé par cette préparation.
+
+### 8.1 Choix retenu pour la proposition
+
+Préférer un fichier Compose pilote autonome et validé à une superposition directe
+sur `compose.yml` : le risque d'hériter de `build:`, du seed de démo, des ports et
+du mode `start-dev` y est moindre. Une base commune pourra être extraite dans un
+lot séparé si elle conserve les contrôles de configuration fusionnée. Le pilote
+reste un déploiement Compose simple, conforme à l'ADR-0005 ; aucune orchestration
+nouvelle. Ce choix est une proposition à approuver, pas une configuration livrée.
+
+Le premier pilote devrait utiliser un Keycloak en mode production avec comptes
+réels autorisés ; la fédération institutionnelle dépend de ses entrées propres.
+Ne jamais contourner une absence d'IdP en exposant le bypass de développement.
+
+### 8.2 Entrées obligatoires et manifeste de release
+
+Avant de fabriquer une release, obtenir : hôte autorisé/architecture réelle,
+nom HTTPS et PKI, politique d'accès privé, realm/client OIDC et audience,
+responsables, coffre à secrets, destination de sauvegarde et RPO/RTO approuvés.
+Si une entrée manque, noter « bloqué, entrée non fournie » ; ne pas inventer de
+nom de serveur, de compte, de certificat ou de secret de production.
+
+Le futur manifeste versionné non secret devra contenir :
+
+| Champ | Contenu vérifiable |
+|---|---|
+| Sources | SHA complet, version de release immuable, arbre propre, checksum des définitions de déploiement |
+| Images applicatives | Référence du registre et digest OCI index + digest ARM64/AMD64 API/web/worker ; migration = image API, scheduler = image worker |
+| Dépendances | Digests et versions PostgreSQL/Redis/Keycloak/MinIO/Caddy ; versions Docker/Compose et plateforme qualifiée |
+| Science | Primer3 effectif, version/build worker, paramètres et résultats de qualification ; `OLIGOSPACE_BUILD_ID` explicite |
+| Données | Révision Alembic source/cible, identifiant du backup pré-release, index/checksums des objets et références présentes |
+| Configuration | Origine/issuer/audience, projet Compose, version des paramètres non secrets et références aux versions des secrets, jamais leurs valeurs |
+| Validation | Liens CI du SHA exact, rapports PostgreSQL/Chromium et ARM64/AMD64, recette humaine, date et approbateurs |
+| Retour arrière | Release précédente, compatibilité de schéma prouvée ou backup cohérent à restaurer, responsable et fenêtre |
+
+Déployer un digest permet de reproduire l'artefact exécuté ; cela ne démontre pas
+une reconstruction bit à bit. Les environnements/dépendances actuels doivent être
+inventoriés et contrôlés, sans promettre des verrous transitifs déjà complets.
+Un changement de digest ou de configuration après recette invalide l'approbation
+du paquet précédent et demande une nouvelle vérification ciblée.
+
+### 8.3 Lots préparatoires proposés, uniquement après revue
+
+| Ordre | Livrable à produire ultérieurement | Critère de validation indépendant |
+|---|---|---|
+| 1 | Définition pilote dédiée sous `infra/`, configurations non secrètes et contrat des paramètres ; pas de modification métier | `config --quiet`, puis inspection contrôlée sans journaliser les secrets : zéro build/code monté/seed dev, images par digest, ingress privé, réseaux/volumes distincts, auth OIDC/production et uploads off |
+| 2 | Chaîne de construction/publication immuable et manifeste | Tests existants sur chaque architecture retenue, version effective Primer3, image API identique à migrate et worker identique à scheduler ; aucun tag écrasé |
+| 3 | Rôles de services et fourniture des secrets compatibles avec les applications | Connexions avec privilèges nécessaires seulement ; aucun credential dev/bootstrap conservé ; rotation/récupération répétable, aucune supposition `_FILE` non implémentée |
+| 4 | Procédure outillée de backup/restore complète R1-08 | Backup chiffré hors hôte, checksum et authenticité, restauration app + identité + objets sur cible vide, intégrité et RPO/RTO acceptés |
+| 5 | Recette R1-09 et isolation dev/pilote sur hôte disponible | TLS/OIDC et accès privé réels, absence de services internes exposés, quotas sous build dev + QC ; reboot et restauration testés |
+| 6 | Données R1-10 et PV R1-11 puis décision d'ouverture | Sources approuvées, permissions/CSV/historique/science vérifiés par les responsables ; décision go/no-go explicite |
+
+Chaque futur lot conserve sa branche, ses tests, sa PR et la revue adaptée. Les
+chemins/artefacts nouveaux de ce tableau sont des livrables attendus, pas des
+scripts existants utilisables aujourd'hui. Ne pas exécuter `make dev`, `make seed`,
+`make migrate` ou `make backup` comme raccourcis pilote : ces cibles utilisent
+actuellement la configuration de développement implicite.
+
+### 8.4 Séquence d'exploitation à rendre exécutable ultérieurement
+
+1. **Préparer.** Sélectionner le manifeste approuvé ; vérifier signature/intégrité,
+   digests, architecture, espace disponible et compatibilité de schéma. Valider
+   explicitement le projet `oligospace-pilot`, les chemins absolus de configuration
+   et de secrets et le contexte Docker. Refuser une cible dev ou inconnue.
+2. **Précharger.** Tirer les images par digest avant la maintenance, sans les
+   reconstruire sur l'hôte. Valider la configuration sans afficher les valeurs
+   secrètes. Le développement conserve ses images et son propre projet.
+3. **Stabiliser.** Informer les utilisateurs, bloquer les nouvelles écritures via
+   un mécanisme de maintenance préalablement qualifié. Aucun mode maintenance
+   applicatif nouveau n'est supposé disponible. Attendre la fin des jobs bornés
+   ou consigner ceux interrompus, puis arrêter scheduler/worker avant la capture
+   cohérente ; ne pas marquer artificiellement les jobs comme terminés.
+4. **Sauvegarder.** Capturer PostgreSQL applicatif/Keycloak, objets et configuration
+   cohérente ; vérifier l'intégrité du paquet et son transfert hors hôte. Conserver
+   la release précédente et le manifeste. Un dump seul ou un HTTP health vert ne
+   franchit pas le gate de récupérabilité.
+5. **Migrer.** Lancer une seule migration explicite avec l'image API de la release
+   et son compte dédié, après backup et préconditions. Pas de seed de démo ni de
+   migration concurrente. Si elle échoue, maintenir la fermeture aux écritures et
+   appliquer le scénario de restauration revu ; pas de downgrade automatique.
+6. **Démarrer.** Démarrer PostgreSQL/Redis/MinIO/Keycloak puis API/web selon les
+   dépendances validées ; démarrer un seul scheduler et les workers autorisés.
+   Après restauration, Redis repart sans file ancienne et PostgreSQL pilote la
+   réconciliation. Observer les jobs et les tentatives avant ouverture des accès.
+7. **Recetter.** Vérifier santé *et* parcours navigateur OIDC, rôles/scopes, reload,
+   historique, nouveau QC/paire de recette, uploads refusés et CSV parsé. Contrôler
+   IDs/audits/provenance et absence de doublon. N'utiliser que des données de
+   recette identifiées et autorisées ; ne pas muter un enregistrement réel pour
+   un smoke implicite.
+8. **Ouvrir ou revenir.** Ouvrir seulement après PV de recette et validation du
+   responsable ; surveiller l'espace disque, santé, backlog des jobs et échecs
+   de sauvegarde via des mécanismes qui restent à qualifier. En cas d'échec,
+   conserver maintenance et preuves ; revenir aux images antérieures uniquement
+   si schéma compatible, sinon restaurer le paquet cohérent. Aucune perte depuis
+   backup ne peut être passée sous silence.
+
+Les futures commandes devront toujours fournir contexte moteur, nom de projet,
+fichier Compose et fichier d'environnement explicites. Aucun `down --volumes`,
+prune, reset de base ou suppression de données n'entre dans cette procédure.
+
+### 8.5 Répétition, portabilité et go/no-go
+
+Répéter d'abord l'installation à blanc et la restauration dans une pile isolée
+autorisée ; conserver les résultats et durées. Qualifier ARM64 et AMD64 avec les
+mêmes fixtures scientifiques, paramètres et unités ; documenter les écarts bruts
+et leurs tolérances justifiées avant validation, sans réécrire les anciens résultats.
+La migration Linux suit §6 : mêmes versions initiales, dump/restore logique,
+contrôle OIDC, un seul écrivain et bascule privée autorisée.
+
+**No-go** si auth dev, seed/comptes de démo, exposition réseau imprévue, backup
+non restauré, résultat scientifique divergent inexpliqué, permission contournée,
+configuration non versionnée ou absence d'approbation scientifique/exploitation.
+R1-08/09/10/11 restent ouverts jusqu'à leurs preuves respectives. Prochaine étape :
+revue de ce plan et choix explicite du premier lot à autoriser, sans exécution
+automatique à la suite de UI-06.

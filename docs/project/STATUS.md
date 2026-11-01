@@ -1,5 +1,24 @@
 # Project status
 
+## Current handoff — UI-06 integrated; qualification preparation only
+
+2026-11-01: user approved UI-06 visually/functionally and authorized PR #15.
+Exact head `535454ef6a12de0815dec8ef21546695625fb9a8`, all 12 checks
+`COMPLETED/SUCCESS`, `CLEAN/MERGEABLE`; merge commit
+`9852bdd704dc2658dd2941eeae8adb56f8ddc759`. Local `main` synchronized by
+fast-forward with `origin/main`. Post-merge format/lint/typecheck and 74 units
+pass; the 198 PostgreSQL cases are delegated to their separate suite, last
+executed with the 29 Chromium journeys for the integrated UI-06 head.
+The merge-commit CI also passed: Actions run `41300133863`, six successful jobs.
+
+UI-02 through UI-06 are integrated. The former review holds in the dated ledger
+below are superseded by these approvals; no new functional work is authorized.
+Documentation-only branch `codex/mvp-qualification-plan` prepares
+`MVP_QUALIFICATION_AUDIT.md` and §8 of
+`../deployment/PILOT_HOSTING_PLAN.md` for review. R1-08/09/10/11 remain open;
+neither hosted-pilot acceptance nor a deployment is claimed. No Mac mini,
+Cloudflare, network or production changes. Personal `assests/` files retained.
+
 ### UI-06 — scientific workflows
 
 UI-05 PR14 merged at `eb7f2b2` after explicit user approval, unchanged
