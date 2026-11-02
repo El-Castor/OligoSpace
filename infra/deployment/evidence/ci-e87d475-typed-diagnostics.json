@@ -1,0 +1,317 @@
+{
+  "source": "e87d475a6f821813e78c505c5c3a388a5ea95763",
+  "run_url": "https://github.com/El-Castor/OligoSpace/actions/runs/41420442400",
+  "purpose": "typed baseline diagnostics before static SeaweedFS configuration",
+  "logs": [
+    {
+      "artifact_path": "qualification-amd64-api/storage/garage-to-garage/storage-report.json",
+      "source": "garage",
+      "target": "garage",
+      "status": "passed",
+      "stage": "completed",
+      "log_diagnostics": {
+        "source": {
+          "status": "passed",
+          "rule_ids": [
+            "LOG_NO_CREDENTIAL_MATCH"
+          ],
+          "stdout_rule_ids": [],
+          "stderr_rule_ids": []
+        },
+        "target": {
+          "status": "passed",
+          "rule_ids": [
+            "LOG_NO_CREDENTIAL_MATCH"
+          ],
+          "stdout_rule_ids": [],
+          "stderr_rule_ids": []
+        }
+      },
+      "cleanup": "passed"
+    },
+    {
+      "artifact_path": "qualification-amd64-api/storage/garage-to-seaweedfs/storage-report.json",
+      "source": "garage",
+      "target": "seaweedfs",
+      "status": "failed",
+      "stage": "log_network_resource_checks",
+      "log_diagnostics": {
+        "source": {
+          "status": "passed",
+          "rule_ids": [
+            "LOG_NO_CREDENTIAL_MATCH"
+          ],
+          "stdout_rule_ids": [],
+          "stderr_rule_ids": []
+        },
+        "target": {
+          "status": "failed",
+          "rule_ids": [
+            "LOG_ACCESS_IDENTIFIER_PRESENT"
+          ],
+          "stdout_rule_ids": [],
+          "stderr_rule_ids": [
+            "LOG_ACCESS_IDENTIFIER_PRESENT"
+          ]
+        }
+      },
+      "cleanup": "passed"
+    },
+    {
+      "artifact_path": "qualification-amd64-api/storage/seaweedfs-to-garage/storage-report.json",
+      "source": "seaweedfs",
+      "target": "garage",
+      "status": "failed",
+      "stage": "log_network_resource_checks",
+      "log_diagnostics": {
+        "source": {
+          "status": "failed",
+          "rule_ids": [
+            "LOG_ACCESS_IDENTIFIER_PRESENT"
+          ],
+          "stdout_rule_ids": [],
+          "stderr_rule_ids": [
+            "LOG_ACCESS_IDENTIFIER_PRESENT"
+          ]
+        },
+        "target": {
+          "status": "passed",
+          "rule_ids": [
+            "LOG_NO_CREDENTIAL_MATCH"
+          ],
+          "stdout_rule_ids": [],
+          "stderr_rule_ids": []
+        }
+      },
+      "cleanup": "passed"
+    },
+    {
+      "artifact_path": "qualification-amd64-api/storage/seaweedfs-to-seaweedfs/storage-report.json",
+      "source": "seaweedfs",
+      "target": "seaweedfs",
+      "status": "failed",
+      "stage": "log_network_resource_checks",
+      "log_diagnostics": {
+        "source": {
+          "status": "failed",
+          "rule_ids": [
+            "LOG_ACCESS_IDENTIFIER_PRESENT"
+          ],
+          "stdout_rule_ids": [],
+          "stderr_rule_ids": [
+            "LOG_ACCESS_IDENTIFIER_PRESENT"
+          ]
+        },
+        "target": {
+          "status": "failed",
+          "rule_ids": [
+            "LOG_ACCESS_IDENTIFIER_PRESENT"
+          ],
+          "stdout_rule_ids": [],
+          "stderr_rule_ids": [
+            "LOG_ACCESS_IDENTIFIER_PRESENT"
+          ]
+        }
+      },
+      "cleanup": "passed"
+    },
+    {
+      "artifact_path": "qualification-arm64-api/storage/garage-to-garage/storage-report.json",
+      "source": "garage",
+      "target": "garage",
+      "status": "passed",
+      "stage": "completed",
+      "log_diagnostics": {
+        "source": {
+          "status": "passed",
+          "rule_ids": [
+            "LOG_NO_CREDENTIAL_MATCH"
+          ],
+          "stdout_rule_ids": [],
+          "stderr_rule_ids": []
+        },
+        "target": {
+          "status": "passed",
+          "rule_ids": [
+            "LOG_NO_CREDENTIAL_MATCH"
+          ],
+          "stdout_rule_ids": [],
+          "stderr_rule_ids": []
+        }
+      },
+      "cleanup": "passed"
+    },
+    {
+      "artifact_path": "qualification-arm64-api/storage/garage-to-seaweedfs/storage-report.json",
+      "source": "garage",
+      "target": "seaweedfs",
+      "status": "failed",
+      "stage": "log_network_resource_checks",
+      "log_diagnostics": {
+        "source": {
+          "status": "passed",
+          "rule_ids": [
+            "LOG_NO_CREDENTIAL_MATCH"
+          ],
+          "stdout_rule_ids": [],
+          "stderr_rule_ids": []
+        },
+        "target": {
+          "status": "failed",
+          "rule_ids": [
+            "LOG_ACCESS_IDENTIFIER_PRESENT"
+          ],
+          "stdout_rule_ids": [],
+          "stderr_rule_ids": [
+            "LOG_ACCESS_IDENTIFIER_PRESENT"
+          ]
+        }
+      },
+      "cleanup": "passed"
+    },
+    {
+      "artifact_path": "qualification-arm64-api/storage/seaweedfs-to-garage/storage-report.json",
+      "source": "seaweedfs",
+      "target": "garage",
+      "status": "failed",
+      "stage": "log_network_resource_checks",
+      "log_diagnostics": {
+        "source": {
+          "status": "failed",
+          "rule_ids": [
+            "LOG_ACCESS_IDENTIFIER_PRESENT"
+          ],
+          "stdout_rule_ids": [],
+          "stderr_rule_ids": [
+            "LOG_ACCESS_IDENTIFIER_PRESENT"
+          ]
+        },
+        "target": {
+          "status": "passed",
+          "rule_ids": [
+            "LOG_NO_CREDENTIAL_MATCH"
+          ],
+          "stdout_rule_ids": [],
+          "stderr_rule_ids": []
+        }
+      },
+      "cleanup": "passed"
+    },
+    {
+      "artifact_path": "qualification-arm64-api/storage/seaweedfs-to-seaweedfs/storage-report.json",
+      "source": "seaweedfs",
+      "target": "seaweedfs",
+      "status": "failed",
+      "stage": "log_network_resource_checks",
+      "log_diagnostics": {
+        "source": {
+          "status": "failed",
+          "rule_ids": [
+            "LOG_ACCESS_IDENTIFIER_PRESENT"
+          ],
+          "stdout_rule_ids": [],
+          "stderr_rule_ids": [
+            "LOG_ACCESS_IDENTIFIER_PRESENT"
+          ]
+        },
+        "target": {
+          "status": "failed",
+          "rule_ids": [
+            "LOG_ACCESS_IDENTIFIER_PRESENT"
+          ],
+          "stdout_rule_ids": [],
+          "stderr_rule_ids": [
+            "LOG_ACCESS_IDENTIFIER_PRESENT"
+          ]
+        }
+      },
+      "cleanup": "passed"
+    }
+  ],
+  "scans": [
+    {
+      "artifact_path": "qualification-amd64-api/oci/scan.json",
+      "execution": "technical_failure",
+      "gate": "not_verified",
+      "rule_id": "SCAN_REPORT_INVALID",
+      "scanner": "aquasec/trivy@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c",
+      "raw_matches_retained": false,
+      "archive_sha256": "03b8883a73e5fe973428511e83719ab32fbcf5ab646655cf17a6ac9fdb3e0920",
+      "source": "e87d475a6f821813e78c505c5c3a388a5ea95763",
+      "architecture": "amd64",
+      "config_digest": "sha256:04902dbc7922d3902be66ed8884775ede8203f18830b3648bcdfe1c03a797637",
+      "view_index_sha256": "4c19e734aa4a5ad9e84fe11756c39a9fc416ffa1d4165ee5f2cc68aced61a693",
+      "application_digest": "sha256:6851079bc55512bb4cd4c1474cd2baccc000b1cebe2c1d06c70a48edde32fe3e"
+    },
+    {
+      "artifact_path": "qualification-amd64-web/oci/scan.json",
+      "execution": "technical_failure",
+      "gate": "not_verified",
+      "rule_id": "SCAN_REPORT_INVALID",
+      "scanner": "aquasec/trivy@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c",
+      "raw_matches_retained": false,
+      "archive_sha256": "3e9f85a77e864f30314ec9072a44b1f9400060436645891d7acb800fc6d65f8a",
+      "source": "e87d475a6f821813e78c505c5c3a388a5ea95763",
+      "architecture": "amd64",
+      "config_digest": "sha256:e03a1022dda947bc863e6f69045ca340d554f3e692c87aeb2972700ba0ae4fcc",
+      "view_index_sha256": "58b48f3b5607feb3d4ae342066988c79d28b752f3b0084bbe1d4d40d0db228df",
+      "application_digest": "sha256:5f671907950ca8deb8d7a5b322a668e709f4ff79fe4778be30177a3e8098c79b"
+    },
+    {
+      "artifact_path": "qualification-amd64-worker/oci/scan.json",
+      "execution": "technical_failure",
+      "gate": "not_verified",
+      "rule_id": "SCAN_REPORT_INVALID",
+      "scanner": "aquasec/trivy@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c",
+      "raw_matches_retained": false,
+      "archive_sha256": "464c003d14488937393eabd76c8838dc4346f98458567c7b59b67133a13fe8c1",
+      "source": "e87d475a6f821813e78c505c5c3a388a5ea95763",
+      "architecture": "amd64",
+      "config_digest": "sha256:013529ee4fe803cdde36c089f798c58f9a46d4c10f769e71604c1a46b18f3fe6",
+      "view_index_sha256": "c693e1d66c87b7fb99319e8b6654342ff1c5401ad2890026e3e88bb135263f1a",
+      "application_digest": "sha256:62bfbb18d7aa38d25116cb29bf89d56ba1c2513d228f66307ca380a6a795aade"
+    },
+    {
+      "artifact_path": "qualification-arm64-api/oci/scan.json",
+      "execution": "technical_failure",
+      "gate": "not_verified",
+      "rule_id": "SCAN_REPORT_INVALID",
+      "scanner": "aquasec/trivy@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c",
+      "raw_matches_retained": false,
+      "archive_sha256": "66341314b85225ecbe5dc31d76c0d69bceb19bfeb89b4f61b9e916eb59be2956",
+      "source": "e87d475a6f821813e78c505c5c3a388a5ea95763",
+      "architecture": "arm64",
+      "config_digest": "sha256:2e7e41cab7d0d744712f84d5ba0ebade1b317dc5644698417ab0fc2b5c17f010",
+      "view_index_sha256": "c209cd711f8aa549abd1e262a15b9479a44f1444e34f08a37f605073ef549ebe",
+      "application_digest": "sha256:d47d0da32ab8db732d7e02dd90e374b50081d6bdf8806e076d9236757f3e2888"
+    },
+    {
+      "artifact_path": "qualification-arm64-web/oci/scan.json",
+      "execution": "technical_failure",
+      "gate": "not_verified",
+      "rule_id": "SCAN_REPORT_INVALID",
+      "scanner": "aquasec/trivy@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c",
+      "raw_matches_retained": false,
+      "archive_sha256": "e1cd51eea2713efce1720431fc53526a6cd0ab3017806a6df3ba258859987c11",
+      "source": "e87d475a6f821813e78c505c5c3a388a5ea95763",
+      "architecture": "arm64",
+      "config_digest": "sha256:b1bd2662c0857116b6507db044879ff197785dbd77514e5504b1e4370cdffd94",
+      "view_index_sha256": "a5367a8adce2546dc10324f1afef0b90580b3a206b9bc26d6664ff57f7e9f012",
+      "application_digest": "sha256:df15f71289ed344b231cf85e0c13d9d3b3d925d5b19788503b4230dc53f7421c"
+    },
+    {
+      "artifact_path": "qualification-arm64-worker/oci/scan.json",
+      "execution": "technical_failure",
+      "gate": "not_verified",
+      "rule_id": "SCAN_REPORT_INVALID",
+      "scanner": "aquasec/trivy@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c",
+      "raw_matches_retained": false,
+      "archive_sha256": "e80eed5fb456193f188723214c74c5c7247fb4f1a8cc8f96be1907e8ab62adf1",
+      "source": "e87d475a6f821813e78c505c5c3a388a5ea95763",
+      "architecture": "arm64",
+      "config_digest": "sha256:ad255bba5d02920d91fffe9f51108f761c23e10abaa96b9ad1460bbcd1f18796",
+      "view_index_sha256": "80154334b73229cea58f08cd1a579305664445cb5bc49e84d48642d7a5c299ab",
+      "application_digest": "sha256:8c30b6d6ae48fb0dee03c3f88a87861b8e139808c7d9eb6ffe51887351e6186c"
+    }
+  ]
+}

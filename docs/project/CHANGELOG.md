@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-11-02 — DEPLOY-02 blocking corrections
+
+Separate log identifiers/secrets/retrieval/controller diagnostics, use private
+SeaweedFS static identity configuration with correct non-root ownership, verify
+and extract OCI scan layouts bound to the exact application digest, and preserve
+strict typed scan outcomes. Eight native S3 scenarios pass; six scans complete
+with blocking vulnerabilities/secret alerts. Primer3 comparison unchanged (nine
+zero deltas). Application/foundation CI and47 static tests pass. PR18 remains
+draft; security findings, candidate scans, capacity and pilot gates stay open.
+No provider substitution, deployment, release or merge. See DEPLOY-02 report.
+
 ## 2026-11-01 — DEPLOY-02 qualification
 
 PR17 merged as `75179a52da0d929922c904ff6df06d94eb7a1a67`. Added isolated

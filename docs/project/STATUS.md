@@ -1,21 +1,19 @@
 # Project status
 
-## DEPLOY-02 — qualification in progress (2026-11-01)
+## DEPLOY-02 — corrected qualification, security blocked (2026-11-02)
 
-PR17 merged at `75179a52da0d929922c904ff6df06d94eb7a1a67` after exact-head
-validation and 14 green checks, superseding earlier PR17 review holds below.
-DEPLOY-02 adds disposable S3/OCI/native-CI qualification tooling; no deployment
-or provider substitution. New owner directive: SeaweedFS first (Apache-2.0),
-Garage second (AGPLv3), historical MinIO compatibility-only; AIStor excluded.
-Both immutable manifests include ARM64/AMD64; runtime prechecks are blocked.
-29 static tests cover candidate Compose resolution and fail-closed reporting.
-Local static tests/Compose resolution pass. Docker runtime is unavailable;
-GitHub publication resumed after initial timeouts. PR18 is DRAFT. At 6a31dd5, six OCI builds, application CI and Primer3 native
-comparison pass; Garage self-restore passes on ARM64/AMD64. SeaweedFS scenarios
-fail their credential-log gate (confirmed ddfd0c2); scans fail execution. No storage/pilot acceptance.
-See [qualification report](../deployment/DEPLOY_02_STORAGE_RELEASE_IMAGES.md).
-No ready pilot, accepted storage decision or authorization to merge DEPLOY-02.
-
+PR18 remains DRAFT/unmerged. Tested code `e0a57dc`, native run41426091675:
+eight S3 self/cross logical restores pass on ARM64/AMD64, including typed log,
+port and cleanup gates. Six OCI scans finish with findings (API/worker secret
+alerts and vulnerabilities in all roles), so native CI/release remain blocked.
+Application CI and deployment foundation pass. Primer3 nine numeric deltas0;
+47 local static tests pass. No fresh E2E claim. Provider choice remains proposed:
+SeaweedFS first, Garage second, historical MinIO reference, AIStor excluded.
+Candidate-image scans, finding triage, actual capacity, identity/TLS/RLS and coherent
+recovery remain open. No Mac mini, Cloudflare, pilot Compose/provider, real data
+or image publication changed. Stop for owner review; no automatic merge.
+Details and retained evidence: [report](../deployment/DEPLOY_02_STORAGE_RELEASE_IMAGES.md).
+This current entry supersedes historical qualification holds below.
 
 ## DEPLOY-01 — foundation delivered for review, pilot gates still open
 

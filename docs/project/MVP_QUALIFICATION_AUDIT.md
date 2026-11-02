@@ -106,10 +106,11 @@ gratuit et maintenu sans licence commerciale/activation. SeaweedFS passe premier
 Garage second ; MinIO historique ne sert que de compatibilité, AIStor est exclu.
 Les anciennes options ci-dessous sont historiques, pas des recommandations
 actuelles. Voir [ADR-0007](../decisions/ADR-0007-pilot-object-storage-gate.md).
-Manifests ARM64/AMD64 vérifiés ; CI native 6a31dd5 : restauration indépendante
-Garage réussie sur les deux architectures, scénarios SeaweedFS en échec au gate
-final. Snapshots mémoire limités, capacité réelle non qualifiée ; Docker local
-reste indisponible. Aucun
+Manifests ARM64/AMD64 vérifiés ; requalification native `e0a57dc` : huit scénarios
+S3 réussis, logs/ports/restaurations inclus. Six scans applicatifs terminés avec
+vulnérabilités et alertes de secrets API/worker, toujours bloquantes ; scans des
+candidats non réalisés. Snapshots mémoire limités, capacité réelle non qualifiée ;
+Docker local reste indisponible. Aucun
 fournisseur, Compose pilote, objet réel ou réseau n’est modifié.
 
 La référence utilisée reste `minio/minio:RELEASE.2025-09-07T16-13-09Z` dans

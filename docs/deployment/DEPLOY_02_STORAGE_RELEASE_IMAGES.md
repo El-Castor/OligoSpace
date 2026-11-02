@@ -1,17 +1,100 @@
 # DEPLOY-02 — Object Storage & Release Image Qualification
 
-## PR18 blocking corrections — execution record (2026-11-02)
+## PR18 blocking corrections — requalification (2026-11-02)
 
-User review of `5313b3c` authorizes correction/requalification, never merge.
-Plan: classify credential identifiers, secret values, retrieval and controller
-failures separately; reproduce the cause without retaining raw logs; use only an
-official provider configuration if a disclosure is confirmed. Correct the Trivy
-tar-versus-layout input and bind the scan view to the fully verified image digest,
-retaining all original attestations. Test malformed/absent reports and distinct
-technical/findings/clean outcomes. Re-run all four isolated S3 scenarios, native
-build/scans/Primer3 on both platforms; review exact-head CI and sanitized evidence,
-update ADR0007/tracking/memory and keep PR18 DRAFT. No host, provider substitution,
-real data migration, image release or security-policy waiver is authorized.
+Tested code: `e0a57dc4868af58fd29380e5e88962419e01d4f3`, native
+[run 41426091675](https://github.com/El-Castor/OligoSpace/actions/runs/41426091675).
+[Retained complete sanitized reports](../../infra/deployment/evidence/ci-e0a57dc-requalification.json)
+replace the earlier failed qualification below. **PR18 remains DRAFT, unmerged;
+release blocked by actual scan findings, not scanner execution failure.**
+
+### Diagnosed causes and corrections
+
+- Typed log diagnostics at `e87d475` isolate `LOG_ACCESS_IDENTIFIER_PRESENT`
+  on SeaweedFS stderr, not a generated secret-value match, retrieval failure or
+  controller failure. [Retained typed baseline](../../infra/deployment/evidence/ci-e87d475-typed-diagnostics.json).
+  The tagged [credential bootstrap source](https://github.com/seaweedfs/seaweedfs/blob/153ab668c99731a6d29492bf6c61d0b4fa701101/weed/s3api/auth_credentials.go)
+  logs the access identifier when AWS environment bootstrap is used. The harness
+  now uses official `mini -s3.config` with a private static identity JSON instead.
+  The strict gate still rejects both access identifiers and secret values.
+- The image [entrypoint](https://github.com/seaweedfs/seaweedfs/blob/153ab668c99731a6d29492bf6c61d0b4fa701101/docker/entrypoint.sh)
+  drops privileges to `seaweed`: a runner-owned 0600 identity file then failed
+  with `CANDIDATE_PERMISSION_DENIED`. A tracked ephemeral helper uses the same
+  pinned image, no network and only that newly generated file mounted to assign
+  its runtime owner. Mode 0600, read-only server mount and non-root server remain.
+  Existing files, secrets and volumes are never candidates for this helper.
+- Trivy 0.76.1 [OCI reader](https://github.com/aquasecurity/trivy/blob/v0.76.1/pkg/fanal/image/archive.go)
+  expects a layout directory on this path; the old controller supplied `.oci.tar`.
+  The original archive is verified and retained unchanged during execution. A
+  bounded, path-validated extraction retains all blobs/attestations and derives
+  a scan-only root index selecting the exact verified application digest. Scan
+  reports bind source, architecture, archive checksum, application/config digest.
+- After fixing input, strict sanitization exposed two genuine report-parser
+  defects: multiple fixed versions use comma-separated branches, and public
+  vendor advisory IDs extend beyond CVE/GHSA. Both now validate bounded public
+  syntax; every finding still blocks. Raw scanner JSON/logs/matches stay in RAM,
+  scan-result cache is memory-only. Public vulnerability DB metadata is retained.
+
+Log diagnostics distinguish access identifier, secret value, retrieval and
+controller failures using fixed rule IDs only. Scan states are `not_executed`,
+`technical_failure`, `completed_with_findings`, `completed_clean`; skipped or
+missing reports never count as success. No severity waiver/ignore rule is added.
+
+### Actual results and security blockers
+
+All four pairs (Garage→Garage, SeaweedFS→SeaweedFS, Garage→SeaweedFS,
+SeaweedFS→Garage) **pass on native Linux ARM64 and AMD64**: eight scenarios.
+The unchanged adapter and SDK 7.2.20 are exercised, persisted bytes/types/metadata/
+SHA256 checked after source/target restarts and independent logical restoration,
+wrong credentials refused, no host ports, both log streams clear and cleanup passes.
+These are synthetic logical restores, not coherent application/identity recovery.
+S3 reports are attributed through the CI artifact/run and its exact-HEAD API
+image argument; unlike OCI/scan reports, they do not independently embed the
+application SHA or image digest.
+Six OCI structures validate. Real Primer3 2.6.1 has nine numeric deltas of 0.0
+between architectures (absolute tolerance 1e-6); no scientific rule changed.
+
+All six scans **completed with findings**; zero technical scanner failures in
+this run. Counts below are package/advisory occurrences **per architecture**,
+not unique CVEs; ARM64 and AMD64 counts match. Policy blocks every finding.
+
+| Role | Critical | High | Medium | Low | Unknown | Secret alerts |
+|---|---:|---:|---:|---:|---:|---:|
+| API | 6 | 121 | 183 | 134 | 10 | 1 |
+| Web | 4 | 18 | 27 | 14 | 2 | 0 |
+| Worker | 5 | 110 | 171 | 129 | 10 | 1 |
+
+Critical examples reported by the dated DB: API/worker OpenSSL
+`CVE-2026-31789` (3.5.4 → reported fix 3.5.5), Perl `CVE-2026-13221`,
+`CVE-2026-42496`, `CVE-2026-8376`; API PyJWT `CVE-2026-102268`
+(2.10.1 → 2.14.0); web Next `GHSA-2464-fhr4-w9xw`,
+`GHSA-673q-mjm6-r5xr`, `GHSA-vcvr-r3jv-pc5j` and tar `CVE-2026-59873`.
+Exact installed/fixed versions and all public finding IDs are retained in the
+receipt. These are scanner observations requiring triage, not independent
+exploitability confirmation. API/worker secret alerts remain **untriaged and
+blocking**; sanitized evidence retains counts only, no path, match or value.
+They do not prove that a real user credential was exposed. Do not dismiss them
+as false positives or grant risk acceptance without a separate qualified review.
+Candidate SeaweedFS/Garage images were executed by digest but **not included in
+these six application-image scans**; their own vulnerability/supply-chain review
+remains a provider-selection gate.
+
+Application CI [41426091482](https://github.com/El-Castor/OligoSpace/actions/runs/41426091482)
+and deployment foundation [41426091561](https://github.com/El-Castor/OligoSpace/actions/runs/41426091561)
+pass at tested code. Native qualification stays red because six scan gates fail
+on findings; offline comparison can pass without approving release. No fresh
+Chromium E2E execution is claimed. Local Python 3.12.2 suite: **47 tests pass**;
+Ruff lint/format and offline Compose configuration pass. Combined local
+`make format lint typecheck test` did not execute: automatic authorization review
+expired, and Docker remains unavailable. CI application checks supply remote
+evidence; no daemon/service was restarted.
+
+Independent review checked strict gates, file ownership helper, bounded extraction,
+parser, artifact attribution and all final reports: no important issue confirmed.
+Review does not waive the observed security findings. Mac Docker Desktop/full-stack
+capacity, peak load, coherent off-host identity/database/object recovery, OIDC/TLS/
+RLS, candidate scans and registry trust remain unqualified. Stop after PR18 review;
+no provider replacement, release publication, deployment or automatic merge.
 
 2026-11-01. Branch `codex/deploy-02-storage-release-images`, based on main
 `75179a52da0d929922c904ff6df06d94eb7a1a67`: PR17 merged after exact approved
@@ -145,46 +228,12 @@ hashes, coherent relational/quarantine references, original retained and reversi
 cutover after recovery acceptance. Neither byte-copying internal volumes nor using
 an AMD64 manifest alone proves migration safety. No actual migration is authorized.
 
-### Observed native CI results at 6a31dd5 (supersede local-only status above)
+### Historical runs
 
-[Run 41343480403](https://github.com/El-Castor/OligoSpace/actions/runs/41343480403),
-source `6a31dd5b19540879c0fa9cc72b7a718d1de6626c`; retained
-[qualification summary](../../infra/deployment/evidence/ci-6a31dd5-qualification-summary.json).
-
-| Scenario | ARM64 runner | AMD64 runner |
-|---|---|---|
-| Garage → independent Garage | Passed, including adapter, hashes/types/metadata, both restarts, denial, log/network checks and cleanup | Passed, same checks |
-| SeaweedFS → independent SeaweedFS | Failed in final log/network/resource gate | Failed in same phase |
-| SeaweedFS → Garage | Data/restore calls completed, overall final gate failed | Same |
-| Garage → SeaweedFS | Data/restore calls completed, overall final gate failed | Same |
-
-All failed reports retain `status=failed`; reaching the final phase is evidence of
-prior synchronous data checks, not a complete qualification. The first report
-suppresses the exact exception. Re-execution at `ddfd0c2`,
-[run 41344277644](https://github.com/El-Castor/OligoSpace/actions/runs/41344277644),
-[retained gates](../../infra/deployment/evidence/ci-ddfd0c2-storage-gates.json),
-identifies `secret_log_gate` in all six SeaweedFS-involving cases and confirms
-Garage self-restore passes on both architectures. The check includes access-key
-identifiers and secret values and also refuses log-read failures; this is not yet
-a finding that a secret value specifically was leaked. Diagnose that distinction
-before accepting or changing logging configuration. No raw server
-log or credential value is uploaded. No provider is approved from these results.
-
-Actual Docker snapshots: Garage ~5–7 MiB, SeaweedFS ~59–76 MiB (partial after-PUT
-samples). Garage test-root allocation totals 4,423,680 bytes on ARM64 and
-4,456,448 bytes on AMD64, including two stores plus logical exchange/config; this
-excludes images/engine and is not a per-instance footprint. SeaweedFS disk/final
-measurements were not reached. These are tiny synthetic workloads on independent
-Linux runners (~16 GB RAM/4 CPUs), not measurements of the Mac mini or peak load.
-
-All six role/architecture OCI structures validate. Both real Primer3 runs use
-2.6.1 and identical inputs/parameters: nine compared numeric facts have maximum
-absolute difference 0.0 (allowed 1e-6). Manual aggregation of retained reports
-passes while explicitly keeping `release=blocked`; the automatic aggregate job
-was skipped because its dependencies failed. Four scan reports fail execution
-with categories `archive`, `manifest`, `oci`; API scans were not reached after S3
-failure. No vulnerability acceptance is inferred. Existing application CI and
-deployment-contract jobs passed at this SHA; no fresh E2E run is claimed.
+Earlier `6a31dd5` and `ddfd0c2` runs proved Garage self-restore but failed
+SeaweedFS log gates; OCI scanning also failed execution. Their retained receipts
+remain historical evidence only. The correction results above supersede those
+failures; the release remains blocked for the newly observed security findings.
 
 ## 4. Image construction and supply-chain checks
 
@@ -204,7 +253,7 @@ are not exhaustively proven by this structural validator. A loaded test image mu
 match the exported configuration digest and rootfs identities.
 
 `scan_artifact.py` prepares actual pinned Trivy vulnerability/secret scanning of
-the OCI archive. Raw matches stay temporary; only sanitized counts/CVE IDs,
+the verified OCI scan layout. Raw matches remain in RAM only; sanitized counts/advisory IDs,
 archive checksum and available database metadata are retained. Findings fail the
 release gate even when collection succeeds. **No scan ran locally; no vulnerability
 cleanliness or exception acceptance is claimed.** Scanner execution and complete
@@ -225,15 +274,12 @@ absolute tolerance 1e-6, relative tolerance zero; it reports each delta. No chan
 to Primer3/scientific rules is made. Aggregation produces offline OCI indexes
 binding both role manifests. They are not published/pullable multiarch releases.
 
-First draft PR CI at `23b99d7` (run `41342999866`) produced API native build and
-structurally verified OCI evidence, including ARM64 revision/platform/SBOM/
-provenance. Its scan execution failed without a detailed safe diagnostic, so S3
-and science steps after it were not executed. This is not scan acceptance or
-runtime storage qualification. The workflow now runs independent SDK/science
-checks before the scan and retains fixed error categories, never raw diagnostics;
-scan failure still fails the job. New-revision native results remain pending. Never substitute DEPLOY-01 evidence for
-this revision. Images/archives are not uploaded as public Actions artifacts;
-sanitary evidence reports only have seven-day retention.
+Initial runs did not execute every downstream check after earlier failures.
+Current workflow attempts independent SDK/science and scan steps even when a
+prior runtime gate fails, explicitly emits not-executed scan status on missing
+prerequisites, and aggregates available evidence without approving release.
+Images/archives are not uploaded; sanitized Actions reports expire after seven
+days. The committed receipt above preserves qualification evidence.
 
 ## 6. GHCR proposal — dry run only
 
@@ -250,36 +296,12 @@ revocation and restore after artifact loss, signature trust, vulnerability polic
 and immutable deployment digests. Tags remain mutable. Public downloads cannot
 be recalled by later revocation. No historical MinIO image is republished.
 
-## 7. Validation, review and remaining gates
+## 7. Remaining gates and stop point
 
-- Local static suite: 29 tests passed using Python 3.12.2, including both
-  candidate Compose resolutions and unavailable-engine fail-closed evidence;
-  Ruff 0.9.7 lint/format and `make compose-config` pass. The required combined
-  `make format lint typecheck test PYTHON_RUNNER=container` attempt fails at its
-  Docker tooling-build prerequisite; those application checks did not run.
-- Independent source review identified Linux exchange-directory ownership,
-  exported-versus-loaded image binding and interrupted cleanup issues; fixes and
-  negative tests are included. A new independent review found premature passed
-  status on late measurement/cleanup failure; both cases were reproduced failing,
-  corrected and verified passing. Runtime behavior remains unverified.
-- Local application/container checks remain blocked by Docker. Remote CI evidence
-  above establishes builds, application/integration checks and scientific comparison
-  at its exact SHA, plus Garage self-restore. SeaweedFS gates, scans and full pilot
-  qualification remain open; no fresh E2E success is claimed.
-- Initial GitHub shell requests timed out; branch publication subsequently
-  succeeded. Draft PR CI is pending; no native/runtime/scan success is claimed
-  until its exact-head reports have been inspected.
-
-Open gates: final owner selection of qualified open-source storage;
-SDK/restore/cross-provider qualification; measured capacity;
-native image builds and scientific comparison; complete scans and risk handling;
-registry ownership/retention/trust; real OIDC/TLS/security gates and coherent
-identity/database/object recovery from the pilot plan. No accepted deferral is
-inferred. ADR-0007 stays proposed and the release stays blocked.
-
-Recommendation: review the tooling separately from architecture acceptance;
-qualify SeaweedFS first and Garage second on the same synthetic contract when
-execution becomes available; AIStor is excluded. Ask the owner to select storage
-only after evidence review.
-No provider, license, format, pilot deployment or registry publication is approved
-by this report. DEPLOY-02 must remain draft and unmerged.
+The corrective qualification is complete at the tested SHA above, with security
+findings explicitly unresolved. Review PR18 tooling and evidence separately from
+provider approval. SeaweedFS remains the conditional first recommendation, Garage
+the alternative with its upstream mono-node reserve; see ADR-0007. No supplier is
+selected by synthetic success. Final provider/capacity/security/recovery acceptance,
+candidate-image scans and vulnerability/secret triage remain open. DEPLOY-02
+stays DRAFT and unmerged. No next functional or operational lot is started.
