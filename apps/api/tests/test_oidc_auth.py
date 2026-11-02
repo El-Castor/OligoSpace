@@ -301,3 +301,71 @@ async def test_local_role_and_memberships_reloaded_for_same_token(
     assert second.principal.role is GlobalRole.VIEWER
     assert project_id in first.principal.project_roles
     assert project_id not in second.principal.project_roles
+
+
+@pytest.mark.parametrize(
+    "exception_type,rule",
+    [
+        (jwt.PyJWKClientConnectionError, "JWKS_FETCH_FAILED"),
+        (jwt.InvalidSignatureError, "JWT_SIGNATURE_INVALID"),
+        (jwt.InvalidAudienceError, "JWT_CLAIMS_INVALID"),
+    ],
+)
+def test_decode_warnings_classify_failure_without_sensitive_details(
+    monkeypatch: pytest.MonkeyPatch,
+    oidc_settings: Settings,
+    caplog: pytest.LogCaptureFixture,
+    exception_type: type[Exception],
+    rule: str,
+) -> None:
+    def reject(token: str) -> None:
+        raise exception_type("synthetic-sensitive-exception-detail")
+
+    monkeypatch.setattr(
+        auth,
+        "PyJWKClient",
+        lambda url: SimpleNamespace(
+            get_signing_key_from_jwt=reject,
+        ),
+    )
+    with pytest.raises(HTTPException) as error:
+        auth._decode_token("synthetic-sensitive-bearer", oidc_settings)
+    assert error.value.status_code == 401
+    records = [record for record in caplog.records if record.name == auth.__name__]
+    assert [record.getMessage() for record in records] == [rule]
+    assert all(record.exc_info is None and not record.args for record in records)
+    assert "synthetic-sensitive" not in caplog.text
+    assert oidc_settings.oidc_client_secret not in caplog.text
+
+
+@pytest.mark.parametrize(
+    "response,rule",
+    [
+        (httpx.Response(503), "OIDC_INTROSPECTION_HTTP_FAILED"),
+        (
+            httpx.ConnectError("synthetic-sensitive-exception-detail"),
+            "OIDC_INTROSPECTION_TRANSPORT_FAILED",
+        ),
+        (
+            httpx.Response(200, content=b"synthetic-sensitive-body"),
+            "OIDC_INTROSPECTION_JSON_INVALID",
+        ),
+        ({"active": False}, "OIDC_INTROSPECTION_INACTIVE"),
+    ],
+)
+async def test_introspection_warnings_classify_failure_without_sensitive_details(
+    monkeypatch: pytest.MonkeyPatch,
+    oidc_settings: Settings,
+    caplog: pytest.LogCaptureFixture,
+    response: object,
+    rule: str,
+) -> None:
+    provider_response(monkeypatch, response)
+    with pytest.raises(HTTPException) as error:
+        await auth._require_active_token("synthetic-sensitive-bearer", oidc_settings)
+    assert error.value.status_code == 401
+    records = [record for record in caplog.records if record.name == auth.__name__]
+    assert [record.getMessage() for record in records] == [rule]
+    assert all(record.exc_info is None and not record.args for record in records)
+    assert "synthetic-sensitive" not in caplog.text
+    assert oidc_settings.oidc_client_secret not in caplog.text

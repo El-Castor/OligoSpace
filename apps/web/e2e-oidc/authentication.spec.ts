@@ -61,6 +61,8 @@ test.beforeAll(async ({ request }) => {
 });
 
 test("real login enforces PKCE, state, nonce and secure session cookies", async ({ page }) => {
+  await page.goto("/login");
+  await page.screenshot({ path: "/evidence/synthetic-login.png", fullPage: true });
   await beginLogin(page);
   const authorize = new URL(page.url());
   expect(authorize.searchParams.get("code_challenge_method")).toBe("S256");
@@ -112,14 +114,30 @@ test("real login enforces PKCE, state, nonce and secure session cookies", async 
 
 test("a callback with forged state cannot establish a session", async ({ page }) => {
   await beginLogin(page);
+  let interceptionSeen = false;
   await page.route("**/api/auth/callback/keycloak?**", async (route) => {
+    interceptionSeen = true;
     const callback = new URL(route.request().url());
     callback.searchParams.set("state", "synthetic-invalid-state");
     await route.continue({ url: callback.toString() });
   });
-  await credentials(page, "member");
-  await expect(page).toHaveURL(/\/login/);
-  expect(Boolean((await session(page)).accessToken)).toBe(false);
+  try {
+    await credentials(page, "member");
+    await expect(page).toHaveURL(/\/login/);
+    expect(interceptionSeen).toBe(true);
+    expect(Boolean((await session(page)).accessToken)).toBe(false);
+  } finally {
+    const path = new URL(page.url()).pathname;
+    const pathClass = path.startsWith("/login") ? "login" : path.startsWith("/api/auth/") ? "auth" : path.startsWith("/realms/") ? "realms" : "other";
+    let sessionPresent = true; // Fail closed if session inspection itself fails.
+    try { sessionPresent = Boolean((await session(page)).accessToken); }
+    catch { /* No session response or error text is retained. */ }
+    writeFileSync("/evidence/state-probe.json", JSON.stringify({
+      interception_seen: interceptionSeen,
+      session_present: sessionPresent,
+      path_class: pathClass,
+    }, null, 2));
+  }
 });
 
 test("administrator provisions a synthetic identity through the real UI", async ({ page }) => {

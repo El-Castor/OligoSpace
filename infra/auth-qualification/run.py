@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import re
 import secrets
 import subprocess
 import tempfile
@@ -29,9 +30,12 @@ def main() -> None:
     evidence = ROOT / "infra/auth-qualification/evidence"
     evidence.mkdir(exist_ok=True)
     for name in (
+        "synthetic-login.png",
         "synthetic-dashboard.png",
         "synthetic-administration.png",
         "oidc-structure.json",
+        "api-rule-counts.json",
+        "state-probe.json",
     ):
         (evidence / name).unlink(missing_ok=True)
     summary: dict[str, object] = {"qualification": "not_completed", "tests": []}
@@ -306,6 +310,36 @@ https://auth-qualification.test {
                 capture_output=True,
                 check=False,
             )
+            # Raw API output lives only in this process. Retain counts of fixed
+            # warning identifiers; never serialize a line, header or exception.
+            api_logs = subprocess.run(
+                dc + ["logs", "--no-color", "api"],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            rule_ids = (
+                "JWKS_FETCH_FAILED",
+                "JWT_SIGNATURE_INVALID",
+                "JWT_CLAIMS_INVALID",
+                "OIDC_INTROSPECTION_HTTP_FAILED",
+                "OIDC_INTROSPECTION_TRANSPORT_FAILED",
+                "OIDC_INTROSPECTION_JSON_INVALID",
+                "OIDC_INTROSPECTION_INACTIVE",
+            )
+            rule_counts = {
+                rule: len(
+                    re.findall(
+                        r"\b" + re.escape(rule) + r"\b",
+                        api_logs.stdout + api_logs.stderr,
+                    )
+                )
+                for rule in rule_ids
+            }
+            (evidence / "api-rule-counts.json").write_text(
+                json.dumps(rule_counts, indent=2)
+            )
+            del api_logs
             results = []
             for line in browser.stdout.splitlines():
                 try:
@@ -342,7 +376,11 @@ https://auth-qualification.test {
                 qualification="passed" if passed else "failed", tests=results
             )
             (evidence / "summary.json").write_text(json.dumps(summary, indent=2))
-            for name in ("synthetic-dashboard.png", "synthetic-administration.png"):
+            for name in (
+                "synthetic-login.png",
+                "synthetic-dashboard.png",
+                "synthetic-administration.png",
+            ):
                 source = work / "evidence" / name
                 if source.exists():
                     shutil.copyfile(source, evidence / name)
@@ -372,6 +410,20 @@ https://auth-qualification.test {
                 ):
                     (evidence / "oidc-structure.json").write_text(
                         json.dumps(structure, indent=2)
+                    )
+            state_path = work / "evidence/state-probe.json"
+            if state_path.exists():
+                state = json.loads(state_path.read_text())
+                if (
+                    isinstance(state, dict)
+                    and set(state)
+                    == {"interception_seen", "session_present", "path_class"}
+                    and type(state["interception_seen"]) is bool
+                    and type(state["session_present"]) is bool
+                    and state["path_class"] in ("login", "auth", "realms", "other")
+                ):
+                    (evidence / "state-probe.json").write_text(
+                        json.dumps(state, indent=2)
                     )
             if not passed:
                 raise RuntimeError(

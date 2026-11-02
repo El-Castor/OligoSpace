@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import logging
 import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
@@ -22,6 +23,7 @@ from oligospace_api.models.enums import GlobalRole
 from oligospace_api.models.registry import ProjectMembership, TeamMembership, User
 
 bearer = HTTPBearer(auto_error=False)
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -70,6 +72,12 @@ def _decode_token(token: str, settings: Settings) -> dict[str, object]:
             raise jwt.InvalidTokenError("Missing subject")
         return claims
     except jwt.PyJWTError as exc:
+        if isinstance(exc, jwt.PyJWKClientError):
+            logger.warning("JWKS_FETCH_FAILED")
+        elif isinstance(exc, jwt.InvalidSignatureError):
+            logger.warning("JWT_SIGNATURE_INVALID")
+        else:
+            logger.warning("JWT_CLAIMS_INVALID")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail={"code": "invalid_token", "message": "The access token is invalid."},
@@ -90,14 +98,25 @@ async def _require_active_token(token: str, settings: Settings) -> None:
             )
             response.raise_for_status()
             result = response.json()
-        if not isinstance(result, dict) or result.get("active") is not True:
-            raise ValueError("Inactive token")
     except (httpx.HTTPError, ValueError) as exc:
+        if isinstance(exc, httpx.HTTPStatusError):
+            logger.warning("OIDC_INTROSPECTION_HTTP_FAILED")
+        elif isinstance(exc, httpx.HTTPError):
+            logger.warning("OIDC_INTROSPECTION_TRANSPORT_FAILED")
+        else:
+            logger.warning("OIDC_INTROSPECTION_JSON_INVALID")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail={"code": "invalid_token", "message": "The access token is invalid."},
             headers={"WWW-Authenticate": "Bearer"},
         ) from exc
+    if not isinstance(result, dict) or result.get("active") is not True:
+        logger.warning("OIDC_INTROSPECTION_INACTIVE")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"code": "invalid_token", "message": "The access token is invalid."},
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 
 async def get_auth_context(
