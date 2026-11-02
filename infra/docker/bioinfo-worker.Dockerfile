@@ -28,7 +28,7 @@ RUN apt-get update \
     && apt-get upgrade --yes \
     && rm -rf /var/lib/apt/lists/*
 COPY envs/bioinfo.yml /tmp/environment.yml
-RUN micromamba install --yes --name base --file /tmp/environment.yml \
+RUN PIP_NO_CACHE_DIR=1 micromamba install --yes --name base --file /tmp/environment.yml \
     && micromamba clean --all --yes
 RUN set -eu; \
     case "${TARGETARCH}" in \
@@ -45,7 +45,8 @@ COPY --from=primer3-builder /opt/primer3 /opt/primer3
 
 WORKDIR /worker
 COPY services/bioinfo-worker/ /worker/
-RUN micromamba run --name base pip install --no-deps . \
+RUN PIP_NO_CACHE_DIR=1 micromamba run --name base pip install --no-cache-dir --no-deps . \
+    && rm -rf /root/.cache/pip \
     && chown -R ${MAMBA_USER}:${MAMBA_USER} /worker
 
 USER ${MAMBA_USER}

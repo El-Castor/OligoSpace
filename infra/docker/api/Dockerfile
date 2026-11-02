@@ -6,12 +6,13 @@ RUN apt-get update \
     && apt-get upgrade --yes \
     && rm -rf /var/lib/apt/lists/*
 COPY envs/api.yml /tmp/environment.yml
-RUN micromamba install --yes --name base --file /tmp/environment.yml \
+RUN PIP_NO_CACHE_DIR=1 micromamba install --yes --name base --file /tmp/environment.yml \
     && micromamba clean --all --yes
 
 WORKDIR /app
 COPY apps/api/ /app/
-RUN micromamba run --name base pip install --no-deps . \
+RUN PIP_NO_CACHE_DIR=1 micromamba run --name base pip install --no-cache-dir --no-deps . \
+    && rm -rf /root/.cache/pip \
     && chown -R ${MAMBA_USER}:${MAMBA_USER} /app
 
 USER ${MAMBA_USER}
