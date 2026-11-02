@@ -17,7 +17,12 @@ import time
 import uuid
 
 from evidence import candidate_runtime_report, credential_log_report
-from storage_profiles import IMAGES, compose_definition, prepare
+from storage_profiles import (
+    IMAGES,
+    compose_definition,
+    prepare,
+    private_identity_owner_args,
+)
 
 
 def safe_failure(error):
@@ -161,7 +166,7 @@ def main():
     def start(kind, side):
         name = project + "-" + side
         data = root / side
-        data.mkdir()
+        data.mkdir(mode=0o700)
         access = (
             "GK" + secrets.token_hex(16) if kind == "garage" else secrets.token_hex(16)
         )
@@ -171,6 +176,11 @@ def main():
         profile = prepare(kind, name, data, access, secret)
         envfiles.extend(profile["private_files"])
         secret_values.extend(profile["extra_secret_values"])
+        if kind == "seaweedfs":
+            owner = project + "-" + side + "-config-owner"
+            containers.append(owner)
+            run(*private_identity_owner_args(project, side, data / "s3.json"))
+            containers.remove(owner)
         env = {
             "PILOT_PROJECT": project,
             "ACCESS_KEY": access,

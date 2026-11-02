@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import json
+import os
 import secrets
 
 IMAGES = {
@@ -9,6 +10,46 @@ IMAGES = {
     "seaweedfs": "chrislusf/seaweedfs@sha256:f7a49e3f3972ebed5be2ed4befa4a0c68eb7bdddba6e692d42729ceb545134b8",
     "garage": "dxflrs/garage@sha256:677e5b758e4425a325b811c425c026bf35a4bf42f7ddbaa773de3f4fd779a5a5",
 }
+
+
+def private_identity_owner_args(project, side, config: Path):
+    """Only a generated private test file may be handed to the image's user."""
+    if (
+        not project.startswith("oligospace-deploy02-test-")
+        or side not in ("source", "target")
+        or config.is_symlink()
+        or config.parent.is_symlink()
+        or config.parent.parent.is_symlink()
+        or not config.is_file()
+        or config.name != "s3.json"
+        or config.parent.name != side
+        or not config.parent.parent.name.startswith("oligospace-deploy02-storage-")
+        or config.parent.parent.stat().st_mode & 0o777 != 0o700
+        or config.stat().st_mode & 0o777 != 0o600
+        or config.stat().st_uid != os.getuid()
+        or config.stat().st_nlink != 1
+    ):
+        raise ValueError("generated_private_identity_required")
+    return [
+        "run",
+        "--rm",
+        "--pull=never",
+        "--network",
+        "none",
+        "--user",
+        "0:0",
+        "--name",
+        project + "-" + side + "-config-owner",
+        "--label",
+        "org.oligospace.disposable=" + project,
+        "--mount",
+        f"type=bind,source={config.resolve()},target=/qualification/s3.json",
+        "--entrypoint",
+        "/bin/chown",
+        IMAGES["seaweedfs"],
+        "seaweed:seaweed",
+        "/qualification/s3.json",
+    ]
 
 
 def command(kind, name):

@@ -10,6 +10,34 @@ import unittest
 
 
 class StorageProfileTests(unittest.TestCase):
+    def test_private_identity_owner_is_limited_to_one_generated_file(self):
+        module = self.profile_module()
+        with tempfile.TemporaryDirectory(
+            prefix="oligospace-deploy02-storage-"
+        ) as directory:
+            root = Path(directory)
+            side = root / "source"
+            side.mkdir(mode=0o700)
+            config = side / "s3.json"
+            config.write_text("{}")
+            config.chmod(0o600)
+            args = module.private_identity_owner_args(
+                "oligospace-deploy02-test-unit", "source", config
+            )
+            self.assertEqual(args[args.index("--network") + 1], "none")
+            self.assertEqual(
+                args[args.index("--mount") + 1],
+                f"type=bind,source={config.resolve()},target=/qualification/s3.json",
+            )
+            self.assertEqual(args[-2:], ["seaweed:seaweed", "/qualification/s3.json"])
+            config.chmod(0o644)
+            with self.assertRaises(ValueError):
+                module.private_identity_owner_args(
+                    "oligospace-deploy02-test-unit", "source", config
+                )
+            with self.assertRaises(ValueError):
+                module.private_identity_owner_args("production", "source", config)
+
     def test_seaweed_uses_official_private_config_instead_of_logged_aws_bootstrap(self):
         module = self.profile_module()
         with tempfile.TemporaryDirectory() as directory:
