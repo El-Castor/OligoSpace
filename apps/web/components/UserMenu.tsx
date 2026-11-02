@@ -14,7 +14,16 @@ export function UserMenu({ user }: { user: CurrentUser | null }) {
   async function logout() {
     setSigningOut(true);
     try {
-      // NextAuth POST signout validates CSRF; the server event closes Keycloak.
+      // Require provider confirmation before removing the local session. This
+      // authenticated JSON POST also verifies the exact same-origin header.
+      const response = await fetch("/api/auth/provider-logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: "{}",
+        cache: "no-store",
+      });
+      if (!response.ok) throw new Error("provider_logout_not_confirmed");
+      // NextAuth POST signout validates its own CSRF token.
       await signOut({ callbackUrl: "/login" });
     } catch {
       setSigningOut(false);

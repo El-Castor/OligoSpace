@@ -28,7 +28,7 @@ const developmentIdentities = {
   },
 } as const;
 
-const providerConfig = {
+export const providerConfig = {
   issuer,
   clientId: process.env.KEYCLOAK_CLIENT_ID ?? "oligospace-web",
   clientSecret: process.env.KEYCLOAK_CLIENT_SECRET ?? "",
@@ -80,6 +80,7 @@ export const authOptions: NextAuthOptions = {
       if (account?.access_token) {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
+        token.logoutRefreshToken = account.refresh_token;
         token.accessTokenExpires = (account.expires_at ?? 0) * 1000;
         return token;
       }

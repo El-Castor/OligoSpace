@@ -149,6 +149,35 @@ class PolicyTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertNotIn("sensitive-unparseable-value", result.stdout + result.stderr)
 
+    def test_oidc_api_and_migration_clients_must_match_web(self):
+        for service in ("api", "migrate"):
+            for key, value in (
+                ("OIDC_CLIENT_ID", None),
+                ("OIDC_CLIENT_SECRET", None),
+                ("OIDC_CLIENT_ID", "other-client"),
+                ("OIDC_CLIENT_SECRET", "different-generated-credential-7ab293bd"),
+            ):
+                with self.subTest(service=service, key=key, missing=value is None):
+                    config = resolved_fixture()
+                    env = config["services"][service]["environment"]
+                    if value is None:
+                        env.pop(key, None)
+                    else:
+                        env[key] = value
+                    result = self.check_config(config)
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn("oidc_client", json.loads(result.stdout)["rules"])
+
+    def test_api_and_migration_oidc_secrets_require_strong_values(self):
+        for service in ("api", "migrate"):
+            with self.subTest(service=service):
+                config = resolved_fixture()
+                config["services"][service]["environment"]["OIDC_CLIENT_SECRET"] = (
+                    "change-me"
+                )
+                result = self.check_config(config)
+                self.assertIn("secret_required", json.loads(result.stdout)["rules"])
+
 
 if __name__ == "__main__":
     unittest.main()

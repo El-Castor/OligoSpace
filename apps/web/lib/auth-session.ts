@@ -10,6 +10,7 @@ function failedSession(token: JWT): JWT {
   return {
     ...token,
     accessToken: undefined,
+    logoutRefreshToken: token.refreshToken ?? token.logoutRefreshToken,
     refreshToken: undefined,
     accessTokenExpires: 0,
     error: "RefreshAccessTokenError",
@@ -49,6 +50,7 @@ export async function refreshSessionToken(
       accessToken: value.access_token,
       accessTokenExpires: Date.now() + value.expires_in * 1000,
       refreshToken: typeof value.refresh_token === "string" ? value.refresh_token : token.refreshToken,
+      logoutRefreshToken: typeof value.refresh_token === "string" ? value.refresh_token : token.refreshToken,
       error: undefined,
     };
   } catch {
@@ -62,11 +64,21 @@ export async function endProviderSession(
   config: ProviderConfig,
   fetcher: typeof fetch = fetch,
 ): Promise<boolean> {
-  if (!token.refreshToken) return false;
+  const credential = token.refreshToken ?? token.logoutRefreshToken;
+  if (!credential) return false;
   try {
     const response = await fetcher(`${config.issuer.replace(/\/$/, "")}/protocol/openid-connect/logout`,
-      providerRequest(config, { refresh_token: token.refreshToken }));
+      providerRequest(config, { refresh_token: credential }));
     return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+export function validLogoutRequest(origin: string | null, contentType: string | null, configuredOrigin: string): boolean {
+  try {
+    return origin === new URL(configuredOrigin).origin &&
+      contentType?.split(";", 1)[0].trim().toLowerCase() === "application/json";
   } catch {
     return false;
   }

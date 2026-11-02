@@ -319,7 +319,7 @@ https://auth-qualification.test {
                     print(json.dumps(item), flush=True)
             passed = (
                 browser.returncode == 0
-                and len(results) == 12
+                and len(results) == 13
                 and all(item["status"] == "passed" for item in results)
             )
             summary.update(

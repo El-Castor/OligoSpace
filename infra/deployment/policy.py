@@ -51,8 +51,16 @@ SECRET_KEYS = {
     "object-store": ["MINIO_ROOT_USER", "MINIO_ROOT_PASSWORD"],
     "keycloak": ["KC_DB_PASSWORD"],
     "web": ["NEXTAUTH_SECRET", "KEYCLOAK_CLIENT_SECRET"],
-    "api": ["OBJECT_STORAGE_ACCESS_KEY", "OBJECT_STORAGE_SECRET_KEY"],
-    "migrate": ["OBJECT_STORAGE_ACCESS_KEY", "OBJECT_STORAGE_SECRET_KEY"],
+    "api": [
+        "OBJECT_STORAGE_ACCESS_KEY",
+        "OBJECT_STORAGE_SECRET_KEY",
+        "OIDC_CLIENT_SECRET",
+    ],
+    "migrate": [
+        "OBJECT_STORAGE_ACCESS_KEY",
+        "OBJECT_STORAGE_SECRET_KEY",
+        "OIDC_CLIENT_SECRET",
+    ],
 }
 
 
@@ -246,6 +254,17 @@ def validate(config: dict) -> list[str]:
         bool(envs["api"].get("OIDC_AUDIENCE"))
         and bool(envs["web"].get("KEYCLOAK_CLIENT_ID")),
         "oidc_parameters",
+    )
+    require(
+        bool(str(envs["web"].get("KEYCLOAK_CLIENT_ID", "")).strip())
+        and bool(str(envs["web"].get("KEYCLOAK_CLIENT_SECRET", "")).strip())
+        and all(
+            envs[name].get("OIDC_CLIENT_ID") == envs["web"].get("KEYCLOAK_CLIENT_ID")
+            and envs[name].get("OIDC_CLIENT_SECRET")
+            == envs["web"].get("KEYCLOAK_CLIENT_SECRET")
+            for name in ("api", "migrate")
+        ),
+        "oidc_client",
     )
     users = []
     for name in ("api", "migrate", "bioinfo-worker"):

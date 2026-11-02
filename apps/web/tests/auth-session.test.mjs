@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { refreshSessionToken, endProviderSession } from "../lib/auth-session.ts";
+import { refreshSessionToken, endProviderSession, validLogoutRequest } from "../lib/auth-session.ts";
 
 const config = { issuer: "https://identity.test/realms/lab", clientId: "app", clientSecret: "synthetic-test-only" };
 const original = { sub: "subject", accessToken: "synthetic-old", refreshToken: "synthetic-refresh", accessTokenExpires: 1 };
@@ -48,4 +48,22 @@ test("logout submits refresh credentials server-side and never follows redirects
   assert.equal(ok, true);
   assert.equal(await endProviderSession(original, config, async () => new Response(null, { status: 503 })), false);
   assert.equal(await endProviderSession(original, config, async () => { throw new Error("private"); }), false);
+});
+
+test("transient refresh failure preserves only a server-side logout credential", async () => {
+  const failed = await refreshSessionToken(original, config, async () => { throw new Error("network"); });
+  assert.equal(failed.accessToken, undefined);
+  assert.equal(failed.refreshToken, undefined);
+  assert.equal(failed.logoutRefreshToken, original.refreshToken);
+  let contacted = false;
+  assert.equal(await endProviderSession(failed, config, async () => {
+    contacted = true; return new Response(null, { status: 204 });
+  }), true);
+  assert.equal(contacted, true);
+});
+test("provider logout requires exact same-origin JSON, including rejection of missing Origin", () => {
+  assert.equal(validLogoutRequest("https://app.test", "application/json", "https://app.test"), true);
+  for (const [origin, type] of [[null, "application/json"], ["https://attacker.test", "application/json"], ["https://app.test", "text/plain"]]) {
+    assert.equal(validLogoutRequest(origin, type, "https://app.test"), false);
+  }
 });

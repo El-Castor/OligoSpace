@@ -40,6 +40,8 @@ def main() -> None:
         "PILOT_PROJECT": project,
         "ENVIRONMENT": "production",
         "AUTH_MODE": "oidc",
+        "OIDC_CLIENT_ID": "oligospace-web",
+        "OIDC_CLIENT_SECRET": secrets.token_hex(24),
         "OBJECT_STORAGE_ACCESS_KEY": secrets.token_hex(24),
         "OBJECT_STORAGE_SECRET_KEY": secrets.token_hex(24),
     }
@@ -238,7 +240,11 @@ def main() -> None:
         if not credentials_absent_from_logs(
             ["docker", "--context", context],
             container,
-            [value for key, value in env.items() if "PASSWORD" in key],
+            [
+                value
+                for key, value in env.items()
+                if "PASSWORD" in key or "SECRET" in key
+            ],
         ):
             raise RuntimeError("credential_in_database_logs")
         evidence["checks"].append("no_generated_password_in_database_logs")

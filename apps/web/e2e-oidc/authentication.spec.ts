@@ -200,6 +200,30 @@ test("local account deactivation rejects a still-valid provider token", async ({
   }
 });
 
+test("provider logout failure preserves the session and a confirmed retry revokes it", async ({ page }) => {
+  await login(page, "member");
+  const issued = (await session(page)).accessToken;
+  expect(Boolean(issued)).toBe(true);
+  await page.route("**/api/auth/provider-logout", async (route) => {
+    await route.fulfill({ status: 503, contentType: "application/json", body: '{"code":"provider_logout_not_confirmed"}' });
+  });
+  await page.getByLabel("Current user").click();
+  await page.getByRole("button", { name: "Logout", exact: true }).click();
+  await expect(page.getByRole("alert")).toHaveText("Logout could not be completed. Please retry.");
+  await expect(page.getByRole("button", { name: "Logout", exact: true })).toBeEnabled();
+  expect(Boolean((await session(page)).accessToken)).toBe(true);
+  expect((await api(page, "/me", issued)).status()).toBe(200);
+  const cookies = await page.context().cookies(origin);
+  expect(cookies.some((cookie) => cookie.name.startsWith("__Secure-next-auth.session-token"))).toBe(true);
+  await page.unroute("**/api/auth/provider-logout");
+  await page.getByRole("button", { name: "Logout", exact: true }).click();
+  await expect(page).toHaveURL(/\/login/);
+  expect(Boolean((await session(page)).accessToken)).toBe(false);
+  await expect.poll(async () => (await api(page, "/me", issued)).status(), { timeout: 15_000 }).toBe(401);
+  await beginLogin(page);
+  await expect(page.locator("#password")).toBeVisible();
+});
+
 test("expired access tokens refresh and logout revokes the provider session", async ({ page }) => {
   await login(page, "member");
   const original = (await session(page)).accessToken;

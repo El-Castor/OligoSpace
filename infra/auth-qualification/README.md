@@ -29,7 +29,9 @@ identity and roles, UI provisioning, negative direct API authorization, project
 membership grant/revocation, local deactivation, real token refresh, provider
 logout, disabled-user introspection and failed refresh. Tests
 have no skip path. Runtime failures fail the command; no static check is reported
-as a successful browser qualification. All twelve cases must pass.
+as a successful browser qualification. All thirteen cases must pass, including
+a provider-logout failure that preserves the local session followed by a
+confirmed retry that revokes the already issued bearer token.
 
 The ignored `evidence/` directory receives a sanitized JSON summary and two
 deliberate synthetic dashboard/administration captures. The workflow retains
