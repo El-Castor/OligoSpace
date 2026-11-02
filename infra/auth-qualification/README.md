@@ -1,0 +1,44 @@
+# Disposable real OIDC qualification
+
+Run `python3 infra/auth-qualification/run.py` on an Ubuntu Docker host with
+Compose v2 and OpenSSL. This builds the production Next.js/API images and the
+repository-pinned Chromium runner. It needs no environment file or account.
+
+The dedicated randomly named Compose project contains tmpfs PostgreSQL, Keycloak
+26.7.2, API in `ENVIRONMENT=production` / `AUTH_MODE=oidc`, production Next.js and
+Caddy HTTPS. No host ports, real records, MinIO or worker are used. Uploads are
+disabled. Keycloak uses its disposable development server and embedded store;
+this qualifies the real OIDC protocol and policy, not a production Keycloak
+installation, institutional directory, hosted TLS or availability architecture.
+
+One canonical issuer (`https://auth-qualification.test/realms/qualification`) is
+reachable by API, web and Chromium on the disposable Docker network. A generated
+one-day self-signed CA/server certificate is trusted explicitly by Node/Python;
+Chromium alone ignores certificate trust errors. No application disables TLS
+verification. Keycloak's administration endpoint is internal only.
+
+All passwords, client/session secrets, subjects and bootstrap projections are
+generated for the run. They exist only in a temporary directory removed on exit,
+or process/container memory. No development seed is loaded. Keycloak identity
+credentials and the four approved initial database projections are synthetic;
+the pending identity is subsequently provisioned through the application UI.
+MFA is tested by real TOTP enrollment and the next-login challenge.
+
+The runner checks PKCE/state/nonce, cookie flags, rejected forged state, persistent
+identity and roles, UI provisioning, negative direct API authorization, project
+membership grant/revocation, local deactivation, real token refresh, provider
+logout, disabled-user introspection and failed refresh. Tests
+have no skip path. Runtime failures fail the command; no static check is reported
+as a successful browser qualification. All twelve cases must pass.
+
+The ignored `evidence/` directory receives a sanitized JSON summary and two
+deliberate synthetic dashboard/administration captures. The workflow retains
+these as an artifact even on failure. MFA enrollment is never captured.
+
+No raw container logs, HTTP bodies, tokens, callback URLs, Playwright traces,
+videos, HARs or error stacks are retained. The custom reporter emits only fixed
+test titles/statuses, and orchestration suppresses subprocess output. A failed
+phase is reported without credential material. Troubleshoot in the same disposable
+environment with care; do not publish its logs. The project is removed in a
+`finally` block; an abruptly killed process may require removal of only the
+`oligospace-oidc-*` project from that run.

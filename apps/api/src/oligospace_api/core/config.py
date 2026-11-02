@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     auth_mode: Literal["oidc", "development"] = "development"
     oidc_issuer: AnyHttpUrl = AnyHttpUrl("http://keycloak:8080/realms/oligospace")
     oidc_audience: str = "oligospace-api"
+    oidc_client_id: str = "oligospace-web"
+    oidc_client_secret: str = Field(default="", repr=False)
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])
     log_level: str = "INFO"
     development_user_id: uuid.UUID = uuid.UUID("00000000-0000-0000-0000-000000000001")
@@ -38,6 +40,10 @@ class Settings(BaseSettings):
     def validate_runtime(self) -> None:
         if self.environment == "production" and self.auth_mode != "oidc":
             raise ValueError("AUTH_MODE must be oidc in production")
+        if self.auth_mode == "oidc" and not self.oidc_client_secret.strip():
+            raise ValueError("OIDC_CLIENT_SECRET is required for oidc authentication")
+        if self.auth_mode == "oidc" and not self.oidc_client_id.strip():
+            raise ValueError("OIDC_CLIENT_ID is required for oidc authentication")
         if self.environment == "production" and "change-me" in self.database_url:
             raise ValueError("Production database credentials are not configured")
         if self.environment == "production" and (
@@ -53,6 +59,10 @@ class Settings(BaseSettings):
     @property
     def oidc_jwks_url(self) -> str:
         return f"{str(self.oidc_issuer).rstrip('/')}/protocol/openid-connect/certs"
+
+    @property
+    def oidc_introspection_url(self) -> str:
+        return f"{str(self.oidc_issuer).rstrip('/')}/protocol/openid-connect/token/introspect"
 
 
 @lru_cache

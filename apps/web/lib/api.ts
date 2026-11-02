@@ -383,7 +383,7 @@ async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
     }
     headers.set("X-OligoSpace-Development-User", userId);
     headers.set("X-OligoSpace-Development-Auth", createHmac("sha256", secret).update(userId).digest("hex"));
-  } else if (session?.accessToken) {
+  } else if (session?.accessToken && !session.error) {
     headers.set("Authorization", `Bearer ${session.accessToken}`);
   } else {
     throw new ApiError("Authentication is required.", 401, "authentication_required");
