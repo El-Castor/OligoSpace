@@ -23,6 +23,10 @@ ARG TARGETARCH
 ARG BLAST_VERSION=2.17.0
 
 USER root
+# Apply maintained Debian security fixes; scanner records residual unpatched advisories.
+RUN apt-get update \
+    && apt-get upgrade --yes \
+    && rm -rf /var/lib/apt/lists/*
 COPY envs/bioinfo.yml /tmp/environment.yml
 RUN micromamba install --yes --name base --file /tmp/environment.yml \
     && micromamba clean --all --yes

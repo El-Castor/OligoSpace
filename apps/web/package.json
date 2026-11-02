@@ -14,7 +14,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "next": "16.3.3",
+    "next": "16.4.1",
     "next-auth": "4.24.15",
     "react": "19.2.8",
     "react-dom": "19.2.8"
@@ -26,9 +26,10 @@
     "@types/react": "19.1.11",
     "@types/react-dom": "19.1.7",
     "eslint": "9.39.5",
-    "eslint-config-next": "16.3.3",
+    "eslint-config-next": "16.4.1",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.2"
   },
+  "overrides": {"sharp": "0.35.5"},
   "packageManager": "npm@10.9.8"
 }

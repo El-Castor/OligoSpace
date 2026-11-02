@@ -121,12 +121,34 @@ def summarize(raw, proof, database):
         )
     ):
         raise ValueError("database_metadata_missing")
+    report = summarize_findings(raw)
+    report["vulnerability_database"] = {
+        k: database[k] for k in ("Version", "UpdatedAt", "NextUpdate", "DownloadedAt")
+    }
+    return report
+
+
+def public_image_location(value):
+    # Only fixed image roots and conventional package paths; never Match/Code.
+    if not isinstance(value, str) or len(value) > 256:
+        return "withheld"
+    value = "/" + value.lstrip("/")
+    if not value.startswith(("/opt/conda/", "/app/", "/worker/", "/usr/local/lib/")):
+        return "withheld"
+    if not re.fullmatch(r"/[A-Za-z0-9_./+@-]+", value) or ".." in value.split("/"):
+        return "withheld"
+    return value
+
+
+def summarize_findings(raw):
+    """Sanitize finding payloads without asserting platform or OS coverage."""
     results = raw.get("Results", [])
     if not isinstance(results, list):
         raise ValueError("invalid_results")
     severity = Counter()
     findings = []
     secret_count = 0
+    secret_observations = []
     for result in results:
         if not isinstance(result, dict):
             raise ValueError("invalid_result")
@@ -137,6 +159,19 @@ def summarize(raw, proof, database):
         if any(not isinstance(secret, dict) for secret in secrets):
             raise ValueError("invalid_secrets")
         secret_count += len(secrets)
+        for secret in secrets:
+            rule = secret.get("RuleID", "")
+            secret_observations.append(
+                {
+                    "rule_id": rule
+                    if isinstance(rule, str)
+                    and re.fullmatch(r"[A-Za-z0-9_-]{1,64}", rule)
+                    else "withheld",
+                    "location": public_image_location(result.get("Target")),
+                    "classification": "analysis_required",
+                    "value_retained": False,
+                }
+            )
         for vulnerability in vulnerabilities:
             if not isinstance(vulnerability, dict):
                 raise ValueError("invalid_vulnerability")
@@ -163,6 +198,7 @@ def summarize(raw, proof, database):
                         vulnerability.get("InstalledVersion", "")
                     ),
                     "fixed_version": safe_field(vulnerability.get("FixedVersion", "")),
+                    "origin": safe_field(result.get("Type", "unknown")),
                 }
             )
     blocked = bool(secret_count or findings)
@@ -170,16 +206,13 @@ def summarize(raw, proof, database):
         "execution": "completed_with_findings" if blocked else "completed_clean",
         "gate": "failed" if blocked else "passed",
         "secret_findings": secret_count,
+        "secret_observations": secret_observations,
         "vulnerabilities_by_severity": dict(severity),
         "vulnerability_ids": sorted({f["id"] for f in findings}),
         "vulnerabilities": findings,
         "scanner": SCANNER,
         "raw_matches_retained": False,
         "risk_acceptance": "not_granted",
-        "vulnerability_database": {
-            k: database[k]
-            for k in ("Version", "UpdatedAt", "NextUpdate", "DownloadedAt")
-        },
     }
 
 

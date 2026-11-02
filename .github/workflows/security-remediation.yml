@@ -1,0 +1,54 @@
+name: Security remediation regressions (no deployment)
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  baseline-secret-triage:
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [api, worker]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 2750c78fb02dcb21808f3f1eef7ccd52560079f5
+          path: baseline
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: docker/setup-buildx-action@v3
+        with:
+          name: baseline-triage
+          driver: docker-container
+      - name: Reconstruct only historical synthetic image
+        env:
+          ROLE: ${{ matrix.role }}
+        run: python3 baseline/infra/deployment/build_local.py --context default --builder baseline-triage --architecture amd64 --role "$ROLE" --output "$RUNNER_TEMP/baseline"
+      - name: Reproduce strict baseline finding with sanitized diagnostics
+        run: |
+          artifact=$(find "$RUNNER_TEMP/baseline" -name '*.oci.tar' -print -quit)
+          python3 infra/deployment/scan_artifact.py --context default --archive "$artifact" --architecture amd64 --source 2750c78fb02dcb21808f3f1eef7ccd52560079f5 --output "$RUNNER_TEMP/baseline/scan.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: baseline-secret-triage-${{ matrix.role }}
+          retention-days: 7
+          path: ${{ runner.temp }}/baseline/scan.json
+  chromium:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Isolated real application Chromium journeys
+        run: make test-e2e

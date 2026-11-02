@@ -157,6 +157,34 @@ class ScanTests(unittest.TestCase):
         self.assertEqual(report["execution"], "completed_with_findings")
         self.assertEqual(report["gate"], "failed")
 
+    def test_secret_triage_preserves_only_public_rule_and_known_image_path(self):
+        raw = fixture()
+        raw["Results"] = [
+            {
+                "Target": "/opt/conda/lib/python3.12/test/certdata/key.pem",
+                "Secrets": [
+                    {
+                        "RuleID": "private-key",
+                        "Match": "sensitive-test-value",
+                        "Code": "private",
+                    }
+                ],
+            }
+        ]
+        report = module.summarize(raw, PROOF, DB)
+        self.assertEqual(report["secret_observations"][0]["rule_id"], "private-key")
+        self.assertEqual(
+            report["secret_observations"][0]["location"],
+            "/opt/conda/lib/python3.12/test/certdata/key.pem",
+        )
+        self.assertNotIn("sensitive-test-value", json.dumps(report))
+        self.assertEqual(report["gate"], "failed")
+        raw["Results"][0]["Target"] = "untrusted-value"
+        self.assertEqual(
+            module.summarize(raw, PROOF, DB)["secret_observations"][0]["location"],
+            "withheld",
+        )
+
     def test_omitted_results_is_valid_clean_report(self):
         self.assertEqual(
             module.summarize(fixture(), PROOF, DB)["execution"], "completed_clean"

@@ -1,6 +1,10 @@
 FROM mambaorg/micromamba:2.4.0@sha256:10bd2dd2e7bfae77e529c76a71f4126c222d74e99b908abc6e210da9eda0f6af
 
 USER root
+# Apply maintained Debian security fixes; scanner records residual unpatched advisories.
+RUN apt-get update \
+    && apt-get upgrade --yes \
+    && rm -rf /var/lib/apt/lists/*
 COPY envs/api.yml /tmp/environment.yml
 RUN micromamba install --yes --name base --file /tmp/environment.yml \
     && micromamba clean --all --yes

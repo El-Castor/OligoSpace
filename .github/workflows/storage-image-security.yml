@@ -1,0 +1,45 @@
+name: Storage candidate image security
+on:
+  pull_request:
+    paths:
+      - 'infra/deployment/**'
+      - '.github/workflows/storage-image-security.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  candidate-scan:
+    name: ${{ matrix.candidate }} linux/${{ matrix.architecture }}
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [seaweedfs, garage]
+        architecture: [amd64, arm64]
+        include:
+          - architecture: amd64
+            runner: ubuntu-24.04
+          - architecture: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate qualification tooling
+        run: python3 -m unittest discover -s infra/deployment/tests -p 'test_scan*.py' -v
+      - name: Scan exact upstream candidate digest without runtime execution
+        run: >-
+          python3 infra/deployment/scan_candidate.py
+          --candidate '${{ matrix.candidate }}'
+          --architecture '${{ matrix.architecture }}'
+          --output 'evidence/${{ matrix.candidate }}-${{ matrix.architecture }}.json'
+      - name: Preserve sanitized observations even when blocked
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: storage-security-${{ matrix.candidate }}-${{ matrix.architecture }}
+          path: evidence/*.json
+          if-no-files-found: error
+          retention-days: 14

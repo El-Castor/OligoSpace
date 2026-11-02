@@ -39,6 +39,15 @@ def compare_payloads(left, right):
     }
 
 
+def compare_reference(current, reference):
+    if any(
+        current.get(key) != reference.get(key)
+        for key in ("inputs", "parameters", "tool_version")
+    ):
+        raise ValueError("validated_reference_provenance_mismatch")
+    return compare_payloads(current["payload"], reference["payload"])
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=Path, required=True)
@@ -85,6 +94,24 @@ def main():
         or a["tool_version"] != "2.6.1"
     ):
         raise ValueError("scientific_provenance_mismatch")
+    baseline_path = Path(__file__).parent / "evidence/ci-e0a57dc-requalification.json"
+    baseline = json.loads(baseline_path.read_text())
+    reference = baseline["reports"]["qualification-amd64-worker/oci/science.json"]
+    reference_comparisons = {
+        entry["architecture"]: compare_reference(entry, reference) for entry in sciences
+    }
+    (args.output / "validated-reference-comparison.json").write_text(
+        json.dumps(
+            {
+                "source": source,
+                "reference_source": baseline["source"],
+                "status": "compared",
+                "architectures": reference_comparisons,
+            },
+            indent=2,
+        )
+        + "\n"
+    )
     comparison = compare_payloads(a["payload"], b["payload"])
     (args.output / "scientific-comparison.json").write_text(
         json.dumps({"source": source, "status": "compared", **comparison}, indent=2)
