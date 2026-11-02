@@ -19,6 +19,17 @@ from oligospace_api.models.registry import User
 from oligospace_api.security import auth
 
 
+@pytest.mark.parametrize(
+    "roles", ["not-admin", {"admin": True}, ["admin", None], ["admin", 1], None, 1]
+)
+def test_malformed_role_claims_cannot_grant_privileges(roles: object) -> None:
+    assert auth._role_from_claims({"realm_access": {"roles": roles}}) is GlobalRole.VIEWER
+
+
+def test_role_names_require_exact_values() -> None:
+    assert auth._role_from_claims({"realm_access": {"roles": ["not-admin"]}}) is GlobalRole.VIEWER
+
+
 @pytest.fixture
 def oidc_settings() -> Settings:
     return Settings(

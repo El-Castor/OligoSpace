@@ -25,6 +25,150 @@ def run(command: list[str], *, data: str | None = None) -> None:
         raise RuntimeError(f"Qualification phase failed: {command[0]} {command[1]}")
 
 
+TEST_TITLES = (
+    "real login enforces PKCE, state, nonce and secure session cookies",
+    "a callback with forged state cannot establish a session",
+    "administrator provisions a synthetic identity through the real UI",
+    "member permissions remain server enforced",
+    "viewer permissions remain server enforced",
+    "anonymous, malformed and development-header API requests are refused",
+    "invalid password does not establish an application session",
+    "project membership grant and revocation apply to the same issued token",
+    "local account deactivation rejects a still-valid provider token",
+    "provider logout failure preserves the session and a confirmed retry revokes it",
+    "expired access tokens refresh and logout revokes the provider session",
+    "Keycloak account disable rejects an already issued token and failed refresh",
+    "provider TOTP enrollment and next-login MFA challenge are enforced",
+)
+
+
+def parse_browser_results(output: str) -> list[dict[str, object]]:
+    results = []
+    for line in output.splitlines():
+        try:
+            item = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if (
+            isinstance(item, dict)
+            and set(item) == {"test", "status", "source_line", "rule_id"}
+            and isinstance(item["test"], str)
+            and item["test"] in TEST_TITLES
+            and item["status"]
+            in ("passed", "failed", "timedOut", "skipped", "interrupted")
+        ):
+            if item["rule_id"] not in (
+                None,
+                "navigation",
+                "visibility",
+                "equality",
+                "timeout",
+                "other",
+            ) or (
+                item["source_line"] is not None
+                and not isinstance(item["source_line"], int)
+            ):
+                continue
+            results.append(item)
+            print(json.dumps(item), flush=True)
+    return results
+
+
+def collect_evidence(dc: list[str], work: Path, evidence: Path) -> None:
+    # Raw API output lives only in this process. Retain counts of fixed
+    # warning identifiers; never serialize a line, header or exception.
+    api_logs = subprocess.run(
+        dc + ["logs", "--no-color", "api"],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    rule_ids = (
+        "JWKS_FETCH_FAILED",
+        "JWT_SIGNATURE_INVALID",
+        "JWT_CLAIMS_INVALID",
+        "OIDC_INTROSPECTION_HTTP_FAILED",
+        "OIDC_INTROSPECTION_TRANSPORT_FAILED",
+        "OIDC_INTROSPECTION_JSON_INVALID",
+        "OIDC_INTROSPECTION_INACTIVE",
+    )
+    rule_counts = {
+        rule: len(
+            re.findall(
+                r"\b" + re.escape(rule) + r"\b",
+                api_logs.stdout + api_logs.stderr,
+            )
+        )
+        for rule in rule_ids
+    }
+    (evidence / "api-rule-counts.json").write_text(json.dumps(rule_counts, indent=2))
+    del api_logs
+    for name in (
+        "synthetic-login.png",
+        "synthetic-dashboard.png",
+        "synthetic-administration.png",
+    ):
+        source = work / "evidence" / name
+        if source.exists():
+            shutil.copyfile(source, evidence / name)
+    structure_path = work / "evidence/oidc-structure.json"
+    if structure_path.exists():
+        structure = json.loads(structure_path.read_text())
+        booleans = {
+            "has_sub",
+            "issuer_expected",
+            "audience_expected",
+            "realm_roles_present",
+        }
+        if (
+            isinstance(structure, dict)
+            and set(structure) == booleans | {"me_status", "me_rule"}
+            and all(type(structure[key]) is bool for key in booleans)
+            and type(structure["me_status"]) is int
+            and 100 <= structure["me_status"] <= 599
+            and structure["me_rule"]
+            in (
+                "invalid_token",
+                "account_not_provisioned",
+                "identity_provider_mismatch",
+                "account_disabled",
+                "other",
+            )
+        ):
+            (evidence / "oidc-structure.json").write_text(
+                json.dumps(structure, indent=2)
+            )
+    state_path = work / "evidence/state-probe.json"
+    if state_path.exists():
+        state = json.loads(state_path.read_text())
+        if (
+            isinstance(state, dict)
+            and set(state) == {"interception_seen", "session_present", "path_class"}
+            and type(state["interception_seen"]) is bool
+            and type(state["session_present"]) is bool
+            and state["path_class"] in ("login", "auth", "realms", "other")
+        ):
+            (evidence / "state-probe.json").write_text(json.dumps(state, indent=2))
+
+
+def browser_run(
+    dc: list[str], *, preflight: bool = False
+) -> subprocess.CompletedProcess[str]:
+    command = dc + ["run", "--rm", "browser"]
+    if preflight:
+        command += [
+            "npx",
+            "playwright",
+            "test",
+            "--config",
+            "playwright.oidc.config.ts",
+            "--grep",
+            # Playwright matches the complete project/file/title path.
+            "(?:^| )real login enforces PKCE",
+        ]
+    return subprocess.run(command, text=True, capture_output=True, check=False)
+
+
 def main() -> None:
     os.umask(0o077)
     evidence = ROOT / "infra/auth-qualification/evidence"
@@ -304,127 +448,49 @@ https://auth-qualification.test {
                 "Running real HTTPS/Keycloak Chromium qualification (credential output suppressed)",
                 flush=True,
             )
-            browser = subprocess.run(
-                dc + ["run", "--rm", "browser"],
-                text=True,
-                capture_output=True,
-                check=False,
+            preflight = browser_run(dc, preflight=True)
+            preflight_results = parse_browser_results(preflight.stdout)
+            preflight_passed = (
+                preflight.returncode == 0
+                and len(preflight_results) == 1
+                and preflight_results[0]["test"] == TEST_TITLES[0]
+                and preflight_results[0]["status"] == "passed"
             )
-            # Raw API output lives only in this process. Retain counts of fixed
-            # warning identifiers; never serialize a line, header or exception.
-            api_logs = subprocess.run(
-                dc + ["logs", "--no-color", "api"],
-                text=True,
-                capture_output=True,
-                check=False,
-            )
-            rule_ids = (
-                "JWKS_FETCH_FAILED",
-                "JWT_SIGNATURE_INVALID",
-                "JWT_CLAIMS_INVALID",
-                "OIDC_INTROSPECTION_HTTP_FAILED",
-                "OIDC_INTROSPECTION_TRANSPORT_FAILED",
-                "OIDC_INTROSPECTION_JSON_INVALID",
-                "OIDC_INTROSPECTION_INACTIVE",
-            )
-            rule_counts = {
-                rule: len(
-                    re.findall(
-                        r"\b" + re.escape(rule) + r"\b",
-                        api_logs.stdout + api_logs.stderr,
-                    )
+            if not preflight_passed:
+                results = preflight_results + [
+                    {
+                        "test": title,
+                        "status": "not_executed",
+                        "source_line": None,
+                        "rule_id": None,
+                    }
+                    for title in TEST_TITLES[1:]
+                ]
+                summary.update(qualification="failed", phase="preflight", tests=results)
+                (evidence / "summary.json").write_text(json.dumps(summary, indent=2))
+                collect_evidence(dc, work, evidence)
+                raise RuntimeError(
+                    "Qualification phase failed: login preflight; remaining cases not executed"
                 )
-                for rule in rule_ids
-            }
-            (evidence / "api-rule-counts.json").write_text(
-                json.dumps(rule_counts, indent=2)
+            print(
+                "Login preflight passed; running all thirteen qualification cases",
+                flush=True,
             )
-            del api_logs
-            results = []
-            for line in browser.stdout.splitlines():
-                try:
-                    item = json.loads(line)
-                except json.JSONDecodeError:
-                    continue
-                if (
-                    set(item) == {"test", "status", "source_line", "rule_id"}
-                    and isinstance(item["test"], str)
-                    and len(item["test"]) < 180
-                    and item["status"]
-                    in ("passed", "failed", "timedOut", "skipped", "interrupted")
-                ):
-                    if item["rule_id"] not in (
-                        None,
-                        "navigation",
-                        "visibility",
-                        "equality",
-                        "timeout",
-                        "other",
-                    ) or (
-                        item["source_line"] is not None
-                        and not isinstance(item["source_line"], int)
-                    ):
-                        continue
-                    results.append(item)
-                    print(json.dumps(item), flush=True)
+            browser = browser_run(dc)
+            results = parse_browser_results(browser.stdout)
             passed = (
                 browser.returncode == 0
-                and len(results) == 13
+                and len(results) == len(TEST_TITLES)
+                and {item["test"] for item in results} == set(TEST_TITLES)
                 and all(item["status"] == "passed" for item in results)
             )
             summary.update(
-                qualification="passed" if passed else "failed", tests=results
+                qualification="passed" if passed else "failed",
+                phase="full",
+                tests=results,
             )
             (evidence / "summary.json").write_text(json.dumps(summary, indent=2))
-            for name in (
-                "synthetic-login.png",
-                "synthetic-dashboard.png",
-                "synthetic-administration.png",
-            ):
-                source = work / "evidence" / name
-                if source.exists():
-                    shutil.copyfile(source, evidence / name)
-            structure_path = work / "evidence/oidc-structure.json"
-            if structure_path.exists():
-                structure = json.loads(structure_path.read_text())
-                booleans = {
-                    "has_sub",
-                    "issuer_expected",
-                    "audience_expected",
-                    "realm_roles_present",
-                }
-                if (
-                    isinstance(structure, dict)
-                    and set(structure) == booleans | {"me_status", "me_rule"}
-                    and all(type(structure[key]) is bool for key in booleans)
-                    and type(structure["me_status"]) is int
-                    and 100 <= structure["me_status"] <= 599
-                    and structure["me_rule"]
-                    in (
-                        "invalid_token",
-                        "account_not_provisioned",
-                        "identity_provider_mismatch",
-                        "account_disabled",
-                        "other",
-                    )
-                ):
-                    (evidence / "oidc-structure.json").write_text(
-                        json.dumps(structure, indent=2)
-                    )
-            state_path = work / "evidence/state-probe.json"
-            if state_path.exists():
-                state = json.loads(state_path.read_text())
-                if (
-                    isinstance(state, dict)
-                    and set(state)
-                    == {"interception_seen", "session_present", "path_class"}
-                    and type(state["interception_seen"]) is bool
-                    and type(state["session_present"]) is bool
-                    and state["path_class"] in ("login", "auth", "realms", "other")
-                ):
-                    (evidence / "state-probe.json").write_text(
-                        json.dumps(state, indent=2)
-                    )
+            collect_evidence(dc, work, evidence)
             if not passed:
                 raise RuntimeError(
                     "Qualification phase failed: browser; inspect sanitized summary.json"

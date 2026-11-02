@@ -33,6 +33,11 @@ as a successful browser qualification. All thirteen cases must pass, including
 a provider-logout failure that preserves the local session followed by a
 confirmed retry that revokes the already issued bearer token.
 
+The harness first runs the unchanged real-login case as a bounded preflight.
+If that fails, it retains its diagnostics, labels each remaining case
+`not_executed`, cleans up, and fails. If it passes, the complete thirteen-case
+suite runs; only all thirteen successful results qualify the run.
+
 The ignored `evidence/` directory receives a sanitized JSON summary and two
 deliberate synthetic dashboard/administration captures. The workflow retains
 these as an artifact even on failure. MFA enrollment is never captured.

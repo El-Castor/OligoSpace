@@ -42,6 +42,8 @@ def development_signature(user_id: str, secret: str) -> str:
 def _role_from_claims(claims: dict[str, object]) -> GlobalRole:
     realm_access = claims.get("realm_access")
     roles = realm_access.get("roles", []) if isinstance(realm_access, dict) else []
+    if not isinstance(roles, list) or not all(isinstance(role, str) for role in roles):
+        return GlobalRole.VIEWER
     for role in (
         GlobalRole.ADMIN,
         GlobalRole.TEAM_MANAGER,

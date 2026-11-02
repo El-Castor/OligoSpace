@@ -11,6 +11,8 @@ export default defineConfig({
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL,
     ignoreHTTPSErrors: true,
+    actionTimeout: 20_000,
+    navigationTimeout: 30_000,
     trace: "off",
     screenshot: "off",
     video: "off",
