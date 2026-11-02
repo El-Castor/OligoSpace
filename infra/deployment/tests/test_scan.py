@@ -32,6 +32,40 @@ def fixture():
 
 
 class ScanTests(unittest.TestCase):
+    def test_valid_multiple_fixed_versions_remain_blocking_findings(self):
+        raw = fixture()
+        raw["Results"] = [
+            {
+                "Vulnerabilities": [
+                    {
+                        "VulnerabilityID": "CVE-2026-1234",
+                        "Severity": "HIGH",
+                        "PkgName": "synthetic-package",
+                        "InstalledVersion": "1.0",
+                        "FixedVersion": "1.2.3, 2.3.4",
+                    }
+                ]
+            }
+        ]
+        report = module.summarize(raw, PROOF, DB)
+        self.assertEqual(report["execution"], "completed_with_findings")
+        self.assertEqual(report["gate"], "failed")
+        self.assertEqual(report["vulnerabilities"][0]["fixed_version"], "1.2.3, 2.3.4")
+
+    def test_validation_rule_identifies_structure_without_error_payload(self):
+        self.assertEqual(
+            module.validation_rule(
+                "SCAN_REPORT_INVALID", ValueError("report_platform_mismatch")
+            ),
+            "SCAN_REPORT_PLATFORM_MISMATCH",
+        )
+        self.assertEqual(
+            module.validation_rule(
+                "SCAN_REPORT_INVALID", ValueError("sensitive-private-error")
+            ),
+            "SCAN_REPORT_INVALID",
+        )
+
     def test_invalid_input_reports_scan_not_executed(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

@@ -49,11 +49,34 @@ def failure(rule, state="technical_failure"):
     }
 
 
+def validation_rule(stage, error):
+    allowed = {
+        "invalid_report_schema",
+        "report_identity_mismatch",
+        "report_platform_mismatch",
+        "os_coverage_missing",
+        "database_metadata_missing",
+        "invalid_results",
+        "invalid_result",
+        "invalid_findings",
+        "invalid_secrets",
+        "invalid_vulnerability",
+        "invalid_public_vulnerability",
+        "invalid_public_field",
+    }
+    reason = str(error)
+    return (
+        "SCAN_" + reason.upper()
+        if stage == "SCAN_REPORT_INVALID" and reason in allowed
+        else stage
+    )
+
+
 def safe_field(value):
     if (
         not isinstance(value, str)
         or len(value) > 160
-        or not re.fullmatch(r"[A-Za-z0-9.+_:~@/() -]*", value)
+        or not re.fullmatch(r"[A-Za-z0-9.+_:~@/() ,\-]*", value)
     ):
         raise ValueError("invalid_public_field")
     return value
@@ -242,9 +265,10 @@ def main():
         TypeError,
         IndexError,
         subprocess.SubprocessError,
-    ):
+    ) as error:
         report = failure(
-            stage, "technical_failure" if container_attempted else "not_executed"
+            validation_rule(stage, error),
+            "technical_failure" if container_attempted else "not_executed",
         )
     report.update(
         {
