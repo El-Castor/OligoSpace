@@ -1,0 +1,335 @@
+{
+  "source": "ddfd0c2a858506a8ff8bfdcc28ac2cca50d40209",
+  "run_url": "https://github.com/El-Castor/OligoSpace/actions/runs/41344277644",
+  "release": "blocked",
+  "storage": [
+    {
+      "runner_architecture": "arm64",
+      "schema": "s3-qualification/v1",
+      "project": "oligospace-deploy02-test-4129a7a8ca38",
+      "source": "garage",
+      "target": "garage",
+      "status": "passed",
+      "checks": [
+        "create_bucket",
+        "binary_unicode_keys",
+        "sha256_contents",
+        "content_types_user_metadata",
+        "source_restart",
+        "logical_export",
+        "independent_instance_restore",
+        "target_restart",
+        "original_retained",
+        "invalid_credentials_refused",
+        "no_host_ports",
+        "no_secret_in_both_log_streams"
+      ],
+      "images": {
+        "garage": "dxflrs/garage@sha256:677e5b758e4425a325b811c425c026bf35a4bf42f7ddbaa773de3f4fd779a5a5"
+      },
+      "observed_at": "2026-11-01T19:58:40.932351+00:00",
+      "application_adapter_exercised": true,
+      "sdk": {
+        "name": "minio",
+        "required_version": "7.2.20"
+      },
+      "resource_samples": {
+        "after_put": {
+          "oligospace-deploy02-test-4129a7a8ca38-source": "5.992MiB / 15.57GiB",
+          "oligospace-deploy02-test-4129a7a8ca38-target": "5.336MiB / 15.57GiB"
+        },
+        "after_restore_restart": {
+          "oligospace-deploy02-test-4129a7a8ca38-source": "5.957MiB / 15.57GiB",
+          "oligospace-deploy02-test-4129a7a8ca38-target": "5.887MiB / 15.57GiB"
+        }
+      },
+      "stage": "completed",
+      "engine": {
+        "Architecture": "aarch64",
+        "OSType": "linux",
+        "ServerVersion": "28.0.4",
+        "MemTotal": 16715923456,
+        "NCPU": 4
+      },
+      "resources": {
+        "oligospace-deploy02-test-4129a7a8ca38-source": "5.957MiB / 15.57GiB",
+        "oligospace-deploy02-test-4129a7a8ca38-target": "5.887MiB / 15.57GiB"
+      },
+      "resource_measurement_scope": "two snapshots; synthetic tiny corpus; not peak RSS or pilot capacity proof",
+      "image_platforms": {
+        "garage": "arm64"
+      },
+      "execution_mode": "native_linux_container",
+      "disk_allocated_bytes": 4440064,
+      "cleanup": "passed"
+    },
+    {
+      "runner_architecture": "arm64",
+      "schema": "s3-qualification/v1",
+      "project": "oligospace-deploy02-test-11d9d8909c71",
+      "source": "garage",
+      "target": "seaweedfs",
+      "status": "failed",
+      "checks": [],
+      "images": {
+        "garage": "dxflrs/garage@sha256:677e5b758e4425a325b811c425c026bf35a4bf42f7ddbaa773de3f4fd779a5a5",
+        "seaweedfs": "chrislusf/seaweedfs@sha256:f7a49e3f3972ebed5be2ed4befa4a0c68eb7bdddba6e692d42729ceb545134b8"
+      },
+      "observed_at": "2026-11-01T19:59:25.512623+00:00",
+      "application_adapter_exercised": true,
+      "sdk": {
+        "name": "minio",
+        "required_version": "7.2.20"
+      },
+      "resource_samples": {
+        "after_put": {
+          "oligospace-deploy02-test-11d9d8909c71-source": "6.047MiB / 15.57GiB",
+          "oligospace-deploy02-test-11d9d8909c71-target": "60.06MiB / 15.57GiB"
+        }
+      },
+      "stage": "log_network_resource_checks",
+      "engine": {
+        "Architecture": "aarch64",
+        "OSType": "linux",
+        "ServerVersion": "28.0.4",
+        "MemTotal": 16715923456,
+        "NCPU": 4
+      },
+      "failure": "secret_log_gate",
+      "cleanup": "passed"
+    },
+    {
+      "runner_architecture": "arm64",
+      "schema": "s3-qualification/v1",
+      "project": "oligospace-deploy02-test-48a35a78728c",
+      "source": "seaweedfs",
+      "target": "garage",
+      "status": "failed",
+      "checks": [],
+      "images": {
+        "seaweedfs": "chrislusf/seaweedfs@sha256:f7a49e3f3972ebed5be2ed4befa4a0c68eb7bdddba6e692d42729ceb545134b8",
+        "garage": "dxflrs/garage@sha256:677e5b758e4425a325b811c425c026bf35a4bf42f7ddbaa773de3f4fd779a5a5"
+      },
+      "observed_at": "2026-11-01T19:58:54.022254+00:00",
+      "application_adapter_exercised": true,
+      "sdk": {
+        "name": "minio",
+        "required_version": "7.2.20"
+      },
+      "resource_samples": {
+        "after_put": {
+          "oligospace-deploy02-test-48a35a78728c-source": "69.04MiB / 15.57GiB",
+          "oligospace-deploy02-test-48a35a78728c-target": "5.738MiB / 15.57GiB"
+        }
+      },
+      "stage": "log_network_resource_checks",
+      "engine": {
+        "Architecture": "aarch64",
+        "OSType": "linux",
+        "ServerVersion": "28.0.4",
+        "MemTotal": 16715923456,
+        "NCPU": 4
+      },
+      "failure": "secret_log_gate",
+      "cleanup": "passed"
+    },
+    {
+      "runner_architecture": "arm64",
+      "schema": "s3-qualification/v1",
+      "project": "oligospace-deploy02-test-9efe9bf016bd",
+      "source": "seaweedfs",
+      "target": "seaweedfs",
+      "status": "failed",
+      "checks": [],
+      "images": {
+        "seaweedfs": "chrislusf/seaweedfs@sha256:f7a49e3f3972ebed5be2ed4befa4a0c68eb7bdddba6e692d42729ceb545134b8"
+      },
+      "observed_at": "2026-11-01T19:58:01.489818+00:00",
+      "application_adapter_exercised": true,
+      "sdk": {
+        "name": "minio",
+        "required_version": "7.2.20"
+      },
+      "resource_samples": {
+        "after_put": {
+          "oligospace-deploy02-test-9efe9bf016bd-source": "86.03MiB / 15.57GiB",
+          "oligospace-deploy02-test-9efe9bf016bd-target": "65.3MiB / 15.57GiB"
+        }
+      },
+      "stage": "log_network_resource_checks",
+      "engine": {
+        "Architecture": "aarch64",
+        "OSType": "linux",
+        "ServerVersion": "28.0.4",
+        "MemTotal": 16715923456,
+        "NCPU": 4
+      },
+      "failure": "secret_log_gate",
+      "cleanup": "passed"
+    },
+    {
+      "runner_architecture": "amd64",
+      "schema": "s3-qualification/v1",
+      "project": "oligospace-deploy02-test-1d361a292a0b",
+      "source": "garage",
+      "target": "garage",
+      "status": "passed",
+      "checks": [
+        "create_bucket",
+        "binary_unicode_keys",
+        "sha256_contents",
+        "content_types_user_metadata",
+        "source_restart",
+        "logical_export",
+        "independent_instance_restore",
+        "target_restart",
+        "original_retained",
+        "invalid_credentials_refused",
+        "no_host_ports",
+        "no_secret_in_both_log_streams"
+      ],
+      "images": {
+        "garage": "dxflrs/garage@sha256:677e5b758e4425a325b811c425c026bf35a4bf42f7ddbaa773de3f4fd779a5a5"
+      },
+      "observed_at": "2026-11-01T19:58:54.926106+00:00",
+      "application_adapter_exercised": true,
+      "sdk": {
+        "name": "minio",
+        "required_version": "7.2.20"
+      },
+      "resource_samples": {
+        "after_put": {
+          "oligospace-deploy02-test-1d361a292a0b-source": "7.227MiB / 15.61GiB",
+          "oligospace-deploy02-test-1d361a292a0b-target": "7.176MiB / 15.61GiB"
+        },
+        "after_restore_restart": {
+          "oligospace-deploy02-test-1d361a292a0b-source": "6.938MiB / 15.61GiB",
+          "oligospace-deploy02-test-1d361a292a0b-target": "6.977MiB / 15.61GiB"
+        }
+      },
+      "stage": "completed",
+      "engine": {
+        "Architecture": "x86_64",
+        "OSType": "linux",
+        "ServerVersion": "28.0.4",
+        "MemTotal": 16760344576,
+        "NCPU": 4
+      },
+      "resources": {
+        "oligospace-deploy02-test-1d361a292a0b-source": "6.938MiB / 15.61GiB",
+        "oligospace-deploy02-test-1d361a292a0b-target": "6.977MiB / 15.61GiB"
+      },
+      "resource_measurement_scope": "two snapshots; synthetic tiny corpus; not peak RSS or pilot capacity proof",
+      "image_platforms": {
+        "garage": "amd64"
+      },
+      "execution_mode": "native_linux_container",
+      "disk_allocated_bytes": 4440064,
+      "cleanup": "passed"
+    },
+    {
+      "runner_architecture": "amd64",
+      "schema": "s3-qualification/v1",
+      "project": "oligospace-deploy02-test-43b04c6c89ec",
+      "source": "garage",
+      "target": "seaweedfs",
+      "status": "failed",
+      "checks": [],
+      "images": {
+        "garage": "dxflrs/garage@sha256:677e5b758e4425a325b811c425c026bf35a4bf42f7ddbaa773de3f4fd779a5a5",
+        "seaweedfs": "chrislusf/seaweedfs@sha256:f7a49e3f3972ebed5be2ed4befa4a0c68eb7bdddba6e692d42729ceb545134b8"
+      },
+      "observed_at": "2026-11-01T19:59:39.353219+00:00",
+      "application_adapter_exercised": true,
+      "sdk": {
+        "name": "minio",
+        "required_version": "7.2.20"
+      },
+      "resource_samples": {
+        "after_put": {
+          "oligospace-deploy02-test-43b04c6c89ec-source": "7.711MiB / 15.61GiB",
+          "oligospace-deploy02-test-43b04c6c89ec-target": "59.41MiB / 15.61GiB"
+        }
+      },
+      "stage": "log_network_resource_checks",
+      "engine": {
+        "Architecture": "x86_64",
+        "OSType": "linux",
+        "ServerVersion": "28.0.4",
+        "MemTotal": 16760344576,
+        "NCPU": 4
+      },
+      "failure": "secret_log_gate",
+      "cleanup": "passed"
+    },
+    {
+      "runner_architecture": "amd64",
+      "schema": "s3-qualification/v1",
+      "project": "oligospace-deploy02-test-a682ba84046b",
+      "source": "seaweedfs",
+      "target": "garage",
+      "status": "failed",
+      "checks": [],
+      "images": {
+        "seaweedfs": "chrislusf/seaweedfs@sha256:f7a49e3f3972ebed5be2ed4befa4a0c68eb7bdddba6e692d42729ceb545134b8",
+        "garage": "dxflrs/garage@sha256:677e5b758e4425a325b811c425c026bf35a4bf42f7ddbaa773de3f4fd779a5a5"
+      },
+      "observed_at": "2026-11-01T19:59:07.917189+00:00",
+      "application_adapter_exercised": true,
+      "sdk": {
+        "name": "minio",
+        "required_version": "7.2.20"
+      },
+      "resource_samples": {
+        "after_put": {
+          "oligospace-deploy02-test-a682ba84046b-source": "68.48MiB / 15.61GiB",
+          "oligospace-deploy02-test-a682ba84046b-target": "6.652MiB / 15.61GiB"
+        }
+      },
+      "stage": "log_network_resource_checks",
+      "engine": {
+        "Architecture": "x86_64",
+        "OSType": "linux",
+        "ServerVersion": "28.0.4",
+        "MemTotal": 16760344576,
+        "NCPU": 4
+      },
+      "failure": "secret_log_gate",
+      "cleanup": "passed"
+    },
+    {
+      "runner_architecture": "amd64",
+      "schema": "s3-qualification/v1",
+      "project": "oligospace-deploy02-test-bdf26c6325a3",
+      "source": "seaweedfs",
+      "target": "seaweedfs",
+      "status": "failed",
+      "checks": [],
+      "images": {
+        "seaweedfs": "chrislusf/seaweedfs@sha256:f7a49e3f3972ebed5be2ed4befa4a0c68eb7bdddba6e692d42729ceb545134b8"
+      },
+      "observed_at": "2026-11-01T19:58:16.590901+00:00",
+      "application_adapter_exercised": true,
+      "sdk": {
+        "name": "minio",
+        "required_version": "7.2.20"
+      },
+      "resource_samples": {
+        "after_put": {
+          "oligospace-deploy02-test-bdf26c6325a3-source": "82.74MiB / 15.61GiB",
+          "oligospace-deploy02-test-bdf26c6325a3-target": "65.54MiB / 15.61GiB"
+        }
+      },
+      "stage": "log_network_resource_checks",
+      "engine": {
+        "Architecture": "x86_64",
+        "OSType": "linux",
+        "ServerVersion": "28.0.4",
+        "MemTotal": 16760344576,
+        "NCPU": 4
+      },
+      "failure": "secret_log_gate",
+      "cleanup": "passed"
+    }
+  ]
+}

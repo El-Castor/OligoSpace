@@ -1,5 +1,69 @@
 # Changelog
 
+Decision review: [one-page DEPLOY-02 synthesis](../deployment/DEPLOY_02_DECISION.md).
+Single PR18 retained; no new remediation. Merge still blocked pending explicit
+risk decision or resolution; release/deployment prerequisites are distinguished.
+GitHub head0b12667 checked: functional CI passes, security scan gates remain red.
+No waiver, merge, provider switch or deployment authorized.
+
+## DEPLOY-02 — targeted review, integration proposal only (2026-11-02)
+
+Reviewed `1cca325`; qualification controller `44bb074`. The44 HIGH occurrences
+per API/worker image equal9 CVEs,6 Debian sources and17 installed binary packages.
+All9 remain open in trixie;8 have unstable fixes, not supported stable upgrades.
+Four native probes confirm actual files; no package removed or finding waived.
+SeaweedFS4.52 immutable variant: go-jose4.1.6 observed on both architectures,
+6/6 self/cross restores pass; scans still block on3 UNKNOWN and38 license
+observations per image. Default4.51 and pilot Compose unchanged.
+Garage source SBOM542 components, source scan1 HIGH/3 MEDIUM/7 LOW;
+OCI binaries equal official downloads on both architectures, but authenticated
+source/build binding and runtime inventory remain unverified.
+Application/foundation CI and Chromium pass at44bb074; release/security gates
+remain red.88 local qualification tests pass. User cancelled the unexecuted A/B split. Keep all work together in PR18.
+Final recommendation: further security corrections/decisions required; do not merge. PR18 stays DRAFT/unmerged pending user review; no deployment,
+release publication, provider switch or security-policy change.
+[Targeted report](../deployment/DEPLOY_02_TARGETED_REVIEW.md).
+
+## 2026-11-02 — DEPLOY-02 security remediation
+
+Applied Debian/Alpine security fixes, PyJWT2.14, multipart0.0.30, compatible
+FastAPI0.135.2/Starlette1.3.1 and Next16.4.1/sharp0.35.5. Removed runtime web
+package-manager tools and pip download cache. Native scans at98a3250 show zero
+CRITICAL/secret alerts; web clean, API/worker44 HIGH each/architecture remain
+blocking. Historical JWTs classified as public PyJWT demo strings entirely in RAM.
+Retained12 bound sanitized SBOM/provenance projections and full149-row application
+HIGH/CRITICAL matrix plus SeaweedFS finding. Eight S3 restores and validated
+Primer3 reference match;69 qualification tests, application/foundation CI and
+isolated29 Chromium journeys pass. Separate supplier scans retain SeaweedFS
+HIGH/UNKNOWN/license gates and Garage inventory blind spot. No provider switch,
+real migration, deployment, release publication or merge; PR18 remains draft.
+
+## 2026-11-02 — DEPLOY-02 blocking corrections
+
+Separate log identifiers/secrets/retrieval/controller diagnostics, use private
+SeaweedFS static identity configuration with correct non-root ownership, verify
+and extract OCI scan layouts bound to the exact application digest, and preserve
+strict typed scan outcomes. Eight native S3 scenarios pass; six scans complete
+with blocking vulnerabilities/secret alerts. Primer3 comparison unchanged (nine
+zero deltas). Application/foundation CI and47 static tests pass. PR18 remains
+draft; security findings, candidate scans, capacity and pilot gates stay open.
+No provider substitution, deployment, release or merge. See DEPLOY-02 report.
+
+## 2026-11-01 — DEPLOY-02 qualification
+
+PR17 merged as `75179a52da0d929922c904ff6df06d94eb7a1a67`. Added isolated
+S3 compatibility/restore and OCI/native-CI qualification tooling without registry
+publication or deployment. Superseding user decision excludes AIStor and makes
+SeaweedFS priority 1, Garage priority 2, historical MinIO compatibility-only. Added
+Garage persistent configuration and four logical restore scenarios; both platform
+manifests verified. 29 static tests pass. PR18 remains DRAFT: actual native CI
+builds and Primer3 comparison pass; Garage independent restore passes ARM64/AMD64,
+SeaweedFS scenarios fail their credential-log gate, image scan execution fails on
+OCI archive/manifest handling. Application CI is green at tested code ddfd0c2;
+release stays blocked. Linux snapshots do not qualify the Mac mini. Local Docker
+remains unavailable; no host, pilot Compose, provider, real object or network change.
+See [report](../deployment/DEPLOY_02_STORAGE_RELEASE_IMAGES.md).
+
 ## 2026-11-01 — PR16 integrated; DEPLOY-01 isolated foundation
 
 Merged approved documentation via PR16/`ab0ec42`, then added independent pilot

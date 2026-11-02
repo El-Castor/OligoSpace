@@ -1,4 +1,4 @@
-FROM mambaorg/micromamba:2.4.0 AS primer3-builder
+FROM mambaorg/micromamba:2.4.0@sha256:10bd2dd2e7bfae77e529c76a71f4126c222d74e99b908abc6e210da9eda0f6af AS primer3-builder
 
 ARG PRIMER3_VERSION=2.6.1
 
@@ -17,14 +17,18 @@ RUN set -eu; \
     install -m 0755 "/tmp/primer3-${PRIMER3_VERSION}/src/oligotm" /opt/primer3/bin/oligotm; \
     install -m 0755 "/tmp/primer3-${PRIMER3_VERSION}/src/ntthal" /opt/primer3/bin/ntthal
 
-FROM mambaorg/micromamba:2.4.0
+FROM mambaorg/micromamba:2.4.0@sha256:10bd2dd2e7bfae77e529c76a71f4126c222d74e99b908abc6e210da9eda0f6af
 
 ARG TARGETARCH
 ARG BLAST_VERSION=2.17.0
 
 USER root
+# Apply maintained Debian security fixes; scanner records residual unpatched advisories.
+RUN apt-get update \
+    && apt-get upgrade --yes \
+    && rm -rf /var/lib/apt/lists/*
 COPY envs/bioinfo.yml /tmp/environment.yml
-RUN micromamba install --yes --name base --file /tmp/environment.yml \
+RUN PIP_NO_CACHE_DIR=1 micromamba install --yes --name base --file /tmp/environment.yml \
     && micromamba clean --all --yes
 RUN set -eu; \
     case "${TARGETARCH}" in \
@@ -41,7 +45,8 @@ COPY --from=primer3-builder /opt/primer3 /opt/primer3
 
 WORKDIR /worker
 COPY services/bioinfo-worker/ /worker/
-RUN micromamba run --name base pip install --no-deps . \
+RUN PIP_NO_CACHE_DIR=1 micromamba run --name base pip install --no-cache-dir --no-deps . \
+    && rm -rf /root/.cache/pip \
     && chown -R ${MAMBA_USER}:${MAMBA_USER} /worker
 
 USER ${MAMBA_USER}

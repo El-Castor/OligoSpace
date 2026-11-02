@@ -1,0 +1,21 @@
+{
+  "schema": "s3-qualification/v1",
+  "project": "oligospace-deploy02-test-65f888482aab",
+  "source": "seaweedfs",
+  "target": "seaweedfs",
+  "status": "blocked",
+  "checks": [],
+  "images": {
+    "seaweedfs": "chrislusf/seaweedfs@sha256:f7a49e3f3972ebed5be2ed4befa4a0c68eb7bdddba6e692d42729ceb545134b8"
+  },
+  "observed_at": "2026-11-01T19:32:15.157573+00:00",
+  "application_adapter_exercised": false,
+  "sdk": {
+    "name": "minio",
+    "required_version": "7.2.20"
+  },
+  "resource_samples": {},
+  "stage": "engine_availability",
+  "failure": "qualification_failed_details_suppressed",
+  "cleanup": "passed"
+}

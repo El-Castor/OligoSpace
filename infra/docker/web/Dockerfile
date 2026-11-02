@@ -1,4 +1,4 @@
-FROM node:22.23.0-alpine3.23 AS dependencies
+FROM node:22.23.0-alpine3.23@sha256:35e2f96595091599e7c1fb0b61049e17d8478997b2aa13db51ad7995299fe55a AS dependencies
 WORKDIR /app
 COPY apps/web/package.json apps/web/package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci
@@ -11,11 +11,15 @@ COPY apps/web/ ./
 FROM tooling AS builder
 RUN npm run build
 
-FROM node:22.23.0-alpine3.23 AS runtime
+FROM node:22.23.0-alpine3.23@sha256:35e2f96595091599e7c1fb0b61049e17d8478997b2aa13db51ad7995299fe55a AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV HOSTNAME=0.0.0.0
+# npm/corepack are build tools; standalone server uses node directly.
+RUN apk upgrade --no-cache \
+    && rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+    && rm -f /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
 RUN addgroup --system --gid 1001 nodejs \
     && adduser --system --uid 1001 nextjs
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./

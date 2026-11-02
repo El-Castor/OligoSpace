@@ -1,5 +1,53 @@
 # Project status
 
+Decision review: [one-page DEPLOY-02 synthesis](../deployment/DEPLOY_02_DECISION.md).
+Single PR18 retained; no new remediation. Merge still blocked pending explicit
+risk decision or resolution; release/deployment prerequisites are distinguished.
+GitHub head0b12667 checked: functional CI passes, security scan gates remain red.
+No waiver, merge, provider switch or deployment authorized.
+
+## DEPLOY-02 — targeted review, integration proposal only (2026-11-02)
+
+Reviewed `1cca325`; qualification controller `44bb074`. The44 HIGH occurrences
+per API/worker image equal9 CVEs,6 Debian sources and17 installed binary packages.
+All9 remain open in trixie;8 have unstable fixes, not supported stable upgrades.
+Four native probes confirm actual files; no package removed or finding waived.
+SeaweedFS4.52 immutable variant: go-jose4.1.6 observed on both architectures,
+6/6 self/cross restores pass; scans still block on3 UNKNOWN and38 license
+observations per image. Default4.51 and pilot Compose unchanged.
+Garage source SBOM542 components, source scan1 HIGH/3 MEDIUM/7 LOW;
+OCI binaries equal official downloads on both architectures, but authenticated
+source/build binding and runtime inventory remain unverified.
+Application/foundation CI and Chromium pass at44bb074; release/security gates
+remain red.88 local qualification tests pass. User cancelled the unexecuted A/B split. Keep all work together in PR18.
+Final recommendation: further security corrections/decisions required; do not merge. PR18 stays DRAFT/unmerged pending user review; no deployment,
+release publication, provider switch or security-policy change.
+[Targeted report](../deployment/DEPLOY_02_TARGETED_REVIEW.md).
+
+## DEPLOY-02 — security remediated, residual gates blocked (2026-11-02)
+
+PR18 remains DRAFT/unmerged. Tested code `98a3250`: all reported application
+CRITICAL removed; web scans clean on ARM64/AMD64. API/worker each retain44 HIGH
+system occurrences per architecture, plus lower/unknown findings; every finding
+still blocks. Zero final secret alerts. Historical JWTs are public PyJWT demo
+strings in pip download cache, verified in RAM without values retained; cache
+is excluded from final images. Eight S3 self/cross restores pass, nine Primer3
+facts match both architectures and validated reference (delta0). Six OCI artifacts
+and12 sanitized SBOM/provenance projections retained. Application/foundation CI
+pass;29 Chromium journeys passed in the isolated uploads-disabled recipe.
+69 local qualification tests, lint/format and Compose config pass; local combined
+make cannot access Docker socket, so application suites run remotely.
+
+Separate candidate scans: SeaweedFS4.51 has1 HIGH +3 UNKNOWN and license obligations;
+Garage2.5.0 has no usable OS/Rust package inventory, gate not_verified. Signatures,
+provenance trust and supplier acceptance remain open. SeaweedFS stays conditional
+first candidate; Garage second, historical MinIO reference, AIStor excluded.
+No pilot Compose/provider, Mac mini, Cloudflare, real data or release publication
+changed. Stop for review; no automatic merge or next functional lot.
+[Security report/matrix](../deployment/DEPLOY_02_SECURITY_REMEDIATION.md) and
+[retained evidence](../../infra/deployment/evidence/security-98a3250-remediation.json).
+This current entry supersedes the historical holds below.
+
 ## DEPLOY-01 — foundation delivered for review, pilot gates still open
 
 PR16 merged at `ab0ec42144dbc34629b2675cc67b4364d5abc820` after exact approved

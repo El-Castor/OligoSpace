@@ -1,0 +1,110 @@
+{
+  "observed_at": "2026-11-01T19:31:42.674638+00:00",
+  "images": {
+    "minio_historical": {
+      "reference": "minio/minio:RELEASE.2025-09-07T16-13-09Z",
+      "status": "blocked",
+      "http_status": 401
+    },
+    "seaweedfs": {
+      "reference": "chrislusf/seaweedfs:4.51",
+      "status": "metadata_verified",
+      "digest": "sha256:f7a49e3f3972ebed5be2ed4befa4a0c68eb7bdddba6e692d42729ceb545134b8",
+      "platforms": {
+        "amd64": "sha256:3a522c379599e163433a636e75022630848b63a74f08ea37bf06f8d776e9a707",
+        "arm64": "sha256:7e68a388de0806ed8d96f30cb7e927182a3d80d42920cb87d97d23311a7a1a77"
+      },
+      "media_type": "application/vnd.oci.image.index.v1+json"
+    },
+    "garage": {
+      "reference": "dxflrs/garage:v2.5.0",
+      "status": "metadata_verified",
+      "digest": "sha256:677e5b758e4425a325b811c425c026bf35a4bf42f7ddbaa773de3f4fd779a5a5",
+      "platforms": {
+        "arm64": "sha256:32b5de84cf9e3ae9c0b4d0f02566c442029e62203a4ed1bca9cdf2327fc19388",
+        "amd64": "sha256:23b16d34e0348d9aca9b960a7429a7e6d494974b5288bfb8f6c3ab856895f71e"
+      },
+      "media_type": "application/vnd.docker.distribution.manifest.list.v2+json"
+    },
+    "postgres": {
+      "reference": "postgres:17.11-alpine",
+      "status": "metadata_verified",
+      "digest": "sha256:266d3c257594e195b309ae9d1805e54c788f1d7b375f56bf6c367aac6c917e7b",
+      "platforms": {
+        "amd64": "sha256:e4cb93687b062cd25a0e8f672d85a7708235009d70d31f8a7698d9370092a9c4",
+        "arm64": "sha256:a717692f944862397bd102c6abee9b3f7927adbf7ee5f3a93e50b65aea0c5396"
+      },
+      "media_type": "application/vnd.oci.image.index.v1+json"
+    },
+    "redis": {
+      "reference": "redis:7.4.10-alpine",
+      "status": "metadata_verified",
+      "digest": "sha256:e7723ff73d963f5cc6d9c4643ea3d989527a402a319239054e9472a7fb9219a2",
+      "platforms": {
+        "amd64": "sha256:9702d01c1f10c3ea9f48211b4362e44f154ff02d063e6f7268eba804059f53bf",
+        "arm64": "sha256:102aa93d02c163a634662ec18a1a1db51bf5b8b6a2f28547ce24626218a40d54"
+      },
+      "media_type": "application/vnd.oci.image.index.v1+json"
+    },
+    "keycloak": {
+      "reference": "quay.io/keycloak/keycloak:26.7.2",
+      "status": "metadata_verified",
+      "digest": "sha256:9d1f1b2b7261ff53c66cb1092dfcdc34a5fb77e81f9e6a6e75b8b6a795de8067",
+      "platforms": {
+        "amd64": "sha256:c2a17fe407e892196d0b7cf9cef54e60952d6c372a9205f661a9efa0911463b0",
+        "arm64": "sha256:cec1f47daf95f81fc78ff2391e262a70ddc9826a657cee7d8068a946a72bd8a7"
+      },
+      "media_type": "application/vnd.oci.image.index.v1+json"
+    },
+    "caddy": {
+      "reference": "caddy:2.11.4-alpine",
+      "status": "metadata_verified",
+      "digest": "sha256:6aeddd44c3078b0f9a35206472a11420648a79c184603ef95957d0a20044cb2b",
+      "platforms": {
+        "amd64": "sha256:040e9f7480b80b6d4a7e5013a21159b950a63dcbdb956e38abe2387fb28d9ec0",
+        "arm64": "sha256:c802bf2721a427e961b9fd6a194c3888a180de9990b43f8530a02bd6be017e17"
+      },
+      "media_type": "application/vnd.oci.image.index.v1+json"
+    },
+    "micromamba": {
+      "reference": "mambaorg/micromamba:2.4.0",
+      "status": "metadata_verified",
+      "digest": "sha256:10bd2dd2e7bfae77e529c76a71f4126c222d74e99b908abc6e210da9eda0f6af",
+      "platforms": {
+        "amd64": "sha256:ee05226051c34f9d09dd911577ce647bfba05b5e32c648c550638a899010d89a",
+        "arm64": "sha256:0f8497554ba2e5720e50b4ebfd82687a9f07bc224e6352955378451de632c95b"
+      },
+      "media_type": "application/vnd.oci.image.index.v1+json"
+    },
+    "node": {
+      "reference": "node:22.23.0-alpine3.23",
+      "status": "metadata_verified",
+      "digest": "sha256:35e2f96595091599e7c1fb0b61049e17d8478997b2aa13db51ad7995299fe55a",
+      "platforms": {
+        "amd64": "sha256:3038c3a8f0b4417e86bb58d44e692cd9526df8f1422e611965a18b0e515c8e6b",
+        "arm64": "sha256:30ae470464e23c353d2268ed2a7bbf14517e30b5c224fa0cf46c609deaf43fdd"
+      },
+      "media_type": "application/vnd.oci.image.index.v1+json"
+    },
+    "scanner": {
+      "reference": "aquasec/trivy:0.76.1",
+      "status": "metadata_verified",
+      "digest": "sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c",
+      "platforms": {
+        "amd64": "sha256:2e6c00d711ab4ae41d8a30c2c1fd3bd3b62704c177bb120f95012e939edfb3df",
+        "arm64": "sha256:fc223b6f033406fd0c5efe59b566295e90cff76ccd2af696bd0d66d53ad83a2d"
+      },
+      "media_type": "application/vnd.oci.image.index.v1+json"
+    },
+    "sbom_scanner": {
+      "reference": "docker/buildkit-syft-scanner:stable-1",
+      "status": "metadata_verified",
+      "digest": "sha256:873a7458c3c8ac8e32c7b796c10e1600b07b963d2aa000a72a2d97aaaa2d6315",
+      "platforms": {
+        "arm64": "sha256:eecdb89c2cd84b80868ea748063edb7225576994dbeac439c6b831092eeb4bff",
+        "amd64": "sha256:10a413da6b52acacf4af4262eafeae6ca05076fbd65850ad7f233163c6d6a81c"
+      },
+      "media_type": "application/vnd.oci.image.index.v1+json"
+    }
+  }
+}

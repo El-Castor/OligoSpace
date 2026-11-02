@@ -1,0 +1,183 @@
+"""Disposable candidate configuration; never a pilot provider switch."""
+
+from pathlib import Path
+import json
+import os
+import secrets
+
+IMAGES = {
+    "minio": "minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e",
+    "seaweedfs": "chrislusf/seaweedfs@sha256:f7a49e3f3972ebed5be2ed4befa4a0c68eb7bdddba6e692d42729ceb545134b8",
+    "garage": "dxflrs/garage@sha256:677e5b758e4425a325b811c425c026bf35a4bf42f7ddbaa773de3f4fd779a5a5",
+}
+
+
+QUALIFICATION_VARIANTS = {
+    "seaweedfs-4.52": "chrislusf/seaweedfs@sha256:57877e32bb90073b37dc109b438ba66e84fd5ed9ced5f5c04f56444ef243ce59",
+}
+
+
+def image_reference(kind, variant=None):
+    if variant is None:
+        return IMAGES[kind]
+    if kind != "seaweedfs" or variant not in QUALIFICATION_VARIANTS:
+        raise ValueError("unsupported_qualification_variant")
+    return QUALIFICATION_VARIANTS[variant]
+
+
+def private_identity_owner_args(project, side, config: Path, variant=None):
+    """Only a generated private test file may be handed to the image's user."""
+    if (
+        not project.startswith("oligospace-deploy02-test-")
+        or side not in ("source", "target")
+        or config.is_symlink()
+        or config.parent.is_symlink()
+        or config.parent.parent.is_symlink()
+        or not config.is_file()
+        or config.name != "s3.json"
+        or config.parent.name != side
+        or not config.parent.parent.name.startswith("oligospace-deploy02-storage-")
+        or config.parent.parent.stat().st_mode & 0o777 != 0o700
+        or config.stat().st_mode & 0o777 != 0o600
+        or config.stat().st_uid != os.getuid()
+        or config.stat().st_nlink != 1
+    ):
+        raise ValueError("generated_private_identity_required")
+    return [
+        "run",
+        "--rm",
+        "--pull=never",
+        "--network",
+        "none",
+        "--user",
+        "0:0",
+        "--name",
+        project + "-" + side + "-config-owner",
+        "--label",
+        "org.oligospace.disposable=" + project,
+        "--mount",
+        f"type=bind,source={config.resolve()},target=/qualification/s3.json",
+        "--entrypoint",
+        "/bin/chown",
+        image_reference("seaweedfs", variant),
+        "seaweed:seaweed",
+        "/qualification/s3.json",
+    ]
+
+
+def command(kind, name):
+    if kind == "minio":
+        return ["server", "/data"]
+    if kind == "seaweedfs":
+        return [
+            "mini",
+            "-dir=/data",
+            "-ip=" + name,
+            "-ip.bind=0.0.0.0",
+            "-s3.config=/etc/seaweedfs/s3.json",
+        ]
+    if kind == "garage":
+        # Let the unchanged MinIO SDK create the bucket, not Garage bootstrap.
+        return ["/garage", "server", "--single-node", "--default-access-key"]
+    raise ValueError("unsupported_candidate")
+
+
+def prepare(kind, name, root: Path, access, secret):
+    args = command(kind, name)
+    private_files = []
+    extra_secret_values = []
+    if kind == "garage":
+        config = root / "garage.toml"
+        rpc_secret = secrets.token_hex(32)
+        extra_secret_values.append(rpc_secret)
+        config.write_text(
+            'metadata_dir = "/data/meta"\n'
+            'data_dir = "/data/objects"\n'
+            'db_engine = "sqlite"\n'
+            "replication_factor = 1\n"
+            "metadata_fsync = true\ndata_fsync = true\n"
+            'rpc_bind_addr = "0.0.0.0:3901"\n'
+            'rpc_public_addr = "127.0.0.1:3901"\n'
+            f'rpc_secret = "{rpc_secret}"\n'
+            '[s3_api]\ns3_region = "us-east-1"\n'
+            'api_bind_addr = "0.0.0.0:3900"\n'
+        )
+        config.chmod(0o600)
+        private_files.append(config)
+        environment = {
+            "GARAGE_DEFAULT_ACCESS_KEY": access,
+            "GARAGE_DEFAULT_SECRET_KEY": secret,
+            # Initial bootstrap otherwise logs the access key at INFO.
+            "RUST_LOG": "warn",
+        }
+        port = 3900
+    elif kind == "seaweedfs":
+        # Official static identity configuration avoids the AWS bootstrap path,
+        # which logs the complete access identifier at INFO. No logging is muted.
+        config = root / "s3.json"
+        config.write_text(
+            json.dumps(
+                {
+                    "identities": [
+                        {
+                            "name": "synthetic-qualification",
+                            "credentials": [{"accessKey": access, "secretKey": secret}],
+                            "actions": ["Admin", "Read", "Write", "List", "Tagging"],
+                        }
+                    ]
+                }
+            )
+        )
+        config.chmod(0o600)
+        private_files.append(config)
+        environment = {}
+        port = 8333
+    else:
+        environment = {"MINIO_ROOT_USER": access, "MINIO_ROOT_PASSWORD": secret}
+        port = 9000
+    (root / "data").mkdir(exist_ok=True)
+    return {
+        "command": args,
+        "environment": environment,
+        "port": port,
+        "private_files": private_files,
+        "extra_secret_values": extra_secret_values,
+    }
+
+
+def compose_definition(kind, side, project, root: Path, envfile: Path, variant=None):
+    name = project + "-" + side
+    volumes = [{"type": "bind", "source": str(root / "data"), "target": "/data"}]
+    if kind == "garage":
+        volumes.append(
+            {
+                "type": "bind",
+                "source": str(root / "garage.toml"),
+                "target": "/etc/garage.toml",
+                "read_only": True,
+            }
+        )
+    elif kind == "seaweedfs":
+        volumes.append(
+            {
+                "type": "bind",
+                "source": str(root / "s3.json"),
+                "target": "/etc/seaweedfs/s3.json",
+                "read_only": True,
+            }
+        )
+    return {
+        "services": {
+            side: {
+                "image": image_reference(kind, variant),
+                "container_name": name,
+                "pull_policy": "never",
+                "command": command(kind, name),
+                "env_file": [str(envfile)],
+                "labels": {"org.oligospace.disposable": project},
+                "volumes": volumes,
+            }
+        },
+        # The harness creates and verifies this unique --internal network.
+        "networks": {"default": {"name": project, "external": True}},
+    }
