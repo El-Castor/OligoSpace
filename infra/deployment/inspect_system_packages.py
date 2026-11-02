@@ -45,6 +45,31 @@ DIGEST = r"sha256:[0-9a-f]{64}"
 PUBLIC_PATH = r"/(?:usr/)?(?:lib|lib64|bin|sbin)/[A-Za-z0-9_./+:-]+|/opt/(?:conda|ncbi-blast|primer3)/[A-Za-z0-9_./+:-]+"
 
 
+class InspectionCommandError(ValueError):
+    def __init__(self, categories):
+        super().__init__("inspection_command_failed")
+        self.categories = categories
+
+
+def diagnostic_categories(text):
+    return [
+        key
+        for key in (
+            "permission denied",
+            "read-only file system",
+            "no such file",
+            "executable file not found",
+            "operation not permitted",
+            "not found",
+            "failed to create",
+            "cannot create",
+            "lock",
+            "timeout",
+        )
+        if key in text.lower()
+    ]
+
+
 def command(argv):
     result = subprocess.run(
         argv, capture_output=True, text=True, timeout=90, check=False
@@ -231,10 +256,16 @@ def host(context, proof):
     docker = ["docker", "--context", context]
 
     def output(args):
-        code, text = command(docker + args)
-        if code:
-            raise ValueError("docker_command_failed")
-        return text
+        result = subprocess.run(
+            docker + args, capture_output=True, text=True, timeout=90, check=False
+        )
+        if result.returncode:
+            raise InspectionCommandError(
+                diagnostic_categories(result.stderr + result.stdout)
+            )
+        if len(result.stdout) > 2 * 1024 * 1024:
+            raise ValueError("output_limit")
+        return result.stdout
 
     endpoint = json.loads(output(["context", "inspect", context]))[0]["Endpoints"][
         "docker"
@@ -320,6 +351,11 @@ def main():
                 )
             }
         report["execution"] = "observed"
+    except InspectionCommandError as error:
+        report["execution"] = "technical_failure"
+        report["failure"] = "inspection_command_failed"
+        report["error_categories"] = error.categories
+        status = 1
     except (
         OSError,
         ValueError,
@@ -327,9 +363,25 @@ def main():
         TypeError,
         IndexError,
         subprocess.SubprocessError,
-    ):
+    ) as error:
         report["execution"] = "technical_failure"
         report["failure"] = "inspection_not_completed"
+        allowed = {
+            "image_proof_mismatch",
+            "native_platform_required",
+            "container_probe_failed",
+            "docker_override_refused",
+            "local_context_required",
+            "output_limit",
+            "invalid_package_path",
+            "executable_root_mismatch",
+            "required_host_arguments_missing",
+        }
+        report["rule_id"] = "INSPECTION_" + (
+            str(error).upper()
+            if str(error) in allowed
+            else type(error).__name__.upper()
+        )
         status = 1
     text = json.dumps(report, indent=2) + "\n"
     if args.probe:

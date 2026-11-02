@@ -54,6 +54,13 @@ class SystemPackagesTests(unittest.TestCase):
         loaded["RootFS"]["Layers"] = []
         self.assertFalse(self.module.image_matches(loaded, proof))
 
+    def test_failed_command_diagnostics_never_retain_payload(self):
+        result = self.module.diagnostic_categories(
+            "synthetic-private-value read-only file system lock failed to create"
+        )
+        self.assertEqual(result, ["read-only file system", "failed to create", "lock"])
+        self.assertNotIn("synthetic-private-value", str(result))
+
     def test_normalized_conda_loader_paths_are_not_silently_lost(self):
         rows = self.module.parse_ldd(
             "libpython3.12.so.1.0 => /opt/conda/bin/../lib/libpython3.12.so.1.0 (0x123)\n"
