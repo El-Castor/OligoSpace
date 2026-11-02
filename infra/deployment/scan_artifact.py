@@ -364,7 +364,19 @@ def main():
                 stage = "SCAN_DATABASE_METADATA_INVALID"
                 database = json.loads((root / "cache/db/metadata.json").read_text())
                 stage = "SCAN_REPORT_INVALID"
-                report = summarize(json.loads(result.stdout), proof, database)
+                raw = json.loads(result.stdout)
+                report = summarize(raw, proof, database)
+                from secret_triage import triage_secrets
+
+                triage = triage_secrets(root / "layout", proof, raw, jwt_triage)
+                if len(triage) != len(report["secret_observations"]):
+                    raise ValueError("invalid_secrets")
+                report["secret_observations"] = [
+                    {**observation, **evidence}
+                    for observation, evidence in zip(
+                        report["secret_observations"], triage, strict=True
+                    )
+                ]
     except (
         tarfile.TarError,
         OSError,
