@@ -1,5 +1,11 @@
 # Changelog
 
+Decision review: [one-page DEPLOY-02 synthesis](../deployment/DEPLOY_02_DECISION.md).
+Single PR18 retained; no new remediation. Merge still blocked pending explicit
+risk decision or resolution; release/deployment prerequisites are distinguished.
+GitHub head0b12667 checked: functional CI passes, security scan gates remain red.
+No waiver, merge, provider switch or deployment authorized.
+
 ## DEPLOY-02 — targeted review, integration proposal only (2026-11-02)
 
 Reviewed `1cca325`; qualification controller `44bb074`. The44 HIGH occurrences

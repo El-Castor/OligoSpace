@@ -1,5 +1,7 @@
 # DEPLOY-02 — Rapport final consolidé et recommandation de fusion
 
+Latest [one-page decision review](DEPLOY_02_DECISION.md) distinguishes code integration from release authorization; no risk acceptance granted.
+
 ## Périmètre et décision maintenue
 
 Revue demandée du head `1cca325bf6d81f76ac875826c7f5ee068e2c89bc`,
