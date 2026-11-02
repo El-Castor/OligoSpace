@@ -1,5 +1,18 @@
 # DEPLOY-02 — Object Storage & Release Image Qualification
 
+## PR18 blocking corrections — execution record (2026-11-02)
+
+User review of `5313b3c` authorizes correction/requalification, never merge.
+Plan: classify credential identifiers, secret values, retrieval and controller
+failures separately; reproduce the cause without retaining raw logs; use only an
+official provider configuration if a disclosure is confirmed. Correct the Trivy
+tar-versus-layout input and bind the scan view to the fully verified image digest,
+retaining all original attestations. Test malformed/absent reports and distinct
+technical/findings/clean outcomes. Re-run all four isolated S3 scenarios, native
+build/scans/Primer3 on both platforms; review exact-head CI and sanitized evidence,
+update ADR0007/tracking/memory and keep PR18 DRAFT. No host, provider substitution,
+real data migration, image release or security-policy waiver is authorized.
+
 2026-11-01. Branch `codex/deploy-02-storage-release-images`, based on main
 `75179a52da0d929922c904ff6df06d94eb7a1a67`: PR17 merged after exact approved
 `8d0cd09a1294dcd2c6a504acc2bd3e842ff038ff`, 14 successful checks and no conflict.

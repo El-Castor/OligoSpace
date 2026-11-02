@@ -32,6 +32,7 @@ jobs:
           name: deploy02-native
           driver: docker-container
       - name: Verify native runner and build tracked source only
+        id: native_build
         env:
           ROLE: ${{ matrix.role }}
           ARCH: ${{ matrix.architecture }}
@@ -61,9 +62,23 @@ jobs:
           done
           exit "$status"
       - name: Collect real scan evidence (findings are not accepted)
+        if: ${{ !cancelled() && steps.native_build.outcome == 'success' }}
+        env:
+          ARCH: ${{ matrix.architecture }}
         run: |
           artifact=$(find "$RUNNER_TEMP/oci" -name '*.oci.tar' -print -quit)
-          python3 infra/deployment/scan_artifact.py --context default --archive "$artifact" --output "$RUNNER_TEMP/oci/scan.json"
+          python3 infra/deployment/scan_artifact.py --context default --archive "$artifact" --architecture "$ARCH" --source "$(git rev-parse HEAD)" --output "$RUNNER_TEMP/oci/scan.json"
+      - name: Record an unexecuted scan explicitly when prerequisites failed
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          report = Path(os.environ["RUNNER_TEMP"]) / "oci/scan.json"
+          if not report.exists():
+              report.parent.mkdir(parents=True, exist_ok=True)
+              report.write_text(json.dumps({"execution": "not_executed", "gate": "not_verified", "rule_id": "SCAN_PREREQUISITE_FAILED", "raw_matches_retained": False}) + "\n")
+          PY
       - name: Retain sanitized evidence only, never OCI images or raw scan matches
         if: always()
         uses: actions/upload-artifact@v4
@@ -79,6 +94,7 @@ jobs:
             ${{ runner.temp }}/storage/**/storage-report.json
   compare-evidence:
     needs: native-image
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
