@@ -28,7 +28,11 @@ def main() -> None:
     os.umask(0o077)
     evidence = ROOT / "infra/auth-qualification/evidence"
     evidence.mkdir(exist_ok=True)
-    for name in ("synthetic-dashboard.png", "synthetic-administration.png"):
+    for name in (
+        "synthetic-dashboard.png",
+        "synthetic-administration.png",
+        "oidc-structure.json",
+    ):
         (evidence / name).unlink(missing_ok=True)
     summary: dict[str, object] = {"qualification": "not_completed", "tests": []}
     (evidence / "summary.json").write_text(json.dumps(summary, indent=2))
@@ -309,12 +313,24 @@ https://auth-qualification.test {
                 except json.JSONDecodeError:
                     continue
                 if (
-                    set(item) == {"test", "status"}
+                    set(item) == {"test", "status", "source_line", "rule_id"}
                     and isinstance(item["test"], str)
                     and len(item["test"]) < 180
                     and item["status"]
                     in ("passed", "failed", "timedOut", "skipped", "interrupted")
                 ):
+                    if item["rule_id"] not in (
+                        None,
+                        "navigation",
+                        "visibility",
+                        "equality",
+                        "timeout",
+                        "other",
+                    ) or (
+                        item["source_line"] is not None
+                        and not isinstance(item["source_line"], int)
+                    ):
+                        continue
                     results.append(item)
                     print(json.dumps(item), flush=True)
             passed = (
@@ -330,6 +346,33 @@ https://auth-qualification.test {
                 source = work / "evidence" / name
                 if source.exists():
                     shutil.copyfile(source, evidence / name)
+            structure_path = work / "evidence/oidc-structure.json"
+            if structure_path.exists():
+                structure = json.loads(structure_path.read_text())
+                booleans = {
+                    "has_sub",
+                    "issuer_expected",
+                    "audience_expected",
+                    "realm_roles_present",
+                }
+                if (
+                    isinstance(structure, dict)
+                    and set(structure) == booleans | {"me_status", "me_rule"}
+                    and all(type(structure[key]) is bool for key in booleans)
+                    and type(structure["me_status"]) is int
+                    and 100 <= structure["me_status"] <= 599
+                    and structure["me_rule"]
+                    in (
+                        "invalid_token",
+                        "account_not_provisioned",
+                        "identity_provider_mismatch",
+                        "account_disabled",
+                        "other",
+                    )
+                ):
+                    (evidence / "oidc-structure.json").write_text(
+                        json.dumps(structure, indent=2)
+                    )
             if not passed:
                 raise RuntimeError(
                     "Qualification phase failed: browser; inspect sanitized summary.json"

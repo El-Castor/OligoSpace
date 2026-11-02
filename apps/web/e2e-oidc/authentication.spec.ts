@@ -1,4 +1,5 @@
 import { createHmac } from "node:crypto";
+import { writeFileSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 
 const origin = process.env.PLAYWRIGHT_BASE_URL!;
@@ -72,12 +73,34 @@ test("real login enforces PKCE, state, nonce and secure session cookies", async 
     expect(Boolean(cookie?.secure && cookie?.httpOnly && cookie?.sameSite === "Lax")).toBe(true);
   }
   await credentials(page, "admin");
-  await expect(page.getByLabel("Current user")).toBeVisible();
+  await expect.poll(async () => {
+    try { return Boolean((await session(page)).accessToken); }
+    catch { return false; }
+  }).toBe(true);
   const value = await session(page);
   expect(Boolean(value.accessToken)).toBe(true);
+  let claims: Record<string, unknown> = {};
+  try {
+    const decoded: unknown = JSON.parse(Buffer.from(value.accessToken!.split(".")[1], "base64url").toString("utf8"));
+    if (decoded && typeof decoded === "object" && !Array.isArray(decoded)) claims = decoded as Record<string, unknown>;
+  }
+  catch { /* Only structural booleans are retained, including malformed payloads. */ }
   const me = await api(page, "/me", value.accessToken);
+  const mePayload = await me.json().catch(() => null);
+  const knownRules = ["invalid_token", "account_not_provisioned", "identity_provider_mismatch", "account_disabled"];
+  const candidateRule = mePayload?.detail?.code;
+  const realmAccess = claims.realm_access as { roles?: unknown } | undefined;
+  writeFileSync("/evidence/oidc-structure.json", JSON.stringify({
+    has_sub: typeof claims.sub === "string" && claims.sub.length > 0,
+    issuer_expected: claims.iss === issuer,
+    audience_expected: claims.aud === "oligospace-api" || (Array.isArray(claims.aud) && claims.aud.includes("oligospace-api")),
+    realm_roles_present: Array.isArray(realmAccess?.roles) && realmAccess.roles.length > 0,
+    me_status: me.status(),
+    me_rule: typeof candidateRule === "string" && knownRules.includes(candidateRule) ? candidateRule : "other",
+  }, null, 2));
+  await expect(page.getByLabel("Current user")).toBeVisible();
   expect(me.status()).toBe(200);
-  const identity = await me.json();
+  const identity = mePayload;
   expect(identity.role).toBe("admin");
   expect(identity.development_identity).toBe(false);
   const cookies = await page.context().cookies(origin);
