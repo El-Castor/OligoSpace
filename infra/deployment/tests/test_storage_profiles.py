@@ -192,6 +192,8 @@ class StorageProfileTests(unittest.TestCase):
                 " print(json.dumps({'Architecture': 'aarch64', 'OSType': 'linux'}))\n"
                 "elif args[:2] == ['network', 'inspect']:\n"
                 " print(json.dumps([{'Internal': True}]))\n"
+                "elif args[0] == 'inspect' and '--format' in args:\n"
+                " print(json.dumps({'Running': True}))\n"
                 "elif args[0] == 'inspect':\n"
                 " print(json.dumps([{'HostConfig': {'PortBindings': {}, 'NetworkMode': 'synthetic'}}]))\n"
                 "elif args[0] == 'stats':\n"

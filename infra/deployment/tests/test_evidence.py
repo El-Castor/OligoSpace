@@ -6,6 +6,25 @@ from unittest.mock import patch
 
 
 class EvidenceTests(unittest.TestCase):
+    def test_exited_candidate_reports_unsupported_flag_without_raw_logs(self):
+        module = self.module()
+        with patch(
+            "subprocess.run",
+            side_effect=[
+                subprocess.CompletedProcess([], 0, b'{"Running":false}', b""),
+                subprocess.CompletedProcess(
+                    [],
+                    0,
+                    b"",
+                    b"flag provided but not defined: -s3.config private-test-value",
+                ),
+            ],
+        ):
+            report = module.candidate_runtime_report(["docker"], "synthetic")
+        self.assertEqual(report["status"], "failed")
+        self.assertIn("CANDIDATE_UNSUPPORTED_FLAG", report["rule_ids"])
+        self.assertNotIn("private-test-value", str(report))
+
     def module(self):
         path = Path(__file__).resolve().parents[1] / "evidence.py"
         spec = importlib.util.spec_from_file_location("evidence", path)

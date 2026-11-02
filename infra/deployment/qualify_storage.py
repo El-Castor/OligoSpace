@@ -16,7 +16,7 @@ import tempfile
 import time
 import uuid
 
-from evidence import credential_log_report
+from evidence import candidate_runtime_report, credential_log_report
 from storage_profiles import IMAGES, compose_definition, prepare
 
 
@@ -275,6 +275,9 @@ def main():
         report["stage"] = "candidate_start"
         source, source_env = start(args.source, "source")
         target, target_env = start(args.target, "target")
+        for name in (source, target):
+            if candidate_runtime_report(docker, name)["status"] != "passed":
+                raise RuntimeError("disposable_candidate_not_running")
         report["stage"] = "sdk_write_read"
         for attempt in range(30):
             try:
@@ -387,6 +390,20 @@ def main():
         raise
     finally:
         # Never print raw exceptions/logs/config; preserve only a sanitized report.
+        runtime_failed = False
+        report["runtime_diagnostics"] = {}
+        for side in ("source", "target"):
+            name = project + "-" + side
+            if name in containers:
+                diagnostic = candidate_runtime_report(docker, name)
+                report["runtime_diagnostics"][side] = diagnostic
+                runtime_failed |= diagnostic["status"] != "passed"
+                if side not in report["log_diagnostics"]:
+                    report["log_diagnostics"][side] = credential_log_report(
+                        docker, name, access_identifiers, secret_values
+                    )
+        if runtime_failed:
+            report["status"] = "failed"
         failures = cleanup_disposable(
             run, containers, project if network_created else None, envfiles
         )
@@ -396,6 +413,8 @@ def main():
         (output / "storage-report.json").write_text(json.dumps(report, indent=2) + "\n")
         if failures:
             raise RuntimeError("disposable_cleanup_failed_credentials_removed")
+        if runtime_failed:
+            raise RuntimeError("disposable_candidate_runtime_failed")
 
 
 if __name__ == "__main__":

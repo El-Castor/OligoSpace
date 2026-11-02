@@ -141,7 +141,7 @@ def summarize(raw, proof, database):
             identifier = vulnerability.get("VulnerabilityID", "")
             level = vulnerability.get("Severity", "UNKNOWN")
             if not re.fullmatch(
-                r"(?:CVE-[0-9]{4}-[0-9]+|GHSA-[a-z0-9-]+)", identifier
+                r"(?:CVE-[0-9]{4}-[0-9]+|GHSA-[a-z0-9-]+|RUSTSEC-[0-9]{4}-[0-9]+|TEMP-[0-9]+-[A-Fa-f0-9]+)", identifier
             ) or level not in ("UNKNOWN", "LOW", "MEDIUM", "HIGH", "CRITICAL"):
                 raise ValueError("invalid_public_vulnerability")
             severity[level] += 1

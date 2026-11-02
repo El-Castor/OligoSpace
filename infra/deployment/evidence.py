@@ -1,6 +1,44 @@
 """No log payload leaves this check; Docker logs can use BOTH streams."""
 
 import subprocess
+import json
+
+
+def candidate_runtime_report(docker, container):
+    """Only fixed runtime categories leave the controller; no log text survives."""
+    try:
+        state = subprocess.run(
+            docker + ["inspect", "--format", "{{json .State}}", container],
+            capture_output=True,
+            check=False,
+            timeout=30,
+        )
+        if state.returncode:
+            return {"status": "blocked", "rule_ids": ["CANDIDATE_INSPECTION_FAILED"]}
+        running = json.loads(state.stdout).get("Running")
+        if not isinstance(running, bool):
+            return {"status": "blocked", "rule_ids": ["CANDIDATE_STATE_INVALID"]}
+        logs = subprocess.run(
+            docker + ["logs", container], capture_output=True, check=False, timeout=30
+        )
+        if logs.returncode:
+            return {"status": "blocked", "rule_ids": ["CANDIDATE_LOG_RETRIEVAL_FAILED"]}
+        payload = logs.stdout + logs.stderr
+        if isinstance(payload, str):
+            payload = payload.encode()
+        rules = ["CANDIDATE_RUNNING" if running else "CANDIDATE_EXITED"]
+        for pattern, rule in (
+            (b"flag provided but not defined", "CANDIDATE_UNSUPPORTED_FLAG"),
+            (b"permission denied", "CANDIDATE_PERMISSION_DENIED"),
+            (b"read-only file system", "CANDIDATE_READ_ONLY_CONFIG"),
+            (b"cannot unmarshal", "CANDIDATE_CONFIG_FORMAT_INVALID"),
+            (b"address already in use", "CANDIDATE_PORT_CONFLICT"),
+        ):
+            if pattern in payload.lower():
+                rules.append(rule)
+        return {"status": "passed" if running else "failed", "rule_ids": rules}
+    except Exception:
+        return {"status": "blocked", "rule_ids": ["CANDIDATE_CONTROLLER_FAILED"]}
 
 
 def credential_log_report(docker, container, access_identifiers, secret_values):

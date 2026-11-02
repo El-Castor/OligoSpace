@@ -32,6 +32,29 @@ def fixture():
 
 
 class ScanTests(unittest.TestCase):
+    def test_vendor_advisory_identifiers_are_retained_and_still_block_release(self):
+        raw = fixture()
+        raw["Results"] = [
+            {
+                "Vulnerabilities": [
+                    {
+                        "VulnerabilityID": identifier,
+                        "Severity": "LOW",
+                        "PkgName": "synthetic-package",
+                        "InstalledVersion": "1.0",
+                        "FixedVersion": "",
+                    }
+                    for identifier in ("TEMP-0000000-ABC123", "RUSTSEC-2026-0001")
+                ]
+            }
+        ]
+        report = module.summarize(raw, PROOF, DB)
+        self.assertEqual(report["execution"], "completed_with_findings")
+        self.assertEqual(report["gate"], "failed")
+        self.assertEqual(
+            report["vulnerability_ids"], ["RUSTSEC-2026-0001", "TEMP-0000000-ABC123"]
+        )
+
     def test_valid_multiple_fixed_versions_remain_blocking_findings(self):
         raw = fixture()
         raw["Results"] = [
