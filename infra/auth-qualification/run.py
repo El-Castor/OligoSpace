@@ -6,9 +6,11 @@ import json
 import os
 from pathlib import Path
 import re
+import selectors
 import secrets
 import subprocess
 import tempfile
+import time
 import uuid
 import shutil
 
@@ -151,6 +153,122 @@ def collect_evidence(dc: list[str], work: Path, evidence: Path) -> None:
             (evidence / "state-probe.json").write_text(json.dumps(state, indent=2))
 
 
+def capture_service_logs(command: list[str]) -> tuple[bytes, str | None]:
+    """Read complete logs into bounded RAM; an incomplete read never passes."""
+    output = bytearray()
+    limit = 4 * 1024 * 1024
+    deadline = time.monotonic() + 30
+    process = subprocess.Popen(
+        command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+    )
+    try:
+        assert process.stdout is not None
+        with selectors.DefaultSelector() as selector:
+            selector.register(process.stdout, selectors.EVENT_READ)
+            while selector.get_map():
+                if time.monotonic() >= deadline:
+                    return bytes(output), "LOG_RETRIEVAL_TIMEOUT"
+                for key, _ in selector.select(timeout=0.5):
+                    block = os.read(key.fd, 65536)
+                    if not block:
+                        selector.unregister(key.fileobj)
+                        continue
+                    remaining = limit - len(output)
+                    output.extend(block[:remaining])
+                    if len(block) > remaining:
+                        return bytes(output), "LOG_LIMIT_EXCEEDED"
+            remaining_time = max(0.1, deadline - time.monotonic())
+            if process.wait(timeout=remaining_time) != 0:
+                return bytes(output), "LOG_RETRIEVAL_FAILED"
+        return bytes(output), None
+    except (OSError, subprocess.TimeoutExpired):
+        return bytes(output), "LOG_RETRIEVAL_FAILED"
+    finally:
+        if process.poll() is None:
+            process.kill()
+            process.wait(timeout=5)
+        if process.stdout is not None:
+            process.stdout.close()
+
+
+def check_log_secrets(
+    dc: list[str], private_values: dict[str, str], evidence: Path
+) -> str:
+    """Retain service, fixed rules/categories and counts; never raw log bytes."""
+    services = []
+    token_pattern = re.compile(
+        rb"(?<![A-Za-z0-9_-])[A-Za-z0-9_-]{16,}\.[A-Za-z0-9_-]{16,}\."
+        rb"[A-Za-z0-9_-]{16,}(?![A-Za-z0-9_-])"
+    )
+    for service in ("api", "web", "keycloak", "caddy"):
+        try:
+            logs, retrieval_rule = capture_service_logs(
+                dc + ["logs", "--no-color", service]
+            )
+        except OSError:
+            logs, retrieval_rule = b"", "LOG_RETRIEVAL_FAILED"
+        findings = []
+        for category, value in private_values.items():
+            if category not in (
+                "identity_password",
+                "client_secret",
+                "session_secret",
+                "database_password",
+                "bootstrap_password",
+                "storage_access_key",
+                "storage_secret_key",
+            ):
+                category = "other_generated_secret"
+            count = logs.count(value.encode()) if value else 0
+            if count:
+                findings.append(
+                    {
+                        "rule_id": "GENERATED_SECRET_PRESENT",
+                        "category": category,
+                        "count": count,
+                    }
+                )
+        token_count = sum(1 for _ in token_pattern.finditer(logs))
+        if token_count:
+            findings.append(
+                {
+                    "rule_id": "JWT_LIKE_TOKEN_PRESENT",
+                    "category": "jwt_like",
+                    "count": token_count,
+                }
+            )
+        if retrieval_rule:
+            if retrieval_rule not in (
+                "LOG_RETRIEVAL_FAILED",
+                "LOG_RETRIEVAL_TIMEOUT",
+                "LOG_LIMIT_EXCEEDED",
+            ):
+                retrieval_rule = "LOG_RETRIEVAL_FAILED"
+            findings.append(
+                {"rule_id": retrieval_rule, "category": "log_retrieval", "count": 1}
+            )
+        gate = (
+            "failed"
+            if any(item["category"] != "log_retrieval" for item in findings)
+            else "not_verified"
+            if retrieval_rule
+            else "passed"
+        )
+        services.append({"service": service, "gate": gate, "findings": findings})
+        del logs
+    gate = (
+        "failed"
+        if any(item["gate"] == "failed" for item in services)
+        else "not_verified"
+        if any(item["gate"] == "not_verified" for item in services)
+        else "passed"
+    )
+    (evidence / "secret-log-gate.json").write_text(
+        json.dumps({"gate": gate, "services": services}, indent=2)
+    )
+    return gate
+
+
 def browser_run(
     dc: list[str], *, preflight: bool = False
 ) -> subprocess.CompletedProcess[str]:
@@ -180,9 +298,24 @@ def main() -> None:
         "oidc-structure.json",
         "api-rule-counts.json",
         "state-probe.json",
+        "secret-log-gate.json",
     ):
         (evidence / name).unlink(missing_ok=True)
-    summary: dict[str, object] = {"qualification": "not_completed", "tests": []}
+    source = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    source_commit = source.stdout.strip()
+    if source.returncode != 0 or not re.fullmatch(r"[0-9a-f]{40}", source_commit):
+        source_commit = None
+    summary: dict[str, object] = {
+        "qualification": "not_completed",
+        "source_commit": source_commit,
+        "tests": [],
+    }
     (evidence / "summary.json").write_text(json.dumps(summary, indent=2))
     with tempfile.TemporaryDirectory(prefix="oligospace-oidc-") as temporary:
         work = Path(temporary)
@@ -196,6 +329,13 @@ def main() -> None:
         password, client_secret, auth_secret, db_password, admin_password = (
             secrets.token_urlsafe(36) for _ in range(5)
         )
+        private_values = {
+            "identity_password": password,
+            "client_secret": client_secret,
+            "session_secret": auth_secret,
+            "database_password": db_password,
+            "bootstrap_password": admin_password,
+        }
         identities = {
             role: str(uuid.uuid4())
             for role in ("admin", "member", "viewer", "pending", "disabled", "mfa")
@@ -307,6 +447,10 @@ https://auth-qualification.test {
             "OBJECT_STORAGE_SECRET_KEY": secrets.token_urlsafe(32),
             "OBJECT_STORAGE_ENDPOINT": "disabled.invalid:9000",
         }
+        private_values.update(
+            storage_access_key=api_env["OBJECT_STORAGE_ACCESS_KEY"],
+            storage_secret_key=api_env["OBJECT_STORAGE_SECRET_KEY"],
+        )
         compose = {
             "networks": {"default": {"internal": True}},
             "services": {
@@ -469,6 +613,7 @@ https://auth-qualification.test {
                 summary.update(qualification="failed", phase="preflight", tests=results)
                 (evidence / "summary.json").write_text(json.dumps(summary, indent=2))
                 collect_evidence(dc, work, evidence)
+                check_log_secrets(dc, private_values, evidence)
                 raise RuntimeError(
                     "Qualification phase failed: login preflight; remaining cases not executed"
                 )
@@ -491,6 +636,11 @@ https://auth-qualification.test {
             )
             (evidence / "summary.json").write_text(json.dumps(summary, indent=2))
             collect_evidence(dc, work, evidence)
+            log_gate = check_log_secrets(dc, private_values, evidence)
+            if log_gate != "passed":
+                passed = False
+                summary.update(qualification="failed", log_gate=log_gate)
+                (evidence / "summary.json").write_text(json.dumps(summary, indent=2))
             if not passed:
                 raise RuntimeError(
                     "Qualification phase failed: browser; inspect sanitized summary.json"

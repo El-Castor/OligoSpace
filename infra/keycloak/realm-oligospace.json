@@ -37,6 +37,17 @@
             "access.token.claim": "true",
             "id.token.claim": "false"
           }
+        },
+        {
+          "name": "oligospace-introspection-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "oligospace-web",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
         }
       ]
     },

@@ -115,11 +115,26 @@ test("real login enforces PKCE, state, nonce and secure session cookies", async 
 test("a callback with forged state cannot establish a session", async ({ page }) => {
   await beginLogin(page);
   let interceptionSeen = false;
-  await page.route("**/api/auth/callback/keycloak?**", async (route) => {
-    interceptionSeen = true;
-    const callback = new URL(route.request().url());
-    callback.searchParams.set("state", "synthetic-invalid-state");
-    await route.continue({ url: callback.toString() });
+  await page.route((url) => url.pathname === "/realms/qualification/login-actions/authenticate", async (route) => {
+    if (route.request().method() !== "POST") {
+      await route.continue();
+      return;
+    }
+    // Intercept the original form response: browser routing does not reliably
+    // intercept a subsequent request within an HTTP redirect chain.
+    const response = await route.fetch({ maxRedirects: 0 });
+    const headers = response.headers();
+    const location = headers.location;
+    if (location) {
+      const callback = new URL(location, origin);
+      if (callback.origin === origin && callback.pathname === "/api/auth/callback/keycloak") {
+        callback.searchParams.set("state", "synthetic-invalid-state");
+        await route.fulfill({ response, headers: { ...headers, location: callback.toString() } });
+        interceptionSeen = true; // The changed redirect was actually fulfilled.
+        return;
+      }
+    }
+    await route.fulfill({ response });
   });
   try {
     await credentials(page, "member");
@@ -250,7 +265,7 @@ test("provider logout failure preserves the session and a confirmed retry revoke
   });
   await page.getByLabel("Current user").click();
   await page.getByRole("button", { name: "Logout", exact: true }).click();
-  await expect(page.getByRole("alert")).toHaveText("Logout could not be completed. Please retry.");
+  await expect(page.locator(".user-popover").getByRole("alert")).toHaveText("Logout could not be completed. Please retry.");
   await expect(page.getByRole("button", { name: "Logout", exact: true })).toBeEnabled();
   expect(Boolean((await session(page)).accessToken)).toBe(true);
   expect((await api(page, "/me", issued)).status()).toBe(200);
