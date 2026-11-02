@@ -1,5 +1,23 @@
 # Project status
 
+## DEPLOY-02 — targeted review, integration proposal only (2026-11-02)
+
+Reviewed `1cca325`; qualification controller `44bb074`. The44 HIGH occurrences
+per API/worker image equal9 CVEs,6 Debian sources and17 installed binary packages.
+All9 remain open in trixie;8 have unstable fixes, not supported stable upgrades.
+Four native probes confirm actual files; no package removed or finding waived.
+SeaweedFS4.52 immutable variant: go-jose4.1.6 observed on both architectures,
+6/6 self/cross restores pass; scans still block on3 UNKNOWN and38 license
+observations per image. Default4.51 and pilot Compose unchanged.
+Garage source SBOM542 components, source scan1 HIGH/3 MEDIUM/7 LOW;
+OCI binaries equal official downloads on both architectures, but authenticated
+source/build binding and runtime inventory remain unverified.
+Application/foundation CI and Chromium pass at44bb074; release/security gates
+remain red.88 local qualification tests pass. Proposed A/B split is documented,
+not executed. PR18 stays DRAFT/unmerged pending user review; no deployment,
+release publication, provider switch or security-policy change.
+[Targeted report](../deployment/DEPLOY_02_TARGETED_REVIEW.md).
+
 ## DEPLOY-02 — security remediated, residual gates blocked (2026-11-02)
 
 PR18 remains DRAFT/unmerged. Tested code `98a3250`: all reported application

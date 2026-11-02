@@ -1,5 +1,7 @@
 # DEPLOY-02 — Remédiation de sécurité OCI
 
+Latest targeted follow-up: [distinct CVEs, physical package presence, supplier qualification and proposed PR split](DEPLOY_02_TARGETED_REVIEW.md). Historical evidence below retains its original source SHA.
+
 ## Périmètre et état de livraison
 
 PR18 reste **DRAFT, non fusionnée**, sans publication, déploiement, accès Mac mini,
@@ -74,7 +76,7 @@ bloquants, pas uniquement HIGH/CRITICAL.
 | Worker | 5 →0 | 110 →44 | 78 | 61 | 8 | 0 |
 
 Les44 HIGH résiduels API/worker concernent principalement util-linux (quatre avis
-sur dix paquets binaires), ACL, SQLite, systemd/udev, ncurses et Perl. Le rapport
+sur neuf paquets binaires), ACL, SQLite, systemd/udev, ncurses et Perl. Le rapport
 ne donne pas de version corrigée pour ces avis dans la distribution retenue.
 [Debian suit encore CVE-2026-76642](https://security-tracker.debian.org/tracker/CVE-2026-76642).
 Cela ne prouve pas qu'aucun correctif n'existe dans un autre canal. Un changement

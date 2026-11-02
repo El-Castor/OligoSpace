@@ -19,6 +19,20 @@ The former MinIO archive/source-build options remain historical analysis, not
 recommended maintained pilot options under this directive. Existing Compose still
 uses its original MinIO contract; no provider is silently substituted.
 
+## Targeted follow-up — no provider adoption
+
+Controller44bb074 qualifies the explicit SeaweedFS4.52 digest variant on native
+ARM64/AMD64: go-jose4.1.6 present, six self/cross restores pass. Its scans remain
+blocked by3 UNKNOWN advisories and38 license observations per architecture;
+upstream publication workflow failure and unverified signature trust are retained.
+Default4.51 and pilot MinIO remain unchanged. Garage2.5.0 source CycloneDX SBOM
+contains542 components; Cargo.lock scan has1 HIGH/3 MEDIUM/7 LOW. Exact OCI and
+public release binaries match on both architectures, without establishing
+source-to-binary attestation or complete runtime inventory. No clean-image claim.
+See [targeted review and split proposal](../deployment/DEPLOY_02_TARGETED_REVIEW.md)
+and its retained evidence. Supplier choice and risk acceptance still require
+user validation; PR18 remains DRAFT/unmerged.
+
 ## Application contract and evidence boundary
 
 MinIO Python SDK 7.2.20, unchanged `ObjectStorage.put`: bucket existence/creation,
