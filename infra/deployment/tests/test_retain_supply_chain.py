@@ -33,6 +33,15 @@ class RetentionTests(unittest.TestCase):
                 {"name": "https://private.invalid", "SPDXID": "SPDXRef-test"}
             )
 
+    def test_bounded_long_spdx_license_expression_is_preserved(self):
+        expression = " AND ".join(["MIT", "Apache-2.0", "LGPL-2.1-or-later"] * 10)
+        package = {
+            "name": "public-package",
+            "SPDXID": "SPDXRef-public-package",
+            "licenseDeclared": expression,
+        }
+        self.assertEqual(package_projection(package)["licenseDeclared"], expression)
+
     def test_changed_blob_and_wrong_proof_subject_are_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

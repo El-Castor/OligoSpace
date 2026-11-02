@@ -22,7 +22,20 @@ def package_projection(package):
     for key in ("name", "versionInfo", "SPDXID", "licenseConcluded", "licenseDeclared"):
         if key not in package:
             continue
-        value = safe_field(package[key])
+        try:
+            if key in ("licenseDeclared", "licenseConcluded"):
+                value = package[key]
+                if (
+                    not isinstance(value, str)
+                    or len(value) > 4096
+                    or not re.fullmatch(r"[A-Za-z0-9.+_() \-]+", value)
+                ):
+                    raise ValueError("unsupported")
+            else:
+                value = safe_field(package[key])
+        except ValueError:
+            # Only fixed field IDs, never values, appear in build diagnostics.
+            raise ValueError("unsupported_spdx_" + key) from None
         if "://" in value or (
             key == "SPDXID" and not re.fullmatch(r"SPDXRef-[A-Za-z0-9.-]+", value)
         ):

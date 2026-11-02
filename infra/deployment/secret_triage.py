@@ -18,7 +18,7 @@ JWT = re.compile(rb"[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*")
 
 def _name(value):
     if not isinstance(value, str) or "\x00" in value:
-        raise ValueError("unresolved")
+        raise ValueError("path_invalid")
     value = value.removeprefix("/")
     while value.startswith("./"):
         value = value[2:]
@@ -67,33 +67,33 @@ def _contents(layout, proof, target):
                 count += 1
                 expanded += max(member.size, 0)
                 if count > MAX_MEMBERS or expanded > MAX_EXPANDED_BYTES:
-                    raise ValueError("unresolved")
+                    raise ValueError("archive_bounds")
                 name = _name(member.name)
                 relevant = (
                     name == target or name in ancestors or name in hidden | opaque
                 )
                 if relevant and name in seen:
-                    raise ValueError("unresolved")
+                    raise ValueError("ambiguous_overlay")
                 if relevant:
                     seen.add(name)
                 if name in ancestors and not member.isdir():
-                    raise ValueError("unresolved")
+                    raise ValueError("ancestor_link")
                 if name in hidden | opaque:
                     blocked = True
                 if name == target:
                     if not member.isfile() or member.size > MAX_FILE_BYTES:
-                        raise ValueError("unresolved")
+                        raise ValueError("target_not_regular")
                     found = layer.extractfile(member).read(MAX_FILE_BYTES + 1)
                     if len(found) != member.size:
                         raise ValueError("unresolved")
         if found is not None:
             # Reject even unusual same-layer whiteout/replacement combinations.
             if blocked:
-                raise ValueError("unresolved")
+                raise ValueError("whiteout_ambiguity")
             return found
         if blocked:
-            raise ValueError("unresolved")
-    raise ValueError("unresolved")
+            raise ValueError("whiteout_ambiguity")
+    raise ValueError("missing_file")
 
 
 def triage_secrets(layout, proof, raw, classifier):
@@ -134,8 +134,24 @@ def triage_secrets(layout, proof, raw, classifier):
                 item["forensic_stage"] = "token_classification"
                 item.update(classifier(match.group().decode("ascii")))
                 item["forensic_status"] = "resolved_in_memory"
-            except Exception:
-                # Never expose exception text, paths, offsets or file contents.
-                pass
+            except Exception as error:
+                # Enumerated reasons only, never exception payloads or values.
+                reasons = {
+                    "path_invalid",
+                    "archive_bounds",
+                    "ambiguous_overlay",
+                    "ancestor_link",
+                    "target_not_regular",
+                    "file_bounds",
+                    "missing_file",
+                    "whiteout_ambiguity",
+                    "blob_identity",
+                    "unresolved",
+                }
+                item["forensic_rule_id"] = "TRIAGE_" + (
+                    str(error).upper()
+                    if isinstance(error, ValueError) and str(error) in reasons
+                    else "CONTROLLER_REFUSAL"
+                )
             observations.append(item)
     return observations
