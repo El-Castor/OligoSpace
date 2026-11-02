@@ -158,7 +158,11 @@ test("a callback with forged state cannot establish a session", async ({ page })
 test("administrator provisions a synthetic identity through the real UI", async ({ page }) => {
   await login(page, "pending");
   expect((await api(page, "/me", (await session(page)).accessToken)).status()).toBe(403);
-  await page.context().clearCookies();
+  await expect(page.getByRole("heading", { name: "Account access unavailable" })).toBeVisible();
+  await page.getByRole("link", { name: "Manage session" }).click();
+  await page.getByRole("button", { name: "Logout", exact: true }).click();
+  await expect(page).toHaveURL(/\/login/);
+  expect(Boolean((await session(page)).accessToken)).toBe(false);
   await login(page, "admin");
   await page.goto("/admin");
   await expect(page.getByRole("heading", { level: 1, name: "Administration" })).toBeVisible();
@@ -171,7 +175,9 @@ test("administrator provisions a synthetic identity through the real UI", async 
   await page.reload();
   await expect(page.locator(".admin-row").filter({ hasText: "pending@qualification.invalid" })).toBeVisible();
   await page.screenshot({ path: "/evidence/synthetic-administration.png", fullPage: true });
-  await page.context().clearCookies();
+  await page.getByLabel("Current user").click();
+  await page.getByRole("button", { name: "Logout", exact: true }).click();
+  await expect(page).toHaveURL(/\/login/);
   await login(page, "pending");
   expect((await api(page, "/me", (await session(page)).accessToken)).status()).toBe(200);
 });
@@ -250,6 +256,12 @@ test("local account deactivation rejects a still-valid provider token", async ({
     userId = (await (await api(member, "/me", token)).json()).id;
     expect((await api(page, `/workspace/admin/users/${userId}`, adminToken, "PATCH", { active: false })).status()).toBe(200);
     expect((await api(member, "/me", token)).status()).toBe(403);
+    await member.goto("/");
+    await expect(member.getByRole("heading", { name: "Account access unavailable" })).toBeVisible();
+    await member.getByRole("link", { name: "Manage session" }).click();
+    await member.getByRole("button", { name: "Logout", exact: true }).click();
+    await expect(member).toHaveURL(/\/login/);
+    expect(Boolean((await session(member)).accessToken)).toBe(false);
   } finally {
     if (userId) expect((await api(page, `/workspace/admin/users/${userId}`, adminToken, "PATCH", { active: true })).status()).toBe(200);
     await memberContext.close();
@@ -303,6 +315,8 @@ test("Keycloak account disable rejects an already issued token and failed refres
   expect((await api(page, "/me", token)).status()).toBe(200);
   expect((await keycloakAdmin(page, `/users/${identities.disabled}`, "PUT", { enabled: false })).status()).toBe(204);
   await expect.poll(async () => (await api(page, "/me", token)).status(), { timeout: 15_000 }).toBe(401);
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Session required" })).toBeVisible();
   await expect.poll(async () => {
     const current = await session(page);
     return !current.accessToken && current.error === "RefreshAccessTokenError";

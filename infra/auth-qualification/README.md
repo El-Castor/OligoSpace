@@ -38,6 +38,14 @@ If that fails, it retains its diagnostics, labels each remaining case
 `not_executed`, cleans up, and fails. If it passes, the complete thirteen-case
 suite runs; only all thirteen successful results qualify the run.
 
+The final log gate reads complete API, web, Keycloak and Caddy logs only in RAM,
+with a 4 MiB and 30-second limit per service. It checks every generated password
+and application secret plus JWT-shaped material. Findings fail qualification;
+retrieval errors or exceeded limits produce `not_verified` and also block
+success. `secret-log-gate.json` contains only service names, fixed rule/category
+identifiers, counts and gate outcomes. Raw logs and matched values are never
+retained. An already failed preflight keeps its failure while retaining this gate.
+
 The ignored `evidence/` directory receives a sanitized JSON summary and two
 deliberate synthetic dashboard/administration captures. The workflow retains
 these as an artifact even on failure. MFA enrollment is never captured.

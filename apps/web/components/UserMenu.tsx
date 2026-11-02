@@ -1,35 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { signOut } from "next-auth/react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
+
+import { LogoutButton } from "@/components/LogoutButton";
 
 import type { CurrentUser } from "@/lib/api";
 
 export function UserMenu({ user }: { user: CurrentUser | null }) {
-  const [signingOut, setSigningOut] = useState(false);
-  const [logoutFailed, setLogoutFailed] = useState(false);
   const menu = useRef<HTMLDetailsElement>(null);
-
-  async function logout() {
-    setSigningOut(true);
-    try {
-      // Require provider confirmation before removing the local session. This
-      // authenticated JSON POST also verifies the exact same-origin header.
-      const response = await fetch("/api/auth/provider-logout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: "{}",
-        cache: "no-store",
-      });
-      if (!response.ok) throw new Error("provider_logout_not_confirmed");
-      // NextAuth POST signout validates its own CSRF token.
-      await signOut({ callbackUrl: "/login" });
-    } catch {
-      setSigningOut(false);
-      setLogoutFailed(true);
-    }
-  }
 
   if (!user) return <div className="avatar" aria-label="No active user">?</div>;
   return (
@@ -48,12 +27,9 @@ export function UserMenu({ user }: { user: CurrentUser | null }) {
           <span>{user.email}</span>
           <small>{user.development_identity ? "Development identity" : user.organization_name}</small>
         </div>
-        {logoutFailed ? <p role="alert">Logout could not be completed. Please retry.</p> : null}
         <Link href="/profile">Profile</Link>
         {user.teams[0] ? <Link href={`/team/${user.teams[0].id}`}>{user.teams[0].name}</Link> : <Link href="/team">Teams</Link>}
-        <button type="button" onClick={logout} disabled={signingOut}>
-          {signingOut ? "Signing out…" : "Logout"}
-        </button>
+        <LogoutButton />
       </div>
     </details>
   );
