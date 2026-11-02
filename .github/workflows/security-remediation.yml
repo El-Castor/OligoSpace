@@ -50,5 +50,19 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
-      - name: Isolated real application Chromium journeys
-        run: make test-e2e
+      - name: Build isolated application test images before dependency services
+        run: docker compose --project-name oligospace-e2e --file compose.yml --file compose.e2e.yml --env-file infra/e2e/e2e.env build api bioinfo-worker
+      - name: Isolated real application Chromium journeys, uploads disabled
+        run: |
+          # Historical MinIO cannot be pulled. No object provider is substituted:
+          # uploads are disabled, no GET exists, and S3 is tested separately.
+          cat > "$RUNNER_TEMP/no-object-service.yml" <<'YAML'
+          services:
+            api:
+              depends_on: !override
+                migrate: {condition: service_completed_successfully}
+                seed: {condition: service_completed_successfully}
+                redis: {condition: service_healthy}
+          YAML
+          make test-e2e E2E_COMPOSE="docker compose --project-name oligospace-e2e --file compose.yml --file compose.e2e.yml --file $RUNNER_TEMP/no-object-service.yml --env-file infra/e2e/e2e.env"
+

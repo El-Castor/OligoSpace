@@ -6,12 +6,26 @@ import sys
 import tarfile
 import tempfile
 import unittest
+import subprocess
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import scan_candidate as candidate
 
 
 class CandidateTests(unittest.TestCase):
+    def test_scanner_failure_diagnostics_never_emit_command_or_raw_output(self):
+        error = subprocess.CalledProcessError(
+            1,
+            ["private-command"],
+            output=b"private-match",
+            stderr=b"private-match: no space left on device: archive permission denied",
+        )
+        diagnostics = candidate.process_failure_diagnostics(error)
+        self.assertEqual(diagnostics["exit_code"], 1)
+        self.assertIn("no space left on device", diagnostics["error_categories"])
+        self.assertIn("permission denied", diagnostics["error_categories"])
+        self.assertNotIn("private", json.dumps(diagnostics))
+
     def test_no_os_metadata_never_fabricates_coverage_or_hides_findings(self):
         proof = {"config_digest": "sha256:" + "a" * 64, "architecture": "arm64"}
         raw = {

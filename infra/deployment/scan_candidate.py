@@ -10,7 +10,13 @@ import subprocess
 import tarfile
 import tempfile
 
-from scan_artifact import SCANNER, failure, safe_field, summarize_findings
+from scan_artifact import (
+    SCANNER,
+    failure,
+    failure_diagnostics,
+    safe_field,
+    summarize_findings,
+)
 from storage_profiles import IMAGES
 
 
@@ -83,6 +89,26 @@ def inventory(raw):
 
 def run(command, timeout=1200):
     return subprocess.check_output(command, stderr=subprocess.PIPE, timeout=timeout)
+
+
+def process_failure_diagnostics(error):
+    # Classify in memory; never persist exception text, command, stdout or stderr.
+    message = error.stderr or b""
+    if isinstance(message, bytes):
+        message = message.decode("utf-8", errors="replace")
+    report = failure_diagnostics(message, error.returncode)
+    extra_categories = (
+        "no space left on device",
+        "read-only file system",
+        "unknown flag",
+        "operation not permitted",
+        "executable file not found",
+        "cannot allocate memory",
+    )
+    report["error_categories"].extend(
+        category for category in extra_categories if category in message.lower()
+    )
+    return report
 
 
 def summarize_candidate(raw, proof, database):
@@ -233,6 +259,9 @@ def main():
             stage = "CANDIDATE_REPORT_INVALID"
             database = json.loads((root / "cache/db/metadata.json").read_text())
             report.update(summarize_candidate(raw, proof, database))
+    except subprocess.CalledProcessError as error:
+        report.update(failure(stage))
+        report.update(process_failure_diagnostics(error))
     except (
         OSError,
         ValueError,

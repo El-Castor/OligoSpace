@@ -1,6 +1,10 @@
 """Run Trivy against a verified OCI directory; persist sanitized evidence only."""
 
 import argparse
+import base64
+import binascii
+import hashlib
+import hmac
 from collections import Counter
 import json
 import os
@@ -128,6 +132,51 @@ def summarize(raw, proof, database):
     return report
 
 
+def jwt_triage(value):
+    """Inspect in RAM; emit fixed facts, never token/claims/signature values."""
+    report = {"classification": "analysis_required", "value_retained": False}
+    if not isinstance(value, str) or len(value) > 16384:
+        return report
+    match = re.search(r"([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)", value)
+    if not match:
+        return report
+    try:
+
+        def decode(part):
+            return base64.urlsafe_b64decode(part + "=" * (-len(part) % 4))
+
+        header = json.loads(decode(match[1]))
+        payload = json.loads(decode(match[2]))
+        if not isinstance(header, dict) or not isinstance(payload, dict):
+            return report
+        report["jwt_structure"] = "decoded"
+        report["has_expiration"] = "exp" in payload
+        report["sample_claims_match"] = payload in (
+            {"sub": "1234567890", "name": "John Doe", "iat": 1516239022},
+            {"sub": "1234567890", "name": "John Doe", "admin": True, "iat": 1516239022},
+        )
+        if header.get("alg") == "HS256" and report["sample_claims_match"]:
+            # Public demonstration keys only, not credentials loaded from any system.
+            for public_key in (
+                b"your-256-bit-secret",
+                b"a-string-secret-at-least-256-bits-long",
+                b"secret",
+            ):
+                signature = hmac.new(
+                    public_key, (match[1] + "." + match[2]).encode(), hashlib.sha256
+                ).digest()
+                if hmac.compare_digest(signature, decode(match[3])):
+                    report.update(
+                        classification="public_documentation_example",
+                        evidence="public_example_claims_and_demo_signature",
+                        source="https://jwt.io/",
+                    )
+                    break
+    except (ValueError, TypeError, binascii.Error):
+        pass
+    return report
+
+
 def public_image_location(value):
     """Return fixed categories only: filenames can themselves contain secrets."""
     if not isinstance(value, str):
@@ -138,6 +187,11 @@ def public_image_location(value):
         ("/opt/conda/lib/python3.12/site-packages/", "python_site_packages"),
         ("/opt/conda/lib/python3.12/", "python_standard_library"),
         ("/opt/conda/", "conda_environment_file"),
+        ("/bin/micromamba", "micromamba_executable"),
+        ("/usr/bin/micromamba", "micromamba_executable"),
+        ("/usr/local/bin/", "base_image_executable"),
+        ("/tmp/", "temporary_build_file"),
+        ("/root/", "base_image_root_file"),
         ("/app/", "application_file"),
         ("/worker/", "worker_file"),
         ("/usr/local/lib/", "system_library_file"),
@@ -177,7 +231,11 @@ def summarize_findings(raw):
                     else "withheld",
                     "location": public_image_location(result.get("Target")),
                     "classification": "analysis_required",
-                    "value_retained": False,
+                    **(
+                        jwt_triage(secret.get("Match"))
+                        if rule == "jwt-token"
+                        else {"value_retained": False}
+                    ),
                 }
             )
         for vulnerability in vulnerabilities:

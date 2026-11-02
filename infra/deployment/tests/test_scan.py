@@ -192,6 +192,11 @@ class ScanTests(unittest.TestCase):
             "synthetic-credential-value", module.public_image_location(location)
         )
 
+    def test_jwt_triage_does_not_promote_arbitrary_tokens_or_retain_claims(self):
+        result = module.jwt_triage("not-a-token")
+        self.assertEqual(result["classification"], "analysis_required")
+        self.assertNotIn("not-a-token", json.dumps(result))
+
     def test_omitted_results_is_valid_clean_report(self):
         self.assertEqual(
             module.summarize(fixture(), PROOF, DB)["execution"], "completed_clean"
