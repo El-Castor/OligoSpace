@@ -10,7 +10,8 @@ from pathlib import PurePosixPath
 import re
 import tarfile
 
-MAX_MEMBERS = 20_000
+# Python/Conda layers legitimately exceed20k files; retain a streaming hard bound.
+MAX_MEMBERS = 100_000
 MAX_EXPANDED_BYTES = 4 * 1024**3
 MAX_FILE_BYTES = 16 * 1024**2
 JWT = re.compile(rb"[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*")
