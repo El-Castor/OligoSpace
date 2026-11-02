@@ -62,6 +62,8 @@ def validation_rule(stage, error):
         "invalid_secrets",
         "invalid_vulnerability",
         "invalid_public_vulnerability",
+        "advisory_identifier_format_unsupported",
+        "advisory_severity_format_unsupported",
         "invalid_public_field",
     }
     reason = str(error)
@@ -140,10 +142,17 @@ def summarize(raw, proof, database):
                 raise ValueError("invalid_vulnerability")
             identifier = vulnerability.get("VulnerabilityID", "")
             level = vulnerability.get("Severity", "UNKNOWN")
-            if not re.fullmatch(
-                r"(?:CVE-[0-9]{4}-[0-9]+|GHSA-[a-z0-9-]+|RUSTSEC-[0-9]{4}-[0-9]+|TEMP-[0-9]+-[A-Fa-f0-9]+)", identifier
-            ) or level not in ("UNKNOWN", "LOW", "MEDIUM", "HIGH", "CRITICAL"):
-                raise ValueError("invalid_public_vulnerability")
+            # Public vendor advisory namespaces are not restricted to CVE/GHSA.
+            if (
+                not isinstance(identifier, str)
+                or len(identifier) > 160
+                or not re.fullmatch(
+                    r"[A-Z][A-Z0-9]*-[A-Za-z0-9][A-Za-z0-9._:+-]*", identifier
+                )
+            ):
+                raise ValueError("advisory_identifier_format_unsupported")
+            if level not in ("UNKNOWN", "LOW", "MEDIUM", "HIGH", "CRITICAL"):
+                raise ValueError("advisory_severity_format_unsupported")
             severity[level] += 1
             findings.append(
                 {

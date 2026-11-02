@@ -44,7 +44,11 @@ class ScanTests(unittest.TestCase):
                         "InstalledVersion": "1.0",
                         "FixedVersion": "",
                     }
-                    for identifier in ("TEMP-0000000-ABC123", "RUSTSEC-2026-0001")
+                    for identifier in (
+                        "TEMP-0000000-ABC123",
+                        "RUSTSEC-2026-0001",
+                        "DLA-4000-1",
+                    )
                 ]
             }
         ]
@@ -52,7 +56,8 @@ class ScanTests(unittest.TestCase):
         self.assertEqual(report["execution"], "completed_with_findings")
         self.assertEqual(report["gate"], "failed")
         self.assertEqual(
-            report["vulnerability_ids"], ["RUSTSEC-2026-0001", "TEMP-0000000-ABC123"]
+            report["vulnerability_ids"],
+            ["DLA-4000-1", "RUSTSEC-2026-0001", "TEMP-0000000-ABC123"],
         )
 
     def test_valid_multiple_fixed_versions_remain_blocking_findings(self):
