@@ -28,9 +28,9 @@ list and user metadata are additional qualification/recovery requirements, not
 new application features. No claim of complete S3 coverage, versioning, retention
 locks, replication, malware scanning or download publication is made.
 
-Current evidence: tested code `e0a57dc4868af58fd29380e5e88962419e01d4f3`,
-[native run41426091675](https://github.com/El-Castor/OligoSpace/actions/runs/41426091675),
-[retained reports](../../infra/deployment/evidence/ci-e0a57dc-requalification.json).
+Current evidence: tested code `98a3250339d2e17b59caff28061ac286f8549708`,
+[native run41458888349](https://github.com/El-Castor/OligoSpace/actions/runs/41458888349),
+[retained security reports](../../infra/deployment/evidence/security-98a3250-remediation.json).
 Eight S3 scenarios pass: independent self-restores and both cross-provider
 logical directions on native Linux ARM64 and AMD64. Typed diagnostics establish
 that the old SeaweedFS failure was an access identifier logged by AWS bootstrap,
@@ -39,16 +39,23 @@ identity configuration removes that disclosure without weakening the gate.
 See [corrective report](../deployment/DEPLOY_02_STORAGE_RELEASE_IMAGES.md) for
 root causes and private non-root identity-file ownership correction.
 
-Six application-image scans complete with blocking vulnerabilities; API/worker
-also have untriaged secret alerts. These are not candidate-image scans. Local
-Docker is unavailable, unchanged; no Mac mini/full-stack capacity test is claimed.
+Security remediation removes all reported application CRITICAL findings and final
+secret alerts; web scans are clean, API/worker retain44 HIGH occurrences each
+per architecture. Historical JWTs are public PyJWT documentation examples in pip
+download cache, classified in RAM; cache is no longer shipped. Residual findings
+remain blocking. Separate exact candidate scans now exist: SeaweedFS1 HIGH plus
+3 UNKNOWN and license observations; Garage has no usable OS/Rust package inventory
+and stays not_verified. Local Docker checks cannot access the socket; no host or
+full-stack capacity qualification is claimed. See the complete
+[security remediation matrix](../deployment/DEPLOY_02_SECURITY_REMEDIATION.md).
+
 
 ## Comparative matrix — 2026-11-02
 
 | Dimension | SeaweedFS (priority1) | Garage (priority2) |
 |---|---|---|
 | Technical compatibility | Real unchanged adapter/SDK7.2.20 and all self/cross logical scenarios pass on both architectures; bytes/types/user metadata/SHA256 and refusal checked | Same contract and independent scenarios pass; region us-east-1, SDK-created bucket |
-| Security | Strict log/port gates pass with official private static identities; own image scan/signature/dependency review pending | Strict log/port gates pass, RUST_LOG=warn; own image scan/signature/dependency review pending |
+| Security | Strict log/port gates pass with official private static identities; exact image scan1 HIGH +3 UNKNOWN,274 packages/38 license observations; signature/dependency acceptance pending | Strict log/port gates pass, RUST_LOG=warn; exact scan has no OS/Rust inventory, coverage not_verified; no clean-image claim |
 | Maintenance | Release4.51,2026-10-25, active release work[S3]; maintenance owner/security response SLA unqualified | Release2.5.0,2026-10-24, active releases[G3]; maintenance owner/security response SLA unqualified |
 | Open-source license | Apache-2.0[S1]; no commercial license or activation required by tested community launch | AGPLv3[G1]; no commercial license/activation; retain notices and applicable redistribution/modified-network-service source obligations |
 | Single-server suitability | Official mini combines services[S2]; no redundancy, representative load/durability qualification pending | SQLite metadata/objects, fsync; upstream single-node quick-start reserves this topology for testing without redundancy[G2,G5]; no unconditional pilot approval |
@@ -92,12 +99,13 @@ one-node test success cannot approve a production pilot. Three containers on the
 same Mac do not create independent failure domains. This recommendation is
 provisional: both synthetic storage contracts now pass, but Garage retains
 a documented single-node production reserve and full capacity/security/backup
-evidence remains incomplete. Application-image vulnerability/secret gates remain
-blocked, and candidate-image scans are still required. A passing Garage synthetic contract does not silently
+evidence remains incomplete. Application-image residual vulnerability gates remain
+blocked; SeaweedFS has a candidate HIGH finding and Garage unresolved scanner
+coverage. Candidate scan/provenance/license acceptance is still required. A passing Garage synthetic contract does not silently
 switch the owner's priority or approve its pilot adoption.
 
-Before final selection: triage application-image vulnerabilities and secret alerts,
-scan candidate images by exact digest, review dependency notices/provenance and
+Before final selection: address residual application/candidate vulnerabilities,
+resolve Garage runtime inventory/provenance coverage, review dependency notices and
 security maintenance, qualify representative capacity plus coherent off-host
 recovery, assign maintenance/restore owners, then obtain explicit user approval.
 The completed tiny synthetic contract does not waive those gates. The existing

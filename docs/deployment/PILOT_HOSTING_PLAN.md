@@ -223,11 +223,13 @@ d’architecture, ce qui remplace les options exploratoires historiques ci-desso
 La matrice et la recommandation provisoire sont dans
 [ADR-0007](../decisions/ADR-0007-pilot-object-storage-gate.md), les preuves dans
 [DEPLOY-02](DEPLOY_02_STORAGE_RELEASE_IMAGES.md). Les manifests ARM64/AMD64 des
-deux candidats sont vérifiés. Requalification native `e0a57dc` : les huit scénarios
-S3 et les contrôles de logs passent sur ARM64/AMD64. Les six scans applicatifs
-sont exécutés mais bloquent sur vulnérabilités et alertes de secrets API/worker ;
-les images des candidats restent à scanner. Snapshots mémoire limités, capacité
-réelle non qualifiée. Aucun fournisseur final n’est choisi ;
+deux candidats sont vérifiés. Requalification native `98a3250` : huit scénarios
+S3 réussis ; zéro CRITICAL/alerte secrète finale, scans web propres. API/worker
+restent bloqués par44 HIGH chacun par architecture et d'autres findings.
+Scans candidats : SeaweedFS1 HIGH/3 UNKNOWN/licences ; Garage sans inventaire
+OS/Rust exploitable, non vérifié. Voir la
+[remédiation de sécurité](DEPLOY_02_SECURITY_REMEDIATION.md). Capacité réelle
+non qualifiée. Aucun fournisseur final n’est choisi ;
 le Compose pilote, les objets et les réseaux restent inchangés.
 
 `compose.yml` référence exactement

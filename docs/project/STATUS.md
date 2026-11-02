@@ -1,19 +1,28 @@
 # Project status
 
-## DEPLOY-02 — corrected qualification, security blocked (2026-11-02)
+## DEPLOY-02 — security remediated, residual gates blocked (2026-11-02)
 
-PR18 remains DRAFT/unmerged. Tested code `e0a57dc`, native run41426091675:
-eight S3 self/cross logical restores pass on ARM64/AMD64, including typed log,
-port and cleanup gates. Six OCI scans finish with findings (API/worker secret
-alerts and vulnerabilities in all roles), so native CI/release remain blocked.
-Application CI and deployment foundation pass. Primer3 nine numeric deltas0;
-47 local static tests pass. No fresh E2E claim. Provider choice remains proposed:
-SeaweedFS first, Garage second, historical MinIO reference, AIStor excluded.
-Candidate-image scans, finding triage, actual capacity, identity/TLS/RLS and coherent
-recovery remain open. No Mac mini, Cloudflare, pilot Compose/provider, real data
-or image publication changed. Stop for owner review; no automatic merge.
-Details and retained evidence: [report](../deployment/DEPLOY_02_STORAGE_RELEASE_IMAGES.md).
-This current entry supersedes historical qualification holds below.
+PR18 remains DRAFT/unmerged. Tested code `98a3250`: all reported application
+CRITICAL removed; web scans clean on ARM64/AMD64. API/worker each retain44 HIGH
+system occurrences per architecture, plus lower/unknown findings; every finding
+still blocks. Zero final secret alerts. Historical JWTs are public PyJWT demo
+strings in pip download cache, verified in RAM without values retained; cache
+is excluded from final images. Eight S3 self/cross restores pass, nine Primer3
+facts match both architectures and validated reference (delta0). Six OCI artifacts
+and12 sanitized SBOM/provenance projections retained. Application/foundation CI
+pass;29 Chromium journeys passed in the isolated uploads-disabled recipe.
+69 local qualification tests, lint/format and Compose config pass; local combined
+make cannot access Docker socket, so application suites run remotely.
+
+Separate candidate scans: SeaweedFS4.51 has1 HIGH +3 UNKNOWN and license obligations;
+Garage2.5.0 has no usable OS/Rust package inventory, gate not_verified. Signatures,
+provenance trust and supplier acceptance remain open. SeaweedFS stays conditional
+first candidate; Garage second, historical MinIO reference, AIStor excluded.
+No pilot Compose/provider, Mac mini, Cloudflare, real data or release publication
+changed. Stop for review; no automatic merge or next functional lot.
+[Security report/matrix](../deployment/DEPLOY_02_SECURITY_REMEDIATION.md) and
+[retained evidence](../../infra/deployment/evidence/security-98a3250-remediation.json).
+This current entry supersedes the historical holds below.
 
 ## DEPLOY-01 — foundation delivered for review, pilot gates still open
 

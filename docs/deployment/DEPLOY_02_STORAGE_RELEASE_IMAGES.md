@@ -1,5 +1,16 @@
 # DEPLOY-02 — Object Storage & Release Image Qualification
 
+## Current security remediation — 2026-11-02
+
+The following e0a57dc qualification record is historical. Current tested code
+`98a3250` and full findings/triage/versions are in the
+[security remediation report](DEPLOY_02_SECURITY_REMEDIATION.md). All reported
+application CRITICAL and final secret alerts are removed; web clean, API/worker
+44 HIGH each per architecture remain blocking. Eight S3 scenarios pass; science
+matches both architectures and the validated reference. Candidate scans now show
+SeaweedFS1 HIGH/3 UNKNOWN plus licenses, Garage missing OS/Rust inventory coverage.
+No provider acceptance, risk waiver, publication or merge. PR18 stays DRAFT.
+
 ## PR18 blocking corrections — requalification (2026-11-02)
 
 Tested code: `e0a57dc4868af58fd29380e5e88962419e01d4f3`, native

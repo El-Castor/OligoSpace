@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-11-02 — DEPLOY-02 security remediation
+
+Applied Debian/Alpine security fixes, PyJWT2.14, multipart0.0.30, compatible
+FastAPI0.135.2/Starlette1.3.1 and Next16.4.1/sharp0.35.5. Removed runtime web
+package-manager tools and pip download cache. Native scans at98a3250 show zero
+CRITICAL/secret alerts; web clean, API/worker44 HIGH each/architecture remain
+blocking. Historical JWTs classified as public PyJWT demo strings entirely in RAM.
+Retained12 bound sanitized SBOM/provenance projections and full149-row application
+HIGH/CRITICAL matrix plus SeaweedFS finding. Eight S3 restores and validated
+Primer3 reference match;69 qualification tests, application/foundation CI and
+isolated29 Chromium journeys pass. Separate supplier scans retain SeaweedFS
+HIGH/UNKNOWN/license gates and Garage inventory blind spot. No provider switch,
+real migration, deployment, release publication or merge; PR18 remains draft.
+
 ## 2026-11-02 — DEPLOY-02 blocking corrections
 
 Separate log identifiers/secrets/retrieval/controller diagnostics, use private
