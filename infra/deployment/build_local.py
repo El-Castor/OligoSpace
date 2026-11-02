@@ -150,6 +150,11 @@ def main() -> None:
             (output / f"{role}-oci-report.json").write_text(
                 json.dumps(proof, indent=2) + "\n"
             )
+            from retain_supply_chain import retain_supply_chain
+
+            manifest["images"][role]["supply_chain"] = retain_supply_chain(
+                artifact, proof, output / f"{role}-supply-chain"
+            )
             if args.load_test_images:
                 subprocess.run(
                     docker

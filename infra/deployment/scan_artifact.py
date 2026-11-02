@@ -137,7 +137,7 @@ def jwt_triage(value):
     report = {"classification": "analysis_required", "value_retained": False}
     if not isinstance(value, str) or len(value) > 16384:
         return report
-    match = re.search(r"([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)", value)
+    match = re.search(r"([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]*)", value)
     if not match:
         return report
     try:
@@ -152,6 +152,7 @@ def jwt_triage(value):
         report["jwt_structure"] = "decoded"
         report["has_expiration"] = "exp" in payload
         report["sample_claims_match"] = payload in (
+            {"some": "payload"},
             {"sub": "1234567890", "name": "John Doe", "iat": 1516239022},
             {"sub": "1234567890", "name": "John Doe", "admin": True, "iat": 1516239022},
         )
@@ -171,6 +172,10 @@ def jwt_triage(value):
                         evidence="public_example_claims_and_demo_signature",
                         source="https://jwt.io/",
                     )
+                    if payload == {"some": "payload"}:
+                        report["source"] = (
+                            "https://pyjwt.readthedocs.io/en/stable/usage.html"
+                        )
                     break
     except (ValueError, TypeError, binascii.Error):
         pass

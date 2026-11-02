@@ -13,7 +13,7 @@ import tarfile
 MAX_MEMBERS = 20_000
 MAX_EXPANDED_BYTES = 4 * 1024**3
 MAX_FILE_BYTES = 16 * 1024**2
-JWT = re.compile(rb"[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+")
+JWT = re.compile(rb"[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*")
 
 
 def _name(value):
@@ -120,14 +120,18 @@ def triage_secrets(layout, proof, raw, classifier):
                 if secret.get("RuleID") != "jwt-token":
                     observations.append(item)
                     continue
-                offset = secret.get("Offset")
+                item["forensic_stage"] = "offset_validation"
+                offset = secret.get("Offset", 0)
                 if type(offset) is not int or offset < 0:
                     raise ValueError("unresolved")
+                item["forensic_stage"] = "verified_file_resolution"
                 content = _contents(layout, proof, name)
                 # Exact byte offset only: never classify a nearby unrelated token.
+                item["forensic_stage"] = "exact_offset_match"
                 match = JWT.match(content, offset)
                 if match is None or match.end() - offset > 16384:
                     raise ValueError("unresolved")
+                item["forensic_stage"] = "token_classification"
                 item.update(classifier(match.group().decode("ascii")))
                 item["forensic_status"] = "resolved_in_memory"
             except Exception:

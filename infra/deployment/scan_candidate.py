@@ -258,7 +258,9 @@ def main():
             )
             stage = "CANDIDATE_REPORT_INVALID"
             database = json.loads((root / "cache/db/metadata.json").read_text())
-            report.update(summarize_candidate(raw, proof, database))
+            summary = summarize_candidate(raw, proof, database)
+            report.pop("rule_id", None)
+            report.update(summary)
     except subprocess.CalledProcessError as error:
         report.update(failure(stage))
         report.update(process_failure_diagnostics(error))

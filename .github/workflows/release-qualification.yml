@@ -91,6 +91,7 @@ jobs:
             ${{ runner.temp }}/oci/qualification-manifest.json
             ${{ runner.temp }}/oci/scan.json
             ${{ runner.temp }}/oci/science.json
+            ${{ runner.temp }}/oci/*-supply-chain/*.json
             ${{ runner.temp }}/storage/**/storage-report.json
   compare-evidence:
     needs: native-image
