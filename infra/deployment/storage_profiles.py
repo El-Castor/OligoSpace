@@ -12,7 +12,20 @@ IMAGES = {
 }
 
 
-def private_identity_owner_args(project, side, config: Path):
+QUALIFICATION_VARIANTS = {
+    "seaweedfs-4.52": "chrislusf/seaweedfs@sha256:57877e32bb90073b37dc109b438ba66e84fd5ed9ced5f5c04f56444ef243ce59",
+}
+
+
+def image_reference(kind, variant=None):
+    if variant is None:
+        return IMAGES[kind]
+    if kind != "seaweedfs" or variant not in QUALIFICATION_VARIANTS:
+        raise ValueError("unsupported_qualification_variant")
+    return QUALIFICATION_VARIANTS[variant]
+
+
+def private_identity_owner_args(project, side, config: Path, variant=None):
     """Only a generated private test file may be handed to the image's user."""
     if (
         not project.startswith("oligospace-deploy02-test-")
@@ -46,7 +59,7 @@ def private_identity_owner_args(project, side, config: Path):
         f"type=bind,source={config.resolve()},target=/qualification/s3.json",
         "--entrypoint",
         "/bin/chown",
-        IMAGES["seaweedfs"],
+        image_reference("seaweedfs", variant),
         "seaweed:seaweed",
         "/qualification/s3.json",
     ]
@@ -132,7 +145,7 @@ def prepare(kind, name, root: Path, access, secret):
     }
 
 
-def compose_definition(kind, side, project, root: Path, envfile: Path):
+def compose_definition(kind, side, project, root: Path, envfile: Path, variant=None):
     name = project + "-" + side
     volumes = [{"type": "bind", "source": str(root / "data"), "target": "/data"}]
     if kind == "garage":
@@ -156,7 +169,7 @@ def compose_definition(kind, side, project, root: Path, envfile: Path):
     return {
         "services": {
             side: {
-                "image": IMAGES[kind],
+                "image": image_reference(kind, variant),
                 "container_name": name,
                 "pull_policy": "never",
                 "command": command(kind, name),

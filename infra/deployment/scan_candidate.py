@@ -17,7 +17,7 @@ from scan_artifact import (
     safe_field,
     summarize_findings,
 )
-from storage_profiles import IMAGES
+from storage_profiles import QUALIFICATION_VARIANTS, image_reference
 
 
 def verified_json(data, digest):
@@ -178,6 +178,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--candidate", choices=("seaweedfs", "garage"), required=True)
     parser.add_argument("--architecture", choices=("arm64", "amd64"), required=True)
+    parser.add_argument("--variant", choices=QUALIFICATION_VARIANTS)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     report = failure("CANDIDATE_SCAN_NOT_EXECUTED", "not_executed")
@@ -191,7 +192,7 @@ def main():
         ]["Host"]
         if not endpoint.startswith("unix://"):
             raise ValueError("local_engine_required")
-        image = IMAGES[args.candidate]
+        image = image_reference(args.candidate, args.variant)
         index = verified_json(
             run(["docker", "buildx", "imagetools", "inspect", "--raw", image]),
             image.split("@")[1],
@@ -278,6 +279,7 @@ def main():
     report.update(
         {
             "candidate": args.candidate,
+            "qualification_variant": args.variant,
             "architecture": args.architecture,
             "upstream_signature": "not_verified",
             "upstream_provenance": "not_verified",

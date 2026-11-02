@@ -10,6 +10,22 @@ import unittest
 
 
 class StorageProfileTests(unittest.TestCase):
+    def test_new_image_is_an_explicit_immutable_qualification_variant(self):
+        module = self.profile_module()
+        baseline = module.IMAGES["seaweedfs"]
+        self.assertEqual(module.image_reference("seaweedfs"), baseline)
+        self.assertEqual(
+            module.image_reference("seaweedfs", "seaweedfs-4.52"),
+            "chrislusf/seaweedfs@sha256:57877e32bb90073b37dc109b438ba66e84fd5ed9ced5f5c04f56444ef243ce59",
+        )
+        self.assertEqual(module.IMAGES["seaweedfs"], baseline)
+        for candidate, variant in (
+            ("garage", "seaweedfs-4.52"),
+            ("seaweedfs", "latest"),
+        ):
+            with self.assertRaises(ValueError):
+                module.image_reference(candidate, variant)
+
     def test_private_identity_owner_is_limited_to_one_generated_file(self):
         module = self.profile_module()
         with tempfile.TemporaryDirectory(

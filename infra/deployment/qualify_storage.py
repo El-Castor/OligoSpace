@@ -19,6 +19,8 @@ import uuid
 from evidence import candidate_runtime_report, credential_log_report
 from storage_profiles import (
     IMAGES,
+    QUALIFICATION_VARIANTS,
+    image_reference,
     compose_definition,
     prepare,
     private_identity_owner_args,
@@ -123,9 +125,18 @@ def main():
     parser.add_argument("--context", required=True)
     parser.add_argument("--source", choices=IMAGES, default="seaweedfs")
     parser.add_argument("--target", choices=IMAGES, default="seaweedfs")
+    parser.add_argument("--seaweedfs-variant", choices=QUALIFICATION_VARIANTS)
     parser.add_argument("--api-image", required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    if args.seaweedfs_variant and "seaweedfs" not in (args.source, args.target):
+        parser.error("variant_requires_seaweedfs")
+
+    def selected_image(kind):
+        return image_reference(
+            kind, args.seaweedfs_variant if kind == "seaweedfs" else None
+        )
+
     docker = ["docker", "--context", args.context]
     endpoint = json.loads(
         subprocess.check_output(docker + ["context", "inspect", args.context])
@@ -179,7 +190,11 @@ def main():
         if kind == "seaweedfs":
             owner = project + "-" + side + "-config-owner"
             containers.append(owner)
-            run(*private_identity_owner_args(project, side, data / "s3.json"))
+            run(
+                *private_identity_owner_args(
+                    project, side, data / "s3.json", args.seaweedfs_variant
+                )
+            )
             containers.remove(owner)
         env = {
             "PILOT_PROJECT": project,
@@ -194,7 +209,16 @@ def main():
         envfiles.append(path)
         definition = data / "compose.json"
         definition.write_text(
-            json.dumps(compose_definition(kind, side, project, data, path))
+            json.dumps(
+                compose_definition(
+                    kind,
+                    side,
+                    project,
+                    data,
+                    path,
+                    args.seaweedfs_variant if kind == "seaweedfs" else None,
+                )
+            )
         )
         containers.append(name)
         run(
@@ -255,7 +279,8 @@ def main():
         "target": args.target,
         "status": "failed",
         "checks": [],
-        "images": {k: IMAGES[k] for k in (args.source, args.target)},
+        "images": {k: selected_image(k) for k in (args.source, args.target)},
+        "qualification_variant": args.seaweedfs_variant,
         "observed_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "application_adapter_exercised": False,
         "sdk": {"name": "minio", "required_version": "7.2.20"},
@@ -371,7 +396,7 @@ def main():
         )
         report["image_platforms"] = {
             kind: json.loads(
-                run("image", "inspect", "--format", "{{json .}}", IMAGES[kind])
+                run("image", "inspect", "--format", "{{json .}}", selected_image(kind))
             )["Architecture"]
             for kind in (args.source, args.target)
         }
