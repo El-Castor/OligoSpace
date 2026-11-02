@@ -170,11 +170,7 @@ def main():
         secret_values.append(secret)
         profile = prepare(kind, name, data, access, secret)
         envfiles.extend(profile["private_files"])
-        for private_file in profile["private_files"]:
-            # Include generated RPC secrets in the no-secret-log check.
-            import tomllib
-
-            secret_values.append(tomllib.loads(private_file.read_text())["rpc_secret"])
+        secret_values.extend(profile["extra_secret_values"])
         env = {
             "PILOT_PROJECT": project,
             "ACCESS_KEY": access,

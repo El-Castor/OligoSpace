@@ -1,6 +1,7 @@
 """Disposable candidate configuration; never a pilot provider switch."""
 
 from pathlib import Path
+import json
 import secrets
 
 IMAGES = {
@@ -14,7 +15,13 @@ def command(kind, name):
     if kind == "minio":
         return ["server", "/data"]
     if kind == "seaweedfs":
-        return ["mini", "-dir=/data", "-ip=" + name, "-ip.bind=0.0.0.0"]
+        return [
+            "mini",
+            "-dir=/data",
+            "-ip=" + name,
+            "-ip.bind=0.0.0.0",
+            "-s3.config=/etc/seaweedfs/s3.json",
+        ]
     if kind == "garage":
         # Let the unchanged MinIO SDK create the bucket, not Garage bootstrap.
         return ["/garage", "server", "--single-node", "--default-access-key"]
@@ -24,8 +31,11 @@ def command(kind, name):
 def prepare(kind, name, root: Path, access, secret):
     args = command(kind, name)
     private_files = []
+    extra_secret_values = []
     if kind == "garage":
         config = root / "garage.toml"
+        rpc_secret = secrets.token_hex(32)
+        extra_secret_values.append(rpc_secret)
         config.write_text(
             'metadata_dir = "/data/meta"\n'
             'data_dir = "/data/objects"\n'
@@ -34,7 +44,7 @@ def prepare(kind, name, root: Path, access, secret):
             "metadata_fsync = true\ndata_fsync = true\n"
             'rpc_bind_addr = "0.0.0.0:3901"\n'
             'rpc_public_addr = "127.0.0.1:3901"\n'
-            f'rpc_secret = "{secrets.token_hex(32)}"\n'
+            f'rpc_secret = "{rpc_secret}"\n'
             '[s3_api]\ns3_region = "us-east-1"\n'
             'api_bind_addr = "0.0.0.0:3900"\n'
         )
@@ -48,7 +58,25 @@ def prepare(kind, name, root: Path, access, secret):
         }
         port = 3900
     elif kind == "seaweedfs":
-        environment = {"AWS_ACCESS_KEY_ID": access, "AWS_SECRET_ACCESS_KEY": secret}
+        # Official static identity configuration avoids the AWS bootstrap path,
+        # which logs the complete access identifier at INFO. No logging is muted.
+        config = root / "s3.json"
+        config.write_text(
+            json.dumps(
+                {
+                    "identities": [
+                        {
+                            "name": "synthetic-qualification",
+                            "credentials": [{"accessKey": access, "secretKey": secret}],
+                            "actions": ["Admin", "Read", "Write", "List", "Tagging"],
+                        }
+                    ]
+                }
+            )
+        )
+        config.chmod(0o600)
+        private_files.append(config)
+        environment = {}
         port = 8333
     else:
         environment = {"MINIO_ROOT_USER": access, "MINIO_ROOT_PASSWORD": secret}
@@ -59,6 +87,7 @@ def prepare(kind, name, root: Path, access, secret):
         "environment": environment,
         "port": port,
         "private_files": private_files,
+        "extra_secret_values": extra_secret_values,
     }
 
 
@@ -71,6 +100,15 @@ def compose_definition(kind, side, project, root: Path, envfile: Path):
                 "type": "bind",
                 "source": str(root / "garage.toml"),
                 "target": "/etc/garage.toml",
+                "read_only": True,
+            }
+        )
+    elif kind == "seaweedfs":
+        volumes.append(
+            {
+                "type": "bind",
+                "source": str(root / "s3.json"),
+                "target": "/etc/seaweedfs/s3.json",
                 "read_only": True,
             }
         )

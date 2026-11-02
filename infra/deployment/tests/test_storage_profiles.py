@@ -10,6 +10,42 @@ import unittest
 
 
 class StorageProfileTests(unittest.TestCase):
+    def test_seaweed_uses_official_private_config_instead_of_logged_aws_bootstrap(self):
+        module = self.profile_module()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            profile = module.prepare(
+                "seaweedfs",
+                "synthetic-source",
+                root,
+                "synthetic-access-id",
+                "synthetic-secret-value",
+            )
+            self.assertNotIn("AWS_ACCESS_KEY_ID", profile["environment"])
+            self.assertNotIn("AWS_SECRET_ACCESS_KEY", profile["environment"])
+            config = root / "s3.json"
+            identity = json.loads(config.read_text())["identities"][0]
+            self.assertEqual(
+                identity["credentials"][0]["accessKey"], "synthetic-access-id"
+            )
+            self.assertEqual(
+                identity["credentials"][0]["secretKey"], "synthetic-secret-value"
+            )
+            self.assertIn("-s3.config=/etc/seaweedfs/s3.json", profile["command"])
+            self.assertIn(config, profile["private_files"])
+            self.assertEqual(config.stat().st_mode & 0o777, 0o600)
+            service = module.compose_definition(
+                "seaweedfs",
+                "source",
+                "oligospace-deploy02-test-unit",
+                root,
+                root / "creds.env",
+            )["services"]["source"]
+            mount = next(
+                v for v in service["volumes"] if v["target"] == "/etc/seaweedfs/s3.json"
+            )
+            self.assertTrue(mount["read_only"])
+
     def test_failure_gate_does_not_expose_raw_exception_values(self):
         path = Path(__file__).resolve().parents[1]
         sys.path.insert(0, str(path))
