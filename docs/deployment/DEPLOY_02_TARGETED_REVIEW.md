@@ -1,4 +1,4 @@
-# DEPLOY-02 — Revue ciblée des risques distincts et proposition de séparation
+# DEPLOY-02 — Rapport final consolidé et recommandation de fusion
 
 ## Périmètre et décision maintenue
 
@@ -10,7 +10,7 @@ base `75179a52da0d929922c904ff6df06d94eb7a1a67`. Contrôleur testé
 et [SBOM source](../../infra/deployment/evidence/garage-2.5.0-source-sbom.cdx.json).
 PR18 reste **DRAFT,
 non fusionnée**. Cette passe apporte des lectures de qualification et une
-proposition d'extraction ; aucun découpage Git/PR n'est exécuté, aucune règle
+consolidation du chantier dans la seule PR18 ; aucun découpage Git/PR n'est exécuté, aucune règle
 GitHub ou politique de sécurité modifiée, aucune activation de release.
 Aucun Dockerfile produit, paquet installé, API, règle métier, politique d'accès,
 Compose pilote ou fournisseur n'est modifié par cette passe. Pas de Mac mini,
@@ -225,60 +225,62 @@ La provenance authentifiée, une SBOM du build réel, ou une reconstruction
 reproductible avec égalité mesurée et inventaire complet restent des preuves à
 obtenir. Aucune publication ni compilation d'une nouvelle image Garage n'est faite.
 
-## 5. Proposition de séparation — aucune extraction exécutée
+## 5. Organisation finale : une seule PR18
 
-La séparation proposée réduit le périmètre de revue ; elle ne crée ni dérogation
-CI, ni permission de release, ni approbation du fournisseur. Pas de force push,
-réécriture dePR18, cherry-pick, nouvelle PR ou fusion exécutés dans cette passe.
-La base de travail est main75179a5 ; la répartition doit être revue avant action.
+La décision utilisateur annule la proposition précédente de séparation A/B.
+Cette proposition n'avait jamais été exécutée : aucun développement n'est perdu,
+retiré ou déplacé. Les outils, corrections de sécurité, tests et preuves restent
+ensemble dans la branche et la PR18. Aucun nouveau découpage n'est recommandé.
+Pour les prochains lots, privilégier une PR cohérente par objectif fonctionnel ou
+technique ; ne pas créer plusieurs PR pour des sous-tâches fortement liées sans
+bénéfice technique démontré. Cette décision d'organisation ne change aucun gate.
 
-| Périmètre | PR A : socle de qualification, sans activation | PR B : sécurité et décisions encore bloquées |
+### Fonctions validées et exigences bloquantes
+
+| Domaine | État démontré | Condition encore ouverte |
 |---|---|---|
-| Outils | OCI/layout/scanners, diagnostics secrets, S3 synthétique, SBOM/provenance, comparaison science et lectures ciblées ; tests associés | Changements fonctionnels d'image et résolution des dépendances approuvés séparément |
-| Produit | Aucun changement apps/api, apps/web, envs ou Dockerfiles runtime | pyproject/envs API, package.json/lock web, trois Dockerfiles : correctifs sécurité déjà testés mais pas confondus avec aptitude pilote |
-| CI | contents:read, aucun packages:write/id-token, aucun login/push/deploy ; contrôles négatifs et vérifications réellement exécutées | Rapports des images candidates/application et gates résiduels toujours visibles ; mêmes politiques |
-| Architecture | Candidats testables et observations datées, aucune substitution du stockage pilote | Décision fournisseur, version/image finale, maintenance/provenance/redistribution, risques résiduels et pilote restent proposés |
-| Documentation | Méthode, preuves historiques attribuées à leur SHA, limites, contrat de qualification | Dossier de remédiation,9 CVE distinctes et décisions d'acceptation restant à valider |
+| Application | backend, worker, frontend, migrations, intégration PostgreSQL et Chromium passent au head documentaire cbca2d7 | ne vaut pas autorisation de release |
+| Science | comparaison native des résultats Primer3 passe | conserver paramètres, versions et référence validée |
+| S3 | huit scénarios historiques 4.51/Garage ; six scénarios supplémentaires 4.52 sur deux architectures passent au contrôleur44bb074 | aucun choix fournisseur ni changement pilote approuvé |
+| API/worker OCI | CRITICAL corrigés, secrets finaux absents dans preuves conservées ; web passe sur deux architectures | 44 occurrences HIGH /9 CVE par image, autres niveaux conservés ; correction stable ou décision explicite requise |
+| SeaweedFS | correctif go-jose4.52 vérifié, contrats passent | défaut4.51 encore signalé ; 4.52 conserve3 UNKNOWN, licences et confiance provenance à traiter |
+| Garage | sourceSBOM et correspondance des distributions établies | HIGH source et autres avis ; inventaire runtime et attestation source→binaire non vérifiés |
+| Historique secrets | triage expurgé des exemples publics conservé | jobs scannant les anciennes images restent rouges, pas présentés comme succès |
+| Déploiement | aucun déploiement réalisé | OIDC/TLS/RLS, récupération, capacité réelle et autres gates du plan restent non qualifiés |
 
-### Dépendances et précautions d'extraction
+### CI et protections vérifiées avant toute fusion
 
-- Ne pas cherry-picker globalement `b449f19` : ce commit mélange correctifs
-  pyproject/envs/Dockerfiles et nouveaux contrôleurs de qualification. Extraire
-  des patches par chemin/hunk après revue, avec une liste de fichiers explicite.
-- Le socle A doit conserver ensemble `build_local`, `oci`, `scan_layout`,
-  `scan_artifact`, `retain_supply_chain` et les helpers importés ; pas d'import
-  cassé par une extraction partielle. `collect_reports` dépend actuellement de
-  `evidence/ci-e0a57dc-requalification.json` pour la référence scientifique :
-  conserver cette référence et sa provenance, ou proposer explicitement une
-  fixture équivalente vérifiée ; ne pas changer les valeurs attendues pour passer.
-- Les rapports datés issus de98a3250/1cca325 conservent leurs SHA originaux après
-  extraction ; ils ne deviennent pas des résultats de la future branche A.
-- A ne certifie aucune image de main, qui n'inclurait pas encore les correctifs B.
-  Le succès des tests des contrôleurs n'est pas le succès d'un scan d'image.
-- Les workflows/gates sécurité ne sont ni désactivés, ni ignorés, ni marqués
-  optionnels pour faire passer A. Si une règle applicable exige un scan vert,
-  l'extraction ne permet pas de contourner son échec : A reste en attente.
-- Le snapshot GitHub consulté indique main non protégée et aucune ruleset de
-  branche retournée ; **cela ne vaut pas autorisation de fusion** ni suppression
-  des exigences utilisateur. Aucune règle n'a été modifiée. Les contraintes
-  effectives doivent être relues lors d'une future ouverture/fusion approuvée.
+Snapshot GitHub au head `cbca2d7748954262fe525cf853d8846991977fe5` :
+PR OPEN/DRAFT, `mergeable=MERGEABLE` (absence de conflit),
+`mergeStateStatus=UNSTABLE`. Tous les jobs de ce head sont terminés.
+Les contrôles applicatifs/foundation, PostgreSQL, Chromium, présence de paquets,
+comparaison scientifique et binaires Garage passent. Les quatre scans natifs
+API/worker, les quatre scans candidats par défaut, le scan source Garage,
+les deux qualifications 4.52 (gates de scan) et les deux scans historiques
+restent rouges. Les réussites S3 ne transforment pas ces échecs en succès.
 
-### Recommandation d'intégration
+L'API GitHub indique `main.protected=false`, aucune ruleset retournée et aucun
+required_status_check configuré dans cette réponse. Ce constat ne rend pas les
+gates de sécurité facultatifs et ne remplace pas l'approbation utilisateur.
+Aucun contrôle, workflow, statut, protection ou politique n'est désactivé,
+renommé pour contournement, forcé ou marqué comme accepté. Aucun merge admin.
 
-Recommander **la préparation séparée de A pour validation utilisateur**, avec zéro
-activation de release et tous les contrôles applicables satisfaits. Ne pas
-fusionnerPR18 en bloc. Maintenir B en brouillon tant que les avis résiduels,
-preuves fournisseurs et décisions ne sont pas résolus ou explicitement décidés.
-Les correctifs critiques déjà livrés restent disponibles et ne doivent pas être
-perdus lors d'une extraction ; leur intégration séparée est elle aussi soumise
-à revue/validation, sans waiver implicite des avis restants.
+### Recommandation explicite
 
-Ordre proposé, pas exécuté : figer les preuves → valider la frontière A/B →
-préparer les patches séparés → tester les deux branches à leurs SHA → demander
-la validation utilisateur avant toute fusion. Ce n'est pas une nouvelle roadmap
-fonctionnelle ni une modification des règles de sécurité.
+**Corrections encore nécessaires : ne pas fusionner PR18 en l'état.**
+L'absence de conflit Git est distincte de l'aptitude de sécurité. Les findings
+résiduels et lacunes de couverture doivent être corrigés ou faire l'objet d'une
+décision explicite, documentée et approuvée, sans dérogation implicite.
+La PR18 reste l'unique PR du chantier, en brouillon et sans fusion automatique.
+Après résolution, rejouer les contrôles pertinents au SHA final puis soumettre
+la recommandation de fusion à l'utilisateur. Aucun développement nouveau ni
+opération d'hébergement n'est engagé par cette consolidation.
 
 ## Preuves, contrôles et arrêt
+
+Dernière revue indépendante de cette consolidation : aucun problème important ;
+annulation A/B, conservation intégrale dans PR18 et recommandation de non-fusion
+vérifiées. Diff documentaire seulement ; les88 tests de qualification repassent.
 
 88 tests locaux de qualification passent, ainsi que Ruff lint/format et les
 vérifications de diff. Le contrôle ciblé est rouge sur les findings source Cargo.lock et les scans

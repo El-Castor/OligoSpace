@@ -13,8 +13,8 @@ Garage source SBOM542 components, source scan1 HIGH/3 MEDIUM/7 LOW;
 OCI binaries equal official downloads on both architectures, but authenticated
 source/build binding and runtime inventory remain unverified.
 Application/foundation CI and Chromium pass at44bb074; release/security gates
-remain red.88 local qualification tests pass. Proposed A/B split is documented,
-not executed. PR18 stays DRAFT/unmerged pending user review; no deployment,
+remain red.88 local qualification tests pass. User cancelled the unexecuted A/B split. Keep all work together in PR18.
+Final recommendation: further security corrections/decisions required; do not merge. PR18 stays DRAFT/unmerged pending user review; no deployment,
 release publication, provider switch or security-policy change.
 [Targeted report](../deployment/DEPLOY_02_TARGETED_REVIEW.md).
 

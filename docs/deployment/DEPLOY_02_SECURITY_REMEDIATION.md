@@ -1,6 +1,6 @@
 # DEPLOY-02 — Remédiation de sécurité OCI
 
-Latest targeted follow-up: [distinct CVEs, physical package presence, supplier qualification and proposed PR split](DEPLOY_02_TARGETED_REVIEW.md). Historical evidence below retains its original source SHA.
+Latest targeted follow-up: [distinct CVEs, physical package presence, supplier qualification and final single-PR recommendation](DEPLOY_02_TARGETED_REVIEW.md). Historical evidence below retains its original source SHA.
 
 ## Périmètre et état de livraison
 

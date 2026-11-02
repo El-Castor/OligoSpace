@@ -29,7 +29,7 @@ Default4.51 and pilot MinIO remain unchanged. Garage2.5.0 source CycloneDX SBOM
 contains542 components; Cargo.lock scan has1 HIGH/3 MEDIUM/7 LOW. Exact OCI and
 public release binaries match on both architectures, without establishing
 source-to-binary attestation or complete runtime inventory. No clean-image claim.
-See [targeted review and split proposal](../deployment/DEPLOY_02_TARGETED_REVIEW.md)
+See [consolidated targeted review (single PR18)](../deployment/DEPLOY_02_TARGETED_REVIEW.md)
 and its retained evidence. Supplier choice and risk acceptance still require
 user validation; PR18 remains DRAFT/unmerged.
 
