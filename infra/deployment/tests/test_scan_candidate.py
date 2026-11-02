@@ -43,6 +43,40 @@ class CandidateTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             candidate.summarize_candidate(raw, proof, database)
 
+    def test_language_inventory_cannot_mask_missing_or_eol_system_coverage(self):
+        proof = {"config_digest": "sha256:" + "a" * 64, "architecture": "arm64"}
+        raw = {
+            "SchemaVersion": 2,
+            "ArtifactType": "container_image",
+            "Metadata": {
+                "ImageID": proof["config_digest"],
+                "ImageConfig": {"architecture": "arm64", "os": "linux"},
+            },
+            "Results": [
+                {
+                    "Class": "lang-pkgs",
+                    "Packages": [{"Name": "public-module", "Version": "1.0"}],
+                }
+            ],
+        }
+        database = {
+            "Version": 2,
+            **{
+                key: "2026-11-02T00:00:00Z"
+                for key in ("UpdatedAt", "NextUpdate", "DownloadedAt")
+            },
+        }
+        for os_info in (
+            {},
+            {"Family": "unsupported", "Name": "1"},
+            {"Family": "debian", "Name": "13", "EOSL": True},
+        ):
+            raw["Metadata"]["OS"] = os_info
+            self.assertEqual(
+                candidate.summarize_candidate(raw, proof, database)["gate"],
+                "not_verified",
+            )
+
     def test_registry_payload_requires_exact_digest(self):
         data = b'{"schemaVersion":2}'
         digest = "sha256:" + hashlib.sha256(data).hexdigest()

@@ -111,11 +111,25 @@ def summarize_candidate(raw, proof, database):
         for result in raw.get("Results", [])
         if result.get("Class") == "lang-pkgs"
     )
+    os_packages = sum(
+        len(result.get("Packages", []))
+        for result in raw.get("Results", [])
+        if result.get("Class") == "os-pkgs"
+    )
+    os_coverage = (
+        operating_system.get("Family") in ("debian", "alpine")
+        and bool(operating_system.get("Name"))
+        and not operating_system.get("EOSL", False)
+        and os_packages > 0
+    )
     report["coverage"] = {
         "operating_system": "detected"
         if operating_system.get("Family")
         else "not_detected",
         "language_packages": language_packages,
+        "os_packages": os_packages,
+        "system_coverage": "observed_supported" if os_coverage else "not_verified",
+        "end_of_support": bool(operating_system.get("EOSL", False)),
         "package_inventory": "observed"
         if report["sbom"]["packages"]
         else "not_verified",
@@ -127,10 +141,8 @@ def summarize_candidate(raw, proof, database):
     }
     if report["sbom"]["license_findings"]:
         report.update(execution="completed_with_findings", gate="failed")
-    if not report["sbom"]["packages"] or (
-        not operating_system.get("Family") and not language_packages
-    ):
-        report["rule_id"] = "CANDIDATE_PACKAGE_COVERAGE_MISSING"
+    if not os_coverage or not report["sbom"]["packages"]:
+        report["rule_id"] = "CANDIDATE_SYSTEM_COVERAGE_UNVERIFIED"
         if report["gate"] != "failed":
             report.update(execution="technical_failure", gate="not_verified")
     return report

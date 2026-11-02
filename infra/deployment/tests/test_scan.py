@@ -175,7 +175,7 @@ class ScanTests(unittest.TestCase):
         self.assertEqual(report["secret_observations"][0]["rule_id"], "private-key")
         self.assertEqual(
             report["secret_observations"][0]["location"],
-            "/opt/conda/lib/python3.12/test/certdata/key.pem",
+            "python_stdlib_test_certdata",
         )
         self.assertNotIn("sensitive-test-value", json.dumps(report))
         self.assertEqual(report["gate"], "failed")
@@ -183,6 +183,13 @@ class ScanTests(unittest.TestCase):
         self.assertEqual(
             module.summarize(raw, PROOF, DB)["secret_observations"][0]["location"],
             "withheld",
+        )
+
+    def test_secret_looking_filenames_never_enter_evidence(self):
+        location = "/app/synthetic-credential-value.pem"
+        self.assertEqual(module.public_image_location(location), "application_file")
+        self.assertNotIn(
+            "synthetic-credential-value", module.public_image_location(location)
         )
 
     def test_omitted_results_is_valid_clean_report(self):

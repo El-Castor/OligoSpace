@@ -129,15 +129,23 @@ def summarize(raw, proof, database):
 
 
 def public_image_location(value):
-    # Only fixed image roots and conventional package paths; never Match/Code.
-    if not isinstance(value, str) or len(value) > 256:
+    """Return fixed categories only: filenames can themselves contain secrets."""
+    if not isinstance(value, str):
         return "withheld"
     value = "/" + value.lstrip("/")
-    if not value.startswith(("/opt/conda/", "/app/", "/worker/", "/usr/local/lib/")):
-        return "withheld"
-    if not re.fullmatch(r"/[A-Za-z0-9_./+@-]+", value) or ".." in value.split("/"):
-        return "withheld"
-    return value
+    categories = (
+        ("/opt/conda/lib/python3.12/test/certdata/", "python_stdlib_test_certdata"),
+        ("/opt/conda/lib/python3.12/site-packages/", "python_site_packages"),
+        ("/opt/conda/lib/python3.12/", "python_standard_library"),
+        ("/opt/conda/", "conda_environment_file"),
+        ("/app/", "application_file"),
+        ("/worker/", "worker_file"),
+        ("/usr/local/lib/", "system_library_file"),
+    )
+    return next(
+        (category for prefix, category in categories if value.startswith(prefix)),
+        "withheld",
+    )
 
 
 def summarize_findings(raw):
