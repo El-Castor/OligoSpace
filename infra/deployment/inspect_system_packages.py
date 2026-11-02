@@ -301,12 +301,8 @@ def host(context, proof):
                 "--mount",
                 "type=bind,src=" + script + ",dst=/inspection.py,readonly",
                 "--entrypoint",
-                "/bin/micromamba",
+                "/opt/conda/bin/python",
                 proof["config_digest"],
-                "run",
-                "-n",
-                "base",
-                "python",
                 "/inspection.py",
                 "--probe",
             ]
@@ -331,6 +327,7 @@ def main():
         "package_deletion_performed": False,
         "exploitability": "not_established",
         "all_code_paths_inspected": False,
+        "launch_mode": "direct_python_without_conda_activation",
     }
     status = 0
     try:

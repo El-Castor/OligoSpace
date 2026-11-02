@@ -2,6 +2,9 @@ import importlib.util
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
+import json
+import subprocess
 
 
 class SystemPackagesTests(unittest.TestCase):
@@ -53,6 +56,51 @@ class SystemPackagesTests(unittest.TestCase):
         self.assertTrue(self.module.image_matches(loaded, proof))
         loaded["RootFS"]["Layers"] = []
         self.assertFalse(self.module.image_matches(loaded, proof))
+
+    def test_read_only_probe_uses_python_without_activation_writes(self):
+        proof = {
+            "status": "verified",
+            "source": "a" * 40,
+            "architecture": "amd64",
+            "config_digest": "sha256:" + "b" * 64,
+            "rootfs_diff_ids": ["sha256:" + "c" * 64],
+        }
+        loaded = {
+            "Id": proof["config_digest"],
+            "Architecture": "amd64",
+            "Os": "linux",
+            "RootFS": {"Layers": proof["rootfs_diff_ids"]},
+            "Config": {
+                "User": "1000",
+                "Labels": {"org.opencontainers.image.revision": proof["source"]},
+            },
+        }
+        calls = []
+
+        def run(argv, **kwargs):
+            calls.append(argv)
+            if "context" in argv[3:]:
+                value = [{"Endpoints": {"docker": {"Host": "unix:///test.sock"}}}]
+            elif "image" in argv:
+                value = [loaded]
+            elif "info" in argv:
+                return subprocess.CompletedProcess(argv, 0, "x86_64", "")
+            else:
+                value = {"execution": "observed"}
+            return subprocess.CompletedProcess(argv, 0, json.dumps(value), "")
+
+        with (
+            patch.object(self.module.subprocess, "run", side_effect=run),
+            patch.dict(
+                self.module.os.environ, {"DOCKER_HOST": "", "DOCKER_CONTEXT": ""}
+            ),
+        ):
+            self.module.host("default", proof)
+        argv = calls[-1]
+        self.assertIn("--read-only", argv)
+        self.assertEqual(argv[argv.index("--network") + 1], "none")
+        self.assertEqual(argv[argv.index("--entrypoint") + 1], "/opt/conda/bin/python")
+        self.assertEqual(argv[argv.index("--entrypoint") + 2], proof["config_digest"])
 
     def test_failed_command_diagnostics_never_retain_payload(self):
         result = self.module.diagnostic_categories(
