@@ -16,7 +16,7 @@ import tempfile
 import time
 import uuid
 
-from evidence import credentials_absent_from_logs
+from evidence import credential_log_report
 from storage_profiles import IMAGES, compose_definition, prepare
 
 
@@ -137,7 +137,7 @@ def main():
     exchange = root / "exchange"
     exchange.mkdir(mode=0o700)
     project = "oligospace-deploy02-test-" + uuid.uuid4().hex[:12]
-    containers, envfiles, passwords = [], [], []
+    containers, envfiles, access_identifiers, secret_values = [], [], [], []
     network_created = False
 
     def run(*values):
@@ -166,14 +166,15 @@ def main():
             "GK" + secrets.token_hex(16) if kind == "garage" else secrets.token_hex(16)
         )
         secret = secrets.token_hex(32)
-        passwords.extend([access, secret])
+        access_identifiers.append(access)
+        secret_values.append(secret)
         profile = prepare(kind, name, data, access, secret)
         envfiles.extend(profile["private_files"])
         for private_file in profile["private_files"]:
             # Include generated RPC secrets in the no-secret-log check.
             import tomllib
 
-            passwords.append(tomllib.loads(private_file.read_text())["rpc_secret"])
+            secret_values.append(tomllib.loads(private_file.read_text())["rpc_secret"])
         env = {
             "PILOT_PROJECT": project,
             "ACCESS_KEY": access,
@@ -253,6 +254,7 @@ def main():
         "application_adapter_exercised": False,
         "sdk": {"name": "minio", "required_version": "7.2.20"},
         "resource_samples": {},
+        "log_diagnostics": {},
         "stage": "engine_availability",
     }
     try:
@@ -319,15 +321,21 @@ def main():
                     raise
                 time.sleep(1)
         report["stage"] = "log_network_resource_checks"
-        for name in (source, target):
+        log_gate_failed = False
+        for side, name in (("source", source), ("target", target)):
             info = json.loads(run("inspect", name))[0]
             if (
                 info["HostConfig"].get("PortBindings")
                 or info["HostConfig"].get("NetworkMode") == "host"
             ):
                 raise ValueError("network_publication")
-            if not credentials_absent_from_logs(docker, name, passwords):
-                raise ValueError("secret_log_gate")
+            diagnostic = credential_log_report(
+                docker, name, access_identifiers, secret_values
+            )
+            report["log_diagnostics"][side] = diagnostic
+            log_gate_failed |= diagnostic["status"] != "passed"
+        if log_gate_failed:
+            raise ValueError("secret_log_gate")
         report.update(
             checks=[
                 "create_bucket",
