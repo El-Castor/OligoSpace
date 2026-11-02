@@ -1,0 +1,145 @@
+name: DEPLOY-02 targeted review (no release)
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  package-presence:
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [api, worker]
+        architecture: [amd64, arm64]
+        include:
+          - architecture: amd64
+            runner: ubuntu-24.04
+            cpu: x86_64
+          - architecture: arm64
+            runner: ubuntu-24.04-arm
+            cpu: aarch64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 1cca325bf6d81f76ac875826c7f5ee068e2c89bc
+          path: reviewed
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: docker/setup-buildx-action@v3
+        with:
+          name: reviewed-presence
+          driver: docker-container
+      - name: Reconstruct reviewed source, never claim old image bit identity
+        env:
+          ROLE: ${{ matrix.role }}
+          ARCH: ${{ matrix.architecture }}
+          CPU: ${{ matrix.cpu }}
+        run: |
+          test "$(uname -m)" = "$CPU"
+          python3 reviewed/infra/deployment/build_local.py --context default --builder reviewed-presence --architecture "$ARCH" --role "$ROLE" --load-test-images --output "$RUNNER_TEMP/reviewed"
+      - name: Inspect exact reconstructed image read-only, network none
+        env:
+          ROLE: ${{ matrix.role }}
+        run: python3 infra/deployment/inspect_system_packages.py --context default --oci-report "$RUNNER_TEMP/reviewed/$ROLE-oci-report.json" --output "$RUNNER_TEMP/presence.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: system-presence-${{ matrix.role }}-${{ matrix.architecture }}
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/presence.json
+            ${{ runner.temp }}/reviewed/*-oci-report.json
+  garage-binary:
+    strategy:
+      fail-fast: false
+      matrix:
+        architecture: [amd64, arm64]
+        include:
+          - architecture: amd64
+            runner: ubuntu-24.04
+          - architecture: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compare pinned OCI bytes to official public release, no execution
+        env:
+          ARCH: ${{ matrix.architecture }}
+        run: |
+          python3 - <<'PY'
+          import json, os, subprocess, sys, tempfile, urllib.request
+          from pathlib import Path
+          sys.path.insert(0, 'infra/deployment')
+          from scan_candidate import verified_json, platform_descriptor
+          from storage_profiles import IMAGES
+          from inspect_garage_binary import release_url
+          arch = os.environ['ARCH']
+          reference = IMAGES['garage']
+          def run(*args):
+              return subprocess.check_output(['docker', *args], stderr=subprocess.PIPE, timeout=300)
+          index = verified_json(run('buildx','imagetools','inspect','--raw',reference), reference.split('@')[1])
+          child = reference.split('@')[0] + '@' + platform_descriptor(index, arch)['digest']
+          manifest = verified_json(run('buildx','imagetools','inspect','--raw',child), child.split('@')[1])
+          run('pull','--platform','linux/'+arch,child)
+          with tempfile.TemporaryDirectory(prefix='oligospace-garage-binding-') as directory:
+              root = Path(directory)
+              archive, binary = root/'image.tar', root/'release.bin'
+              run('image','save','--output',str(archive),child)
+              with urllib.request.urlopen(release_url(arch),timeout=60) as response, binary.open('wb') as output:
+                  total = 0
+                  while chunk := response.read(1024*1024):
+                      total += len(chunk)
+                      if total > 512*1024*1024:
+                          raise ValueError('release_binary_limit')
+                      output.write(chunk)
+              target = Path(os.environ['RUNNER_TEMP'])/'garage-binary.json'
+              result = subprocess.run([sys.executable,'infra/deployment/inspect_garage_binary.py','--archive',str(archive),'--config-digest',manifest['config']['digest'],'--architecture',arch,'--release-binary',str(binary),'--output',str(target)],check=False)
+              report = json.loads(target.read_text())
+              report.update(index_reference=reference, platform_reference=child, official_release_url=release_url(arch), download_origin='fixed_official_https_url', controller_source=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip())
+              target.write_text(json.dumps(report,indent=2)+'\n')
+              raise SystemExit(result.returncode)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: garage-binary-${{ matrix.architecture }}
+          retention-days: 14
+          if-no-files-found: error
+          path: ${{ runner.temp }}/garage-binary.json
+  garage-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Obtain exact source lockfile by fixed commit
+        run: curl --fail --silent --show-error --max-time 60 'https://git.deuxfleurs.fr/Deuxfleurs/garage/raw/commit/586726edb0170bb46f604e84fba09e5659610649/Cargo.lock' --output "$RUNNER_TEMP/Cargo.lock"
+      - name: Source scan remains distinct from binary runtime coverage
+        run: python3 infra/deployment/scan_garage_source.py --lockfile "$RUNNER_TEMP/Cargo.lock" --output "$RUNNER_TEMP/garage-source-scan.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: garage-source-review
+          retention-days: 14
+          if-no-files-found: error
+          path: ${{ runner.temp }}/garage-source-scan.json
