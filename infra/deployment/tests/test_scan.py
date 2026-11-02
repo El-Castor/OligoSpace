@@ -197,6 +197,30 @@ class ScanTests(unittest.TestCase):
         self.assertEqual(result["classification"], "analysis_required")
         self.assertNotIn("not-a-token", json.dumps(result))
 
+    def test_public_jwt_example_requires_demo_signature_not_claims_alone(self):
+        def encode(value):
+            return module.base64.urlsafe_b64encode(value).decode().rstrip("=")
+
+        header = encode(json.dumps({"alg": "HS256", "typ": "JWT"}).encode())
+        payload = encode(
+            json.dumps(
+                {"sub": "1234567890", "name": "John Doe", "iat": 1516239022}
+            ).encode()
+        )
+        unsigned = header + "." + payload
+        signature = encode(
+            module.hmac.new(
+                b"your-256-bit-secret", unsigned.encode(), module.hashlib.sha256
+            ).digest()
+        )
+        report = module.jwt_triage(unsigned + "." + signature)
+        self.assertEqual(report["classification"], "public_documentation_example")
+        self.assertNotIn(signature, json.dumps(report))
+        self.assertEqual(
+            module.jwt_triage(unsigned + "." + encode(b"different"))["classification"],
+            "analysis_required",
+        )
+
     def test_omitted_results_is_valid_clean_report(self):
         self.assertEqual(
             module.summarize(fixture(), PROOF, DB)["execution"], "completed_clean"

@@ -228,7 +228,7 @@ def main():
                         "--security-opt=no-new-privileges",
                         "--read-only",
                         "--tmpfs",
-                        "/tmp:rw,nosuid,nodev,noexec,size=256m",
+                        "/tmp:rw,nosuid,nodev,noexec,size=2g",
                         "--user",
                         f"{os.getuid()}:{os.getgid()}",
                         "--env",

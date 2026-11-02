@@ -27,6 +27,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Verify native runner
+        env:
+          ARCH: ${{ matrix.architecture }}
+        run: |
+          case "$ARCH:$(uname -m)" in
+            amd64:x86_64|arm64:aarch64) ;;
+            *) exit 1 ;;
+          esac
       - name: Validate qualification tooling
         run: python3 -m unittest discover -s infra/deployment/tests -p 'test_scan*.py' -v
       - name: Scan exact upstream candidate digest without runtime execution
