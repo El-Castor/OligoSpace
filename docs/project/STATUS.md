@@ -1,8 +1,32 @@
 # Project status
 
-## MVP-01 — real OIDC authentication delivered for review (2026-11-03)
+## MVP-01 — real OIDC authentication merged into main (2026-11-03)
 
-PR19 (DRAFT, unmerged): real HTTPS Keycloak/PostgreSQL/Next.js/API/Chromium
+PR19 merged into `main` as `dc012e8fe161ed08380947887371dafdc611f2de` (merge commit)
+from the owner-approved head `4285d4f58aeb09b21a44447f1110d02bccb815ce`, using
+`--match-head-commit`, no `--admin`; `main` had no branch protection or ruleset and
+no required checks. Post-merge `CI` and `Deployment foundation` on `main`: success.
+No workflow publishes images or deploys on push to `main`.
+
+**Scope of the authorization: integration of code only.** It is not a pilot approval,
+not a deployment approval, and not a waiver of any DEPLOY-02 scanner or finding.
+DEPLOY-02 scan gates remain red on PRs and release-blocking; they were not modified.
+No deployment, Cloudflare change, image publication, storage adoption or data
+migration was performed.
+
+Qualification at code SHA `dc672aa`: real-OIDC 16/16 (AUTH-B1 last-admin race fixed,
+cross-organization isolation, introspection load and Keycloak outage cases,
+`kombu==5.6.2` pinned). See the
+[acceptance dossier](../mvp/MVP_01_AUTHENTICATION_ACCEPTANCE.md).
+
+Priority follow-ups: **AUTH-B6** (bounded JWKS cache with secure key rotation, to be
+done before pilot qualification) and **DEP-1** (pin transitive Celery dependencies,
+reproducibility risk). ResearchBrain/Basic Memory not reachable from this session, so
+not updated.
+
+## MVP-01 — delivered for review (superseded, 2026-11-03)
+
+PR19 (was DRAFT): real HTTPS Keycloak/PostgreSQL/Next.js/API/Chromium
 qualification passes 16/16 at code SHA `dc672aa` (AUTH-B1 last-admin race fixed,
 cross-organization journey, introspection load and Keycloak-outage cases added,
 `kombu==5.6.2` pinned); unit, PostgreSQL, migration, frontend and existing Chromium

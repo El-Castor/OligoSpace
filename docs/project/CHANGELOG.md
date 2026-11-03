@@ -1,5 +1,14 @@
 # Changelog
 
+## MVP-01 — merged into main (2026-11-03)
+
+PR19 merged as `dc012e8fe161ed08380947887371dafdc611f2de` (approved head
+`4285d4f58aeb09b21a44447f1110d02bccb815ce`). Code integration only: no deployment,
+image publication, Cloudflare change, storage adoption or data migration; DEPLOY-02
+scanners and findings unchanged and not waived. Open priorities: AUTH-B6 (bounded
+JWKS cache with secure rotation, before pilot qualification) and DEP-1 (transitive
+Celery pins).
+
 ## MVP-01 — real OIDC authentication delivered for review (2026-11-03)
 
 Added confidential-client introspection after local JWT validation, issuer-bound

@@ -1,7 +1,8 @@
 # MVP-01 — Authentication acceptance
 
-Status: delivered for review (PR19, DRAFT, unmerged); real-OIDC qualification 16/16
-passed at code SHA dc672aa (13/13 at 0c58d62 earlier); no pilot approval. Conditions for a private pilot are listed below.
+Status: merged into main as dc012e8 (code integration only; approved head 4285d4f);
+real-OIDC qualification 16/16 passed at code SHA dc672aa (13/13 at 0c58d62 earlier);
+no pilot or deployment approval. Conditions for a private pilot are listed below.
 Base main:5e10b750889275a0db76a94fdb1e85c83f95e88b (DEPLOY-02 merge).
 One branch/PR only; no deployment, provider substitution or security waiver.
 

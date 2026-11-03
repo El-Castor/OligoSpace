@@ -7,10 +7,11 @@
 - AUTH-B3: audit email/display-name refreshes from validated claims.
 - AUTH-B4: concurrent logout/refresh/multi-tab tests, and cross-organization checks
   for audit, attachments and jobs in real OIDC (the basic journey is done).
-- AUTH-B6: owner decision on reusing/caching the JWKS client (currently one fetch per
-  API request, which is also the actual denial path during a Keycloak outage); no
-  revocation cache is to be introduced without an explicit decision.
-- DEP-1: pin remaining transitive Celery dependencies (kombu is pinned at 5.6.2).
+- AUTH-B6 (priority, before pilot qualification): bounded JWKS cache with secure key
+  rotation (currently one fetch per API request, which is also the actual denial path
+  during a Keycloak outage); no revocation cache is to be introduced.
+- DEP-1 (reproducibility risk): pin remaining transitive Celery dependencies (kombu is
+  pinned at 5.6.2).
 - AUTH-B5: product decision on invitation, Keycloak account creation, password-reset
   mail delivery and MFA recovery (currently absent/unqualified).
 
