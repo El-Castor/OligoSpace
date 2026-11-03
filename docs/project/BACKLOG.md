@@ -2,11 +2,15 @@
 
 ## MVP-01 follow-ups (awaiting owner prioritization)
 
-- AUTH-B1: serialize concurrent mutual admin demotion (no last-active-admin invariant).
+- AUTH-B1: resolved (row-lock serialization plus PostgreSQL concurrency test).
 - AUTH-B2: retire the legacy literal `keycloak` provider after pilot bootstrap.
 - AUTH-B3: audit email/display-name refreshes from validated claims.
-- AUTH-B4: real-OIDC cross-organization negative journey and concurrent
-  logout/refresh/multi-tab tests.
+- AUTH-B4: concurrent logout/refresh/multi-tab tests, and cross-organization checks
+  for audit, attachments and jobs in real OIDC (the basic journey is done).
+- AUTH-B6: owner decision on reusing/caching the JWKS client (currently one fetch per
+  API request, which is also the actual denial path during a Keycloak outage); no
+  revocation cache is to be introduced without an explicit decision.
+- DEP-1: pin remaining transitive Celery dependencies (kombu is pinned at 5.6.2).
 - AUTH-B5: product decision on invitation, Keycloak account creation, password-reset
   mail delivery and MFA recovery (currently absent/unqualified).
 

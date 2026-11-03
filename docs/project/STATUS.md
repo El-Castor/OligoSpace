@@ -3,8 +3,10 @@
 ## MVP-01 — real OIDC authentication delivered for review (2026-11-03)
 
 PR19 (DRAFT, unmerged): real HTTPS Keycloak/PostgreSQL/Next.js/API/Chromium
-qualification passes 13/13 at `0c58d62`; unit, PostgreSQL, migration, frontend and
-existing Chromium checks pass. Remaining red checks are the DEPLOY-02 vulnerability
+qualification passes 16/16 at code SHA `dc672aa` (AUTH-B1 last-admin race fixed,
+cross-organization journey, introspection load and Keycloak-outage cases added,
+`kombu==5.6.2` pinned); unit, PostgreSQL, migration, frontend and existing Chromium
+checks pass. Remaining red checks are the DEPLOY-02 vulnerability
 gates only (not waived). Independent review done; findings in the
 [acceptance dossier](../mvp/MVP_01_AUTHENTICATION_ACCEPTANCE.md). No pilot approval,
 deployment, merge, Mac mini or Cloudflare change. Work stops for owner review.

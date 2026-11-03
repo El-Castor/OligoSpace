@@ -1,7 +1,7 @@
 # MVP-01 — Authentication acceptance
 
-Status: delivered for review (PR19, DRAFT, unmerged); real-OIDC qualification 13/13
-passed at 0c58d62; no pilot approval. Conditions for a private pilot are listed below.
+Status: delivered for review (PR19, DRAFT, unmerged); real-OIDC qualification 16/16
+passed at code SHA dc672aa (13/13 at 0c58d62 earlier); no pilot approval. Conditions for a private pilot are listed below.
 Base main:5e10b750889275a0db76a94fdb1e85c83f95e88b (DEPLOY-02 merge).
 One branch/PR only; no deployment, provider substitution or security waiver.
 
@@ -118,7 +118,88 @@ format/lint/typecheck/test cannot reach local Docker daemon. Local Turbopack bui
 also hit a process/port permission error; no local build pass is claimed.
 CI is authoritative for Docker builds, PostgreSQL and real Chromium/science.
 
-## Final results (head 0c58d62)
+## Final checks before merge (code SHA dc672aa)
+
+Three targeted checks were added without widening functional scope. Documentation
+commits after `dc672aa` do not change code.
+
+**Real-OIDC at dc672aa (run 41626472638): 16/16 passed.** Application CI passes:
+backend, integration/PostgreSQL, migration, frontend, bioinfo-worker, compose,
+deployment-contract and the scientific `chromium` job. Secret/token log gate passed.
+Still red and unwaived: the DEPLOY-02 scan gates (security remediation regressions,
+storage candidate image security, release image qualification, targeted review).
+
+### AUTH-B1 — last active administrator (resolved)
+
+Reproduced before the fix: two administrators demoting/deactivating each other
+concurrently both succeeded (2 admins and a 3-admin cycle all `ok`), leaving no
+active administrator. `update_user` now locks the organization's active admins
+(`SELECT ... FOR UPDATE ORDER BY id`, `populate_existing`) when a change can reduce
+their number, and refuses with 422 `last_active_administrator_required` if the target
+would be the last one. `tests/integration/test_admin_concurrency.py` (5 cases, forced
+transaction overlap) passed 3 consecutive runs. Residual: a demotion can be refused
+while a concurrent promotion is not yet visible; this is a safe-direction false
+refusal, retry succeeds.
+
+### Cross-organization isolation
+
+`tests/integration/test_cross_organization_isolation.py` (PostgreSQL) and a real-OIDC
+journey with two Keycloak identities in different organizations (API read/list/CSV/
+patch/put/delete/foreign keys in both directions, UI 404). A mutation test removing
+the organization filter made the PostgreSQL test fail. Not covered: audit (only an
+actor-filtered own-activity view exists), attachments, jobs/runs/validations in the
+real-OIDC journey.
+
+### Introspection cost and Keycloak outage (disposable local topology, not pilot sizing)
+
+80 requests per phase, 0 errors; p50/p95/max in ms; requests per second.
+
+| Concurrency | `/health/live` | `/me` (JWT + JWKS fetch + introspection + DB) | direct Keycloak introspection |
+|---|---|---|---|
+| 1 | 2.9/3.9/12; 310 | 20.6/23.5/26.6; 47.7 | 4.2/6.1/8.4; 227 |
+| 4 | 8.4/12/19.5; 437 | 56.5/70.9/89.8; 68.1 | 9.8/14.9/18; 376 |
+| 8 | 14.7/19.8/31.8; 509 | 110.4/247.2/343.7; 63.6 | 19.6/22.1/25.8; 413 |
+| 16 | 27.1/54.6/59; 519 | 298.1/669.6/792.8; 42.7 | 32.5/40.9/43.2; 473 |
+
+`/me` saturates near 43-68 rps because each call does a JWKS fetch, an introspection
+and a DB read; the direct introspection column is measured separately. No security
+cache was introduced; immediate revocation and fail-closed are unchanged.
+
+Outage: with Keycloak stopped, a still-unexpired token got 401 on all 26 requests
+(10 sequential, 16 concurrent; p50 7.9 ms, max 10.6 ms), `/health/live` stayed 200,
+the UI showed "Session required", and a fresh login worked after restart (about
+18.7 s to recover). Caveats stated plainly: (1) these refusals came from
+`JWKS_FETCH_FAILED` (29), not introspection (introspection failure counters 0):
+`_decode_token` builds a new `PyJWKClient` per request, so there is no JWKS cache and
+every call fetches JWKS. Fail-closed holds, but the actual denial path is the JWKS
+fetch. Whether to reuse/cache JWKS is an owner decision (AUTH-B6); not changed.
+(2) `recovery_old_token_status = 401` is an expired 90 s token, not revocation proof.
+
+### Pre-existing dependency defect found and fixed
+
+The `chromium` job failed at `cd77bf0` on three Primer3 journeys ("job saved but could
+not be dispatched"). Cause: `kombu 5.7.0` (published 2026-11-03) needs `packaging`
+only through `kombu[redis]`, which `celery[redis]==5.4.0` does not request, so
+`send_task` raised `ModuleNotFoundError`. Reproduced locally. Not an MVP-01 change;
+`kombu==5.6.2` is now pinned in `envs/api.yml`, `envs/bioinfo.yml` and both
+`pyproject.toml` files. Other transitive Celery dependencies remain unpinned.
+
+### Second independent review (read-only) dispositions
+
+- "Concurrent promotion bypass" rated major: judged a safe-direction false refusal, not an invariant break (see AUTH-B1).
+- JWKS per request: confirmed, recorded as AUTH-B6.
+- Outage denial path via JWKS: confirmed, documented above.
+- Audit cross-organization untested: documented above.
+- Client secret passed to the browser container: harness only, disposable; accepted.
+- kombu pin consistent across the four files.
+
+Cases 14-16 of the real-OIDC suite: cross-organization isolation, introspection
+measurement under light concurrency, and Keycloak outage fail-closed/recovery.
+Evidence: [introspection-load.json](evidence/introspection-load.json),
+[keycloak-outage.json](evidence/keycloak-outage.json); no token or secret matched a
+grep on the evidence files.
+
+## Results at head 0c58d62 (earlier, 13 journeys)
 
 Real-OIDC qualification (run 41549959570, disposable HTTPS Keycloak 26.7.2, PostgreSQL,
 production Next.js and API, Chromium, AUTH_MODE=oidc): **13/13 passed**, artifacts in
@@ -184,20 +265,18 @@ and role re-read, organization-scoped access checks, logout origin/content-type 
 no refresh token in the browser session, no secrets in repository or logs gate.
 
 Findings and disposition:
-- Reported as major: "last admin can be disabled". Verified partly incorrect: the acting
-  administrator can never disable or demote themself (`cannot_remove_own_admin_access`),
-  so the actor remains an active admin. Only a concurrent mutual demotion by two
-  administrators is not serialized. Retained as a backlog item (AUTH-B1), not a
-  silent change to existing business policy in this PR.
+- Reported as major: "last admin can be disabled". Verified partly incorrect at that
+  time: a single actor cannot demote themself, but concurrent mutual demotion by two
+  administrators was not serialized. Later reproduced and fixed (see AUTH-B1 above).
 - Minor: legacy `keycloak` provider literal is accepted and rebound to the issuer.
   Intentional, documented migration; a different issuer is rejected. Backlog AUTH-B2
   to retire the literal after pilot bootstrap.
 - Minor: email/display name are refreshed from validated claims on each request.
   Accepted: claims come from a signature- and introspection-verified token; no
   authorization decision uses them. Backlog AUTH-B3 (audit on change).
-- Not covered by tests (stated, not claimed): cross-organization negative journey in
-  real OIDC (covered only by existing API tests), concurrent logout/refresh race,
-  multi-tab refresh-token rotation, issuer change scenario.
+- Not covered by tests (stated, not claimed): concurrent logout/refresh race,
+  multi-tab refresh-token rotation, issuer change scenario. The cross-organization
+  real-OIDC journey is now covered (see above).
 
 Independent review found the credential-wiring and logout-failure regressions
 (earlier pass); fixes and negative tests were added in the same PR. Final
@@ -221,9 +300,10 @@ Conditions for a private pilot (all must hold, none is granted by this PR):
 3. Operator procedure for MFA enrollment/recovery, reset-password mail delivery,
    Keycloak outage (API fails closed) and account offboarding (disable in Keycloak and
    local projection).
-4. Re-run of the real-OIDC qualification against the pilot topology (all 13 journeys)
-   plus a cross-organization negative journey, before any real use.
-5. Backlog items AUTH-B1..B3 reviewed.
+4. Re-run of the real-OIDC qualification against the pilot topology (all 16 cases),
+   before any real use.
+5. Backlog items AUTH-B2..B6 reviewed (AUTH-B1 resolved), including the owner decision
+   on JWKS reuse/caching.
 
 ResearchBrain/Basic Memory was not available in this session (no tool exposed), so
 no memory note was written; the owner should record the outcome from this dossier.

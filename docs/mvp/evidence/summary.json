@@ -1,6 +1,6 @@
 {
   "qualification": "passed",
-  "source_commit": "0c58d621457e35ba73b4aa5120d96b6a23fd14c7",
+  "source_commit": "dc672aa1d531164f9be870eb9daabd407a1a974b",
   "tests": [
     {
       "test": "real login enforces PKCE, state, nonce and secure session cookies",
@@ -76,6 +76,24 @@
     },
     {
       "test": "provider TOTP enrollment and next-login MFA challenge are enforced",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "identities from different organizations cannot read or modify each other's data",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "introspection cost is measured under light concurrency without request errors",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "Keycloak outage fails closed without cached acceptance and recovers",
       "status": "passed",
       "source_line": null,
       "rule_id": null

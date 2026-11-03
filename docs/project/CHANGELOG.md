@@ -5,8 +5,14 @@
 Added confidential-client introspection after local JWT validation, issuer-bound
 identity, server-side provider logout with retry, failed-refresh handling, account
 recovery screens for unprovisioned/disabled accounts, and a disposable real
-Keycloak/Chromium qualification (13/13). Sanitized evidence in `docs/mvp/evidence/`.
+Keycloak/Chromium qualification (16/16). Sanitized evidence in `docs/mvp/evidence/`.
 No schema migration, no business-model change.
+
+Fixed a concurrent last-active-administrator race in `update_user` (row locks plus
+422 `last_active_administrator_required`); added PostgreSQL concurrency and
+cross-organization tests, real-OIDC cases for cross-organization isolation, light
+introspection load and Keycloak outage; pinned `kombu==5.6.2` after kombu 5.7.0
+broke Celery task dispatch.
 
 ## MVP-01 — real OIDC authentication qualification (history)
 

@@ -29,14 +29,14 @@ identity and roles, UI provisioning, negative direct API authorization, project
 membership grant/revocation, cross-organization isolation, local deactivation, real token refresh, provider
 logout, disabled-user introspection and failed refresh. Tests
 have no skip path. Runtime failures fail the command; no static check is reported
-as a successful browser qualification. All fourteen cases must pass, including
+as a successful browser qualification. All sixteen cases must pass, including
 a provider-logout failure that preserves the local session followed by a
 confirmed retry that revokes the already issued bearer token.
 
 The harness first runs the unchanged real-login case as a bounded preflight.
 If that fails, it retains its diagnostics, labels each remaining case
-`not_executed`, cleans up, and fails. If it passes, the complete fourteen-case
-suite runs; only all fourteen successful results qualify the run.
+`not_executed`, cleans up, and fails. If it passes, the complete sixteen-case
+suite runs; only all sixteen successful results qualify the run.
 
 The final log gate reads complete API, web, Keycloak and Caddy logs only in RAM,
 with a 4 MiB and 30-second limit per service. It checks every generated password
