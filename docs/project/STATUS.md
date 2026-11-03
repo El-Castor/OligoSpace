@@ -1,6 +1,15 @@
 # Project status
 
-## MVP-01 — real OIDC authentication qualification in progress
+## MVP-01 — real OIDC authentication delivered for review (2026-11-03)
+
+PR19 (DRAFT, unmerged): real HTTPS Keycloak/PostgreSQL/Next.js/API/Chromium
+qualification passes 13/13 at `0c58d62`; unit, PostgreSQL, migration, frontend and
+existing Chromium checks pass. Remaining red checks are the DEPLOY-02 vulnerability
+gates only (not waived). Independent review done; findings in the
+[acceptance dossier](../mvp/MVP_01_AUTHENTICATION_ACCEPTANCE.md). No pilot approval,
+deployment, merge, Mac mini or Cloudflare change. Work stops for owner review.
+
+## MVP-01 — real OIDC authentication qualification (history)
 
 DEPLOY-02 PR18 is merged at5e10b750889275a0db76a94fdb1e85c83f95e88b,
 approved head7c81574, integration only. Historical no-merge statements below are

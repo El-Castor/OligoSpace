@@ -1,6 +1,7 @@
 # MVP-01 — Authentication acceptance
 
-Status: implementation/qualification in progress; no pilot approval.
+Status: delivered for review (PR19, DRAFT, unmerged); real-OIDC qualification 13/13
+passed at 0c58d62; no pilot approval. Conditions for a private pilot are listed below.
 Base main:5e10b750889275a0db76a94fdb1e85c83f95e88b (DEPLOY-02 merge).
 One branch/PR only; no deployment, provider substitution or security waiver.
 
@@ -26,16 +27,18 @@ using its CSRF-protected endpoint. No schema/business policy rewrite.
 
 ## Execution and acceptance steps
 
-- [ ] Negative/positive API tests for crypto claims, provider active/revoked/down,
+- [x] Negative/positive API tests for crypto claims, provider active/revoked/down,
   local active/provisioning/provider binding, role and project permission changes.
-- [ ] Backend minimal fixes with bounded async introspection, production settings
+- [x] Backend minimal fixes with bounded async introspection, production settings
   validation; frontend refresh/logout failure handling tests.
-- [ ] Isolated real Keycloak/PostgreSQL/Next.js/API Chromium fixture, AUTH_MODE=oidc,
+- [x] Isolated real Keycloak/PostgreSQL/Next.js/API Chromium fixture, AUTH_MODE=oidc,
   HTTPS, synthetic admin/member/viewer, PKCE/state, cookies, refresh, expiry,
   provider/local revocation, roles/direct API denial, logout and MFA.
-- [ ] Preserve unit/PostgreSQL/scientific and existing Chromium regressions;
+- [x] Preserve unit/PostgreSQL/scientific and existing Chromium regressions;
   capture only synthetic safe screens, never cookies/tokens/raw HTTP traces.
-- [ ] Final matrix/results/limits, independent review, backlog/memory and one PR.
+- [x] Final matrix/results/limits, independent review, backlog and one PR.
+  ResearchBrain/Basic Memory was not reachable from this session: not updated (see
+  Remaining limitations).
 
 ## DEPLOY-02 integration boundary
 
@@ -104,7 +107,8 @@ access. Existing scientific visibility and permission tests are retained.
 
 ## Verification status and evidence attribution
 
-Local API:99 passed,198 PostgreSQL cases skipped because no server was available;
+Local API:99 passed,198 PostgreSQL cases skipped because no server was available
+(local only; the PostgreSQL suites pass in CI, see below);
 47 new signed-token/introspection/identity/role-revocation cases included.
 API Ruff/configured strict mypy pass. Web14 tests, strict typecheck and scoped lint
 pass using temporary official-checksum-verified Node22.23.0. Existing cached
@@ -114,20 +118,115 @@ format/lint/typecheck/test cannot reach local Docker daemon. Local Turbopack bui
 also hit a process/port permission error; no local build pass is claimed.
 CI is authoritative for Docker builds, PostgreSQL and real Chromium/science.
 
-Initial d95d3d5 application CI41539555372 passes; foundation startup failure from
-missing introspection credentials was demonstrated and corrected in51399b8.
-Current head qualification41540107580 and application CI are pending. No real
-OIDC/MFA or screenshot acceptance is claimed until their sanitized artifacts are
-available. Expected13 Chromium cases: actual login/cookies/PKCE/state/nonce,
-forged state, admin projection, member/viewer denials, anonymous/bogus/development
-headers rejected, invalid password, real refresh/provider logout, Keycloak disable,
-project grant/revoke with old bearer, local disable and TOTP enrollment/challenge,
-provider logout failure/retry. Skipped or absent tests are never successes.
+## Final results (head 0c58d62)
 
-Independent review found the credential-wiring and logout-failure regressions;
-fixes and negative tests were added in the same PR. Final re-review pending.
+Real-OIDC qualification (run 41549959570, disposable HTTPS Keycloak 26.7.2, PostgreSQL,
+production Next.js and API, Chromium, AUTH_MODE=oidc): **13/13 passed**, artifacts in
+[evidence/](evidence/summary.json). Application CI (runs 41549959456 and 41549952778)
+passes: backend, integration (PostgreSQL), migration, bioinfo-worker, frontend,
+compose, deployment-contract, and the existing scientific/functional Chromium job
+(`chromium`, run 41549959418). Secret/token log gate: passed for api, web, keycloak, caddy
+([secret-log-gate.json](evidence/secret-log-gate.json)). API rule counters for the
+run: introspection inactive 4 (expected revocations), JWT claims invalid 1 (the
+bogus-token journey), signature/JWKS/transport/HTTP/JSON failures 0.
+
+Red checks on the PR are exclusively DEPLOY-02 vulnerability/supplier gates
+(baseline-secret-triage, native-image api/worker, seaweedfs, garage). They fail by
+scan exit code 2 on documented findings, do not touch authentication, are not waived
+and remain release-blocking. They do not run on `main`.
+
+| # | Journey (real provider) | Result |
+|---|---|---|
+| 1 | Login with PKCE S256, state, nonce; Secure/HttpOnly/Lax cookies | passed |
+| 2 | Callback with forged state yields no session | passed |
+| 3 | Unprovisioned identity gets 403 + recovery screen; admin provisions; login then works | passed |
+| 4 | Member: admin APIs 403 (read and write), /admin denied | passed |
+| 5 | Viewer: admin APIs 403, project creation 403, /admin denied | passed |
+| 6 | Anonymous, malformed and development-header requests 401 | passed |
+| 7 | Wrong password creates no session | passed |
+| 8 | Project grant then revoke apply to the same issued token (200 then 404) | passed |
+| 9 | Local deactivation: already-issued valid token gets 403; recovery screen; logout | passed |
+| 10 | Provider logout failure keeps session and shows retry; confirmed retry revokes token (401) and SSO | passed |
+| 11 | Access token refresh; logout ends provider SSO | passed |
+| 12 | Keycloak account disabled: issued token 401, refresh fails, session marked expired | passed |
+| 13 | TOTP enrollment then MFA challenge, invalid then valid code | passed |
+
+Login/logout/refresh/revocation flow: login = Authorization Code + PKCE through
+Keycloak; API verifies JWT then introspects per call; refresh by NextAuth server side
+(a failed refresh drops usable credentials); logout = same-origin CSRF-checked POST
+to the provider-logout route, then NextAuth signOut only after provider confirmation;
+revocation = provider disable (introspection inactive) or local `active=false`
+(403) or membership removal (404), all effective on tokens already issued.
+
+A first qualification run at 22ba4c9 passed 11/13; the two failures (journeys 3 and 9)
+were a test race, not a product defect: after "Manage session" the page is already on
+`/login`, so the URL assertion passed before logout finished and the session was read
+too early. The test now polls until the session is ended, and also proves provider SSO
+ended by requiring the Keycloak password form on the next login. No product code
+changed for that fix; the failing result is retained here, not hidden.
+
+### Screens (synthetic data only, no cookies/tokens/URLs with codes)
+
+![Login](evidence/synthetic-login.png)
+![Administrator overview](evidence/synthetic-dashboard.png)
+![User administration](evidence/synthetic-administration.png)
+
+The administration capture shows the issuer URL stored for the identity that already
+logged in, versus the literal `keycloak` for projections not yet bound; the latter is
+migrated to the configured issuer at first successful login.
+
+## Independent review (read-only, separate agent, final head)
+
+Confirmed: RS256-only with signature/issuer/audience/exp/iat/sub checks, fail-closed
+introspection with 5 s timeout, development headers ignored under oidc, production
+settings validation, subject-keyed identity without email linking, per-request active
+and role re-read, organization-scoped access checks, logout origin/content-type check,
+no refresh token in the browser session, no secrets in repository or logs gate.
+
+Findings and disposition:
+- Reported as major: "last admin can be disabled". Verified partly incorrect: the acting
+  administrator can never disable or demote themself (`cannot_remove_own_admin_access`),
+  so the actor remains an active admin. Only a concurrent mutual demotion by two
+  administrators is not serialized. Retained as a backlog item (AUTH-B1), not a
+  silent change to existing business policy in this PR.
+- Minor: legacy `keycloak` provider literal is accepted and rebound to the issuer.
+  Intentional, documented migration; a different issuer is rejected. Backlog AUTH-B2
+  to retire the literal after pilot bootstrap.
+- Minor: email/display name are refreshed from validated claims on each request.
+  Accepted: claims come from a signature- and introspection-verified token; no
+  authorization decision uses them. Backlog AUTH-B3 (audit on change).
+- Not covered by tests (stated, not claimed): cross-organization negative journey in
+  real OIDC (covered only by existing API tests), concurrent logout/refresh race,
+  multi-tab refresh-token rotation, issuer change scenario.
+
+Independent review found the credential-wiring and logout-failure regressions
+(earlier pass); fixes and negative tests were added in the same PR. Final
+re-review: see section above.
 
 ## Remaining limitations and private-pilot decision
+
+Missing or out-of-scope features (explicit, none added in this PR): invitation by
+email, account creation in Keycloak from OligoSpace, self-registration, password
+reset qualification (Keycloak feature exists, mail delivery unqualified), MFA
+recovery policy, institutional SSO/federation, session listing/forced remote logout
+for all of a user's sessions from the OligoSpace UI. Proposing any of these is a
+separate product decision awaiting the owner.
+
+Conditions for a private pilot (all must hold, none is granted by this PR):
+1. Owner decision on this PR and on the open DEPLOY-02 release gates (reexamine
+   2026-11-16 or earlier).
+2. Institution-owned Keycloak realm bootstrapped without demo identities, default
+   passwords or `AUTH_MODE=development`; confidential client secret rotated and held
+   outside Git; HTTPS issuer reachable and trusted by browser and containers.
+3. Operator procedure for MFA enrollment/recovery, reset-password mail delivery,
+   Keycloak outage (API fails closed) and account offboarding (disable in Keycloak and
+   local projection).
+4. Re-run of the real-OIDC qualification against the pilot topology (all 13 journeys)
+   plus a cross-organization negative journey, before any real use.
+5. Backlog items AUTH-B1..B3 reviewed.
+
+ResearchBrain/Basic Memory was not available in this session (no tool exposed), so
+no memory note was written; the owner should record the outcome from this dossier.
 
 MVP-01 is not a deployment approval. Retain DEPLOY-02 security findings and all
 release gates. No claim of validated real host, institutional SSO/federation,

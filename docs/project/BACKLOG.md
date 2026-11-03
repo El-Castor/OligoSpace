@@ -1,6 +1,16 @@
 # Backlog
 
-## MVP-01 — real OIDC authentication qualification in progress
+## MVP-01 follow-ups (awaiting owner prioritization)
+
+- AUTH-B1: serialize concurrent mutual admin demotion (no last-active-admin invariant).
+- AUTH-B2: retire the legacy literal `keycloak` provider after pilot bootstrap.
+- AUTH-B3: audit email/display-name refreshes from validated claims.
+- AUTH-B4: real-OIDC cross-organization negative journey and concurrent
+  logout/refresh/multi-tab tests.
+- AUTH-B5: product decision on invitation, Keycloak account creation, password-reset
+  mail delivery and MFA recovery (currently absent/unqualified).
+
+## MVP-01 — real OIDC authentication qualification (history)
 
 DEPLOY-02 PR18 is merged at5e10b750889275a0db76a94fdb1e85c83f95e88b,
 approved head7c81574, integration only. Historical no-merge statements below are

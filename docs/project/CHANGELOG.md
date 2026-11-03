@@ -1,6 +1,14 @@
 # Changelog
 
-## MVP-01 — real OIDC authentication qualification in progress
+## MVP-01 — real OIDC authentication delivered for review (2026-11-03)
+
+Added confidential-client introspection after local JWT validation, issuer-bound
+identity, server-side provider logout with retry, failed-refresh handling, account
+recovery screens for unprovisioned/disabled accounts, and a disposable real
+Keycloak/Chromium qualification (13/13). Sanitized evidence in `docs/mvp/evidence/`.
+No schema migration, no business-model change.
+
+## MVP-01 — real OIDC authentication qualification (history)
 
 DEPLOY-02 PR18 is merged at5e10b750889275a0db76a94fdb1e85c83f95e88b,
 approved head7c81574, integration only. Historical no-merge statements below are
