@@ -26,17 +26,17 @@ MFA is tested by real TOTP enrollment and the next-login challenge.
 
 The runner checks PKCE/state/nonce, cookie flags, rejected forged state, persistent
 identity and roles, UI provisioning, negative direct API authorization, project
-membership grant/revocation, local deactivation, real token refresh, provider
+membership grant/revocation, cross-organization isolation, local deactivation, real token refresh, provider
 logout, disabled-user introspection and failed refresh. Tests
 have no skip path. Runtime failures fail the command; no static check is reported
-as a successful browser qualification. All thirteen cases must pass, including
+as a successful browser qualification. All fourteen cases must pass, including
 a provider-logout failure that preserves the local session followed by a
 confirmed retry that revokes the already issued bearer token.
 
 The harness first runs the unchanged real-login case as a bounded preflight.
 If that fails, it retains its diagnostics, labels each remaining case
-`not_executed`, cleans up, and fails. If it passes, the complete thirteen-case
-suite runs; only all thirteen successful results qualify the run.
+`not_executed`, cleans up, and fails. If it passes, the complete fourteen-case
+suite runs; only all fourteen successful results qualify the run.
 
 The final log gate reads complete API, web, Keycloak and Caddy logs only in RAM,
 with a 4 MiB and 30-second limit per service. It checks every generated password
@@ -45,6 +45,18 @@ retrieval errors or exceeded limits produce `not_verified` and also block
 success. `secret-log-gate.json` contains only service names, fixed rule/category
 identifiers, counts and gate outcomes. Raw logs and matched values are never
 retained. An already failed preflight keeps its failure while retaining this gate.
+
+Three cases extend the original login/revocation proof. One compares two real Keycloak
+administrators in different organizations on direct API and UI access. One measures
+`/health/live` (no authentication), `/me` (JWT validation, per-request introspection
+and database re-read) and direct Keycloak introspection at concurrency 1, 4, 8 and 16
+with 80 requests per phase; any refusal of a valid token fails the case. One asks the
+harness, through two empty signal files, to stop then start only the disposable Keycloak
+service while an already issued unexpired access token is replayed: every request must
+be refused (no cached acceptance) and a fresh login must work after recovery. The
+browser container receives the disposable client secret only to time direct
+introspection; no result field is free text, and `introspection-load.json` and
+`keycloak-outage.json` are copied only when they match a strict numeric schema.
 
 The ignored `evidence/` directory receives a sanitized JSON summary and two
 deliberate synthetic dashboard/administration captures. The workflow retains

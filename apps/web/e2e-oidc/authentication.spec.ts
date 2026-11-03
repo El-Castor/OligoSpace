@@ -1,5 +1,5 @@
 import { createHmac } from "node:crypto";
-import { writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 
 const origin = process.env.PLAYWRIGHT_BASE_URL!;
@@ -367,4 +367,199 @@ test("provider TOTP enrollment and next-login MFA challenge are enforced", async
   await page.locator("#kc-login").click();
   await page.waitForURL((url) => url.origin === origin && !url.pathname.startsWith("/realms/"));
   expect(Boolean((await session(page)).accessToken)).toBe(true);
+});
+
+test("identities from different organizations cannot read or modify each other's data", async ({ page, browser }) => {
+  const suffix = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+  const markerA = `xorga${suffix}`;
+  const markerB = `xorgb${suffix}`;
+  const sequence = Array.from({ length: 24 }, () => "ACGT"[Math.floor(Math.random() * 4)]).join("");
+  await login(page, "admin");
+  const tokenA = (await session(page)).accessToken;
+  const otherContext = await browser.newContext({ baseURL: origin, ignoreHTTPSErrors: true });
+  try {
+    const other = await otherContext.newPage();
+    await login(other, "foreign");
+    const tokenB = (await session(other)).accessToken;
+    const meA = await (await api(page, "/me", tokenA)).json();
+    const meB = await (await api(other, "/me", tokenB)).json();
+    // Two real Keycloak identities, both administrators, in distinct organizations.
+    expect(meA.role).toBe("admin");
+    expect(meB.role).toBe("admin");
+    expect(meA.organization_id).not.toBe(meB.organization_id);
+
+    const team = await (await api(page, "/workspace/teams", tokenA, "POST", { name: `team-${markerA}` })).json();
+    const projectResponse = await api(page, "/workspace/projects", tokenA, "POST", { name: `project-${markerA}`, visibility: "organization", team_id: team.id });
+    expect(projectResponse.status()).toBe(201);
+    const project = await projectResponse.json();
+    const oligoResponse = await api(page, "/registry/oligos", tokenA, "POST", { name: `oligo-${markerA}`, sequence, visibility: "organization", owner_project_id: project.id });
+    expect(oligoResponse.status()).toBe(201);
+    const oligo = (await oligoResponse.json()).oligo;
+
+    // Organization B: direct API reads of every foreign record are not found.
+    for (const path of [`/registry/oligos/${oligo.public_id}`, `/workspace/projects/${project.public_id}`, `/workspace/teams/${team.id}`]) {
+      expect((await api(other, path, tokenB)).status()).toBe(404);
+    }
+    // Lists, search, CSV export and the user directory disclose nothing foreign.
+    for (const path of [`/registry/oligos?q=${markerA}`, `/registry/oligos?q=${sequence}`, "/registry/oligos", "/workspace/projects", "/workspace/teams", "/workspace/users", "/workspace/admin/users", "/workspace/dashboard", "/registry/oligos/export.csv"]) {
+      const response = await api(other, path, tokenB);
+      expect(response.status()).toBe(200);
+      const body = await response.text();
+      const leaked = [markerA, sequence, "admin@qualification.invalid", "member@qualification.invalid", meA.external_identity_id].some((value) => body.includes(value));
+      expect(leaked).toBe(false);
+    }
+    // Direct modification attempts, including the most privileged foreign role, are refused.
+    expect((await api(other, `/registry/oligos/${oligo.public_id}`, tokenB, "PATCH", { name: "overwritten" })).status()).toBe(404);
+    expect((await api(other, `/workspace/projects/${project.public_id}`, tokenB, "PATCH", { name: "overwritten" })).status()).toBe(404);
+    expect((await api(other, `/workspace/projects/${project.public_id}/members/${meB.id}`, tokenB, "PUT", { role: "admin" })).status()).toBe(404);
+    expect((await api(other, `/workspace/teams/${team.id}/members/${meB.id}`, tokenB, "PUT", { role: "admin" })).status()).toBe(404);
+    expect((await api(other, `/workspace/admin/users/${meA.id}`, tokenB, "PATCH", { active: false })).status()).toBe(404);
+    expect((await api(other, `/workspace/admin/users/${meA.id}`, tokenB, "PATCH", { global_role: "viewer" })).status()).toBe(404);
+    // Foreign keys cannot reference another organization's team or project.
+    for (const [path, body] of [["/workspace/projects", { name: `fk-${markerB}`, team_id: team.id }], ["/registry/oligos", { name: `fk-${markerB}`, sequence: "ACGTACGTACGTAAAACCCC", owner_project_id: project.id }]] as const) {
+      expect([403, 404, 422]).toContain((await api(other, path, tokenB, "POST", body)).status());
+    }
+    // The foreign administrator is untouched and organization A data is unchanged.
+    const stillA = await api(page, "/me", tokenA);
+    expect(stillA.status()).toBe(200);
+    expect((await stillA.json()).role).toBe("admin");
+    expect((await (await api(page, `/registry/oligos/${oligo.public_id}`, tokenA)).json()).name).toBe(`oligo-${markerA}`);
+    expect((await (await api(page, `/workspace/projects/${project.public_id}`, tokenA)).json()).name).toBe(`project-${markerA}`);
+
+    // Reverse direction: organization B data is invisible to organization A's administrator.
+    const ownProject = await (await api(other, "/workspace/projects", tokenB, "POST", { name: `project-${markerB}`, visibility: "organization" })).json();
+    expect((await api(page, `/workspace/projects/${ownProject.public_id}`, tokenA)).status()).toBe(404);
+    expect((await (await api(page, "/workspace/projects", tokenA)).text()).includes(markerB)).toBe(false);
+    expect((await (await api(page, "/workspace/admin/users", tokenA)).text()).includes("foreign@qualification.invalid")).toBe(false);
+
+    // Through the interface, foreign records are simply not found and not rendered.
+    await other.goto(`/projects/${project.public_id}`);
+    await expect(other.getByText("This page could not be found.")).toBeVisible();
+    await expect(other.locator("body")).not.toContainText(markerA);
+    await other.goto(`/oligos/${oligo.public_id}`);
+    await expect(other.getByText("This page could not be found.")).toBeVisible();
+    await expect(other.locator("body")).not.toContainText(markerA);
+    await other.goto("/admin");
+    await expect(other.getByRole("heading", { level: 1, name: "Administration" })).toBeVisible();
+    await expect(other.locator("body")).toContainText("foreign@qualification.invalid");
+    await expect(other.locator("body")).not.toContainText("member@qualification.invalid");
+    await expect(other.locator("body")).not.toContainText(markerA);
+  } finally { await otherContext.close(); }
+});
+
+const LOAD_LEVELS = [1, 4, 8, 16];
+const REQUESTS_PER_PHASE = 80;
+
+function round1(value: number) { return Math.round(value * 10) / 10; }
+function percentile(sorted: number[], rank: number) {
+  return sorted[Math.max(0, Math.min(sorted.length - 1, Math.ceil((rank / 100) * sorted.length) - 1))];
+}
+
+async function measure(endpoint: string, concurrency: number, call: () => Promise<boolean>) {
+  const durations: number[] = [];
+  let errors = 0;
+  let issued = 0;
+  const started = performance.now();
+  await Promise.all(Array.from({ length: concurrency }, async () => {
+    while (issued < REQUESTS_PER_PHASE) {
+      issued += 1;
+      const begin = performance.now();
+      let ok = false;
+      try { ok = await call(); } catch { ok = false; }
+      durations.push(performance.now() - begin);
+      if (!ok) errors += 1;
+    }
+  }));
+  const seconds = (performance.now() - started) / 1000;
+  durations.sort((left, right) => left - right);
+  return {
+    endpoint, concurrency, requests: REQUESTS_PER_PHASE, errors,
+    p50_ms: round1(percentile(durations, 50)), p95_ms: round1(percentile(durations, 95)),
+    max_ms: round1(durations[durations.length - 1]), throughput_rps: round1(REQUESTS_PER_PHASE / seconds),
+  };
+}
+
+async function status(page: Page, path: string, token?: string) {
+  const response = await api(page, path, token);
+  const code = response.status();
+  await response.dispose();
+  return code;
+}
+
+test("introspection cost is measured under light concurrency without request errors", async ({ page }) => {
+  await login(page, "member");
+  for (let warmup = 0; warmup < 5; warmup += 1) expect(await status(page, "/me", (await session(page)).accessToken)).toBe(200);
+  const results = [];
+  for (const level of LOAD_LEVELS) {
+    results.push(await measure("health_live_without_authentication", level, async () => (await status(page, "/health/live")) === 200));
+    let token = (await session(page)).accessToken!;
+    results.push(await measure("api_me_jwt_introspection_and_database", level, async () => (await status(page, "/me", token)) === 200));
+    token = (await session(page)).accessToken!;
+    results.push(await measure("keycloak_introspection_direct", level, async () => {
+      const response = await page.request.post(`${issuer}/protocol/openid-connect/token/introspect`, {
+        form: { token, client_id: "oligospace-web", client_secret: process.env.QUALIFICATION_CLIENT_SECRET! },
+      });
+      const active = response.status() === 200 && (await response.json()).active === true;
+      return active;
+    }));
+  }
+  writeFileSync("/evidence/introspection-load.json", JSON.stringify({ requests_per_phase: REQUESTS_PER_PHASE, results }, null, 2));
+  // Valid credentials must never be refused because of the measurement load.
+  expect(results.reduce((sum, item) => sum + item.errors, 0)).toBe(0);
+});
+
+async function orchestrate(request: string, acknowledgement: string) {
+  writeFileSync(`/evidence/${request}`, "");
+  await expect.poll(() => existsSync(`/evidence/${acknowledgement}`), { timeout: 120_000, intervals: [500] }).toBe(true);
+  expect(readFileSync(`/evidence/${acknowledgement}`, "utf8")).toBe("ok");
+}
+
+test("Keycloak outage fails closed without cached acceptance and recovers", async ({ page }) => {
+  test.setTimeout(420_000);
+  await login(page, "member");
+  const token = (await session(page)).accessToken!;
+  const expiresAt = Number(JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString("utf8")).exp) * 1000;
+  expect(await status(page, "/me", token)).toBe(200);
+  await orchestrate("outage-request", "outage-ack");
+  const sequential: { code: number; ms: number }[] = [];
+  for (let index = 0; index < 10; index += 1) {
+    const begin = performance.now();
+    sequential.push({ code: await status(page, "/me", token), ms: performance.now() - begin });
+  }
+  const concurrent = await Promise.all(Array.from({ length: 16 }, () => status(page, "/me", token)));
+  const liveDuringOutage = await status(page, "/health/live");
+  await page.goto("/");
+  const sessionRequired = await page.getByRole("heading", { name: "Session required" }).isVisible();
+  // The assertion is meaningful only while the already issued token is still unexpired.
+  const tokenStillValid = Date.now() < expiresAt;
+  const durations = sequential.map((item) => item.ms).sort((left, right) => left - right);
+  const nonRefusals = sequential.filter((item) => item.code !== 401).length + concurrent.filter((code) => code !== 401).length;
+  const restoreStarted = Date.now();
+  await orchestrate("restore-request", "restore-ack");
+  await expect.poll(async () => {
+    try { return (await page.request.get(`${issuer}/.well-known/openid-configuration`)).status() === 200; }
+    catch { return false; }
+  }, { timeout: 180_000, intervals: [1000, 2000, 5000] }).toBe(true);
+  const recoverySeconds = round1((Date.now() - restoreStarted) / 1000);
+  const oldTokenAfterRecovery = await status(page, "/me", token);
+  await page.context().clearCookies();
+  await login(page, "member");
+  const newLogin = await status(page, "/me", (await session(page)).accessToken);
+  writeFileSync("/evidence/keycloak-outage.json", JSON.stringify({
+    token_valid_during_outage: tokenStillValid,
+    outage_requests: sequential.length + concurrent.length,
+    outage_non_401: nonRefusals,
+    outage_p50_ms: round1(percentile(durations, 50)),
+    outage_max_ms: round1(durations[durations.length - 1]),
+    health_live_status: liveDuringOutage,
+    ui_session_required: sessionRequired,
+    recovery_old_token_status: oldTokenAfterRecovery,
+    recovery_new_login_status: newLogin,
+    seconds_to_recover: recoverySeconds,
+  }, null, 2));
+  expect(tokenStillValid).toBe(true);
+  expect(nonRefusals).toBe(0);
+  expect(liveDuringOutage).toBe(200);
+  expect(sessionRequired).toBe(true);
+  expect(newLogin).toBe(200);
 });

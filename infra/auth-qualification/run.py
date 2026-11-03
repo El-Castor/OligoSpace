@@ -41,7 +41,12 @@ TEST_TITLES = (
     "expired access tokens refresh and logout revokes the provider session",
     "Keycloak account disable rejects an already issued token and failed refresh",
     "provider TOTP enrollment and next-login MFA challenge are enforced",
+    "identities from different organizations cannot read or modify each other's data",
+    "introspection cost is measured under light concurrency without request errors",
+    "Keycloak outage fails closed without cached acceptance and recovers",
 )
+CASE_COUNT = len(TEST_TITLES)
+PHASE_ROLES = {"admin": "admin", "member": "member", "viewer": "viewer", "foreign": "admin"}
 
 
 def parse_browser_results(output: str) -> list[dict[str, object]]:
@@ -76,7 +81,111 @@ def parse_browser_results(output: str) -> list[dict[str, object]]:
     return results
 
 
+LOAD_ENDPOINTS = (
+    "health_live_without_authentication",
+    "api_me_jwt_introspection_and_database",
+    "keycloak_introspection_direct",
+)
+LOAD_LEVELS = (1, 4, 8, 16)
+
+
+def _is_int(value: object) -> bool:
+    return type(value) is int and value >= 0
+
+
+def _is_number(value: object) -> bool:
+    return type(value) in (int, float) and 0 <= value < 10**7
+
+
+def valid_load_evidence(value: object) -> bool:
+    """Accept only fixed endpoint labels and numeric aggregates; nothing free-form."""
+    if not isinstance(value, dict) or set(value) != {"requests_per_phase", "results"}:
+        return False
+    if not _is_int(value["requests_per_phase"]) or not isinstance(value["results"], list):
+        return False
+    results = value["results"]
+    if len(results) != len(LOAD_ENDPOINTS) * len(LOAD_LEVELS):
+        return False
+    keys = {
+        "endpoint",
+        "concurrency",
+        "requests",
+        "errors",
+        "p50_ms",
+        "p95_ms",
+        "max_ms",
+        "throughput_rps",
+    }
+    seen = set()
+    for item in results:
+        if not isinstance(item, dict) or set(item) != keys:
+            return False
+        if item["endpoint"] not in LOAD_ENDPOINTS or item["concurrency"] not in LOAD_LEVELS:
+            return False
+        if not all(_is_int(item[key]) for key in ("requests", "errors")):
+            return False
+        if not all(
+            _is_number(item[key]) for key in ("p50_ms", "p95_ms", "max_ms", "throughput_rps")
+        ):
+            return False
+        seen.add((item["endpoint"], item["concurrency"]))
+    return len(seen) == len(results)
+
+
+def valid_outage_evidence(value: object) -> bool:
+    booleans = {"token_valid_during_outage", "ui_session_required"}
+    counts = {"outage_requests", "outage_non_401"}
+    statuses = {"health_live_status", "recovery_old_token_status", "recovery_new_login_status"}
+    numbers = {"outage_p50_ms", "outage_max_ms", "seconds_to_recover"}
+    if not isinstance(value, dict) or set(value) != booleans | counts | statuses | numbers:
+        return False
+    return (
+        all(type(value[key]) is bool for key in booleans)
+        and all(_is_int(value[key]) for key in counts)
+        and all(_is_int(value[key]) and 100 <= value[key] <= 599 for key in statuses)
+        and all(_is_number(value[key]) for key in numbers)
+    )
+
+
+def serve_outage_signals(dc: list[str], signals: Path, process: subprocess.Popen[str]) -> None:
+    """Stop/start only the disposable Keycloak service when the test explicitly asks.
+
+    The browser container cannot control Docker; it requests an outage through two
+    empty files and waits for the acknowledgement. Nothing else is exposed to it.
+    """
+    actions = (
+        ("outage-request", "outage-ack", "stop"),
+        ("restore-request", "restore-ack", "start"),
+    )
+    deadline = time.monotonic() + 25 * 60
+    while process.poll() is None:
+        if time.monotonic() > deadline:
+            process.kill()
+            break
+        for request, acknowledgement, command in actions:
+            if (signals / request).exists() and not (signals / acknowledgement).exists():
+                result = subprocess.run(
+                    dc + [command, "keycloak"], capture_output=True, check=False, timeout=180
+                )
+                answer = signals / acknowledgement
+                answer.write_text("ok" if result.returncode == 0 else "failed")
+                answer.chmod(0o644)
+        time.sleep(0.5)
+
+
 def collect_evidence(dc: list[str], work: Path, evidence: Path) -> None:
+    for name, validator in (
+        ("introspection-load.json", valid_load_evidence),
+        ("keycloak-outage.json", valid_outage_evidence),
+    ):
+        path = work / "evidence" / name
+        if path.exists():
+            try:
+                content = json.loads(path.read_text())
+            except json.JSONDecodeError:
+                continue
+            if validator(content):
+                (evidence / name).write_text(json.dumps(content, indent=2))
     # Raw API output lives only in this process. Retain counts of fixed
     # warning identifiers; never serialize a line, header or exception.
     api_logs = subprocess.run(
@@ -270,7 +379,7 @@ def check_log_secrets(
 
 
 def browser_run(
-    dc: list[str], *, preflight: bool = False
+    dc: list[str], *, preflight: bool = False, work: Path | None = None
 ) -> subprocess.CompletedProcess[str]:
     command = dc + ["run", "--rm", "browser"]
     if preflight:
@@ -284,7 +393,20 @@ def browser_run(
             # Playwright matches the complete project/file/title path.
             "(?:^| )real login enforces PKCE",
         ]
-    return subprocess.run(command, text=True, capture_output=True, check=False)
+    if work is None:
+        return subprocess.run(command, text=True, capture_output=True, check=False)
+    # The full suite may ask the harness to stop/start the disposable Keycloak. Output goes
+    # to a file in the disposable work directory so a full pipe never blocks the browser.
+    output_path = work / "browser-output.log"
+    with output_path.open("w") as output:
+        process = subprocess.Popen(
+            command, text=True, stdout=output, stderr=subprocess.STDOUT
+        )
+        serve_outage_signals(dc, work / "evidence", process)
+        returncode = process.wait()
+    return subprocess.CompletedProcess(
+        command, returncode, output_path.read_text(), ""
+    )
 
 
 def main() -> None:
@@ -299,6 +421,8 @@ def main() -> None:
         "api-rule-counts.json",
         "state-probe.json",
         "secret-log-gate.json",
+        "introspection-load.json",
+        "keycloak-outage.json",
     ):
         (evidence / name).unlink(missing_ok=True)
     source = subprocess.run(
@@ -338,7 +462,15 @@ def main() -> None:
         }
         identities = {
             role: str(uuid.uuid4())
-            for role in ("admin", "member", "viewer", "pending", "disabled", "mfa")
+            for role in (
+                "admin",
+                "member",
+                "viewer",
+                "pending",
+                "disabled",
+                "mfa",
+                "foreign",
+            )
         }
         realm = json.loads((ROOT / "infra/keycloak/realm-oligospace.json").read_text())
         realm.update(
@@ -373,9 +505,7 @@ def main() -> None:
                 "credentials": [
                     {"type": "password", "value": password, "temporary": False}
                 ],
-                "realmRoles": [
-                    role if role in ("admin", "member", "viewer") else "member"
-                ],
+                "realmRoles": [PHASE_ROLES.get(role, "member")],
                 "requiredActions": ["CONFIGURE_TOTP"] if role == "mfa" else [],
             }
             for role, subject in identities.items()
@@ -532,6 +662,7 @@ https://auth-qualification.test {
                         "PLAYWRIGHT_BASE_URL": ORIGIN,
                         "QUALIFICATION_PASSWORD": password,
                         "QUALIFICATION_ADMIN_PASSWORD": admin_password,
+                        "QUALIFICATION_CLIENT_SECRET": client_secret,
                         "QUALIFICATION_IDENTITIES": json.dumps(identities),
                         "NEXTAUTH_SECRET": auth_secret,
                         "NODE_EXTRA_CA_CERTS": "/certs/ca.pem",
@@ -565,12 +696,18 @@ https://auth-qualification.test {
                 ]
             )
             organization = str(uuid.uuid4())
+            other_organization = str(uuid.uuid4())
             sql = f"INSERT INTO organizations(id,name,slug,active) VALUES ('{organization}','Synthetic qualification','qualification',true);\n"
+            sql += f"INSERT INTO organizations(id,name,slug,active) VALUES ('{other_organization}','Synthetic other organization','qualification-other',true);\n"
             for role, subject in identities.items():
                 if role in ("pending", "mfa"):
                     continue
                 db_role = role if role in ("admin", "viewer") else "member"
-                sql += f"INSERT INTO users(id,oidc_subject,identity_provider,email,display_name,active,global_role,organization_id) VALUES ('{uuid.uuid4()}','{subject}','keycloak','{role}@qualification.invalid','Synthetic {role.title()}',true,'{db_role}','{organization}');\n"
+                db_role = "admin" if role == "foreign" else db_role
+                member_organization = (
+                    other_organization if role == "foreign" else organization
+                )
+                sql += f"INSERT INTO users(id,oidc_subject,identity_provider,email,display_name,active,global_role,organization_id) VALUES ('{uuid.uuid4()}','{subject}','keycloak','{role}@qualification.invalid','Synthetic {role.title()}',true,'{db_role}','{member_organization}');\n"
             run(
                 dc
                 + [
@@ -618,10 +755,10 @@ https://auth-qualification.test {
                     "Qualification phase failed: login preflight; remaining cases not executed"
                 )
             print(
-                "Login preflight passed; running all thirteen qualification cases",
+                f"Login preflight passed; running all {CASE_COUNT} qualification cases",
                 flush=True,
             )
-            browser = browser_run(dc)
+            browser = browser_run(dc, work=work)
             results = parse_browser_results(browser.stdout)
             passed = (
                 browser.returncode == 0
