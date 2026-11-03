@@ -104,12 +104,12 @@ access. Existing scientific visibility and permission tests are retained.
 
 ## Verification status and evidence attribution
 
-Local API:85 passed,198 PostgreSQL cases skipped because no server was available;
-33 new signed-token/introspection/identity/role-revocation cases included.
+Local API:99 passed,198 PostgreSQL cases skipped because no server was available;
+47 new signed-token/introspection/identity/role-revocation cases included.
 API Ruff/configured strict mypy pass. Web14 tests, strict typecheck and scoped lint
 pass using temporary official-checksum-verified Node22.23.0. Existing cached
 prototype/.next output requires a local lint exclusion only; CI uses clean source.
-Infrastructure90 tests pass; Compose configuration passes. Combined make
+Infrastructure90 tests and7 qualification guard tests pass; Compose configuration passes. Combined make
 format/lint/typecheck/test cannot reach local Docker daemon. Local Turbopack build
 also hit a process/port permission error; no local build pass is claimed.
 CI is authoritative for Docker builds, PostgreSQL and real Chromium/science.
@@ -135,3 +135,26 @@ mail delivery, MFA recovery, HA/Keycloak outage availability, or multiple concur
 tab refresh-token rotation. Provider unavailable means fail closed, not continued
 access. Review successful real-OIDC proofs and remaining security gates before any
 private-pilot authorization. PR19 stays unmerged for user review.
+
+## Diagnosed real-provider failures (not waived)
+
+The initial real-provider run was not a success: valid-shaped tokens were rejected
+with401. Controller0840521 preflight retained all expected structural booleans,
+three OIDC_INTROSPECTION_INACTIVE events and zero JWT/JWKS/transport failures.
+Keycloak26.7.2 [verifyAudience source](https://github.com/keycloak/keycloak/blob/26.7.2/services/src/main/java/org/keycloak/protocol/oidc/AccessTokenIntrospectionProvider.java#L273)
+requires the authenticated introspection client to be an access-token audience.
+The existing configuration minted oligospace-api audience only but authenticated
+introspection as oligospace-web. An explicit second audience mapper for the
+existing web client corrects this contract. API audience remains oligospace-api;
+no issuer, signature, audience check or introspection enforcement is disabled.
+The API and web are the two components of the same existing confidential-client
+integration; a separately credentialed resource-server client would be a future
+institutional design choice, not silently introduced here.
+
+The original forged-state test also failed to intercept its intended redirect
+(interception_seen=false); it did not demonstrate a bypass. The corrected test
+alters Keycloak's actual form-response redirect and requires interception plus
+absence of an application session. No state/code/URL is retained.
+A failed login preflight now labels the other12 journeys not_executed and fails;
+all13 must pass in a complete run. Log verification reads bounded service output
+in RAM only; actual matches fail, incomplete/truncated reads are not_verified.

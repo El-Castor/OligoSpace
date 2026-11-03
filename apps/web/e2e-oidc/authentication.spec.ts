@@ -28,6 +28,14 @@ async function session(page: Page): Promise<{ accessToken?: string; error?: stri
   return page.evaluate(async () => (await fetch("/api/auth/session")).json());
 }
 
+async function expectSessionEnded(page: Page) {
+  // The recovery path already sits on /login, so the URL cannot prove logout completion.
+  await expect.poll(async () => {
+    try { return Boolean((await session(page)).accessToken); }
+    catch { return true; } // Navigation in progress: keep waiting, never treat as ended.
+  }, { timeout: 20_000, intervals: [500, 1000] }).toBe(false);
+}
+
 async function api(page: Page, path: string, token?: string, method = "GET", body?: object) {
   // Return statuses only; never pass token-bearing request objects to expect().
   const response = await page.request.fetch(`/api/v1${path}`, {
@@ -161,9 +169,9 @@ test("administrator provisions a synthetic identity through the real UI", async 
   await expect(page.getByRole("heading", { name: "Account access unavailable" })).toBeVisible();
   await page.getByRole("link", { name: "Manage session" }).click();
   await page.getByRole("button", { name: "Logout", exact: true }).click();
+  await expectSessionEnded(page);
   await expect(page).toHaveURL(/\/login/);
-  expect(Boolean((await session(page)).accessToken)).toBe(false);
-  await login(page, "admin");
+  await login(page, "admin"); // Also proves the provider SSO session of the pending identity ended.
   await page.goto("/admin");
   await expect(page.getByRole("heading", { level: 1, name: "Administration" })).toBeVisible();
   const form = page.locator("form").filter({ has: page.getByRole("button", { name: "Create projection" }) });
@@ -260,8 +268,10 @@ test("local account deactivation rejects a still-valid provider token", async ({
     await expect(member.getByRole("heading", { name: "Account access unavailable" })).toBeVisible();
     await member.getByRole("link", { name: "Manage session" }).click();
     await member.getByRole("button", { name: "Logout", exact: true }).click();
+    await expectSessionEnded(member);
     await expect(member).toHaveURL(/\/login/);
-    expect(Boolean((await session(member)).accessToken)).toBe(false);
+    await beginLogin(member); // Provider SSO must also have been ended.
+    await expect(member.locator("#password")).toBeVisible();
   } finally {
     if (userId) expect((await api(page, `/workspace/admin/users/${userId}`, adminToken, "PATCH", { active: true })).status()).toBe(200);
     await memberContext.close();
