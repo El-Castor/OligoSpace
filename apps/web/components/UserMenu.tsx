@@ -1,22 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { signOut } from "next-auth/react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
+
+import { LogoutButton } from "@/components/LogoutButton";
 
 import type { CurrentUser } from "@/lib/api";
 
 export function UserMenu({ user }: { user: CurrentUser | null }) {
-  const [signingOut, setSigningOut] = useState(false);
   const menu = useRef<HTMLDetailsElement>(null);
-
-  async function logout() {
-    setSigningOut(true);
-    const response = await fetch("/api/auth/logout-url", { cache: "no-store" });
-    const payload = (await response.json()) as { url: string };
-    await signOut({ redirect: false });
-    window.location.assign(payload.url);
-  }
 
   if (!user) return <div className="avatar" aria-label="No active user">?</div>;
   return (
@@ -37,9 +29,7 @@ export function UserMenu({ user }: { user: CurrentUser | null }) {
         </div>
         <Link href="/profile">Profile</Link>
         {user.teams[0] ? <Link href={`/team/${user.teams[0].id}`}>{user.teams[0].name}</Link> : <Link href="/team">Teams</Link>}
-        <button type="button" onClick={logout} disabled={signingOut}>
-          {signingOut ? "Signing out…" : "Logout"}
-        </button>
+        <LogoutButton />
       </div>
     </details>
   );

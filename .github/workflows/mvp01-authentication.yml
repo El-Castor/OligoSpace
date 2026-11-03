@@ -1,0 +1,32 @@
+name: MVP01 real OIDC qualification
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-keycloak-chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Verify fail-closed runtime-log gate
+        run: python3 -B -m unittest discover -s infra/auth-qualification -p 'test_*.py'
+      - name: Real HTTPS Keycloak, PostgreSQL, production web and Chromium
+        run: python3 infra/auth-qualification/run.py
+      - name: Retain only sanitized status and synthetic screen captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mvp01-sanitized-authentication-evidence
+          path: infra/auth-qualification/evidence/
+          if-no-files-found: error
+          retention-days: 14

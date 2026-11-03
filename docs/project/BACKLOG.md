@@ -1,5 +1,35 @@
 # Backlog
 
+## MVP-01 follow-ups (awaiting owner prioritization)
+
+- AUTH-B1: resolved (row-lock serialization plus PostgreSQL concurrency test).
+- AUTH-B2: retire the legacy literal `keycloak` provider after pilot bootstrap.
+- AUTH-B3: audit email/display-name refreshes from validated claims.
+- AUTH-B4: concurrent logout/refresh/multi-tab tests, and cross-organization checks
+  for audit, attachments and jobs in real OIDC (the basic journey is done).
+- AUTH-B6: owner decision on reusing/caching the JWKS client (currently one fetch per
+  API request, which is also the actual denial path during a Keycloak outage); no
+  revocation cache is to be introduced without an explicit decision.
+- DEP-1: pin remaining transitive Celery dependencies (kombu is pinned at 5.6.2).
+- AUTH-B5: product decision on invitation, Keycloak account creation, password-reset
+  mail delivery and MFA recovery (currently absent/unqualified).
+
+## MVP-01 — real OIDC authentication qualification (history)
+
+DEPLOY-02 PR18 is merged at5e10b750889275a0db76a94fdb1e85c83f95e88b,
+approved head7c81574, integration only. Historical no-merge statements below are
+superseded by the owner's explicit limited authorization, not by security clearance.
+All residual findings and release gates remain open; reexamine2026-11-16 or sooner.
+Priority security backlog: evaluate minimal/alternative Debian13 API/worker images
+preserving Python/Primer3/BLAST and native ARM64/AMD64 reproducibility. Not part of
+MVP-01 implementation and no image migration/pilot approval is implied.
+
+MVP-01 retains existing Keycloak/NextAuth/API identity and admin provisioning;
+qualifies revocation/logout/refresh and roles using disposable real OIDC, no
+development bypass. One branch and PR; no automatic merge or real deployment.
+See [acceptance dossier](../mvp/MVP_01_AUTHENTICATION_ACCEPTANCE.md).
+
+
 Decision review: [one-page DEPLOY-02 synthesis](../deployment/DEPLOY_02_DECISION.md).
 Single PR18 retained; no new remediation. Merge still blocked pending explicit
 risk decision or resolution; release/deployment prerequisites are distinguished.

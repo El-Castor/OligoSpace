@@ -194,12 +194,35 @@ async def update_user(
     payload: UserAdminUpdate,
 ) -> User:
     _require_admin(principal)
+    data = payload.model_dump(exclude_unset=True)
+    may_remove_admin = data.get("active") is False or (
+        data.get("global_role") is not None and data["global_role"] is not GlobalRole.ADMIN
+    )
+    active_admins: list[User] = []
+    if may_remove_admin:
+        # Serialize every change that can reduce the administrator set. Rows are locked in a
+        # fixed (id) order, and a waiting transaction re-evaluates the predicate after the
+        # holder commits, so concurrent demotions cannot both rely on the same survivor.
+        active_admins = list(
+            await session.scalars(
+                select(User)
+                .where(
+                    User.organization_id == principal.organization_id,
+                    User.active.is_(True),
+                    User.global_role == GlobalRole.ADMIN,
+                )
+                .order_by(User.id)
+                .with_for_update()
+                .execution_options(populate_existing=True)
+            )
+        )
     user = await session.scalar(
-        select(User).where(User.id == user_id, User.organization_id == principal.organization_id)
+        select(User)
+        .where(User.id == user_id, User.organization_id == principal.organization_id)
+        .execution_options(populate_existing=True)
     )
     if user is None:
         raise _not_found("User")
-    data = payload.model_dump(exclude_unset=True)
     if user.id == principal.user_id and (
         data.get("active") is False
         or (
@@ -213,6 +236,19 @@ async def update_user(
             detail={
                 "code": "cannot_remove_own_admin_access",
                 "message": "Use another administrator to change your own access.",
+            },
+        )
+    if (
+        may_remove_admin
+        and user.active
+        and user.global_role is GlobalRole.ADMIN
+        and not any(admin.id != user.id for admin in active_admins)
+    ):
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "code": "last_active_administrator_required",
+                "message": "At least one active administrator must remain in the organization.",
             },
         )
     before = {

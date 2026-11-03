@@ -1,5 +1,8 @@
+import { getServerSession } from "next-auth";
+
+import { LogoutButton } from "@/components/LogoutButton";
 import { LoginActions } from "@/components/LoginActions";
-import { developmentAuth } from "@/lib/auth";
+import { authOptions, developmentAuth } from "@/lib/auth";
 
 export default async function LoginPage({
   searchParams,
@@ -7,6 +10,7 @@ export default async function LoginPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const { error } = await searchParams;
+  const session = await getServerSession(authOptions);
   return (
     <div className="login-shell">
       <section className="login-card">
@@ -19,6 +23,7 @@ export default async function LoginPage({
         </p>
         {error ? <div className="notice" role="alert">Authentication failed or expired. Please sign in again.</div> : null}
         <LoginActions development={developmentAuth} />
+        {session?.user?.id ? <LogoutButton className="secondary-button" /> : null}
       </section>
     </div>
   );

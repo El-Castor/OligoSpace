@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import logging
 import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from typing import cast
 
+import httpx
 import jwt
 from fastapi import Depends, Header, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -21,6 +23,7 @@ from oligospace_api.models.enums import GlobalRole
 from oligospace_api.models.registry import ProjectMembership, TeamMembership, User
 
 bearer = HTTPBearer(auto_error=False)
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -39,6 +42,8 @@ def development_signature(user_id: str, secret: str) -> str:
 def _role_from_claims(claims: dict[str, object]) -> GlobalRole:
     realm_access = claims.get("realm_access")
     roles = realm_access.get("roles", []) if isinstance(realm_access, dict) else []
+    if not isinstance(roles, list) or not all(isinstance(role, str) for role in roles):
+        return GlobalRole.VIEWER
     for role in (
         GlobalRole.ADMIN,
         GlobalRole.TEAM_MANAGER,
@@ -53,7 +58,7 @@ def _role_from_claims(claims: dict[str, object]) -> GlobalRole:
 def _decode_token(token: str, settings: Settings) -> dict[str, object]:
     try:
         signing_key = PyJWKClient(settings.oidc_jwks_url).get_signing_key_from_jwt(token)
-        return cast(
+        claims = cast(
             dict[str, object],
             jwt.decode(
                 token,
@@ -64,12 +69,56 @@ def _decode_token(token: str, settings: Settings) -> dict[str, object]:
                 options={"require": ["exp", "iat", "sub"]},
             ),
         )
+        subject = claims.get("sub")
+        if not isinstance(subject, str) or not subject.strip():
+            raise jwt.InvalidTokenError("Missing subject")
+        return claims
     except jwt.PyJWTError as exc:
+        if isinstance(exc, jwt.PyJWKClientError):
+            logger.warning("JWKS_FETCH_FAILED")
+        elif isinstance(exc, jwt.InvalidSignatureError):
+            logger.warning("JWT_SIGNATURE_INVALID")
+        else:
+            logger.warning("JWT_CLAIMS_INVALID")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail={"code": "invalid_token", "message": "The access token is invalid."},
             headers={"WWW-Authenticate": "Bearer"},
         ) from exc
+
+
+async def _require_active_token(token: str, settings: Settings) -> None:
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            response = await client.post(
+                settings.oidc_introspection_url,
+                data={
+                    "token": token,
+                    "client_id": settings.oidc_client_id,
+                    "client_secret": settings.oidc_client_secret,
+                },
+            )
+            response.raise_for_status()
+            result = response.json()
+    except (httpx.HTTPError, ValueError) as exc:
+        if isinstance(exc, httpx.HTTPStatusError):
+            logger.warning("OIDC_INTROSPECTION_HTTP_FAILED")
+        elif isinstance(exc, httpx.HTTPError):
+            logger.warning("OIDC_INTROSPECTION_TRANSPORT_FAILED")
+        else:
+            logger.warning("OIDC_INTROSPECTION_JSON_INVALID")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"code": "invalid_token", "message": "The access token is invalid."},
+            headers={"WWW-Authenticate": "Bearer"},
+        ) from exc
+    if not isinstance(result, dict) or result.get("active") is not True:
+        logger.warning("OIDC_INTROSPECTION_INACTIVE")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"code": "invalid_token", "message": "The access token is invalid."},
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 
 async def get_auth_context(
@@ -116,6 +165,7 @@ async def get_auth_context(
             headers={"WWW-Authenticate": "Bearer"},
         )
     claims = _decode_token(credentials.credentials, settings)
+    await _require_active_token(credentials.credentials, settings)
     subject = str(claims["sub"])
     user = await session.scalar(select(User).where(User.oidc_subject == subject))
     if user is None:
@@ -126,7 +176,13 @@ async def get_auth_context(
     if not user.active:
         raise _disabled_account()
 
-    user.identity_provider = str(settings.oidc_issuer).rstrip("/")
+    issuer = str(settings.oidc_issuer).rstrip("/")
+    if user.identity_provider not in (issuer, "keycloak"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"code": "identity_provider_mismatch", "message": "Account is not active."},
+        )
+    user.identity_provider = issuer
     user.email = str(claims.get("email") or user.email)
     user.display_name = str(claims.get("name") or user.display_name)
     user.first_name = str(claims["given_name"]) if claims.get("given_name") else user.first_name

@@ -1,5 +1,35 @@
 # Changelog
 
+## MVP-01 — real OIDC authentication delivered for review (2026-11-03)
+
+Added confidential-client introspection after local JWT validation, issuer-bound
+identity, server-side provider logout with retry, failed-refresh handling, account
+recovery screens for unprovisioned/disabled accounts, and a disposable real
+Keycloak/Chromium qualification (16/16). Sanitized evidence in `docs/mvp/evidence/`.
+No schema migration, no business-model change.
+
+Fixed a concurrent last-active-administrator race in `update_user` (row locks plus
+422 `last_active_administrator_required`); added PostgreSQL concurrency and
+cross-organization tests, real-OIDC cases for cross-organization isolation, light
+introspection load and Keycloak outage; pinned `kombu==5.6.2` after kombu 5.7.0
+broke Celery task dispatch.
+
+## MVP-01 — real OIDC authentication qualification (history)
+
+DEPLOY-02 PR18 is merged at5e10b750889275a0db76a94fdb1e85c83f95e88b,
+approved head7c81574, integration only. Historical no-merge statements below are
+superseded by the owner's explicit limited authorization, not by security clearance.
+All residual findings and release gates remain open; reexamine2026-11-16 or sooner.
+Priority security backlog: evaluate minimal/alternative Debian13 API/worker images
+preserving Python/Primer3/BLAST and native ARM64/AMD64 reproducibility. Not part of
+MVP-01 implementation and no image migration/pilot approval is implied.
+
+MVP-01 retains existing Keycloak/NextAuth/API identity and admin provisioning;
+qualifies revocation/logout/refresh and roles using disposable real OIDC, no
+development bypass. One branch and PR; no automatic merge or real deployment.
+See [acceptance dossier](../mvp/MVP_01_AUTHENTICATION_ACCEPTANCE.md).
+
+
 Decision review: [one-page DEPLOY-02 synthesis](../deployment/DEPLOY_02_DECISION.md).
 Single PR18 retained; no new remediation. Merge still blocked pending explicit
 risk decision or resolution; release/deployment prerequisites are distinguished.

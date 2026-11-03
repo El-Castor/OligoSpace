@@ -1,16 +1,30 @@
 import Link from "next/link";
 
 import { PageHeader } from "@/components/PageHeader";
-import { apiGet, type CurrentUser, type PersonalizedDashboard } from "@/lib/api";
+import { apiGet, ApiError, type CurrentUser, type PersonalizedDashboard } from "@/lib/api";
+import { accountRecovery } from "@/lib/auth-presentation";
 
 const resourceHref = (entityType: string, publicId: string) =>
   entityType === "project" ? `/projects/${publicId}` : `/${entityType}s/${publicId}`;
 
 export default async function DashboardPage() {
-  const [summary, user] = await Promise.all([
-    apiGet<PersonalizedDashboard>("/workspace/dashboard"),
-    apiGet<CurrentUser>("/me"),
-  ]);
+  let summary: PersonalizedDashboard;
+  let user: CurrentUser;
+  try {
+    [summary, user] = await Promise.all([
+      apiGet<PersonalizedDashboard>("/workspace/dashboard"),
+      apiGet<CurrentUser>("/me"),
+    ]);
+  } catch (error) {
+    const recovery = error instanceof ApiError && [401, 403].includes(error.status)
+      ? accountRecovery(error.code) : null;
+    if (!recovery) throw error;
+    return <>
+      <PageHeader eyebrow="Authentication" title={recovery.title} description={recovery.message} />
+      <div className="notice" role="alert">Application data was not loaded.</div>
+      <Link className="primary-button" href="/login">Manage session</Link>
+    </>;
+  }
   const stats = [
     ["My oligos", summary.my_oligos, "Created by this identity"],
     ["My assays", summary.my_assays, "Reusable designs I created"],
