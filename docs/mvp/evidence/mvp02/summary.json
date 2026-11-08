@@ -1,0 +1,53 @@
+{
+  "qualification": "passed",
+  "started_at": "2026-11-08T21:50:32.659924+00:00",
+  "execution_platform": "x86_64",
+  "mode": "scientific",
+  "source_commit": "428e58f07d9d2a35d09187c5d708e37a4a21977a",
+  "tests": [
+    {
+      "test": "scientist registers targets, oligos and assays in an authorized project, then searches, filters and reuses them",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "validated Primer3 reference values are reproduced, persisted with provenance and reloaded",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "asynchronous jobs survive a stopped worker and repeated submissions create one job",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "administrator, scientist, reader and another organization keep consistent rights through permission removal",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "failure states explain what happened and create no scientific result",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "CSV export is faithful, formula-safe and limited to the permitted records",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "desktop and mobile layouts keep the scientific workflow usable",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    }
+  ],
+  "phase": "full",
+  "finished_at": "2026-11-08T21:55:42.859550+00:00"
+}

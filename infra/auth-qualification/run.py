@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import argparse
+from datetime import UTC, datetime
+import platform
 import json
 import os
 from pathlib import Path
@@ -24,10 +27,40 @@ def run(command: list[str], *, data: str | None = None) -> None:
         command, input=data, text=True, capture_output=True, check=False
     )
     if result.returncode:
-        raise RuntimeError(f"Qualification phase failed: {command[0]} {command[1]}")
+        codes = [
+            code
+            for code, pattern in {
+                "docker_permission": "permission denied",
+                "build_failed": "failed to solve",
+                "registry_network": "failed to fetch",
+                "image_missing": "manifest unknown",
+                "container_start": "failed to start",
+                "dependency_conflict": "Could not solve",
+                "sql_error": "ERROR:",
+                "npm_error": "npm error",
+                "typescript": "Type error:",
+                "missing_file": "no such file",
+                "read_only": "read-only",
+                "not_found": "not found",
+                "network_timeout": "timeout",
+                "docker_unavailable": "Cannot connect",
+            }.items()
+            if pattern.lower() in (result.stdout + result.stderr).lower()
+        ]
+        phase = next(
+            (
+                item
+                for item in command
+                if item in ("build", "up", "run", "config", "exec", "down")
+            ),
+            "unknown",
+        )
+        raise RuntimeError(
+            f"Qualification phase failed: {phase}; categories={','.join(codes)}"
+        )
 
 
-TEST_TITLES = (
+AUTH_TEST_TITLES = (
     "real login enforces PKCE, state, nonce and secure session cookies",
     "a callback with forged state cannot establish a session",
     "administrator provisions a synthetic identity through the real UI",
@@ -45,8 +78,15 @@ TEST_TITLES = (
     "introspection cost is measured under light concurrency without request errors",
     "Keycloak outage fails closed without cached acceptance and recovers",
 )
+TEST_TITLES = AUTH_TEST_TITLES
 CASE_COUNT = len(TEST_TITLES)
-PHASE_ROLES = {"admin": "admin", "member": "member", "viewer": "viewer", "foreign": "admin"}
+SCIENTIFIC = False
+PHASE_ROLES = {
+    "admin": "admin",
+    "member": "member",
+    "viewer": "viewer",
+    "foreign": "admin",
+}
 
 
 def parse_browser_results(output: str) -> list[dict[str, object]]:
@@ -101,7 +141,9 @@ def valid_load_evidence(value: object) -> bool:
     """Accept only fixed endpoint labels and numeric aggregates; nothing free-form."""
     if not isinstance(value, dict) or set(value) != {"requests_per_phase", "results"}:
         return False
-    if not _is_int(value["requests_per_phase"]) or not isinstance(value["results"], list):
+    if not _is_int(value["requests_per_phase"]) or not isinstance(
+        value["results"], list
+    ):
         return False
     results = value["results"]
     if len(results) != len(LOAD_ENDPOINTS) * len(LOAD_LEVELS):
@@ -120,12 +162,16 @@ def valid_load_evidence(value: object) -> bool:
     for item in results:
         if not isinstance(item, dict) or set(item) != keys:
             return False
-        if item["endpoint"] not in LOAD_ENDPOINTS or item["concurrency"] not in LOAD_LEVELS:
+        if (
+            item["endpoint"] not in LOAD_ENDPOINTS
+            or item["concurrency"] not in LOAD_LEVELS
+        ):
             return False
         if not all(_is_int(item[key]) for key in ("requests", "errors")):
             return False
         if not all(
-            _is_number(item[key]) for key in ("p50_ms", "p95_ms", "max_ms", "throughput_rps")
+            _is_number(item[key])
+            for key in ("p50_ms", "p95_ms", "max_ms", "throughput_rps")
         ):
             return False
         seen.add((item["endpoint"], item["concurrency"]))
@@ -135,9 +181,16 @@ def valid_load_evidence(value: object) -> bool:
 def valid_outage_evidence(value: object) -> bool:
     booleans = {"token_valid_during_outage", "ui_session_required"}
     counts = {"outage_requests", "outage_non_401"}
-    statuses = {"health_live_status", "recovery_old_token_status", "recovery_new_login_status"}
+    statuses = {
+        "health_live_status",
+        "recovery_old_token_status",
+        "recovery_new_login_status",
+    }
     numbers = {"outage_p50_ms", "outage_max_ms", "seconds_to_recover"}
-    if not isinstance(value, dict) or set(value) != booleans | counts | statuses | numbers:
+    if (
+        not isinstance(value, dict)
+        or set(value) != booleans | counts | statuses | numbers
+    ):
         return False
     return (
         all(type(value[key]) is bool for key in booleans)
@@ -147,7 +200,52 @@ def valid_outage_evidence(value: object) -> bool:
     )
 
 
-def serve_outage_signals(dc: list[str], signals: Path, process: subprocess.Popen[str]) -> None:
+EXPECTED_CSV_AUDITS = [
+    {"actor": "reader", "rows": 0},  # project access revoked
+    {"actor": "scientist", "rows": 5},  # actual browser download
+    {"actor": "scientist", "rows": 1},  # filtered download
+    {"actor": "scientist", "rows": 0},  # empty download
+    {"actor": "reader", "rows": 4},  # private oligo excluded
+    {"actor": "rival", "rows": 0},  # other institute
+]
+
+
+def valid_csv_audit_shape(value: object) -> bool:
+    if not isinstance(value, dict) or set(value) != {
+        "exports",
+        "invalid_audits",
+        "distinct_requests",
+        "events",
+    }:
+        return False
+    if not all(
+        _is_int(value[key])
+        for key in ("exports", "invalid_audits", "distinct_requests")
+    ) or not isinstance(value["events"], list):
+        return False
+    return all(
+        isinstance(event, dict)
+        and set(event) == {"actor", "rows"}
+        and event["actor"] in ("reader", "scientist", "rival", "other")
+        and _is_int(event["rows"])
+        for event in value["events"]
+    )
+
+
+def csv_audit_passed(value: object) -> bool:
+    # Fresh DB and serial browser suite: this ordered list correlates every tested
+    # download, including the earlier revocation check, to one distinct audited request.
+    return valid_csv_audit_shape(value) and (
+        value["exports"] == len(EXPECTED_CSV_AUDITS)
+        and value["distinct_requests"] == len(EXPECTED_CSV_AUDITS)
+        and value["invalid_audits"] == 0
+        and value["events"] == EXPECTED_CSV_AUDITS
+    )
+
+
+def serve_outage_signals(
+    dc: list[str], signals: Path, process: subprocess.Popen[str]
+) -> None:
     """Stop/start only the disposable Keycloak service when the test explicitly asks.
 
     The browser container cannot control Docker; it requests an outage through two
@@ -156,6 +254,10 @@ def serve_outage_signals(dc: list[str], signals: Path, process: subprocess.Popen
     actions = (
         ("outage-request", "outage-ack", "stop"),
         ("restore-request", "restore-ack", "start"),
+        ("worker-stop-request", "worker-stop-ack", "stop"),
+        ("worker-start-request", "worker-start-ack", "start"),
+        ("worker-fault-request", "worker-fault-ack", "fault"),
+        ("worker-repair-request", "worker-repair-ack", "repair"),
     )
     deadline = time.monotonic() + 25 * 60
     while process.poll() is None:
@@ -163,9 +265,36 @@ def serve_outage_signals(dc: list[str], signals: Path, process: subprocess.Popen
             process.kill()
             break
         for request, acknowledgement, command in actions:
-            if (signals / request).exists() and not (signals / acknowledgement).exists():
+            if (signals / request).exists() and not (
+                signals / acknowledgement
+            ).exists():
+                if command in ("fault", "repair"):
+                    # Fault injection in this disposable container only; no scientific
+                    # parameters or application code are changed. Restore in test finally.
+                    script = (
+                        "import os; os.rename('/opt/primer3/bin/primer3_core','/opt/primer3/bin/primer3_core.saved'); os.symlink('/bin/false','/opt/primer3/bin/primer3_core')"
+                        if command == "fault"
+                        else "import os; os.unlink('/opt/primer3/bin/primer3_core'); os.rename('/opt/primer3/bin/primer3_core.saved','/opt/primer3/bin/primer3_core')"
+                    )
+                    action = [
+                        "exec",
+                        "-T",
+                        "--user",
+                        "root",
+                        "bioinfo-worker",
+                        "/opt/conda/bin/python",
+                        "-c",
+                        script,
+                    ]
+                else:
+                    action = [
+                        command,
+                        "bioinfo-worker"
+                        if request.startswith("worker-")
+                        else "keycloak",
+                    ]
                 result = subprocess.run(
-                    dc + [command, "keycloak"], capture_output=True, check=False, timeout=180
+                    dc + action, capture_output=True, check=False, timeout=180
                 )
                 answer = signals / acknowledgement
                 answer.write_text("ok" if result.returncode == 0 else "failed")
@@ -309,7 +438,11 @@ def check_log_secrets(
         rb"(?<![A-Za-z0-9_-])[A-Za-z0-9_-]{16,}\.[A-Za-z0-9_-]{16,}\."
         rb"[A-Za-z0-9_-]{16,}(?![A-Za-z0-9_-])"
     )
-    for service in ("api", "web", "keycloak", "caddy"):
+    for service in (
+        ("api", "web", "keycloak", "caddy", "bioinfo-worker", "scientific-scheduler")
+        if SCIENTIFIC
+        else ("api", "web", "keycloak", "caddy")
+    ):
         try:
             logs, retrieval_rule = capture_service_logs(
                 dc + ["logs", "--no-color", service]
@@ -382,7 +515,16 @@ def browser_run(
     dc: list[str], *, preflight: bool = False, work: Path | None = None
 ) -> subprocess.CompletedProcess[str]:
     command = dc + ["run", "--rm", "browser"]
-    if preflight:
+    if SCIENTIFIC:
+        command += [
+            "npx",
+            "playwright",
+            "test",
+            "--config",
+            "playwright.oidc.config.ts",
+            "scientific.spec.ts",
+        ]
+    elif preflight:
         command += [
             "npx",
             "playwright",
@@ -404,16 +546,37 @@ def browser_run(
         )
         serve_outage_signals(dc, work / "evidence", process)
         returncode = process.wait()
-    return subprocess.CompletedProcess(
-        command, returncode, output_path.read_text(), ""
-    )
+    return subprocess.CompletedProcess(command, returncode, output_path.read_text(), "")
 
 
 def main() -> None:
+    global SCIENTIFIC, TEST_TITLES, CASE_COUNT, PHASE_ROLES
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--scientific", action="store_true")
+    SCIENTIFIC = parser.parse_args().scientific
+    if SCIENTIFIC:
+        spec = (ROOT / "apps/web/e2e-oidc/scientific.spec.ts").read_text()
+        TEST_TITLES = tuple(re.findall(r'^test\("([^"]+)"', spec, re.MULTILINE))
+        CASE_COUNT = len(TEST_TITLES)
+        PHASE_ROLES = {
+            "labadmin": "admin",
+            "scientist": "member",
+            "reader": "viewer",
+            "trainee": "member",
+            "rival": "admin",
+        }
     os.umask(0o077)
-    evidence = ROOT / "infra/auth-qualification/evidence"
+    evidence = ROOT / (
+        "infra/auth-qualification/scientific-evidence"
+        if SCIENTIFIC
+        else "infra/auth-qualification/evidence"
+    )
     evidence.mkdir(exist_ok=True)
     for name in (
+        "scientific-evidence.json",
+        "csv-audit.json",
+        "synthetic-scientific-mobile.png",
+        "synthetic-scientific-desktop.png",
         "synthetic-login.png",
         "synthetic-dashboard.png",
         "synthetic-administration.png",
@@ -437,6 +600,9 @@ def main() -> None:
         source_commit = None
     summary: dict[str, object] = {
         "qualification": "not_completed",
+        "started_at": datetime.now(UTC).isoformat(),
+        "execution_platform": platform.machine(),
+        "mode": "scientific" if SCIENTIFIC else "authentication",
         "source_commit": source_commit,
         "tests": [],
     }
@@ -463,13 +629,17 @@ def main() -> None:
         identities = {
             role: str(uuid.uuid4())
             for role in (
-                "admin",
-                "member",
-                "viewer",
-                "pending",
-                "disabled",
-                "mfa",
-                "foreign",
+                tuple(PHASE_ROLES)
+                if SCIENTIFIC
+                else (
+                    "admin",
+                    "member",
+                    "viewer",
+                    "pending",
+                    "disabled",
+                    "mfa",
+                    "foreign",
+                )
             )
         }
         realm = json.loads((ROOT / "infra/keycloak/realm-oligospace.json").read_text())
@@ -567,6 +737,7 @@ https://auth-qualification.test {
             "AUTH_MODE": "oidc",
             "UPLOADS_ENABLED": "false",
             "DATABASE_URL": db_url,
+            "REDIS_URL": "redis://redis:6379/0",
             "OIDC_ISSUER": f"{ORIGIN}/realms/qualification",
             "OIDC_AUDIENCE": "oligospace-api",
             "OIDC_CLIENT_ID": "oligospace-web",
@@ -661,6 +832,7 @@ https://auth-qualification.test {
                     "environment": {
                         "PLAYWRIGHT_BASE_URL": ORIGIN,
                         "QUALIFICATION_PASSWORD": password,
+                        "SCIENTIFIC_ACCEPTANCE": "1" if SCIENTIFIC else "0",
                         "QUALIFICATION_ADMIN_PASSWORD": admin_password,
                         "QUALIFICATION_CLIENT_SECRET": client_secret,
                         "QUALIFICATION_IDENTITIES": json.dumps(identities),
@@ -671,6 +843,43 @@ https://auth-qualification.test {
                 },
             },
         }
+        if SCIENTIFIC:
+            compose["services"].update(
+                {
+                    "redis": {"image": "redis:7.4.10-alpine", "tmpfs": ["/data"]},
+                    "bioinfo-worker": {
+                        "build": {
+                            "context": str(ROOT),
+                            "dockerfile": "infra/docker/bioinfo-worker.Dockerfile",
+                        },
+                        "environment": {
+                            "DATABASE_URL": db_url,
+                            "REDIS_URL": "redis://redis:6379/0",
+                        },
+                    },
+                    "scientific-scheduler": {
+                        "build": {
+                            "context": str(ROOT),
+                            "dockerfile": "infra/docker/bioinfo-worker.Dockerfile",
+                        },
+                        "environment": {
+                            "DATABASE_URL": db_url,
+                            "REDIS_URL": "redis://redis:6379/0",
+                        },
+                        "command": [
+                            "micromamba",
+                            "run",
+                            "--name",
+                            "base",
+                            "celery",
+                            "--app",
+                            "oligospace_bioinfo.celery_app:app",
+                            "beat",
+                            "--loglevel=INFO",
+                        ],
+                    },
+                }
+            )
         config = work / "compose.json"
         config.write_text(json.dumps(compose))
         project = f"oligospace-oidc-{secrets.token_hex(4)}"
@@ -678,7 +887,11 @@ https://auth-qualification.test {
         try:
             print("Building disposable qualification images", flush=True)
             run(dc + ["config", "--quiet"])
-            run(dc + ["build", "api", "web", "browser"])
+            run(
+                dc
+                + ["build", "api", "web", "browser"]
+                + (["bioinfo-worker", "scientific-scheduler"] if SCIENTIFIC else [])
+            )
             run(dc + ["up", "--detach", "--wait", "postgres"])
             run(
                 dc
@@ -702,10 +915,10 @@ https://auth-qualification.test {
             for role, subject in identities.items():
                 if role in ("pending", "mfa"):
                     continue
-                db_role = role if role in ("admin", "viewer") else "member"
-                db_role = "admin" if role == "foreign" else db_role
+                db_role = PHASE_ROLES.get(role, "member")
+                db_role = "admin" if role in ("foreign", "rival") else db_role
                 member_organization = (
-                    other_organization if role == "foreign" else organization
+                    other_organization if role in ("foreign", "rival") else organization
                 )
                 sql += f"INSERT INTO users(id,oidc_subject,identity_provider,email,display_name,active,global_role,organization_id) VALUES ('{uuid.uuid4()}','{subject}','keycloak','{role}@qualification.invalid','Synthetic {role.title()}',true,'{db_role}','{member_organization}');\n"
             run(
@@ -724,14 +937,43 @@ https://auth-qualification.test {
                 ],
                 data=sql,
             )
-            run(dc + ["up", "--detach", "keycloak", "api", "web", "caddy"])
+            if SCIENTIFIC:
+                run(
+                    dc
+                    + [
+                        "exec",
+                        "-T",
+                        "postgres",
+                        "psql",
+                        "-U",
+                        "qualification",
+                        "-d",
+                        "qualification",
+                        "-v",
+                        "ON_ERROR_STOP=1",
+                    ],
+                    data="INSERT INTO experiment_types(id,name,slug,description,active,allowed_roles,required_metadata,recommended_validation_fields) VALUES (gen_random_uuid(),'PCR','pcr','Synthetic PCR',true,'[\"forward_primer\",\"reverse_primer\"]','{}','{}');",
+                )
+            run(
+                dc
+                + ["up", "--detach", "keycloak", "api", "web", "caddy"]
+                + (
+                    ["redis", "bioinfo-worker", "scientific-scheduler"]
+                    if SCIENTIFIC
+                    else []
+                )
+            )
             print(
                 "Running real HTTPS/Keycloak Chromium qualification (credential output suppressed)",
                 flush=True,
             )
-            preflight = browser_run(dc, preflight=True)
+            preflight = (
+                browser_run(dc, preflight=True)
+                if not SCIENTIFIC
+                else subprocess.CompletedProcess([], 0, "", "")
+            )
             preflight_results = parse_browser_results(preflight.stdout)
-            preflight_passed = (
+            preflight_passed = SCIENTIFIC or (
                 preflight.returncode == 0
                 and len(preflight_results) == 1
                 and preflight_results[0]["test"] == TEST_TITLES[0]
@@ -769,10 +1011,63 @@ https://auth-qualification.test {
             summary.update(
                 qualification="passed" if passed else "failed",
                 phase="full",
+                finished_at=datetime.now(UTC).isoformat(),
                 tests=results,
             )
             (evidence / "summary.json").write_text(json.dumps(summary, indent=2))
             collect_evidence(dc, work, evidence)
+            if SCIENTIFIC:
+                for name in (
+                    "scientific-evidence.json",
+                    "synthetic-scientific-mobile.png",
+                    "synthetic-scientific-desktop.png",
+                ):
+                    source = work / "evidence" / name
+                    if source.exists():
+                        shutil.copyfile(source, evidence / name)
+            if SCIENTIFIC:
+                audit = subprocess.run(
+                    dc
+                    + [
+                        "exec",
+                        "-T",
+                        "postgres",
+                        "psql",
+                        "-U",
+                        "qualification",
+                        "-d",
+                        "qualification",
+                        "-At",
+                        "-v",
+                        "ON_ERROR_STOP=1",
+                        "-c",
+                        "SELECT json_build_object('exports',count(*),'invalid_audits',count(*) FILTER (WHERE a.actor_id IS NULL OR a.request_id IS NULL OR a.after->>'schema' IS DISTINCT FROM 'oligos-csv/v1' OR jsonb_typeof(a.after->'row_count') IS DISTINCT FROM 'number'),'distinct_requests',count(DISTINCT a.request_id),'events',json_agg(json_build_object('actor',CASE u.email WHEN 'reader@qualification.invalid' THEN 'reader' WHEN 'scientist@qualification.invalid' THEN 'scientist' WHEN 'rival@qualification.invalid' THEN 'rival' ELSE 'other' END,'rows',a.after->'row_count') ORDER BY a.occurred_at,a.id)) FROM audit_events a LEFT JOIN users u ON u.id=a.actor_id WHERE a.entity_type='oligo_export' AND a.action='export'",
+                    ],
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                try:
+                    counts = json.loads(audit.stdout) if audit.returncode == 0 else None
+                except json.JSONDecodeError:
+                    counts = None
+                valid = valid_csv_audit_shape(counts)
+                audit_passed = csv_audit_passed(counts)
+                (evidence / "csv-audit.json").write_text(
+                    json.dumps(
+                        {
+                            "gate": "passed" if audit_passed else "failed",
+                            "counts": counts if valid else None,
+                        },
+                        indent=2,
+                    )
+                )
+                if not audit_passed:
+                    passed = False
+                    summary.update(qualification="failed", csv_audit_gate="failed")
+                    (evidence / "summary.json").write_text(
+                        json.dumps(summary, indent=2)
+                    )
             log_gate = check_log_secrets(dc, private_values, evidence)
             if log_gate != "passed":
                 passed = False

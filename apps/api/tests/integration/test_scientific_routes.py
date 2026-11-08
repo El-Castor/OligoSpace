@@ -291,3 +291,88 @@ async def test_unsupported_sequence_has_explicit_unavailable_error(
     )
     assert response.status_code == 422
     assert response.json()["detail"]["code"] == "primer3_unsupported_sequence"
+
+
+async def test_repeated_submission_with_new_idempotency_keys_creates_one_active_job(
+    scientific_client: ScientificFixture,
+) -> None:
+    # The web form sends a fresh Idempotency-Key per click, so a double click must not
+    # depend on the key to be recognised as the same active request.
+    fixture = scientific_client
+    forward = await create_oligo(fixture.client, "Repeat forward", "ATGCGTACGTTAGCGTACGA")
+    responses = [
+        await fixture.client.post(
+            "/api/v1/scientific-jobs/oligo-primer3-qc",
+            headers={"Idempotency-Key": f"repeat-click-{index}"},
+            json={"oligo_public_id": forward["public_id"]},
+        )
+        for index in range(3)
+    ]
+    assert [response.status_code for response in responses] == [202, 200, 200], [
+        response.text for response in responses
+    ]
+    assert len({response.json()["public_id"] for response in responses}) == 1
+    assert len(fixture.queue.calls) == 1
+    await fixture.session.commit()
+    assert (
+        int(
+            await fixture.session.scalar(
+                select(func.count())
+                .select_from(ScientificJob)
+                .where(ScientificJob.organization_id == fixture.admin.organization_id)
+            )
+            or 0
+        )
+        == 1
+    )
+
+
+async def test_concurrent_identical_submissions_create_one_job_without_server_error(
+    scientific_client: ScientificFixture,
+) -> None:
+    import asyncio
+
+    from oligospace_api.schemas.scientific import OligoPrimer3JobCreate
+    from oligospace_api.services.scientific import submit_oligo_qc
+
+    fixture = scientific_client
+    forward = await create_oligo(fixture.client, "Concurrent forward", "ATGCGTACGTTAGCGTACGA")
+    await fixture.session.commit()
+    engine = fixture.session.bind
+    principal = context_for(fixture.admin).principal
+
+    async def submit(key: str) -> tuple[str, bool]:
+        async with async_sessionmaker(engine, expire_on_commit=False)() as session:
+            original_commit = session.commit
+
+            async def delayed_commit() -> None:
+                # Keep the first transaction open so both requests pass the pre-check.
+                await asyncio.sleep(0.4)
+                await original_commit()
+
+            session.commit = delayed_commit  # type: ignore[method-assign]
+            job, replayed = await submit_oligo_qc(
+                session,
+                principal,
+                OligoPrimer3JobCreate(oligo_public_id=str(forward["public_id"])),
+                key,
+                fixture.queue,
+            )
+            return job.public_id, replayed
+
+    outcomes = await asyncio.gather(submit("concurrent-a"), submit("concurrent-b"))
+    assert len({public_id for public_id, _ in outcomes}) == 1
+    assert sorted(replayed for _, replayed in outcomes) == [False, True]
+    assert len(fixture.queue.calls) == 1
+    async with async_sessionmaker(engine)() as check:
+        assert (
+            int(
+                await check.scalar(
+                    select(func.count())
+                    .select_from(ScientificJob)
+                    .where(ScientificJob.organization_id == fixture.admin.organization_id)
+                )
+                or 0
+            )
+            == 1
+        )

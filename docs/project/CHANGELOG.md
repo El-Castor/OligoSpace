@@ -1,5 +1,22 @@
 # Changelog
 
+## MVP-02 — scientific acceptance delivered for review (2026-11-08)
+
+Single [PR #20](https://github.com/El-Castor/OligoSpace/pull/20), branch
+`codex/mvp-02-scientific-acceptance`, from main `5e34340`; no merge/release.
+Scientific acceptance passes 7/7 with real HTTPS Keycloak/PostgreSQL/Primer3 on
+local ARM64 and CI x86_64. Nine reference facts have zero numerical difference;
+six repeated requests produce one job/no 500s. Admin/editor/reader, two institutes,
+revocation/demotion, persisted failed jobs, all16 CSV columns and mobile/desktop
+are verified. Idempotency defect fixed; evidence cleanup and exact six-download
+CSV-audit gate corrected after independent review, with no further findings.
+Mandatory make checks pass: 99 API/14 worker/15 web units,206 PostgreSQL with
+migration round-trip,29 Chromium; existing16OIDC and CI application jobs pass.
+[Report, retained proofs and limitations](../mvp/MVP_02_SCIENTIFIC_ACCEPTANCE.md).
+DEPLOY-triggered security/storage checks remain red and untouched; no all-CI-green
+or pilot approval is claimed. Next: user review and R1-10/11 human scientific
+acceptance; existing R1-08/09/DEPLOY gates remain separate. Personal files retained.
+
 ## MVP-01 — merged into main (2026-11-03)
 
 PR19 merged as `dc012e8fe161ed08380947887371dafdc611f2de` (approved head
