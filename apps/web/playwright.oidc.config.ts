@@ -2,6 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./e2e-oidc",
+  testMatch: process.env.SCIENTIFIC_ACCEPTANCE === "1" ? "scientific.spec.ts" : "authentication.spec.ts",
   fullyParallel: false,
   workers: 1,
   retries: 0,

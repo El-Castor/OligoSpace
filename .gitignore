@@ -22,3 +22,6 @@ backups/
 
 # Local agent tooling
 .serena/
+
+# Disposable MVP-02 runtime evidence is retained as sanitized CI artifacts.
+infra/auth-qualification/scientific-evidence/

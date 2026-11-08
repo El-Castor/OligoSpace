@@ -1,5 +1,16 @@
 # Project status
 
+## MVP-02 — scientific acceptance in progress (2026-11-08)
+
+Single branch `codex/mvp-02-scientific-acceptance`, based on main `5e34340`.
+Existing scientific/OIDC journeys reused; real-worker acceptance harness added.
+206 PostgreSQL tests/migration round-trip, 99 API/14 worker/15 web units pass;
+frontend image download timed out locally, runtime and exact-head CI pending.
+Idempotency regressions and stale-evidence review finding addressed.
+See [acceptance matrix](../mvp/MVP_02_SCIENTIFIC_ACCEPTANCE.md) for current evidence,
+limits and remaining gates. No DEPLOY changes, release or automatic merge.
+
+
 ## MVP-01 — real OIDC authentication merged into main (2026-11-03)
 
 PR19 merged into `main` as `dc012e8fe161ed08380947887371dafdc611f2de` (merge commit)

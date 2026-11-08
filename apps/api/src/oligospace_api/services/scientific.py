@@ -6,6 +6,7 @@ from typing import Any
 
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from oligospace_api.core.config import get_settings
@@ -70,15 +71,18 @@ async def _existing_idempotent(
                 ScientificJob.idempotency_key == idempotency_key,
             )
         )
-        if existing is not None and existing.execution_fingerprint != fingerprint:
-            raise HTTPException(
-                409,
-                detail={
-                    "code": "idempotency_conflict",
-                    "message": "This idempotency key was used for a different request.",
-                },
-            )
-        return existing
+        if existing is not None:
+            if existing.execution_fingerprint != fingerprint:
+                raise HTTPException(
+                    409,
+                    detail={
+                        "code": "idempotency_conflict",
+                        "message": "This idempotency key was used for a different request.",
+                    },
+                )
+            return existing
+    # A new key (the web form sends one per click) must still not duplicate an identical
+    # request that is already queued or running for the same requester.
     active_job: ScientificJob | None = await session.scalar(
         select(ScientificJob).where(
             ScientificJob.organization_id == principal.organization_id,
@@ -197,7 +201,18 @@ async def _persist_and_dispatch(
         queued_at=now,
     )
     session.add(job)
-    await session.flush()
+    try:
+        await session.flush()
+    except IntegrityError:
+        # A concurrent identical submission won the unique index between our check and
+        # insert; answer with that job instead of a server error.
+        await session.rollback()
+        winner = await _existing_idempotent(session, principal, idempotency_key, fingerprint)
+        if winner is None:
+            raise
+        loaded = await get_visible_job(session, principal, winner.public_id)
+        assert loaded is not None
+        return loaded, True
     session.add(
         AuditEvent(
             occurred_at=now,

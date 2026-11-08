@@ -1,5 +1,16 @@
 # Backlog
 
+## MVP-02 — scientific acceptance in progress (2026-11-08)
+
+Single branch `codex/mvp-02-scientific-acceptance`, based on main `5e34340`.
+Existing scientific/OIDC journeys reused; real-worker acceptance harness added.
+206 PostgreSQL tests/migration round-trip, 99 API/14 worker/15 web units pass;
+frontend image download timed out locally, runtime and exact-head CI pending.
+Idempotency regressions and stale-evidence review finding addressed.
+See [acceptance matrix](../mvp/MVP_02_SCIENTIFIC_ACCEPTANCE.md) for current evidence,
+limits and remaining gates. No DEPLOY changes, release or automatic merge.
+
+
 ## MVP-01 follow-ups (awaiting owner prioritization)
 
 - AUTH-B1: resolved (row-lock serialization plus PostgreSQL concurrency test).

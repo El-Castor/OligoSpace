@@ -12,7 +12,7 @@ export default class SanitizedReporter implements Reporter {
       : message.includes("toBeVisible") ? "visibility"
       : message.includes("toBe(") ? "equality"
       : message.includes("Timeout") ? "timeout" : "other";
-    const match = error?.stack?.match(/authentication\.spec\.ts:(\d+):\d+/);
+    const match = error?.stack?.match(/(?:authentication|scientific)\.spec\.ts:(\d+):\d+/);
     const sourceLine = error ? (error.location?.line ?? (match ? Number(match[1]) : null)) : null;
     process.stdout.write(`${JSON.stringify({ test: test.title, status: result.status, source_line: sourceLine, rule_id: error ? category : null })}\n`);
   }
