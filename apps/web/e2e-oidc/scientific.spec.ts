@@ -77,7 +77,9 @@ interface OligoRecord {
   melting_temperature_c: number | null;
   molecular_weight_g_mol: number | null;
   status: string;
+  oligo_type: string;
   created_at: string;
+  updated_at: string;
   calculation_provenance: Record<string, string | null>;
 }
 
@@ -130,6 +132,16 @@ async function addMember(page: Page, persona: Persona, role: string, kind: "Team
   await page.locator('select[name="role"]').selectOption(role);
   await page.getByRole("button", { name: "Add or update" }).click();
   await expect(page.getByRole("status")).toContainText(`${kind} membership`);
+}
+
+async function expectNotFound(page: Page, path: string) {
+  const response = await page.goto(path);
+  // Next streams some authenticated pages before notFound(); the rendered boundary
+  // and absence of record data prove browser denial. Direct API status stays 404.
+  expect([200, 404]).toContain(response?.status());
+  await expect(page.getByRole("heading", { name: "404", exact: true })).toBeVisible();
+  await expect(page.getByText("This page could not be found.", { exact: true })).toBeVisible();
+  await expect(page.locator(".record-field, .scientific-job")).toHaveCount(0);
 }
 
 async function registerOligo(
@@ -733,8 +745,7 @@ test("administrator, scientist, reader and another organization keep consistent 
     await page.goto("/oligos/new");
     await expect(page.getByText("Read-only access", { exact: true })).toBeVisible();
     await expect(page.locator('.record-form button[type="submit"]')).toHaveCount(0);
-    const hidden = await page.goto(`/oligos/${privateOligo.public_id}`);
-    expect(hidden?.status()).toBe(404);
+    await expectNotFound(page, `/oligos/${privateOligo.public_id}`);
     await page.goto(`/search?q=${suffix}`);
     await expect(page.getByRole("link", { name: new RegExp(projectOligoName) }).first()).toBeVisible();
     await expect(page.getByRole("link", { name: new RegExp(privateName) })).toHaveCount(0);
@@ -752,7 +763,7 @@ test("administrator, scientist, reader and another organization keep consistent 
     await withSession(browser, "rival", async (rival) => {
       const { page } = rival;
       for (const path of [`/oligos/${projectOligo.public_id}`, `/oligos/${privateOligo.public_id}`, `/scientific-jobs/${jobId}`]) {
-        expect((await page.goto(path))?.status()).toBe(404);
+        await expectNotFound(page, path);
         crossOrganizationChecks += 1;
       }
       await page.goto(`/search?q=${suffix}`);
@@ -789,7 +800,7 @@ test("administrator, scientist, reader and another organization keep consistent 
       denied((await api(reader, `/scientific-jobs/${jobId}`)).status(), [404]);
       const search = await json<{ total: number }>(await api(reader, `/registry/oligos?q=${suffix}`));
       expect(search.total).toBe(0);
-      expect((await reader.page.goto(`/oligos/${projectOligo.public_id}`))?.status()).toBe(404);
+      await expectNotFound(reader.page, `/oligos/${projectOligo.public_id}`);
       expect((await csvRows(reader, suffix)).length).toBe(0);
       revokedEffective = true;
       // Granting the role again restores read access to the same token.
@@ -890,8 +901,9 @@ test("failure states explain what happened and create no scientific result", asy
     }
 
     // Unknown or unreachable records are a clear 404, not a partial page.
-    expect((await page.goto("/oligos/OLG-999999"))?.status()).toBe(404);
-    expect((await page.goto("/scientific-jobs/SJOB-999999"))?.status()).toBe(404);
+    await expectNotFound(page, "/oligos/OLG-999999");
+    expect((await api(session, "/registry/oligos/OLG-999999")).status()).toBe(404);
+    await expectNotFound(page, "/scientific-jobs/SJOB-999999");
     expect((await api(session, "/scientific-jobs/SJOB-999999")).status()).toBe(404);
   });
 });
@@ -903,6 +915,8 @@ test("CSV export is faithful, formula-safe and limited to the permitted records"
     accent: `${marker} Échantillon, "Bd21" é`,
     formula: `=${marker} formula`,
     privateName: `${marker} private`,
+    zeroName: `${marker} zero GC`,
+    nullName: `${marker} unavailable QC`,
   };
   let rowsChecked = 0;
   let mismatches = 0;
@@ -914,6 +928,8 @@ test("CSV export is faithful, formula-safe and limited to the permitted records"
     created.push(await apiOligo(session, names.accent, uniqueDna(run + 31, "ACG")));
     created.push(await apiOligo(session, names.formula, uniqueDna(run + 32, "TGC")));
     created.push(await apiOligo(session, names.privateName, uniqueDna(run + 33, "CAT"), "private"));
+    created.push(await apiOligo(session, names.zeroName, "A".repeat(20)));
+    created.push(await apiOligo(session, names.nullName, "NNNACGT"));
 
     // The visible download is the file under test.
     await page.goto(`/oligos?q=${encodeURIComponent(marker)}`);
@@ -927,7 +943,7 @@ test("CSV export is faithful, formula-safe and limited to the permitted records"
     const rows = parseCsv(text.slice(1));
     expect(rows[0]).toEqual(CSV_COLUMNS);
     const body = rows.slice(1);
-    expect(body).toHaveLength(3);
+    expect(body).toHaveLength(5);
 
     for (const row of body) {
       const cells = Object.fromEntries(CSV_COLUMNS.map((column, index) => [column, row[index]]));
@@ -936,20 +952,28 @@ test("CSV export is faithful, formula-safe and limited to the permitted records"
       const truth = await json<OligoRecord>(await api(session, `/registry/oligos/${source!.public_id}`));
       const expectedName = truth.name.startsWith("=") ? `'${truth.name}` : truth.name;
       const comparisons: Array<[string, string, string | number | null]> = [
+        ["public_id", cells.public_id, truth.public_id],
         ["name", cells.name, expectedName],
+        ["oligo_type", cells.oligo_type, truth.oligo_type],
         ["normalized_sequence", cells.normalized_sequence, truth.normalized_sequence],
         ["sequence_length", cells.sequence_length, truth.sequence_length],
         ["gc_percent", cells.gc_percent, truth.gc_percent],
         ["melting_temperature_c", cells.melting_temperature_c, truth.melting_temperature_c],
         ["molecular_weight_g_mol", cells.molecular_weight_g_mol, truth.molecular_weight_g_mol],
         ["status", cells.status, truth.status],
-        ["tm_method", cells.tm_method, truth.calculation_provenance.tm_method],
+        ...["normalization", "gc_method", "tm_method", "molecular_weight_method"].map(
+          (key): [string, string, string | null] => [key, cells[key], truth.calculation_provenance[key]],
+        ),
       ];
       for (const [, actual, wanted] of comparisons) {
-        const matches = typeof wanted === "number" ? Number(actual) === wanted : actual === wanted;
+        const matches = wanted === null ? actual === "" : typeof wanted === "number" ? actual !== "" && Number(actual) === wanted : actual === wanted;
         if (!matches) mismatches += 1;
       }
-      expect(Date.parse(cells.created_at)).toBe(Date.parse(truth.created_at));
+      for (const column of ["created_at", "updated_at"] as const) {
+        expect(Date.parse(cells[column])).toBe(Date.parse(truth[column]));
+      }
+      const calculatedAt = truth.calculation_provenance.calculated_at;
+      expect(calculatedAt ? Date.parse(cells.calculated_at) === Date.parse(calculatedAt) : cells.calculated_at === "").toBe(true);
       rowsChecked += 1;
     }
     expect(mismatches).toBe(0);
@@ -958,14 +982,15 @@ test("CSV export is faithful, formula-safe and limited to the permitted records"
     // Search narrows the export; an empty search result is a header-only file, not an error.
     expect(await csvRows(session, `${marker} Échantillon`)).toHaveLength(1);
     expect(await csvRows(session, `absent-${suffix}`)).toHaveLength(0);
-    // The audited export shows in the actor's own activity.
+    // The activity panel remains usable; CSV audit persistence is checked in the
+    // harness against PostgreSQL (exports are not resource activity-panel entries).
     await page.goto("/");
-    await expect(page.getByText("export · oligo export", { exact: false }).first()).toBeVisible();
+    await expect(page.getByText("My recent activity", { exact: true })).toBeVisible();
   });
 
   await withSession(browser, "reader", async (reader) => {
     const rows = await csvRows(reader, marker);
-    expect(rows.map((row) => row[1]).sort()).toEqual([names.accent, `'${names.formula}`].sort());
+    expect(rows.map((row) => row[1]).sort()).toEqual([names.accent, `'${names.formula}`, names.zeroName, names.nullName].sort());
     leaked += rows.filter((row) => row[1].includes("private")).length;
     expect(leaked).toBe(0);
   });

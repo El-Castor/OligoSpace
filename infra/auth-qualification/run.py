@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+from datetime import UTC, datetime
+import platform
 import json
 import os
 from pathlib import Path
@@ -529,6 +531,7 @@ def main() -> None:
     evidence.mkdir(exist_ok=True)
     for name in (
         "scientific-evidence.json",
+        "csv-audit.json",
         "synthetic-scientific-mobile.png",
         "synthetic-scientific-desktop.png",
         "synthetic-login.png",
@@ -554,6 +557,9 @@ def main() -> None:
         source_commit = None
     summary: dict[str, object] = {
         "qualification": "not_completed",
+        "started_at": datetime.now(UTC).isoformat(),
+        "execution_platform": platform.machine(),
+        "mode": "scientific" if SCIENTIFIC else "authentication",
         "source_commit": source_commit,
         "tests": [],
     }
@@ -962,6 +968,7 @@ https://auth-qualification.test {
             summary.update(
                 qualification="passed" if passed else "failed",
                 phase="full",
+                finished_at=datetime.now(UTC).isoformat(),
                 tests=results,
             )
             (evidence / "summary.json").write_text(json.dumps(summary, indent=2))
@@ -975,6 +982,58 @@ https://auth-qualification.test {
                     source = work / "evidence" / name
                     if source.exists():
                         shutil.copyfile(source, evidence / name)
+            if SCIENTIFIC:
+                audit = subprocess.run(
+                    dc
+                    + [
+                        "exec",
+                        "-T",
+                        "postgres",
+                        "psql",
+                        "-U",
+                        "qualification",
+                        "-d",
+                        "qualification",
+                        "-At",
+                        "-v",
+                        "ON_ERROR_STOP=1",
+                        "-c",
+                        "SELECT json_build_object('exports',count(*),'invalid_audits',count(*) FILTER (WHERE a.actor_id IS NULL OR a.request_id IS NULL OR a.after->>'schema' IS DISTINCT FROM 'oligos-csv/v1' OR jsonb_typeof(a.after->'row_count') IS DISTINCT FROM 'number'),'reader_exports',count(*) FILTER (WHERE u.email='reader@qualification.invalid')) FROM audit_events a LEFT JOIN users u ON u.id=a.actor_id WHERE a.entity_type='oligo_export' AND a.action='export'",
+                    ],
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                try:
+                    counts = json.loads(audit.stdout) if audit.returncode == 0 else None
+                except json.JSONDecodeError:
+                    counts = None
+                valid = (
+                    isinstance(counts, dict)
+                    and set(counts) == {"exports", "invalid_audits", "reader_exports"}
+                    and all(_is_int(value) for value in counts.values())
+                )
+                audit_passed = (
+                    valid
+                    and counts["exports"] > 0
+                    and counts["reader_exports"] > 0
+                    and counts["invalid_audits"] == 0
+                )
+                (evidence / "csv-audit.json").write_text(
+                    json.dumps(
+                        {
+                            "gate": "passed" if audit_passed else "failed",
+                            "counts": counts if valid else None,
+                        },
+                        indent=2,
+                    )
+                )
+                if not audit_passed:
+                    passed = False
+                    summary.update(qualification="failed", csv_audit_gate="failed")
+                    (evidence / "summary.json").write_text(
+                        json.dumps(summary, indent=2)
+                    )
             log_gate = check_log_secrets(dc, private_values, evidence)
             if log_gate != "passed":
                 passed = False
