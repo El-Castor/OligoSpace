@@ -1,0 +1,93 @@
+{
+  "reference": {
+    "tool_version": "2.6.1",
+    "tool_source_sha256_match": true,
+    "facts": [
+      {
+        "fact": "forward_nearest_neighbor_tm",
+        "expected": 59.62663,
+        "observed": 59.62663,
+        "abs_delta": 0
+      },
+      {
+        "fact": "forward_hairpin",
+        "expected": 69.836183,
+        "observed": 69.836183,
+        "abs_delta": 0
+      },
+      {
+        "fact": "forward_homodimer",
+        "expected": 46.16876,
+        "observed": 46.16876,
+        "abs_delta": 0
+      },
+      {
+        "fact": "reverse_nearest_neighbor_tm",
+        "expected": 59.62663,
+        "observed": 59.62663,
+        "abs_delta": 0
+      },
+      {
+        "fact": "reverse_hairpin",
+        "expected": 69.091431,
+        "observed": 69.091431,
+        "abs_delta": 0
+      },
+      {
+        "fact": "reverse_homodimer",
+        "expected": 34.346077,
+        "observed": 34.346077,
+        "abs_delta": 0
+      },
+      {
+        "fact": "tm_delta",
+        "expected": 0,
+        "observed": 0,
+        "abs_delta": 0
+      },
+      {
+        "fact": "heterodimer",
+        "expected": 59.555182,
+        "observed": 59.555182,
+        "abs_delta": 0
+      },
+      {
+        "fact": "end_complementarity",
+        "expected": 59.555182,
+        "observed": 59.555182,
+        "abs_delta": 0
+      }
+    ],
+    "max_abs_delta": 0
+  },
+  "repeated_submissions": {
+    "requests": 6,
+    "distinct_jobs": 1,
+    "server_errors": 0,
+    "queued_while_worker_stopped": true,
+    "completed_after_restart": true
+  },
+  "permissions": {
+    "denials_verified": 13,
+    "cross_organization_checks": 9,
+    "revoked_access_effective": true,
+    "demotion_effective": true
+  },
+  "worker_failure": {
+    "terminal_state": "failed",
+    "result_absent": true,
+    "persisted_after_reload": true
+  },
+  "csv": {
+    "rows_checked": 5,
+    "mismatched_fields": 0,
+    "formula_cells_neutralized": true,
+    "excluded_records_present": 0,
+    "outsider_rows": 0
+  },
+  "viewport": {
+    "mobile_pages_checked": 7,
+    "desktop_pages_checked": 21,
+    "horizontal_overflow_pages": 0
+  }
+}

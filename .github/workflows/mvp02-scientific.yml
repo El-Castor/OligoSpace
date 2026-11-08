@@ -18,6 +18,8 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
+      - name: Verify evidence and log gates fail closed
+        run: python3 -B -m unittest discover -s infra/auth-qualification -p 'test_*.py'
       - name: Scientific acceptance with real Keycloak, PostgreSQL and Primer3
         run: python3 infra/auth-qualification/run.py --scientific
       - name: Retain sanitized scientific evidence and synthetic captures

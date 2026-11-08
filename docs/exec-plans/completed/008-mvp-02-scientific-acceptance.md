@@ -12,13 +12,13 @@ personal files, scientific parameters and all DEPLOY-02 gates. No deployment,
 release, provider adoption, uploads or additional export formats.
 
 - [x] Inspect specifications, acceptance criteria, existing tests and branch state.
-- [ ] Connect the seven existing scientific Chromium scenarios to an isolated OIDC
+- [x] Connect the seven existing scientific Chromium scenarios to an isolated OIDC
   harness with five identities in two organizations, worker and scheduler.
-- [ ] Reproduce repeated-submission defects; verify minimal fixes against PostgreSQL.
-- [ ] Execute reference values, persistence, rights/revocation, CSV and viewport checks.
-- [ ] Run format, lint, typecheck, units, PostgreSQL/migrations, existing Chromium/OIDC.
-- [ ] Independent review; fix demonstrated findings and rerun affected checks.
-- [ ] Publish acceptance matrix/evidence/limitations, STATUS/BACKLOG/CHANGELOG,
+- [x] Reproduce repeated-submission defects; verify minimal fixes against PostgreSQL.
+- [x] Execute reference values, persistence, rights/revocation, CSV and viewport checks.
+- [x] Run format, lint, typecheck, units, PostgreSQL/migrations, existing Chromium/OIDC.
+- [x] Independent review; fix demonstrated findings and rerun affected checks.
+- [x] Publish acceptance matrix/evidence/limitations, STATUS/BACKLOG/CHANGELOG,
   one PR and exact-head CI results. Stop for review.
 
 ## Review focus
@@ -28,3 +28,10 @@ Current source visibility must apply to stored results after permission removal.
 Numerical comparisons must retain the validated reference parameters and units.
 Scientific mode must not weaken or accidentally expand MVP-01 authentication tests.
 Only synthetic evidence and sanitized diagnostics may leave the disposable stack.
+
+## Outcome
+
+PR #20 delivers seven passing OIDC/scientific journeys, idempotency correction,
+206 PostgreSQL/29 Chromium/16 OIDC regressions and the acceptance dossier.
+Independent review findings resolved. Functional gates pass; DEPLOY/security
+checks remain open. No merge/release; stop for user scientific review.

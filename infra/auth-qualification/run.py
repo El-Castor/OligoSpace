@@ -200,6 +200,49 @@ def valid_outage_evidence(value: object) -> bool:
     )
 
 
+EXPECTED_CSV_AUDITS = [
+    {"actor": "reader", "rows": 0},  # project access revoked
+    {"actor": "scientist", "rows": 5},  # actual browser download
+    {"actor": "scientist", "rows": 1},  # filtered download
+    {"actor": "scientist", "rows": 0},  # empty download
+    {"actor": "reader", "rows": 4},  # private oligo excluded
+    {"actor": "rival", "rows": 0},  # other institute
+]
+
+
+def valid_csv_audit_shape(value: object) -> bool:
+    if not isinstance(value, dict) or set(value) != {
+        "exports",
+        "invalid_audits",
+        "distinct_requests",
+        "events",
+    }:
+        return False
+    if not all(
+        _is_int(value[key])
+        for key in ("exports", "invalid_audits", "distinct_requests")
+    ) or not isinstance(value["events"], list):
+        return False
+    return all(
+        isinstance(event, dict)
+        and set(event) == {"actor", "rows"}
+        and event["actor"] in ("reader", "scientist", "rival", "other")
+        and _is_int(event["rows"])
+        for event in value["events"]
+    )
+
+
+def csv_audit_passed(value: object) -> bool:
+    # Fresh DB and serial browser suite: this ordered list correlates every tested
+    # download, including the earlier revocation check, to one distinct audited request.
+    return valid_csv_audit_shape(value) and (
+        value["exports"] == len(EXPECTED_CSV_AUDITS)
+        and value["distinct_requests"] == len(EXPECTED_CSV_AUDITS)
+        and value["invalid_audits"] == 0
+        and value["events"] == EXPECTED_CSV_AUDITS
+    )
+
+
 def serve_outage_signals(
     dc: list[str], signals: Path, process: subprocess.Popen[str]
 ) -> None:
@@ -998,7 +1041,7 @@ https://auth-qualification.test {
                         "-v",
                         "ON_ERROR_STOP=1",
                         "-c",
-                        "SELECT json_build_object('exports',count(*),'invalid_audits',count(*) FILTER (WHERE a.actor_id IS NULL OR a.request_id IS NULL OR a.after->>'schema' IS DISTINCT FROM 'oligos-csv/v1' OR jsonb_typeof(a.after->'row_count') IS DISTINCT FROM 'number'),'reader_exports',count(*) FILTER (WHERE u.email='reader@qualification.invalid')) FROM audit_events a LEFT JOIN users u ON u.id=a.actor_id WHERE a.entity_type='oligo_export' AND a.action='export'",
+                        "SELECT json_build_object('exports',count(*),'invalid_audits',count(*) FILTER (WHERE a.actor_id IS NULL OR a.request_id IS NULL OR a.after->>'schema' IS DISTINCT FROM 'oligos-csv/v1' OR jsonb_typeof(a.after->'row_count') IS DISTINCT FROM 'number'),'distinct_requests',count(DISTINCT a.request_id),'events',json_agg(json_build_object('actor',CASE u.email WHEN 'reader@qualification.invalid' THEN 'reader' WHEN 'scientist@qualification.invalid' THEN 'scientist' WHEN 'rival@qualification.invalid' THEN 'rival' ELSE 'other' END,'rows',a.after->'row_count') ORDER BY a.occurred_at,a.id)) FROM audit_events a LEFT JOIN users u ON u.id=a.actor_id WHERE a.entity_type='oligo_export' AND a.action='export'",
                     ],
                     capture_output=True,
                     text=True,
@@ -1008,17 +1051,8 @@ https://auth-qualification.test {
                     counts = json.loads(audit.stdout) if audit.returncode == 0 else None
                 except json.JSONDecodeError:
                     counts = None
-                valid = (
-                    isinstance(counts, dict)
-                    and set(counts) == {"exports", "invalid_audits", "reader_exports"}
-                    and all(_is_int(value) for value in counts.values())
-                )
-                audit_passed = (
-                    valid
-                    and counts["exports"] > 0
-                    and counts["reader_exports"] > 0
-                    and counts["invalid_audits"] == 0
-                )
+                valid = valid_csv_audit_shape(counts)
+                audit_passed = csv_audit_passed(counts)
                 (evidence / "csv-audit.json").write_text(
                     json.dumps(
                         {
