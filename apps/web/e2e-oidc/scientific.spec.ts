@@ -105,7 +105,9 @@ async function withSession<T>(
 ): Promise<T> {
   const session = await openSession(browser, persona, options);
   try {
-    return await work(session);
+    const value = await work(session);
+    expect(session.runtimeErrors).toBe(0);
+    return value;
   } finally {
     await session.context.close();
   }

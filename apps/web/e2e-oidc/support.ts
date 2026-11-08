@@ -14,6 +14,7 @@ export interface Session {
   persona: Persona;
   context: BrowserContext;
   page: Page;
+  runtimeErrors: number;
 }
 
 async function oidcLogin(page: Page, persona: Persona) {
@@ -34,9 +35,13 @@ export async function openSession(
   // browser.newContext does not inherit the configured `use` options.
   const context = await browser.newContext({ baseURL: origin, ignoreHTTPSErrors: true, ...options });
   const page = await context.newPage();
+  const session: Session = { persona, context, page, runtimeErrors: 0 };
+  // Count only; never retain exception text, which can contain credentials/URLs.
+  page.on("pageerror", () => { session.runtimeErrors += 1; });
   await oidcLogin(page, persona);
   await expect(page.getByLabel("Current user")).toBeVisible();
-  return { persona, context, page };
+  await expect(page).toHaveTitle(/OligoSpace/);
+  return session;
 }
 
 async function authHeaders(session: Session): Promise<Record<string, string>> {
