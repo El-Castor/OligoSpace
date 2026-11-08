@@ -1,5 +1,29 @@
 # Backlog
 
+## MVP-02 — code integration only (2026-11-09)
+
+The owner explicitly authorized PR #20 at unchanged head `3f2c83a1b8c6d449e1f6d249dfef3c462cdc5c2c`.
+Merged with `--merge --match-head-commit`, without `--admin`, as
+`a2f9a211fba9f5c12afadb8435d03e83b067a00b` (2026-11-08 22:59:17 UTC). Local `main` was fast-forwarded;
+merge parents and exact tree equality with the approved head were verified.
+Before merge: no active branch protection, ruleset or required check; functional
+CI, 7 scientific OIDC, 16 OIDC, 29 Chromium and 206 PostgreSQL cases successful.
+All nine DEPLOY-02 failed checks remain failed, unchanged and release-blocking.
+No webhook, GitHub Pages or environment is configured; push workflows perform
+CI and disposable foundation checks only, without publishing or deploying.
+
+Post-merge [CI](https://github.com/El-Castor/OligoSpace/actions/runs/42532912311)
+and [foundation](https://github.com/El-Castor/OligoSpace/actions/runs/42532912335):
+**SUCCESS** on the merge commit (six application jobs and the foundation check). This four-file documentation follow-up is isolated
+in a separate commit; application, workflow and retained evidence files are unchanged.
+This records integration only; coverage limits, human R1-10/R1-11 acceptance,
+R1-08/R1-09 operations and every DEPLOY-02 gate remain open. No Mac mini,
+Cloudflare, image publication, SeaweedFS adoption or real migration is authorized
+or performed. Stop after this integration report; no next work lot.
+
+This entry supersedes earlier pending-merge wording below, preserving its history.
+
+
 ## MVP-02 — scientific acceptance delivered for review (2026-11-08)
 
 Single [PR #20](https://github.com/El-Castor/OligoSpace/pull/20), branch

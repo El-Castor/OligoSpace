@@ -1,5 +1,43 @@
 # MVP-02 — Scientific end-to-end acceptance
 
+## Limited integration record — 2026-11-09
+
+Following owner review, code integration alone was authorized at exact head
+`3f2c83a1b8c6d449e1f6d249dfef3c462cdc5c2c`. PR #20 merged as
+[`a2f9a211fba9f5c12afadb8435d03e83b067a00b`](https://github.com/El-Castor/OligoSpace/commit/a2f9a211fba9f5c12afadb8435d03e83b067a00b)
+on 2026-11-08 at 22:59:17 UTC, using `--match-head-commit` and no `--admin`.
+Parents are prior main `5e34340` and approved head `3f2c83a`; the merge tree equals
+that approved head exactly. Local `main` was synchronized without modifying the
+pre-existing personal files.
+
+Pre-merge inspection confirmed no branch protection, repository/inherited ruleset
+or required status check. The six application jobs plus scientific, OIDC and
+Chromium jobs on the exact approved head all succeeded. These nine DEPLOY-02
+checks remain failures, without waiver or configuration change:
+
+- `native-image (api, amd64)` and `native-image (api, arm64)`;
+- `native-image (worker, amd64)` and `native-image (worker, arm64)`;
+- `baseline-secret-triage (api)` and `baseline-secret-triage (worker)`;
+- `seaweedfs-452 (amd64)`, `seaweedfs-452 (arm64)` and `garage-source`.
+
+The inspected workflows publish no images/releases and deploy nothing on push.
+Only application CI and disposable foundation tests run after merge; PR-only
+security and scientific workflows retain their qualified-head results. Repository
+webhooks/environments were empty and GitHub Pages was disabled. No rule, check,
+provider, host or release setting was changed.
+
+Post-merge [application CI](https://github.com/El-Castor/OligoSpace/actions/runs/42532912311)
+and [foundation checks](https://github.com/El-Castor/OligoSpace/actions/runs/42532912335):
+**SUCCESS** on the merge commit (six application jobs and the foundation check). Required local make checks were also rerun after synchronization.
+This documentation-only follow-up preserves all scientific evidence and coverage
+limits below; it does not rerun or promote synthetic tests to human acceptance.
+R1-10/R1-11 remain open, along with R1-08/R1-09 and all deployment/security gates.
+The owner authorization does not permit Mac mini deployment, Cloudflare changes,
+SeaweedFS adoption, image publication or any real migration.
+
+The delivery-stage references below to no merge and awaiting review are historical;
+only their integration status is superseded by this limited authorization.
+
 Date: 2026-11-08. Base: `5e343407c8c998e7a8a844424bf90faba4b00272`.
 Single branch: `codex/mvp-02-scientific-acceptance`.
 Delivery: [PR #20](https://github.com/El-Castor/OligoSpace/pull/20), without merge.
