@@ -114,3 +114,113 @@ class HardenedQualificationTests(unittest.TestCase):
                 self.assertIn("--force-recreate", command)
                 self.assertNotIn("exec", command)
                 self.assertNotIn("root", command)
+
+
+class RuntimeHealthEvidenceTests(unittest.TestCase):
+    def test_state_whitelist_drops_all_free_text_and_secrets(self):
+        private = "secret-token-arbitrary-text"
+        state = {
+            "Status": "exited",
+            "ExitCode": 126,
+            "OOMKilled": False,
+            "Error": private,
+            "Env": [private],
+            "Health": {"Status": "unhealthy", "Log": [{"Output": private}]},
+        }
+        result = run.sanitized_runtime_state(state)
+        self.assertEqual(
+            result,
+            {
+                "status": "exited",
+                "exit_code": 126,
+                "oom_killed": False,
+                "health": "unhealthy",
+            },
+        )
+        self.assertNotIn(private, json.dumps(result))
+        for field, value in (
+            ("Status", private),
+            ("ExitCode", private),
+            ("ExitCode", True),
+            ("OOMKilled", private),
+            ("Health", {"Status": private}),
+        ):
+            with self.subTest(field=field, value=value):
+                invalid = dict(state, **{field: value})
+                self.assertIsNone(run.sanitized_runtime_state(invalid))
+
+    def test_diagnostics_preserve_categories_and_fail_closed_without_raw_text(self):
+        private = "secret-token-arbitrary-text"
+        state = {
+            "Status": "exited",
+            "ExitCode": 126,
+            "OOMKilled": False,
+            "Error": private,
+            "Health": {"Status": "unhealthy", "Log": [private]},
+        }
+
+        def execute(command, **kwargs):
+            output = json.dumps(state) if "inspect" in command else "a" * 64
+            return Mock(returncode=0, stdout=output)
+
+        logs = (
+            private
+            + " Permission denied read-only /tmp/test micromamba not found cannot execute"
+        ).encode()
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            patch.object(run, "SCIENTIFIC", False),
+            patch.object(run.subprocess, "run", side_effect=execute) as commands,
+            patch.object(
+                run,
+                "capture_service_logs",
+                side_effect=[(logs, None)] * 4 + [(b"", "LOG_RETRIEVAL_TIMEOUT")],
+            ),
+        ):
+            run.collect_runtime_health(
+                ["docker", "compose", "--file", "private.json"], Path(temporary)
+            )
+            text = (Path(temporary) / "runtime-health.json").read_text()
+            result = json.loads(text)
+            self.assertNotIn(private, text)
+            self.assertEqual(result["retrieval_gate"], "not_verified")
+            first = result["services"][0]
+            self.assertEqual(first["state"]["exit_code"], 126)
+            self.assertEqual(
+                first["log_category_counts"], dict.fromkeys(run.RUNTIME_LOG_PATTERNS, 1)
+            )
+            self.assertEqual(result["services"][-1]["log_gate"], "not_verified")
+            self.assertEqual(
+                result["services"][-1]["log_retrieval_rule"], "LOG_RETRIEVAL_TIMEOUT"
+            )
+            self.assertTrue(
+                all(
+                    "{{json .State}}" in call.args[0]
+                    for call in commands.call_args_list
+                    if "inspect" in call.args[0]
+                )
+            )
+
+    def test_missing_container_and_log_spawn_failure_never_look_verified(self):
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            patch.object(run, "SCIENTIFIC", False),
+            patch.object(
+                run.subprocess, "run", return_value=Mock(returncode=1, stdout="secret")
+            ),
+            patch.object(
+                run, "capture_service_logs", side_effect=OSError("private-error")
+            ),
+        ):
+            run.collect_runtime_health(["docker", "compose"], Path(temporary))
+            text = (Path(temporary) / "runtime-health.json").read_text()
+            self.assertNotIn("secret", text)
+            self.assertNotIn("private-error", text)
+            result = json.loads(text)
+            self.assertEqual(result["retrieval_gate"], "not_verified")
+            self.assertTrue(
+                all(
+                    item["state"] is None and item["log_gate"] == "not_verified"
+                    for item in result["services"]
+                )
+            )

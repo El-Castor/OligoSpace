@@ -1,0 +1,77 @@
+{
+  "actual_architecture": "arm64",
+  "ca_certificates": 118,
+  "cap_eff": "0000000000000000",
+  "expected_hardened": true,
+  "gid": 57439,
+  "kombu": "5.6.2",
+  "native_libraries": {
+    "elf_files_checked": 674,
+    "missing_libraries": [
+      "/opt/conda/bin/wish",
+      "/opt/conda/bin/wish8.6",
+      "/opt/conda/lib/libtk8.6.so",
+      "/opt/conda/lib/python3.12/lib-dynload/_tkinter.cpython-312-aarch64-linux-gnu.so",
+      "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libgssapi_krb5-fec99a71.so.2.2",
+      "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libk5crypto-47ac5e52.so.3.1",
+      "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libkrb5-90a0ef7c.so.3.3",
+      "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libkrb5support-73f3f43d.so.0.1",
+      "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libselinux-ae24b712.so.1",
+      "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libssl-ed89d281.so.3",
+      "/opt/conda/pkgs/python-3.12.8-h1683364_1_cpython/lib/python3.12/lib-dynload/_tkinter.cpython-312-aarch64-linux-gnu.so",
+      "/opt/conda/pkgs/tk-8.6.13-noxft_hf03c496_4/bin/wish",
+      "/opt/conda/pkgs/tk-8.6.13-noxft_hf03c496_4/bin/wish8.6",
+      "/opt/conda/pkgs/tk-8.6.13-noxft_hf03c496_4/lib/libtk8.6.so"
+    ],
+    "unclassified": []
+  },
+  "no_new_privs": "1",
+  "python": "3.12.8",
+  "reason_codes": [
+    "native_library_check_failed"
+  ],
+  "role": "worker",
+  "role_import": true,
+  "role_version": "0.1.0",
+  "rootfs_erofs": true,
+  "rootfs_readonly_proven": true,
+  "rootfs_write_errno": "EROFS",
+  "scientific_checks": {
+    "blast_synthetic_exact_match": true,
+    "blast_version_checks": {
+      "blast_formatter": true,
+      "blast_formatter_vdb": true,
+      "blast_vdb_cmd": true,
+      "blastdb_aliastool": true,
+      "blastdbcheck": true,
+      "blastdbcmd": true,
+      "blastn": true,
+      "blastn_vdb": true,
+      "blastp": true,
+      "blastx": true,
+      "convert2blastmask": true,
+      "deltablast": true,
+      "dustmasker": true,
+      "makeblastdb": true,
+      "makembindex": true,
+      "makeprofiledb": true,
+      "psiblast": true,
+      "rpsblast": true,
+      "rpstblastn": true,
+      "segmasker": true,
+      "tblastn": true,
+      "tblastn_vdb": true,
+      "tblastx": true,
+      "windowmasker": true
+    },
+    "blast_version_scope": "ELF tools accepting -version only",
+    "primer3_nine_golden_facts": true,
+    "tool_failure_classification": {
+      "exit": true,
+      "timeout": true
+    }
+  },
+  "status": "failed",
+  "tmp_writable": true,
+  "uid": 57439
+}

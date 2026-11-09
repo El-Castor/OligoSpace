@@ -456,6 +456,128 @@ def collect_evidence(dc: list[str], work: Path, evidence: Path) -> None:
             (evidence / "state-probe.json").write_text(json.dumps(state, indent=2))
 
 
+RUNTIME_LOG_PATTERNS = {
+    "permission_denied": rb"permission denied",
+    "read_only": rb"read[- ]only",
+    "noexec": rb"noexec|cannot execute|operation not permitted",
+    "micromamba": rb"micromamba",
+    "tmp": rb"/tmp(?:/|\b)",
+    "not_found": rb"not found|no such file",
+}
+
+
+def sanitized_runtime_state(value: object) -> dict | None:
+    """Whitelist typed fields; inspect errors, health output and env never escape."""
+    if not isinstance(value, dict):
+        return None
+    status = value.get("Status")
+    exit_code = value.get("ExitCode")
+    oom = value.get("OOMKilled")
+    if (
+        status
+        not in (
+            "created",
+            "running",
+            "paused",
+            "restarting",
+            "removing",
+            "exited",
+            "dead",
+        )
+        or type(exit_code) is not int
+        or not -255 <= exit_code <= 65535
+        or type(oom) is not bool
+    ):
+        return None
+    health = value.get("Health", {})
+    if not isinstance(health, dict):
+        return None
+    health_status = health.get("Status", "absent")
+    if health_status not in ("absent", "starting", "healthy", "unhealthy"):
+        return None
+    return {
+        "status": status,
+        "exit_code": exit_code,
+        "oom_killed": oom,
+        "health": health_status,
+    }
+
+
+def collect_runtime_health(dc: list[str], evidence: Path) -> None:
+    """Retain bounded, sanitized diagnostics before disposable teardown.
+
+    Any failed retrieval is explicitly not_verified; empty logs never imply a
+    successful read. No raw inspect/log output is written to an artifact.
+    """
+    services = ["postgres", "keycloak", "api", "web", "caddy"]
+    if SCIENTIFIC:
+        services += ["redis", "bioinfo-worker", "scientific-scheduler"]
+    observations = []
+    for service in services:
+        state = None
+        try:
+            ids = subprocess.run(
+                dc + ["ps", "--all", "--quiet", service],
+                capture_output=True,
+                text=True,
+                timeout=15,
+                check=False,
+            )
+            identifier = ids.stdout.strip()
+            if ids.returncode == 0 and re.fullmatch(r"[0-9a-f]{12,64}", identifier):
+                inspected = subprocess.run(
+                    ["docker", "inspect", "--format", "{{json .State}}", identifier],
+                    capture_output=True,
+                    text=True,
+                    timeout=15,
+                    check=False,
+                )
+                if inspected.returncode == 0:
+                    state = sanitized_runtime_state(json.loads(inspected.stdout))
+        except (OSError, subprocess.TimeoutExpired, ValueError):
+            pass
+        try:
+            logs, rule = capture_service_logs(dc + ["logs", "--no-color", service])
+        except (OSError, subprocess.TimeoutExpired):
+            logs, rule = b"", "LOG_RETRIEVAL_FAILED"
+        counts = {
+            name: len(re.findall(pattern, logs, re.IGNORECASE))
+            for name, pattern in RUNTIME_LOG_PATTERNS.items()
+        }
+        del logs
+        observations.append(
+            {
+                "service": service,
+                "state": state,
+                "state_gate": "passed" if state is not None else "not_verified",
+                "log_gate": "passed" if rule is None else "not_verified",
+                "log_retrieval_rule": rule
+                if rule
+                in (
+                    "LOG_RETRIEVAL_FAILED",
+                    "LOG_RETRIEVAL_TIMEOUT",
+                    "LOG_LIMIT_EXCEEDED",
+                )
+                else None
+                if rule is None
+                else "LOG_RETRIEVAL_FAILED",
+                "log_category_counts": counts,
+            }
+        )
+    verified = all(
+        item["state_gate"] == item["log_gate"] == "passed" for item in observations
+    )
+    (evidence / "runtime-health.json").write_text(
+        json.dumps(
+            {
+                "retrieval_gate": "passed" if verified else "not_verified",
+                "services": observations,
+            },
+            indent=2,
+        )
+    )
+
+
 def capture_service_logs(command: list[str]) -> tuple[bytes, str | None]:
     """Read complete logs into bounded RAM; an incomplete read never passes."""
     output = bytearray()
@@ -646,6 +768,7 @@ def main() -> None:
     evidence.mkdir(exist_ok=True)
     for name in (
         "scientific-evidence.json",
+        "runtime-health.json",
         "csv-audit.json",
         "synthetic-scientific-mobile.png",
         "synthetic-scientific-desktop.png",
@@ -1063,6 +1186,7 @@ https://auth-qualification.test {
                 ]
                 summary.update(qualification="failed", phase="preflight", tests=results)
                 (evidence / "summary.json").write_text(json.dumps(summary, indent=2))
+                collect_runtime_health(dc, evidence)
                 collect_evidence(dc, work, evidence)
                 check_log_secrets(dc, private_values, evidence)
                 raise RuntimeError(
@@ -1146,6 +1270,7 @@ https://auth-qualification.test {
                 summary.update(qualification="failed", log_gate=log_gate)
                 (evidence / "summary.json").write_text(json.dumps(summary, indent=2))
             if not passed:
+                collect_runtime_health(dc, evidence)
                 raise RuntimeError(
                     "Qualification phase failed: browser; inspect sanitized summary.json"
                 )
@@ -1159,6 +1284,10 @@ https://auth-qualification.test {
                     }
                 )
             )
+        except Exception:
+            if not (evidence / "runtime-health.json").exists():
+                collect_runtime_health(dc, evidence)
+            raise
         finally:
             run(dc + ["down", "--volumes", "--remove-orphans"])
 

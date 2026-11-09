@@ -1,0 +1,147 @@
+{
+  "schema": "deploy03-tooling-lock/v1",
+  "baseline_source": "9ebbf2cd993395af2b154efb0b4cf5a76b4dd079",
+  "scope": "separate_future_tooling_stage_only",
+  "source_observation": {
+    "artifact": "baseline/arm64/api/api-supply-chain/sbom-projection.json",
+    "sha256": "abfd91fc345fe76315a144402286ffc92212f899533df4b92ed8197f0ff40028",
+    "architecture": "arm64",
+    "subject_digest": "sha256:8ffe7127a4510c2a6874cda367bef2729a0560b505492835617951c4ab36edd5",
+    "original_attestation_blob_digest": "sha256:82b59919eef76cd2cf2555aa291d43533bbeb3deaf3f369c9542873acd5b68de",
+    "signature_trust": "not_verified",
+    "version_source": "attestations[0].packages name/versionInfo",
+    "closure_method": "explicit requested Linux Python3.12 development roots plus baseline-observed transitive packages; not an installed tooling closure export"
+  },
+  "roots": {
+    "mypy": "1.15.0",
+    "pytest": "8.3.4",
+    "pytest-asyncio": "0.25.3",
+    "ruff": "0.9.7"
+  },
+  "source": "https://pypi.org/pypi/{name}/{version}/json",
+  "release_metadata": {
+    "iniconfig==2.3.1": {
+      "url": "https://pypi.org/pypi/iniconfig/2.3.1/json",
+      "hashes": [
+        "67f4b9c50da0dedf52af349e7749a80a9057a5031199791b906c3bb3ae878960",
+        "9121e2c1fdb355232495be3194c8dfe87ccc2d5dee45947b78e68f499790d7a7"
+      ],
+      "metadata_sha256": "ab4d5df71d2a4f01a0eb418d7809bb22dca3293991a369309f068c07c1471557"
+    },
+    "mypy==1.15.0": {
+      "url": "https://pypi.org/pypi/mypy/1.15.0/json",
+      "hashes": [
+        "1124a18bc11a6a62887e3e137f37f53fbae476dc36c185d549d4f837a2a6a14e",
+        "171a9ca9a40cd1843abeca0e405bc1940cd9b305eaeea2dda769ba096932bb22",
+        "1905f494bfd7d85a23a88c5d97840888a7bd516545fc5aaedff0267e0bb54e2f",
+        "1fbb8da62dc352133d7d7ca90ed2fb0e9d42bb1a32724c287d3c76c58cbaa9c2",
+        "2922d42e16d6de288022e5ca321cd0618b238cfc5570e0263e5ba0a77dbef56f",
+        "2e2c2e6d3593f6451b18588848e66260ff62ccca522dd231cd4dd59b0160668b",
+        "2ee2d57e01a7c35de00f4634ba1bbf015185b219e4dc5909e281016df43f5ee5",
+        "2f2147ab812b75e5b5499b01ade1f4a81489a147c01585cda36019102538615f",
+        "404534629d51d3efea5c800ee7c42b72a6554d6c400e6a79eafe15d11341fd43",
+        "5469affef548bd1895d86d3bf10ce2b44e33d86923c29e4d675b3e323437ea3e",
+        "5a95fb17c13e29d2d5195869262f8125dfdb5c134dc8d9a9d0aecf7525b10c2c",
+        "6983aae8b2f653e098edb77f893f7b6aca69f6cffb19b2cc7443f23cce5f4828",
+        "712e962a6357634fef20412699a3655c610110e01cdaa6180acec7fc9f8513ba",
+        "8023ff13985661b50a5928fc7a5ca15f3d1affb41e5f0a9952cb68ef090b31ee",
+        "811aeccadfb730024c5d3e326b2fbe9249bb7413553f15499a4050f7c30e801d",
+        "8f8722560a14cde92fdb1e31597760dc35f9f5524cce17836c0d22841830fd5b",
+        "93faf3fdb04768d44bf28693293f3904bbb555d076b781ad2530214ee53e3445",
+        "973500e0774b85d9689715feeffcc980193086551110fd678ebe1f4342fb7c5e",
+        "979e4e1a006511dacf628e36fadfecbcc0160a8af6ca7dad2f5025529e082c13",
+        "98b7b9b9aedb65fe628c62a6dc57f6d5088ef2dfca37903a7d9ee374d03acca5",
+        "aea39e0583d05124836ea645f412e88a5c7d0fd77a6d694b60d9b6b2d9f184fd",
+        "b9378e2c00146c44793c98b8d5a61039a048e31f429fb0eb546d93f4b000bedf",
+        "baefc32840a9f00babd83251560e0ae1573e2f9d1b067719479bfb0e987c6357",
+        "be68172e9fd9ad8fb876c6389f16d1c1b5f100ffa779f77b1fb2176fcc9ab95b",
+        "c43a7682e24b4f576d93072216bf56eeff70d9140241f9edec0c104d0c515036",
+        "c4bb0e1bd29f7d34efcccd71cf733580191e9a264a2202b0239da95984c5b559",
+        "c7be1e46525adfa0d97681432ee9fcd61a3964c2446795714699a998d193f1a3",
+        "c9817fa23833ff189db061e6d2eff49b2f3b6ed9856b4a0a73046e41932d744f",
+        "ce436f4c6d218a070048ed6a44c0bbb10cd2cc5e272b29e7845f6a2f57ee4464",
+        "d10d994b41fb3497719bbf866f227b3489048ea4bbbb5015357db306249f7980",
+        "e601a7fa172c2131bff456bb3ee08a88360760d0d2f8cbd7a75a65497e2df078",
+        "f95579473af29ab73a10bada2f9722856792a36ec5af5399b653aa28360290a5"
+      ],
+      "metadata_sha256": "52b35b76536d72e3116a8e4958ab9fdd96a54ce1af8c18249cc9e6a9735448a3"
+    },
+    "mypy-extensions==1.2.0": {
+      "url": "https://pypi.org/pypi/mypy-extensions/1.2.0/json",
+      "hashes": [
+        "993e7a20aa5671eb41a7132cf555af30062da99729601601b9a8382b11cae768",
+        "c6e275a07f1c2fc096b62940452d0eaa3f3af7de45d704787866240a7c6d5a51"
+      ],
+      "metadata_sha256": "3707b05b06d0b9379d3adf6aea8fa169bdf64a445a3188daaa53c279f0b65451"
+    },
+    "packaging==26.3": {
+      "url": "https://pypi.org/pypi/packaging/26.3/json",
+      "hashes": [
+        "94edc256424af38762eb31306eed28beb9f0efc50a8837492c9d6fd6004aed79",
+        "d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c"
+      ],
+      "metadata_sha256": "4f190d2f0b312b3086058cee64ab4333bf3ce67fb78b4c2bdb43899049b29f4d"
+    },
+    "pluggy==1.7.0": {
+      "url": "https://pypi.org/pypi/pluggy/1.7.0/json",
+      "hashes": [
+        "7dd7b0d8832ba3cb632c306926ded123429211b83641b35dc5c41ad2d34f9bec",
+        "d1eaa46ebb595891b860ab086b4d09c8588af65ebd4361b8e8f4bb8920b90ba8"
+      ],
+      "metadata_sha256": "9e8f441bba8382eabf6febf386a5b9610cfe0c16b60b96e7b4b1831bd6d96361"
+    },
+    "pytest==8.3.4": {
+      "url": "https://pypi.org/pypi/pytest/8.3.4/json",
+      "hashes": [
+        "50e16d954148559c9a74109af1eaf0c945ba2d8f30f0a3d3335edde19788b6f6",
+        "965370d062bce11e73868e0335abac31b4d3de0e82f4007408d242b4f8610761"
+      ],
+      "metadata_sha256": "66f62214c9eebf64712924d8b7180fbdc9036a2fd08a57eb09a241aafbfa7f46"
+    },
+    "pytest-asyncio==0.25.3": {
+      "url": "https://pypi.org/pypi/pytest-asyncio/0.25.3/json",
+      "hashes": [
+        "9e89518e0f9bd08928f97a3482fdc4e244df17529460bc038291ccaf8f85c7c3",
+        "fc1da2cf9f125ada7e710b4ddad05518d4cee187ae9412e9ac9271003497f07a"
+      ],
+      "metadata_sha256": "4cd7d3d0ef1b78cc9f240371299be64e974604c721ae6acc0e7e1717f736c310"
+    },
+    "ruff==0.9.7": {
+      "url": "https://pypi.org/pypi/ruff/0.9.7/json",
+      "hashes": [
+        "0372c5a90349f00212270421fe91874b866fd3626eb3b397ede06cd385f6f7e0",
+        "042ae32b41343888f59c0a4148f103208bf6b21c90118d51dc93a68366f4e903",
+        "0c439bdfc8983e1336577f00e09a4e7a78944fe01e4ea7fe616d00c3ec69a3d0",
+        "115d1f15e8fdd445a7b4dc9a30abae22de3f6bcabeb503964904471691ef7606",
+        "3770fe52b9d691a15f0b87ada29c45324b2ace8f01200fb0c14845e499eb0c2c",
+        "643757633417907510157b206e490c3aa11cab0c087c912f60e07fbafa87a4c6",
+        "7c1f880ac5b2cbebd58b8ebde57069a374865c73f3bf41f05fe7a179c1c8ef22",
+        "87862589373b33cc484b10831004e5e5ec47dc10d2b41ba770e837d4f429d721",
+        "88362e3227c82f63eaebf0b2eff5b88990280fb1ecf7105523883ba8c3aaf6fb",
+        "91ff963baed3e9a6a4eba2a02f4ca8eaa6eba1cc0521aec0987da8d62f53cbef",
+        "99d50def47305fe6f233eb8dabfd60047578ca87c9dcb235c9723ab1175180f4",
+        "a17e1e01bee0926d351a1ee9bc15c445beae888f90069a6192a07a84af544b6b",
+        "b075a700b2533feb7a01130ff656a4ec0d5f340bb540ad98759b8401c32c2037",
+        "d59105ae9c44152c3d40a9c40d6331a7acd1cdf5ef404fbe31178a77b174ea66",
+        "d76b8ab60e99e6424cd9d3d923274a1324aefce04f8ea537136b8398bbae0a62",
+        "e63fc20143c291cab2841dbb8260e96bafbe1ba13fd3d60d28be2c71e312da49",
+        "e9ece95b7de5923cbf38893f066ed2872be2f2f477ba94f826c8defdd6ec6b7d",
+        "f313b5800483770bd540cddac7c90fc46f895f427b7820f18fe1822697f1fec9"
+      ],
+      "metadata_sha256": "e1ee079a0153cea314360148cd67c3de75281da76a97f372454a4e8fedb03a33"
+    },
+    "typing-extensions==4.16.0": {
+      "url": "https://pypi.org/pypi/typing-extensions/4.16.0/json",
+      "hashes": [
+        "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8",
+        "dc983d19a509c94dba722ee6abd33940f7c05a89e243c47e907eb4db6f1a43e5"
+      ],
+      "metadata_sha256": "2140da00d62dde967f52d0be0ae28444f1d6a3fe603f52c83c23988c32122d5a"
+    }
+  },
+  "limitations": [
+    "All public release artifact hashes are retained, not a target-specific wheel selection.",
+    "No packages installed and no tooling-stage execution performed.",
+    "PyPI metadata authenticity relies on HTTPS at observation; original response bytes not retained."
+  ]
+}

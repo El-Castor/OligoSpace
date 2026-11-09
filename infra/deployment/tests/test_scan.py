@@ -34,6 +34,67 @@ def fixture():
 
 
 class ScanTests(unittest.TestCase):
+    def test_debian_epoch_release_reconstruction_maps_only_exact_unique_source(self):
+        raw = fixture()
+        package = {
+            "Name": "bsdutils",
+            "Version": "2.41.5",
+            "Release": "0+deb13u1",
+            "Epoch": 1,
+            "SrcName": "util-linux",
+            "SrcVersion": "2.41.5",
+            "SrcRelease": "0+deb13u1",
+            "SrcEpoch": 1,
+        }
+        finding = {
+            "VulnerabilityID": "CVE-2026-1234",
+            "Severity": "HIGH",
+            "PkgName": "bsdutils",
+            "InstalledVersion": "1:2.41.5-0+deb13u1",
+        }
+        raw["Results"] = [
+            {"Type": "debian", "Packages": [package], "Vulnerabilities": [finding]}
+        ]
+        report = module.summarize(raw, PROOF, DB)
+        self.assertEqual(
+            report["package_inventory"][0]["version"], "1:2.41.5-0+deb13u1"
+        )
+        self.assertEqual(
+            report["package_inventory"][0]["source_version"], "1:2.41.5-0+deb13u1"
+        )
+        self.assertEqual(report["vulnerabilities"][0]["package_source"], "util-linux")
+        raw["Results"][0]["Packages"].append({**package, "SrcName": "different-source"})
+        self.assertIsNone(
+            module.summarize(raw, PROOF, DB)["vulnerabilities"][0]["package_source"]
+        )
+        raw["Results"][0]["Packages"] = [
+            {k: v for k, v in package.items() if k != "Release"}
+        ]
+        self.assertFalse(
+            module.summarize(raw, PROOF, DB)["package_inventory"][0]["version_complete"]
+        )
+        self.assertIsNone(
+            module.summarize(raw, PROOF, DB)["vulnerabilities"][0]["package_source"]
+        )
+
+    def test_python_inventory_versions_are_not_reconstructed_as_debian(self):
+        raw = fixture()
+        raw["Results"] = [
+            {"Type": "python-pkg", "Packages": [{"Name": "kombu", "Version": "5.6.2"}]}
+        ]
+        row = module.summarize(raw, PROOF, DB)["package_inventory"][0]
+        self.assertEqual(row["version"], "5.6.2")
+
+    def test_debian_version_components_reject_invalid_epoch_and_release(self):
+        for component in (
+            {"Epoch": True},
+            {"Epoch": -1},
+            {"Epoch": "1:2"},
+            {"Release": "2 bad"},
+        ):
+            with self.subTest(component=component), self.assertRaises(ValueError):
+                module.inventory_version({"Version": "2.3.2", **component}, "debian")
+
     def test_trivy_cvss40_and_public_github_cve_search_are_retained(self):
         vector = "CVSS:4.0/AV:N/AC:L/AT:P/PR:L/UI:A/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N"
         metrics = {"ghsa": {"V40Vector": vector, "V40Score": 5.3}}

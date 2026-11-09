@@ -1,5 +1,22 @@
 # Project status
 
+## DEPLOY-03 — active qualification (2026-11-09)
+
+Owner-authorized single branch `codex/deploy-03-container-hardening`, draft
+[PR #21](https://github.com/El-Castor/OligoSpace/pull/21), from verified main9ebbf2c.
+Initial inventory and frozen Python/PyPI hashes retained; Kombu5.6.2 unchanged.
+Three runtime strategies and hardened OIDC/scientific paths are being compared
+on native ARM64/AMD64 CI. Production choice, complete proofs and final independent
+review remain pending. Local candidate builds hit host disk exhaustion/Docker I/O;
+only disposable comparison archives removed, personal files/dev containers retained.
+[Current dossier](../deployment/DEPLOY_03_CONTAINER_HARDENING.md). No merge, image
+publication, Mac mini, Cloudflare, S3 adoption, real migration or DEPLOY-04. Existing
+security/storage/provenance and R1-10/11 human acceptance gates remain open.
+
+This owner instruction supersedes the earlier stop-after-MVP-02 work boundary
+only for DEPLOY-03; it grants no operational authorization.
+
+
 ## MVP-02 — code integration only (2026-11-09)
 
 The owner explicitly authorized PR #20 at unchanged head `3f2c83a1b8c6d449e1f6d249dfef3c462cdc5c2c`.

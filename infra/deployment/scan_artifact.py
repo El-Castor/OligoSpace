@@ -188,6 +188,35 @@ def public_data_source(value):
     }
 
 
+def inventory_version(package, ecosystem, prefix=""):
+    upstream = safe_field(package.get(prefix + "Version", ""))
+    if ecosystem != "debian":
+        return upstream, None
+    epoch = package.get(prefix + "Epoch")
+    if epoch is not None and (
+        isinstance(epoch, bool)
+        or not isinstance(epoch, (str, int))
+        or not re.fullmatch(r"[0-9]+", str(epoch))
+    ):
+        raise ValueError("invalid_public_field")
+    release = package.get(prefix + "Release")
+    if release is not None:
+        release = safe_field(release)
+        if release and not re.fullmatch(r"[A-Za-z0-9+.~]+", release):
+            raise ValueError("invalid_public_field")
+    version = upstream
+    if release:
+        version += "-" + release
+    if epoch is not None and int(epoch) != 0:
+        version = str(epoch) + ":" + version
+    return version, {
+        "upstream": upstream,
+        "epoch": epoch,
+        "release": release,
+        "complete": release is not None,
+    }
+
+
 def validate_database(database):
     if (
         not isinstance(database, dict)
@@ -373,15 +402,28 @@ def summarize_findings(raw):
             for package in result["Packages"]:
                 if not isinstance(package, dict):
                     raise ValueError("invalid_result")
+                ecosystem = safe_field(result.get("Type", "unknown"))
+                version, components = inventory_version(package, ecosystem)
+                source_version, source_components = inventory_version(
+                    package, ecosystem, "Src"
+                )
                 packages.append(
                     {
                         "package": safe_field(package.get("Name", "")),
-                        "version": safe_field(package.get("Version", "")),
+                        "version": version,
                         "source_package": safe_field(package.get("SrcName", ""))
                         or None,
-                        "source_version": safe_field(package.get("SrcVersion", ""))
-                        or None,
-                        "ecosystem": safe_field(result.get("Type", "unknown")),
+                        "source_version": source_version or None,
+                        "ecosystem": ecosystem,
+                        **(
+                            {
+                                "version_components": components,
+                                "version_complete": components["complete"],
+                                "source_version_components": source_components,
+                            }
+                            if components is not None
+                            else {}
+                        ),
                     }
                 )
         secrets = result.get("Secrets", [])
@@ -431,6 +473,7 @@ def summarize_findings(raw):
                     p["source_package"]
                     for p in packages
                     if p["package"] == vulnerability.get("PkgName")
+                    and p.get("version_complete", True)
                     and p["version"] == vulnerability.get("InstalledVersion")
                     and p["ecosystem"] == result.get("Type", "unknown")
                     and p["source_package"]
