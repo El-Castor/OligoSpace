@@ -5,6 +5,8 @@ import sys
 import unittest
 import subprocess
 import tempfile
+from unittest.mock import patch
+from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 spec = importlib.util.spec_from_file_location(
@@ -32,6 +34,195 @@ def fixture():
 
 
 class ScanTests(unittest.TestCase):
+    def test_trivy_cvss40_and_public_github_cve_search_are_retained(self):
+        vector = "CVSS:4.0/AV:N/AC:L/AT:P/PR:L/UI:A/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N"
+        metrics = {"ghsa": {"V40Vector": vector, "V40Score": 5.3}}
+        self.assertEqual(module.public_cvss(metrics), metrics)
+        url = "https://github.com/advisories?query=CVE-2026-1234"
+        self.assertEqual(module.public_url(url), url)
+        for unsafe in (
+            "https://github.com/advisories?query=private-token",
+            "https://github.com/advisories?query=CVE-2026-1234&token=private",
+            "https://example.org/advisories?query=CVE-2026-1234",
+        ):
+            with self.subTest(url=unsafe), self.assertRaises(ValueError):
+                module.public_url(unsafe)
+
+    def test_public_scoring_inventory_and_ubuntu_identity(self):
+        raw = fixture()
+        raw["Metadata"]["OS"] = {"Family": "ubuntu", "Name": "24.04"}
+        raw["Results"] = [
+            {
+                "Type": "ubuntu",
+                "Packages": [
+                    {
+                        "Name": "libc6",
+                        "Version": "2.39",
+                        "SrcName": "glibc",
+                        "SrcVersion": "2.39",
+                    }
+                ],
+                "Vulnerabilities": [
+                    {
+                        "VulnerabilityID": "CVE-2026-1234",
+                        "Severity": "HIGH",
+                        "PkgName": "libc6",
+                        "CVSS": {
+                            "nvd": {
+                                "V3Score": 8.1,
+                                "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:H",
+                            }
+                        },
+                        "SeveritySource": "nvd",
+                        "DataSource": {
+                            "ID": "ubuntu",
+                            "Name": "Ubuntu CVE Tracker",
+                            "URL": "https://ubuntu.com/security/",
+                        },
+                        "PrimaryURL": "https://ubuntu.com/security/CVE-2026-1234",
+                        "Layer": {"Digest": "sha256:" + "a" * 64},
+                        "PkgPath": "/opt/conda/lib/private-filename",
+                    }
+                ],
+            }
+        ]
+        report = module.summarize(raw, PROOF, DB)
+        row = report["vulnerabilities"][0]
+        self.assertEqual(row["cvss"]["nvd"]["V3Score"], 8.1)
+        self.assertEqual(row["severity_source"], "nvd")
+        self.assertEqual(row["package_path"], "conda_environment_file")
+        self.assertNotIn("private-filename", json.dumps(report))
+        self.assertEqual(
+            report["operating_system"], {"family": "ubuntu", "name": "24.04"}
+        )
+        self.assertEqual(report["package_inventory"][0]["source_package"], "glibc")
+        self.assertEqual(report["package_inventory_coverage"], "observed")
+        self.assertEqual(report["gate"], "failed")
+
+    def test_unsafe_public_fields_fail_closed(self):
+        for field, value in (
+            ("PrimaryURL", "https://user:secret@example.org/a"),
+            ("PrimaryURL", "https://example.org/a?token=private"),
+            ("CVSS", {"nvd": {"V3Score": 11}}),
+            ("Layer", {"Digest": "private"}),
+        ):
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                module.summarize(
+                    {
+                        **fixture(),
+                        "Results": [
+                            {
+                                "Vulnerabilities": [
+                                    {
+                                        "VulnerabilityID": "CVE-2026-1234",
+                                        "Severity": "HIGH",
+                                        field: value,
+                                    }
+                                ]
+                            }
+                        ],
+                    },
+                    PROOF,
+                    DB,
+                )
+
+    def test_missing_inventory_is_explicit_and_unknown_cvss_is_null(self):
+        raw = fixture()
+        raw["Results"] = [
+            {
+                "Vulnerabilities": [
+                    {"VulnerabilityID": "CVE-2026-1234", "Severity": "LOW"}
+                ]
+            }
+        ]
+        report = module.summarize(raw, PROOF, DB)
+        self.assertEqual(report["package_inventory_coverage"], "not_verified")
+        self.assertIsNone(report["vulnerabilities"][0]["cvss"])
+        with self.assertRaises(ValueError):
+            module.summarize(raw, PROOF, DB, require_inventory=True)
+
+    def test_frozen_cli_is_offline_and_rejects_database_mutation(self):
+        for mutate in (False, True):
+            with (
+                self.subTest(mutate=mutate),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = Path(directory)
+                (root / "db").mkdir()
+                (root / "db/metadata.json").write_text(json.dumps(DB))
+                (root / "db/trivy.db").write_bytes(b"original")
+                output = root / "output.json"
+                raw = fixture()
+                raw["Results"] = [
+                    {"Type": "debian", "Packages": [{"Name": "libc6", "Version": "1"}]}
+                ]
+                proof = {**PROOF, "descriptor": {"digest": "sha256:" + "b" * 64}}
+
+                def scan(command, **kwargs):
+                    self.assertIn("--offline-scan", command)
+                    self.assertIn("--skip-db-update", command)
+                    self.assertIn("--list-all-pkgs", command)
+                    self.assertEqual(command[command.index("--network") + 1], "none")
+                    self.assertIn(str(root.resolve()) + ":/cache:ro", command)
+                    if mutate:
+                        (root / "db/trivy.db").write_bytes(b"changed")
+                    return SimpleNamespace(
+                        returncode=0, stdout=json.dumps(raw), stderr=""
+                    )
+
+                argv = [
+                    "scan",
+                    "--context",
+                    "test",
+                    "--archive",
+                    str(root / "archive"),
+                    "--source",
+                    "a" * 40,
+                    "--architecture",
+                    "arm64",
+                    "--output",
+                    str(output),
+                    "--vulnerability-cache",
+                    str(root),
+                ]
+                with (
+                    patch.object(sys, "argv", argv),
+                    patch.object(module, "prepare_layout", return_value=proof),
+                    patch.object(
+                        module.subprocess,
+                        "check_output",
+                        return_value=b'[{"Endpoints":{"docker":{"Host":"unix:///synthetic"}}}]',
+                    ),
+                    patch.object(module.subprocess, "run", side_effect=scan),
+                    patch.dict(module.os.environ, {}, clear=True),
+                    self.assertRaises(SystemExit) as stopped,
+                ):
+                    module.main()
+                report = json.loads(output.read_text())
+                if mutate:
+                    self.assertEqual(report["gate"], "not_verified")
+                    self.assertEqual(report["rule_id"], "SCAN_FROZEN_DATABASE_CHANGED")
+                    self.assertNotEqual(stopped.exception.code, 0)
+                else:
+                    self.assertEqual(stopped.exception.code, 0)
+                    self.assertTrue(
+                        report["frozen_vulnerability_database"]["unchanged_after_scan"]
+                    )
+
+    def test_frozen_database_requires_complete_files_and_detects_change(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            with self.assertRaises(ValueError):
+                module.frozen_database_identity(root)
+            (root / "db").mkdir()
+            (root / "db/metadata.json").write_text(json.dumps(DB))
+            (root / "db/trivy.db").write_bytes(b"database")
+            identity = module.frozen_database_identity(root)
+            module.verify_frozen_database(root, identity)
+            (root / "db/trivy.db").write_bytes(b"changed")
+            with self.assertRaises(ValueError):
+                module.verify_frozen_database(root, identity)
+
     def test_vendor_advisory_identifiers_are_retained_and_still_block_release(self):
         raw = fixture()
         raw["Results"] = [
@@ -145,7 +336,6 @@ class ScanTests(unittest.TestCase):
                         "PkgName": "openssl",
                         "InstalledVersion": "1.0",
                         "FixedVersion": "2.0",
-                        "PrimaryURL": "private-url",
                     }
                 ],
             }

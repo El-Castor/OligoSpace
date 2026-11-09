@@ -1,0 +1,76 @@
+# syntax=docker/dockerfile:1.7
+# Qualification experiments only; validate native library closure before adoption.
+ARG BASELINE_IMAGE=oligospace-qualification/worker:9ebbf2cd993395af2b154efb0b4cf5a76b4dd079
+ARG MINIMAL_BASE
+ARG PYTHON_BASE=python:3.12.16-slim-bookworm@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df
+
+FROM ${BASELINE_IMAGE} AS baseline
+
+FROM baseline AS strategy-a
+USER root
+RUN /opt/conda/bin/python -m pip uninstall --yes \
+      hatchling hatchutils pathspec trove-classifiers mypy mypy_extensions \
+      pytest iniconfig pluggy ruff \
+    && rm -rf /root/.cache/pip
+USER 1000:1000
+
+FROM ${MINIMAL_BASE} AS strategy-b
+USER root
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends bash ca-certificates libstdc++6 libgomp1 \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --gid 1000 mambauser \
+    && useradd --uid 1000 --gid 1000 --create-home mambauser
+COPY --from=strategy-a /opt/conda /opt/conda
+COPY --from=baseline /bin/micromamba /bin/micromamba
+COPY --from=baseline /usr/local/bin/_entrypoint.sh /usr/local/bin/_entrypoint.sh
+COPY --from=baseline /usr/local/bin/_activate_current_env.sh /usr/local/bin/_activate_current_env.sh
+COPY --from=baseline /opt/primer3 /opt/primer3
+COPY --from=baseline /opt/ncbi-blast /opt/ncbi-blast
+COPY --from=baseline --chown=1000:1000 /worker /worker
+ENV MAMBA_ROOT_PREFIX=/opt/conda MAMBA_EXE=/bin/micromamba MAMBA_USER=mambauser ENV_NAME=base PYTHONUNBUFFERED=1
+ENV PATH=/opt/primer3/bin:/opt/ncbi-blast/bin:$PATH
+ENV LD_LIBRARY_PATH=/opt/conda/lib:/opt/ncbi-blast/lib
+WORKDIR /worker
+USER 1000:1000
+ENTRYPOINT ["/usr/local/bin/_entrypoint.sh"]
+CMD ["micromamba", "run", "--name", "base", "celery", "--app", "oligospace_bioinfo.celery_app:app", "worker", "--loglevel=INFO"]
+
+FROM ${PYTHON_BASE} AS primer3-builder
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends gcc g++ make \
+    && rm -rf /var/lib/apt/lists/*
+ADD --checksum=sha256:805cef7ef39607cd40f0f5bb8b32e35e20007153a0a55131dd430ce644c8fb9e \
+    https://codeload.github.com/primer3-org/primer3/tar.gz/refs/tags/v2.6.1 \
+    /tmp/primer3.tar.gz
+RUN tar -xzf /tmp/primer3.tar.gz -C /tmp \
+    && make --directory /tmp/primer3-2.6.1/src primer3_core oligotm ntthal \
+    && install -d /opt/primer3/bin \
+    && install -m 0755 /tmp/primer3-2.6.1/src/primer3_core /tmp/primer3-2.6.1/src/oligotm /tmp/primer3-2.6.1/src/ntthal /opt/primer3/bin/
+
+FROM ${PYTHON_BASE} AS wheel-builder
+COPY infra/hardening/locks/build.txt /tmp/build.txt
+RUN python -m venv /opt/build \
+    && /opt/build/bin/python -m pip install --no-cache-dir --require-hashes -r /tmp/build.txt
+COPY services/bioinfo-worker /src
+RUN /opt/build/bin/python -m pip wheel --no-deps --no-build-isolation --wheel-dir /wheels /src
+
+FROM ${PYTHON_BASE} AS strategy-c
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends ca-certificates libstdc++6 libgomp1 \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --gid 1000 appuser \
+    && useradd --uid 1000 --gid 1000 --create-home appuser \
+    && python -m venv /opt/venv
+COPY infra/hardening/locks/worker.txt /tmp/runtime.txt
+RUN /opt/venv/bin/python -m pip install --no-cache-dir --require-hashes -r /tmp/runtime.txt
+COPY --from=wheel-builder /wheels /wheels
+RUN /opt/venv/bin/python -m pip install --no-cache-dir --no-deps /wheels/*.whl \
+    && rm -rf /wheels /tmp/runtime.txt
+COPY --from=primer3-builder /opt/primer3 /opt/primer3
+COPY --from=baseline /opt/ncbi-blast /opt/ncbi-blast
+ENV PATH=/opt/venv/bin:/opt/primer3/bin:/opt/ncbi-blast/bin:$PATH PYTHONUNBUFFERED=1
+ENV LD_LIBRARY_PATH=/opt/ncbi-blast/lib
+WORKDIR /worker
+USER 1000:1000
+CMD ["celery", "--app", "oligospace_bioinfo.celery_app:app", "worker", "--loglevel=INFO"]
