@@ -1,0 +1,311 @@
+{
+  "schema": "oligospace-ubuntu-advisory-review-v1",
+  "reviewed_on": "2026-11-09",
+  "scope": "Official-source desktop research for pending strategy-c-ubuntu API/worker experiments; no candidate execution performed in this review",
+  "sources_policy": "Only Canonical/Ubuntu official pages and Canonical-owned repository were used as evidence. Search-index versus individual-page differences and fetch limitations are explicit.",
+  "support": {
+    "release": "Ubuntu 24.04 LTS Noble",
+    "standard_security_maintenance_end": "2029-05-31",
+    "source_url": "https://documentation.ubuntu.com/release-notes/24.04/",
+    "component_policy_url": "https://documentation.ubuntu.com/security/security-updates/",
+    "component_caveat": "Standard LTS security support covers Main/Restricted for five years; Universe/Multiverse have community support unless relevant Ubuntu Pro coverage applies. Do not assume every installed dependency has identical support."
+  },
+  "python": {
+    "package": "python3.12",
+    "component": "Main",
+    "official_package_index": "https://packages.ubuntu.com/search?arch=amd64&keywords=python3.12&searchon=names&suite=noble",
+    "base_upstream_version": "3.12.3",
+    "security_revision_example": "3.12.3-1ubuntu0.17",
+    "security_notice": "https://ubuntu.com/security/notices/USN-8744-1",
+    "security_notice_date": "2026-09-10",
+    "policy_url": "https://documentation.ubuntu.com/security/security-updates/",
+    "interpretation": "Ubuntu fixes supported packages through backported security patches and distro revisions. A lower upstream patch banner than python:3.12.16 is not evidence of an unmaintained downgrade. Assess distro package revision and CVE status; do not claim all upstream fixes or behavior are equivalent.",
+    "runtime_installed_revision": "not_yet_verified",
+    "venv_component_caveat": "Official package index marks python3.12-venv Universe; inspect actual dependency support instead of applying Main claim to all artifacts."
+  },
+  "baseline_high_review": [
+    {
+      "id": "CVE-2026-76642",
+      "source_package": "util-linux",
+      "ubuntu_release": "24.04 LTS noble",
+      "observed_on": "2026-11-09",
+      "tracker_url": "https://ubuntu.com/security/CVE-2026-76642",
+      "tracker_last_updated_observed": "2026-11-09",
+      "ubuntu_status": "needs_evaluation",
+      "ubuntu_fixed_version": null,
+      "baseline_debian_scanner_severity": "HIGH",
+      "baseline_debian_scanner_cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+          "V3Score": 7.8
+        }
+      },
+      "installed_ubuntu_version_verified": false,
+      "risk_acceptance": "not_granted",
+      "meaning": "Untriaged or evaluation pending; neither fixed nor not affected. A zero Trivy count cannot resolve this status."
+    },
+    {
+      "id": "CVE-2026-78408",
+      "source_package": "util-linux",
+      "ubuntu_release": "24.04 LTS noble",
+      "observed_on": "2026-11-09",
+      "tracker_url": "https://ubuntu.com/security/CVE-2026-78408",
+      "tracker_last_updated_observed": "2026-11-09",
+      "ubuntu_status": "not_affected",
+      "ubuntu_fixed_version": null,
+      "baseline_debian_scanner_severity": "HIGH",
+      "baseline_debian_scanner_cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:R/S:C/C:N/I:H/A:H",
+          "V3Score": 7.9
+        }
+      },
+      "installed_ubuntu_version_verified": false,
+      "risk_acceptance": "not_granted",
+      "meaning": "Explicit vendor not-affected assessment for Noble; distinct from a patched-version claim.",
+      "cache_discrepancy": "Official aggregate util-linux search result had older needs-evaluation data while individual page last updated 9 November reports Noble not affected. Preserve this discrepancy; prefer dated individual entry for this observation."
+    },
+    {
+      "id": "CVE-2026-78409",
+      "source_package": "util-linux",
+      "ubuntu_release": "24.04 LTS noble",
+      "observed_on": "2026-11-09",
+      "tracker_url": "https://ubuntu.com/security/CVE-2026-78409",
+      "tracker_last_updated_observed": "2026-09-16",
+      "ubuntu_status": "needs_evaluation",
+      "ubuntu_fixed_version": null,
+      "baseline_debian_scanner_severity": "HIGH",
+      "baseline_debian_scanner_cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H",
+          "V3Score": 7
+        }
+      },
+      "installed_ubuntu_version_verified": false,
+      "risk_acceptance": "not_granted",
+      "meaning": "Untriaged or evaluation pending; neither fixed nor not affected. A zero Trivy count cannot resolve this status.",
+      "retrieval_note": "Direct page fetch timed out; official-domain search returned complete Noble table and status. Canonical-owned OSV document additionally reviewed; no unaffected status inferred from range omission."
+    },
+    {
+      "id": "CVE-2026-78410",
+      "source_package": "util-linux",
+      "ubuntu_release": "24.04 LTS noble",
+      "observed_on": "2026-11-09",
+      "tracker_url": "https://ubuntu.com/security/CVE-2026-78410",
+      "tracker_last_updated_observed": "2026-09-16",
+      "ubuntu_status": "needs_evaluation",
+      "ubuntu_fixed_version": null,
+      "baseline_debian_scanner_severity": "HIGH",
+      "baseline_debian_scanner_cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+          "V3Score": 7.8
+        }
+      },
+      "installed_ubuntu_version_verified": false,
+      "risk_acceptance": "not_granted",
+      "meaning": "Untriaged or evaluation pending; neither fixed nor not affected. A zero Trivy count cannot resolve this status.",
+      "retrieval_note": "Direct page fetch timed out; official-domain search returned complete Noble table and status. Canonical-owned OSV document additionally reviewed; no unaffected status inferred from range omission."
+    },
+    {
+      "id": "CVE-2026-54369",
+      "source_package": "acl",
+      "ubuntu_release": "24.04 LTS noble",
+      "observed_on": "2026-11-09",
+      "tracker_url": "https://ubuntu.com/security/CVE-2026-54369",
+      "tracker_last_updated_observed": "2026-10-28",
+      "ubuntu_status": "ignored_backport_too_intrusive",
+      "ubuntu_fixed_version": null,
+      "baseline_debian_scanner_severity": "HIGH",
+      "baseline_debian_scanner_cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N",
+          "V3Score": 7.1
+        }
+      },
+      "installed_ubuntu_version_verified": false,
+      "risk_acceptance": "not_granted",
+      "meaning": "Ubuntu chose not to backport the intrusive change; ignored does not mean fixed or unaffected."
+    },
+    {
+      "id": "CVE-2026-119373",
+      "source_package": "sqlite3",
+      "ubuntu_release": "24.04 LTS noble",
+      "observed_on": "2026-11-09",
+      "tracker_url": "https://ubuntu.com/security/CVE-2026-119373",
+      "tracker_last_updated_observed": "2026-11-04",
+      "ubuntu_status": "needs_evaluation",
+      "ubuntu_fixed_version": null,
+      "baseline_debian_scanner_severity": "HIGH",
+      "baseline_debian_scanner_cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+          "V3Score": 7.8
+        }
+      },
+      "installed_ubuntu_version_verified": false,
+      "risk_acceptance": "not_granted",
+      "meaning": "Untriaged or evaluation pending; neither fixed nor not affected. A zero Trivy count cannot resolve this status.",
+      "package_disambiguation": "Legacy source sqlite is not in Noble, but relevant sqlite3 source needs evaluation. Do not transfer DNE to libsqlite3-0."
+    },
+    {
+      "id": "CVE-2026-119374",
+      "source_package": "sqlite3",
+      "ubuntu_release": "24.04 LTS noble",
+      "observed_on": "2026-11-09",
+      "tracker_url": "https://ubuntu.com/security/CVE-2026-119374",
+      "tracker_last_updated_observed": "2026-11-04",
+      "ubuntu_status": "needs_evaluation",
+      "ubuntu_fixed_version": null,
+      "baseline_debian_scanner_severity": "HIGH",
+      "baseline_debian_scanner_cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+          "V3Score": 7.8
+        }
+      },
+      "installed_ubuntu_version_verified": false,
+      "risk_acceptance": "not_granted",
+      "meaning": "Untriaged or evaluation pending; neither fixed nor not affected. A zero Trivy count cannot resolve this status.",
+      "package_disambiguation": "Legacy source sqlite is not in Noble, but relevant sqlite3 source needs evaluation. Do not transfer DNE to libsqlite3-0.",
+      "additional_source_url": "https://ubuntu.com/security/cves/CVE-2026-119374.json",
+      "machine_status": "needs-triage"
+    },
+    {
+      "id": "CVE-2026-119379",
+      "source_package": "sqlite3",
+      "ubuntu_release": "24.04 LTS noble",
+      "observed_on": "2026-11-09",
+      "tracker_url": "https://ubuntu.com/security/CVE-2026-119379",
+      "tracker_last_updated_observed": "2026-11-04",
+      "ubuntu_status": "needs_evaluation",
+      "ubuntu_fixed_version": null,
+      "baseline_debian_scanner_severity": "HIGH",
+      "baseline_debian_scanner_cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+          "V3Score": 7.8
+        }
+      },
+      "installed_ubuntu_version_verified": false,
+      "risk_acceptance": "not_granted",
+      "meaning": "Untriaged or evaluation pending; neither fixed nor not affected. A zero Trivy count cannot resolve this status.",
+      "package_disambiguation": "Legacy source sqlite is not in Noble, but relevant sqlite3 source needs evaluation. Do not transfer DNE to libsqlite3-0."
+    },
+    {
+      "id": "CVE-2026-16742",
+      "source_package": "systemd",
+      "ubuntu_release": "24.04 LTS noble",
+      "observed_on": "2026-11-09",
+      "tracker_url": "https://ubuntu.com/security/CVE-2026-16742",
+      "tracker_last_updated_observed": "2026-08-13",
+      "ubuntu_status": "fixed",
+      "ubuntu_fixed_version": "255.4-1ubuntu8.17",
+      "baseline_debian_scanner_severity": "HIGH",
+      "baseline_debian_scanner_cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:H",
+          "V3Score": 8.8
+        }
+      },
+      "installed_ubuntu_version_verified": false,
+      "risk_acceptance": "not_granted",
+      "meaning": "Vendor provides a fixed Noble package version. Candidate must independently prove this version or newer is installed; source tracker status alone does not qualify image."
+    },
+    {
+      "id": "CVE-2025-69720",
+      "source_package": "ncurses",
+      "ubuntu_release": "24.04 LTS noble",
+      "observed_on": "2026-11-09",
+      "tracker_url": "https://ubuntu.com/security/CVE-2025-69720",
+      "tracker_last_updated_observed": "2026-07-08",
+      "ubuntu_status": "fixed",
+      "ubuntu_fixed_version": "6.4+20240113-1ubuntu2.1",
+      "baseline_debian_scanner_severity": "HIGH",
+      "baseline_debian_scanner_cvss": {
+        "julia": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+          "V3Score": 7.8
+        },
+        "nvd": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+          "V3Score": 7.8
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+          "V3Score": 7.8
+        }
+      },
+      "installed_ubuntu_version_verified": false,
+      "risk_acceptance": "not_granted",
+      "meaning": "Vendor provides a fixed Noble package version. Candidate must independently prove this version or newer is installed; source tracker status alone does not qualify image."
+    },
+    {
+      "id": "CVE-2026-9538",
+      "source_package": "perl",
+      "ubuntu_release": "24.04 LTS noble",
+      "observed_on": "2026-11-09",
+      "tracker_url": "https://ubuntu.com/security/CVE-2026-9538",
+      "tracker_last_updated_observed": "2026-08-27",
+      "ubuntu_status": "fixed",
+      "ubuntu_fixed_version": "5.38.2-3.2ubuntu0.4",
+      "baseline_debian_scanner_severity": "HIGH",
+      "baseline_debian_scanner_cvss": {
+        "nvd": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "V3Score": 7.5
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "V3Score": 7.5
+        }
+      },
+      "installed_ubuntu_version_verified": false,
+      "risk_acceptance": "not_granted",
+      "meaning": "Vendor provides a fixed Noble package version. Candidate must independently prove this version or newer is installed; source tracker status alone does not qualify image.",
+      "additional_source_url": "https://ubuntu.com/security/cves/CVE-2026-9538.json",
+      "machine_status": "released",
+      "notice": "https://ubuntu.com/security/notices/USN-8684-1"
+    }
+  ],
+  "bookworm_critical_review": [
+    {
+      "id": "CVE-2025-7458",
+      "bookworm_experiment_scanner_severity": "CRITICAL",
+      "source_package": "sqlite3",
+      "ubuntu_release": "24.04 LTS noble",
+      "ubuntu_status": "not_affected",
+      "tracker_url": "https://ubuntu.com/security/CVE-2025-7458",
+      "observed_on": "2026-11-09",
+      "meaning": "Noble sqlite3 explicitly not affected; legacy sqlite is not in release. Do not confuse these source packages.",
+      "candidate_presence_and_version_verified": false
+    },
+    {
+      "id": "CVE-2023-45853",
+      "bookworm_experiment_scanner_severity": "CRITICAL",
+      "source_package": "zlib",
+      "ubuntu_release": "24.04 LTS noble",
+      "ubuntu_status": "not_affected",
+      "tracker_url": "https://ubuntu.com/security/CVE-2023-45853",
+      "observed_on": "2026-11-09",
+      "meaning": "Noble zlib explicitly not affected; vulnerability description concerns unsupported MiniZip code. This does not automatically classify separately bundled third-party copies.",
+      "candidate_presence_and_version_verified": false
+    }
+  ],
+  "summary": {
+    "baseline_high_ids": 11,
+    "noble_needs_evaluation": 6,
+    "noble_ignored_intrusive_backport": 1,
+    "noble_explicit_not_affected": 1,
+    "noble_vendor_fixed_versions_available": 3,
+    "bookworm_critical_ids_reviewed": 2,
+    "zero_scan_is_fix_proof": false
+  },
+  "qualification_limits": [
+    "No actual Ubuntu image installation, package-version comparison, CVE scan or runtime/scientific checks were performed by this review.",
+    "Needs-evaluation and ignored CVEs remain open review items even if absent from a scanner report.",
+    "Image adoption requires supported package inventory, source/version provenance, matching-database comparison and native architecture runtime qualification."
+  ],
+  "release_authorization": "not_granted",
+  "risk_acceptance": "not_granted"
+}

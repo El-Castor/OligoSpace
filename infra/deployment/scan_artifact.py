@@ -190,7 +190,7 @@ def public_data_source(value):
 
 def inventory_version(package, ecosystem, prefix=""):
     upstream = safe_field(package.get(prefix + "Version", ""))
-    if ecosystem != "debian":
+    if ecosystem not in ("debian", "ubuntu"):
         return upstream, None
     epoch = package.get(prefix + "Epoch")
     if epoch is not None and (

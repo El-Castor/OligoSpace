@@ -34,6 +34,48 @@ def fixture():
 
 
 class ScanTests(unittest.TestCase):
+    def test_ubuntu_split_versions_preserve_source_identity_and_incomplete_state(self):
+        raw = fixture()
+        raw["Metadata"]["OS"] = {"Family": "ubuntu", "Name": "24.04"}
+        package = {
+            "Name": "bsdutils",
+            "Version": "2.39.3",
+            "Epoch": 1,
+            "Release": "9ubuntu6.4",
+            "SrcName": "util-linux",
+            "SrcVersion": "2.39.3",
+            "SrcEpoch": 1,
+            "SrcRelease": "9ubuntu6.4",
+        }
+        raw["Results"] = [
+            {
+                "Type": "ubuntu",
+                "Packages": [package],
+                "Vulnerabilities": [
+                    {
+                        "VulnerabilityID": "CVE-2026-1234",
+                        "Severity": "HIGH",
+                        "PkgName": "bsdutils",
+                        "InstalledVersion": "1:2.39.3-9ubuntu6.4",
+                    }
+                ],
+            }
+        ]
+        report = module.summarize(raw, PROOF, DB)
+        row = report["package_inventory"][0]
+        self.assertEqual(row["version"], "1:2.39.3-9ubuntu6.4")
+        self.assertEqual(row["source_version"], "1:2.39.3-9ubuntu6.4")
+        self.assertTrue(row["version_complete"])
+        self.assertEqual(report["vulnerabilities"][0]["package_source"], "util-linux")
+        del package["Release"]
+        report = module.summarize(raw, PROOF, DB)
+        self.assertFalse(report["package_inventory"][0]["version_complete"])
+        self.assertIsNone(report["vulnerabilities"][0]["package_source"])
+        self.assertEqual(
+            module.inventory_version({"Version": "1:2.39.3-9ubuntu6.4"}, "ubuntu")[0],
+            "1:2.39.3-9ubuntu6.4",
+        )
+
     def test_debian_epoch_release_reconstruction_maps_only_exact_unique_source(self):
         raw = fixture()
         package = {
