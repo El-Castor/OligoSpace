@@ -76,7 +76,12 @@ def ldd_unclassified(result: subprocess.CompletedProcess, output: str) -> bool:
 
 
 def native_libraries() -> dict:
-    roots = [Path(sys.prefix), Path("/opt/primer3/bin"), Path("/opt/ncbi-blast")]
+    roots = {
+        Path(sys.prefix),
+        Path(sys.base_prefix),
+        Path("/opt/primer3/bin"),
+        Path("/opt/ncbi-blast"),
+    }
     files = {Path(sys.executable).resolve()}
     for root in roots:
         if root.exists():
@@ -251,6 +256,11 @@ def worker_checks() -> dict:
         match = f"synthetic\tsynthetic\t100.000\t{len(sequence)}" in hits
     return {
         "primer3_nine_golden_facts": golden,
+        "primer3_observed_values": observed,
+        "primer3_reference_values": expected,
+        "primer3_parameters": parameters,
+        "primer3_source_sha256": tasks.PRIMER3_SOURCE_SHA256,
+        "primer3_version": tasks.PRIMER3_VERSION,
         "tool_failure_classification": failures,
         "blast_version_checks": versions,
         "blast_version_scope": "ELF tools accepting -version only",

@@ -1,6 +1,7 @@
 import importlib.util
 from pathlib import Path
 import unittest
+import subprocess
 
 
 spec = importlib.util.spec_from_file_location(
@@ -12,6 +13,15 @@ module = importlib.util.module_from_spec(spec)
 class IsolationTests(unittest.TestCase):
     def setUp(self):
         spec.loader.exec_module(module)
+
+    def test_failed_log_collection_cannot_prove_credentials_absent(self):
+        for status, output, expected in (
+            (0, "safe", True),
+            (1, "", False),
+            (0, "private", False),
+        ):
+            result = subprocess.CompletedProcess([], status, output, "")
+            self.assertEqual(module.log_evidence_passed(result, ("private",)), expected)
 
     def test_all_services_are_bounded_internal_and_have_no_host_ports(self):
         config = module.compose_spec(

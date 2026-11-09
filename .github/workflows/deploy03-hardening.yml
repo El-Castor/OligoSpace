@@ -49,6 +49,7 @@ jobs:
         with: {python-version: "3.12"}
       - uses: docker/setup-docker-action@v4
         with:
+          context: deploy03
           daemon-config: '{"features":{"containerd-snapshotter":true}}'
       - uses: actions/download-artifact@v4
         with:
@@ -65,7 +66,7 @@ jobs:
         env:
           ARCH: ${{ matrix.architecture }}
           ROLE: ${{ matrix.role }}
-        run: python3 infra/hardening/qualify.py --context default --architecture "$ARCH" --role "$ROLE" --vulnerability-cache "$RUNNER_TEMP/trivy-cache" --output "$RUNNER_TEMP/results"
+        run: python3 infra/hardening/qualify.py --context deploy03 --architecture "$ARCH" --role "$ROLE" --vulnerability-cache "$RUNNER_TEMP/trivy-cache" --output "$RUNNER_TEMP/results"
       - name: Retain sanitized reports and package inventories, never images
         if: always()
         uses: actions/upload-artifact@v4

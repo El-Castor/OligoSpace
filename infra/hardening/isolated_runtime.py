@@ -135,6 +135,12 @@ def runtime_safe(info, network):
     )
 
 
+def log_evidence_passed(result, credentials):
+    return result.returncode == 0 and not any(
+        secret in result.stdout + result.stderr for secret in credentials
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in (
@@ -258,8 +264,8 @@ def main():
                     report["checks"][role + "_ready"] = False
             for role, container in containers.items():
                 logs = run(docker + ["logs", container], check=False)
-                report["checks"][role + "_credentials_absent_from_logs"] = not any(
-                    s in logs.stdout + logs.stderr for s in (password, redis_password)
+                report["checks"][role + "_credentials_absent_from_logs"] = (
+                    log_evidence_passed(logs, (password, redis_password))
                 )
             run(dc + ["stop", "--timeout", "20"])
             for role, container in containers.items():

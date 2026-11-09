@@ -66,6 +66,7 @@ class NativeLibraryClosureTests(unittest.TestCase):
 
             with (
                 patch.object(self.module.sys, "prefix", str(prefix)),
+                patch.object(self.module.sys, "base_prefix", str(prefix)),
                 patch.object(self.module.sys, "executable", str(executable)),
                 patch.object(self.module.subprocess, "run", side_effect=ldd),
                 patch.dict(self.module.os.environ, {"LD_LIBRARY_PATH": "/unrelated"}),
