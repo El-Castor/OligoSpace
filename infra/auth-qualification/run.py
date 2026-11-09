@@ -81,6 +81,7 @@ AUTH_TEST_TITLES = (
 TEST_TITLES = AUTH_TEST_TITLES
 CASE_COUNT = len(TEST_TITLES)
 SCIENTIFIC = False
+HARDENED = False
 PHASE_ROLES = {
     "admin": "admin",
     "member": "member",
@@ -243,6 +244,66 @@ def csv_audit_passed(value: object) -> bool:
     )
 
 
+def harden_compose(compose: dict) -> None:
+    """Constrain application runtimes while inheriting their image's non-root USER."""
+    for name in ("api", "bioinfo-worker", "scientific-scheduler"):
+        service = compose["services"].get(name)
+        if service is None:
+            continue
+        service.update(
+            read_only=True,
+            cap_drop=["ALL"],
+            security_opt=["no-new-privileges:true"],
+            cpus="2.0",
+            mem_limit="2g",
+            pids_limit=256,
+            tmpfs=["/tmp:rw,noexec,nosuid,nodev,size=128m,mode=1777"],
+        )
+        if name == "scientific-scheduler":
+            service["command"] = [
+                "celery",
+                "--app",
+                "oligospace_bioinfo.celery_app:app",
+                "beat",
+                "--loglevel=INFO",
+                "--schedule=/tmp/celerybeat-schedule",
+                "--pidfile=/tmp/celerybeat.pid",
+            ]
+
+
+def hardened_worker_action(dc: list[str], signals: Path, *, fault: bool) -> list[str]:
+    """Recreate only the disposable worker; never exec as root or mutate its image.
+
+    The executable fixture lives beside the private Compose configuration and is
+    mounted read-only over Primer3. Restoring uses the unmodified configuration.
+    """
+    command = list(dc)
+    if fault:
+        config = Path(dc[dc.index("--file") + 1])
+        if config.parent.resolve() != signals.parent.resolve():
+            raise ValueError(
+                "Fault fixture must stay inside the disposable work directory"
+            )
+        fixture = config.parent / "primer3-failure"
+        fixture.write_text("#!/bin/sh\nexit 1\n")
+        fixture.chmod(0o755)
+        compose = json.loads(config.read_text())
+        worker = compose["services"]["bioinfo-worker"]
+        worker.setdefault("volumes", []).append(
+            f"{fixture}:/opt/primer3/bin/primer3_core:ro"
+        )
+        fault_config = config.parent / "compose-worker-fault.json"
+        fault_config.write_text(json.dumps(compose))
+        command[command.index("--file") + 1] = str(fault_config)
+    return command + [
+        "up",
+        "--detach",
+        "--no-deps",
+        "--force-recreate",
+        "bioinfo-worker",
+    ]
+
+
 def serve_outage_signals(
     dc: list[str], signals: Path, process: subprocess.Popen[str]
 ) -> None:
@@ -268,7 +329,11 @@ def serve_outage_signals(
             if (signals / request).exists() and not (
                 signals / acknowledgement
             ).exists():
-                if command in ("fault", "repair"):
+                if command in ("fault", "repair") and HARDENED:
+                    action = hardened_worker_action(
+                        dc, signals, fault=command == "fault"
+                    )
+                elif command in ("fault", "repair"):
                     # Fault injection in this disposable container only; no scientific
                     # parameters or application code are changed. Restore in test finally.
                     script = (
@@ -276,7 +341,7 @@ def serve_outage_signals(
                         if command == "fault"
                         else "import os; os.unlink('/opt/primer3/bin/primer3_core'); os.rename('/opt/primer3/bin/primer3_core.saved','/opt/primer3/bin/primer3_core')"
                     )
-                    action = [
+                    action = dc + [
                         "exec",
                         "-T",
                         "--user",
@@ -287,14 +352,14 @@ def serve_outage_signals(
                         script,
                     ]
                 else:
-                    action = [
+                    action = dc + [
                         command,
                         "bioinfo-worker"
                         if request.startswith("worker-")
                         else "keycloak",
                     ]
                 result = subprocess.run(
-                    dc + action, capture_output=True, check=False, timeout=180
+                    action, capture_output=True, check=False, timeout=180
                 )
                 answer = signals / acknowledgement
                 answer.write_text("ok" if result.returncode == 0 else "failed")
@@ -544,16 +609,23 @@ def browser_run(
         process = subprocess.Popen(
             command, text=True, stdout=output, stderr=subprocess.STDOUT
         )
-        serve_outage_signals(dc, work / "evidence", process)
+        try:
+            serve_outage_signals(dc, work / "evidence", process)
+        finally:
+            if HARDENED and SCIENTIFIC:
+                run(hardened_worker_action(dc, work / "evidence", fault=False))
         returncode = process.wait()
     return subprocess.CompletedProcess(command, returncode, output_path.read_text(), "")
 
 
 def main() -> None:
-    global SCIENTIFIC, TEST_TITLES, CASE_COUNT, PHASE_ROLES
+    global SCIENTIFIC, HARDENED, TEST_TITLES, CASE_COUNT, PHASE_ROLES
     parser = argparse.ArgumentParser()
     parser.add_argument("--scientific", action="store_true")
-    SCIENTIFIC = parser.parse_args().scientific
+    parser.add_argument("--hardened", action="store_true")
+    args = parser.parse_args()
+    SCIENTIFIC = args.scientific
+    HARDENED = args.hardened
     if SCIENTIFIC:
         spec = (ROOT / "apps/web/e2e-oidc/scientific.spec.ts").read_text()
         TEST_TITLES = tuple(re.findall(r'^test\("([^"]+)"', spec, re.MULTILINE))
@@ -603,6 +675,7 @@ def main() -> None:
         "started_at": datetime.now(UTC).isoformat(),
         "execution_platform": platform.machine(),
         "mode": "scientific" if SCIENTIFIC else "authentication",
+        "hardened": HARDENED,
         "source_commit": source_commit,
         "tests": [],
     }
@@ -880,6 +953,8 @@ https://auth-qualification.test {
                     },
                 }
             )
+        if HARDENED:
+            harden_compose(compose)
         config = work / "compose.json"
         config.write_text(json.dumps(compose))
         project = f"oligospace-oidc-{secrets.token_hex(4)}"
@@ -899,10 +974,7 @@ https://auth-qualification.test {
                     "run",
                     "--rm",
                     "api",
-                    "micromamba",
-                    "run",
-                    "--name",
-                    "base",
+                    *(["micromamba", "run", "--name", "base"] if not HARDENED else []),
                     "alembic",
                     "upgrade",
                     "head",

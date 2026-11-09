@@ -13,7 +13,7 @@ import re
 import subprocess
 import tarfile
 import tempfile
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, urlsplit
 import math
 
 from scan_layout import prepare_layout
@@ -97,11 +97,19 @@ def public_url(value):
         raise ValueError("invalid_public_field")
     parsed = urlsplit(value)
     # Trivy uses public GitHub advisory searches when no direct advisory exists.
-    # Admit only a CVE identifier, never arbitrary query parameters or values.
+    # Admit only CVE identifiers or the fixed reviewed-Python ecosystem filter,
+    # never arbitrary query parameters or values.
     cve_search = (
         parsed.netloc == "github.com"
         and parsed.path == "/advisories"
-        and re.fullmatch(r"query=CVE-[0-9]{4}-[0-9]{4,}", parsed.query)
+        and (
+            re.fullmatch(r"query=CVE-[0-9]{4}-[0-9]{4,}", parsed.query)
+            or (
+                parsed.query.count("=") == 1
+                and "&" not in parsed.query
+                and parse_qs(parsed.query) == {"query": ["type:reviewed ecosystem:pip"]}
+            )
+        )
     )
     if (
         parsed.scheme != "https"
@@ -110,9 +118,7 @@ def public_url(value):
         or parsed.password
         or (parsed.query and not cve_search)
         or parsed.fragment
-        or not re.fullmatch(
-            r"https://[A-Za-z0-9./_:~%+@\-]+", value.split("?", 1)[0]
-        )
+        or not re.fullmatch(r"https://[A-Za-z0-9./_:~%+@\-]+", value.split("?", 1)[0])
     ):
         raise ValueError("invalid_public_field")
     return value

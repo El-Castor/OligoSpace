@@ -40,6 +40,10 @@ class ScanTests(unittest.TestCase):
         self.assertEqual(module.public_cvss(metrics), metrics)
         url = "https://github.com/advisories?query=CVE-2026-1234"
         self.assertEqual(module.public_url(url), url)
+        ecosystem_url = (
+            "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+        )
+        self.assertEqual(module.public_url(ecosystem_url), ecosystem_url)
         for unsafe in (
             "https://github.com/advisories?query=private-token",
             "https://github.com/advisories?query=CVE-2026-1234&token=private",
