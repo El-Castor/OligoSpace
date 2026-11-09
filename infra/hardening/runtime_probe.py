@@ -56,6 +56,25 @@ def elf(path: Path) -> bool:
         return False
 
 
+def bundled_library_root(path: Path) -> Path | None:
+    """Only wheel-owned sibling libraries may supply contextual loader paths."""
+    resolved = path.resolve()
+    for pattern in (
+        "lib/python*/site-packages/*.libs",
+        "lib64/python*/site-packages/*.libs",
+    ):
+        for root in Path(sys.prefix).glob(pattern):
+            if root.is_dir() and resolved.is_relative_to(root.resolve()):
+                return root.resolve()
+    return None
+
+
+def ldd_unclassified(result: subprocess.CompletedProcess, output: str) -> bool:
+    return bool(result.returncode) and not any(
+        text in output for text in ("not a dynamic executable", "statically linked")
+    )
+
+
 def native_libraries() -> dict:
     roots = [Path(sys.prefix), Path("/opt/primer3/bin"), Path("/opt/ncbi-blast")]
     files = {Path(sys.executable).resolve()}
@@ -66,22 +85,66 @@ def native_libraries() -> dict:
             )
     missing = []
     unclassified = []
+    first_pass_missing = []
+    contextual_checks = []
     for path in sorted(files):
         result = subprocess.run(
             ["ldd", str(path)], capture_output=True, text=True, timeout=10
         )
         output = result.stdout + result.stderr
         if "not found" in output:
-            missing.append(str(path))
-        elif result.returncode and not any(
-            text in output for text in ("not a dynamic executable", "statically linked")
-        ):
+            first_pass_missing.append({"path": str(path), "output": output})
+            bundle = bundled_library_root(path)
+            if bundle is not None:
+                # Do not inherit an unrelated LD_LIBRARY_PATH or borrow system/other
+                # wheel directories. A successful import separately proves activation.
+                environment = dict(os.environ, LD_LIBRARY_PATH=str(bundle))
+                contextual = subprocess.run(
+                    ["ldd", str(path)],
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                    env=environment,
+                )
+                remaining = contextual.stdout + contextual.stderr
+                contextual_checks.append(
+                    {
+                        "path": str(path),
+                        "library_path": str(bundle),
+                        "output": remaining,
+                        "returncode": contextual.returncode,
+                        "resolved": contextual.returncode == 0
+                        and "not found" not in remaining,
+                    }
+                )
+                result, output = contextual, remaining
+            if "not found" in output or (bundle is not None and result.returncode != 0):
+                missing.append(str(path))
+        if ldd_unclassified(result, output):
             unclassified.append(str(path))
     return {
         "elf_files_checked": len(files),
+        "first_pass_missing": first_pass_missing,
+        "contextual_checks": contextual_checks,
         "missing_libraries": missing,
         "unclassified": unclassified,
     }
+
+
+def native_imports(role: str) -> dict[str, bool]:
+    modules = (
+        ("psycopg", "psycopg_binary")
+        if role == "worker"
+        else ("asyncpg", "cryptography.hazmat.bindings._rust")
+    )
+    results = {}
+    for module in modules:
+        try:
+            importlib.import_module(module)
+            results[module] = True
+        except Exception:
+            results[module] = False
+    return results
 
 
 def worker_checks() -> dict:
@@ -249,6 +312,9 @@ def main() -> int:
         )
         if report["kombu"] != "5.6.2" or sys.version_info[:2] != (3, 12):
             reasons.append("runtime_version_mismatch")
+        report["native_imports"] = native_imports(args.role)
+        if not all(report["native_imports"].values()):
+            reasons.append("native_import_check_failed")
         report["native_libraries"] = native_libraries()
         if (
             report["native_libraries"]["missing_libraries"]
