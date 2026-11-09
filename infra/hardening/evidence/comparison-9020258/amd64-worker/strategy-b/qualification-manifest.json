@@ -1,0 +1,32 @@
+{
+  "source": "9020258e85a38d67b113c8d75614fcaa37745522",
+  "controller_source": "9020258e85a38d67b113c8d75614fcaa37745522",
+  "experiment": "strategy-b",
+  "status": "qualification_only",
+  "architecture": "amd64",
+  "mode": "native_build",
+  "images": {
+    "worker": {
+      "digest": "sha256:5e2054dd3860416a4d8e7d0ac8639695f68f53a685b732adef3bdbce32fe40dd",
+      "artifact": "worker-strategy-b-9020258e85a38d67b113c8d75614fcaa37745522-amd64.oci.tar",
+      "metadata": "worker-strategy-b-9020258e85a38d67b113c8d75614fcaa37745522-amd64.metadata.json",
+      "supply_chain": {
+        "sanitized_projection": true,
+        "original_verbatim": false,
+        "signature_trust": "not_verified",
+        "subject_digest": "sha256:a47567ec1cf7f3d0036cc0fc1f315393a2cb17b497cbaac1485c3976c9088f13",
+        "source_sha": "9020258e85a38d67b113c8d75614fcaa37745522",
+        "source_sha_authority": "verified_image_revision_label",
+        "architecture": "amd64",
+        "sbom": "sbom-projection.json",
+        "provenance": "provenance-projection.json",
+        "sbom_attestations": 1,
+        "provenance_attestations": 1
+      }
+    }
+  },
+  "shared_roles": {
+    "migrate": "api",
+    "scheduler": "worker"
+  }
+}

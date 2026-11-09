@@ -1,0 +1,56 @@
+{
+  "controller_source": "9020258e85a38d67b113c8d75614fcaa37745522",
+  "architecture": "amd64",
+  "host": "x86_64",
+  "role": "worker",
+  "scope": "disposable_comparison_only",
+  "publication_authorized": false,
+  "profiles": {
+    "baseline": {
+      "source": "9ebbf2cd993395af2b154efb0b4cf5a76b4dd079",
+      "build_exit": 0,
+      "oci_bytes": 534396928,
+      "scan_exit": 2,
+      "scan_execution": "completed_with_findings",
+      "release_scan_gate": "failed",
+      "runtime_exit": 1,
+      "runtime_gate": "failed",
+      "execution": "completed"
+    },
+    "strategy-a": {
+      "source": "9020258e85a38d67b113c8d75614fcaa37745522",
+      "build_exit": 0,
+      "oci_bytes": 534297088,
+      "scan_exit": 2,
+      "scan_execution": "completed_with_findings",
+      "release_scan_gate": "failed",
+      "runtime_exit": 1,
+      "runtime_gate": "failed",
+      "execution": "completed"
+    },
+    "strategy-b": {
+      "source": "9020258e85a38d67b113c8d75614fcaa37745522",
+      "build_exit": 0,
+      "oci_bytes": 485800960,
+      "scan_exit": 2,
+      "scan_execution": "completed_with_findings",
+      "release_scan_gate": "failed",
+      "runtime_exit": 1,
+      "runtime_gate": "failed",
+      "execution": "completed"
+    },
+    "strategy-c": {
+      "source": "9020258e85a38d67b113c8d75614fcaa37745522",
+      "build_exit": 0,
+      "oci_bytes": 400918016,
+      "scan_exit": 2,
+      "scan_execution": "completed_with_findings",
+      "release_scan_gate": "failed",
+      "runtime_exit": 1,
+      "runtime_gate": "failed",
+      "execution": "completed"
+    }
+  },
+  "technical_comparison": "completed",
+  "release_authorization": "not_granted"
+}

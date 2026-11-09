@@ -1,0 +1,110 @@
+{
+  "actual_architecture": "amd64",
+  "ca_certificates": 118,
+  "cap_eff": "0000000000000000",
+  "expected_hardened": true,
+  "gid": 1000,
+  "kombu": "5.6.2",
+  "native_imports": {
+    "asyncpg": true,
+    "cryptography.hazmat.bindings._rust": true
+  },
+  "native_libraries": {
+    "contextual_checks": [],
+    "elf_files_checked": 463,
+    "first_pass_missing": [
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f28d8b85000)\n\tlibtk8.6.so => /opt/conda/bin/../lib/libtk8.6.so (0x00007f28d8a06000)\n\tlibtcl8.6.so => /opt/conda/bin/../lib/libtcl8.6.so (0x00007f28d883f000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f28d864a000)\n\tlibX11.so.6 => not found\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f28d8558000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f28d8553000)\n\tlibz.so.1 => /opt/conda/bin/../lib/libz.so.1 (0x00007f28d8538000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f28d8533000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f28d8b87000)\n",
+        "path": "/opt/conda/bin/wish"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f9e92d39000)\n\tlibtk8.6.so => /opt/conda/bin/../lib/libtk8.6.so (0x00007f9e92bba000)\n\tlibtcl8.6.so => /opt/conda/bin/../lib/libtcl8.6.so (0x00007f9e929f3000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f9e927fe000)\n\tlibX11.so.6 => not found\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f9e9270c000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f9e92707000)\n\tlibz.so.1 => /opt/conda/bin/../lib/libz.so.1 (0x00007f9e926ec000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f9e926e7000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f9e92d3b000)\n",
+        "path": "/opt/conda/bin/wish8.6"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f7d8bbd7000)\n\tlibX11.so.6 => not found\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f7d8b96c000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f7d8b778000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f7d8bbd9000)\n",
+        "path": "/opt/conda/lib/libtk8.6.so"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f2f46695000)\n\tlibtk8.6.so => /opt/conda/lib/python3.12/lib-dynload/../../libtk8.6.so (0x00007f2f4650b000)\n\tlibtcl8.6.so => /opt/conda/lib/python3.12/lib-dynload/../../libtcl8.6.so (0x00007f2f46344000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f2f4614f000)\n\tlibX11.so.6 => not found\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f2f4605d000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f2f46058000)\n\tlibz.so.1 => /opt/conda/lib/python3.12/lib-dynload/../../libz.so.1 (0x00007f2f4603d000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f2f46038000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f2f46697000)\n",
+        "path": "/opt/conda/lib/python3.12/lib-dynload/_tkinter.cpython-312-x86_64-linux-gnu.so"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007ff081f39000)\n\tlibcrypt.so.2 => not found\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007ff081f26000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007ff081d32000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007ff081f3b000)\n",
+        "path": "/opt/conda/pkgs/python-3.12.8-h9e4cc4f_1_cpython/lib/python3.12/lib-dynload/_crypt.cpython-312-x86_64-linux-gnu.so"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f4d8e5ac000)\n\tlibffi.so.8 => not found\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f4d8e57e000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f4d8e579000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f4d8e385000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f4d8e5ae000)\n",
+        "path": "/opt/conda/pkgs/python-3.12.8-h9e4cc4f_1_cpython/lib/python3.12/lib-dynload/_ctypes.cpython-312-x86_64-linux-gnu.so"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007febbb0dc000)\n\tlibncursesw.so.6 => not found\n\tlibtinfow.so.6 => not found\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007febbb0ab000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007febbaeb7000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007febbb0de000)\n",
+        "path": "/opt/conda/pkgs/python-3.12.8-h9e4cc4f_1_cpython/lib/python3.12/lib-dynload/_curses.cpython-312-x86_64-linux-gnu.so"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f4fda2b5000)\n\tlibpanelw.so.6 => not found\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f4fda0b1000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f4fda2b7000)\n",
+        "path": "/opt/conda/pkgs/python-3.12.8-h9e4cc4f_1_cpython/lib/python3.12/lib-dynload/_curses_panel.cpython-312-x86_64-linux-gnu.so"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007fb868331000)\n\tlibtk8.6.so => not found\n\tlibtcl8.6.so => not found\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fb868124000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fb868333000)\n",
+        "path": "/opt/conda/pkgs/python-3.12.8-h9e4cc4f_1_cpython/lib/python3.12/lib-dynload/_tkinter.cpython-312-x86_64-linux-gnu.so"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007fafbeb45000)\n\tlibnsl.so.3 => not found\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fafbeb31000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fafbe93d000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fafbeb47000)\n",
+        "path": "/opt/conda/pkgs/python-3.12.8-h9e4cc4f_1_cpython/lib/python3.12/lib-dynload/nis.cpython-312-x86_64-linux-gnu.so"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f725800a000)\n\tlibexpat.so.1 => not found\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f7257feb000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f7257df7000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f725800c000)\n",
+        "path": "/opt/conda/pkgs/python-3.12.8-h9e4cc4f_1_cpython/lib/python3.12/lib-dynload/pyexpat.cpython-312-x86_64-linux-gnu.so"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f69c3478000)\n\tlibreadline.so.8 => not found\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f69c3461000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f69c326d000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f69c347a000)\n",
+        "path": "/opt/conda/pkgs/python-3.12.8-h9e4cc4f_1_cpython/lib/python3.12/lib-dynload/readline.cpython-312-x86_64-linux-gnu.so"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f740d27a000)\n\tlibtk8.6.so => /opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/bin/../lib/libtk8.6.so (0x00007f740d0fb000)\n\tlibtcl8.6.so => /opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/bin/../lib/libtcl8.6.so (0x00007f740cf34000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f740cd3f000)\n\tlibX11.so.6 => not found\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f740cc4d000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f740cc48000)\n\tlibz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x00007f740cc28000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f740cc23000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f740d27c000)\n",
+        "path": "/opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/bin/wish"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007feb5546e000)\n\tlibtk8.6.so => /opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/bin/../lib/libtk8.6.so (0x00007feb552ef000)\n\tlibtcl8.6.so => /opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/bin/../lib/libtcl8.6.so (0x00007feb55128000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007feb54f33000)\n\tlibX11.so.6 => not found\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007feb54e41000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007feb54e3c000)\n\tlibz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x00007feb54e1c000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007feb54e17000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007feb55470000)\n",
+        "path": "/opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/bin/wish8.6"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f8c240d9000)\n\tlibX11.so.6 => not found\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f8c23e6e000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f8c23c7a000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f8c240db000)\n",
+        "path": "/opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/lib/libtk8.6.so"
+      }
+    ],
+    "missing_libraries": [
+      "/opt/conda/bin/wish",
+      "/opt/conda/bin/wish8.6",
+      "/opt/conda/lib/libtk8.6.so",
+      "/opt/conda/lib/python3.12/lib-dynload/_tkinter.cpython-312-x86_64-linux-gnu.so",
+      "/opt/conda/pkgs/python-3.12.8-h9e4cc4f_1_cpython/lib/python3.12/lib-dynload/_crypt.cpython-312-x86_64-linux-gnu.so",
+      "/opt/conda/pkgs/python-3.12.8-h9e4cc4f_1_cpython/lib/python3.12/lib-dynload/_ctypes.cpython-312-x86_64-linux-gnu.so",
+      "/opt/conda/pkgs/python-3.12.8-h9e4cc4f_1_cpython/lib/python3.12/lib-dynload/_curses.cpython-312-x86_64-linux-gnu.so",
+      "/opt/conda/pkgs/python-3.12.8-h9e4cc4f_1_cpython/lib/python3.12/lib-dynload/_curses_panel.cpython-312-x86_64-linux-gnu.so",
+      "/opt/conda/pkgs/python-3.12.8-h9e4cc4f_1_cpython/lib/python3.12/lib-dynload/_tkinter.cpython-312-x86_64-linux-gnu.so",
+      "/opt/conda/pkgs/python-3.12.8-h9e4cc4f_1_cpython/lib/python3.12/lib-dynload/nis.cpython-312-x86_64-linux-gnu.so",
+      "/opt/conda/pkgs/python-3.12.8-h9e4cc4f_1_cpython/lib/python3.12/lib-dynload/pyexpat.cpython-312-x86_64-linux-gnu.so",
+      "/opt/conda/pkgs/python-3.12.8-h9e4cc4f_1_cpython/lib/python3.12/lib-dynload/readline.cpython-312-x86_64-linux-gnu.so",
+      "/opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/bin/wish",
+      "/opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/bin/wish8.6",
+      "/opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/lib/libtk8.6.so"
+    ],
+    "unclassified": []
+  },
+  "no_new_privs": "1",
+  "python": "3.12.8",
+  "reason_codes": [
+    "native_library_check_failed"
+  ],
+  "role": "api",
+  "role_import": true,
+  "role_version": "0.1.0",
+  "rootfs_erofs": true,
+  "rootfs_readonly_proven": true,
+  "rootfs_write_errno": "EROFS",
+  "status": "failed",
+  "tmp_writable": true,
+  "uid": 1000
+}

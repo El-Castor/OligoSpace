@@ -1,0 +1,40 @@
+{
+  "actual_architecture": "arm64",
+  "ca_certificates": 148,
+  "cap_eff": "0000000000000000",
+  "expected_hardened": true,
+  "gid": 1000,
+  "kombu": "5.6.2",
+  "native_imports": {
+    "asyncpg": true,
+    "cryptography.hazmat.bindings._rust": true
+  },
+  "native_libraries": {
+    "contextual_checks": [],
+    "elf_files_checked": 158,
+    "first_pass_missing": [
+      {
+        "output": "\tlinux-vdso.so.1 (0x0000ff3a4c09e000)\n\tlibtk8.6.so => not found\n\tlibtcl8.6.so => not found\n\tlibc.so.6 => /lib/aarch64-linux-gnu/libc.so.6 (0x0000ff3a4be70000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000ff3a4c050000)\n",
+        "path": "/usr/local/lib/python3.12/lib-dynload/_tkinter.cpython-312-aarch64-linux-gnu.so"
+      }
+    ],
+    "missing_libraries": [
+      "/usr/local/lib/python3.12/lib-dynload/_tkinter.cpython-312-aarch64-linux-gnu.so"
+    ],
+    "unclassified": []
+  },
+  "no_new_privs": "1",
+  "python": "3.12.16",
+  "reason_codes": [
+    "native_library_check_failed"
+  ],
+  "role": "api",
+  "role_import": true,
+  "role_version": "0.1.0",
+  "rootfs_erofs": true,
+  "rootfs_readonly_proven": true,
+  "rootfs_write_errno": "EROFS",
+  "status": "failed",
+  "tmp_writable": true,
+  "uid": 1000
+}

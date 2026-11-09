@@ -23,7 +23,12 @@ class BuilderTests(unittest.TestCase):
         module = self.load_module()
         sha = "a" * 40
         for role in ("api", "worker"):
-            for experiment in ("strategy-a", "strategy-b", "strategy-c"):
+            for experiment in (
+                "strategy-a",
+                "strategy-b",
+                "strategy-c",
+                "strategy-c-ubuntu",
+            ):
                 recipe = module.build_recipe(role, sha, experiment)
                 self.assertEqual(
                     recipe["dockerfile"],

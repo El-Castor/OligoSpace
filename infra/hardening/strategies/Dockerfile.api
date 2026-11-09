@@ -4,6 +4,7 @@
 ARG BASELINE_IMAGE=oligospace-qualification/api:9ebbf2cd993395af2b154efb0b4cf5a76b4dd079
 ARG MINIMAL_BASE
 ARG PYTHON_BASE=python:3.12.16-slim-bookworm@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df
+ARG UBUNTU_BASE=ubuntu:24.04@sha256:fe81560990fae86dc4743202b2cb4d3df98d0bcf949173cecef15ce1127ef852
 
 FROM ${BASELINE_IMAGE} AS baseline
 
@@ -50,6 +51,39 @@ RUN /opt/venv/bin/python -m pip install --no-cache-dir --require-hashes -r /tmp/
 COPY --from=wheel-builder /wheels /wheels
 RUN /opt/venv/bin/python -m pip install --no-cache-dir --no-deps /wheels/*.whl \
     && rm -rf /wheels /tmp/runtime.txt
+ENV PATH=/opt/venv/bin:$PATH PYTHONUNBUFFERED=1
+WORKDIR /app
+USER 1000:1000
+EXPOSE 8000
+CMD ["uvicorn", "oligospace_api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# Maintained Ubuntu distro Python; separate experimental fourth target.
+FROM ${UBUNTU_BASE} AS ubuntu-python
+RUN apt-get update \
+    && apt-get upgrade --yes \
+    && apt-get install --yes --no-install-recommends python3.12 python3.12-venv ca-certificates libstdc++6 libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+FROM ubuntu-python AS ubuntu-wheel-builder
+COPY infra/hardening/locks/build.txt /tmp/build.txt
+RUN python3.12 -m venv /opt/build \
+    && /opt/build/bin/python -m pip install --no-cache-dir --require-hashes -r /tmp/build.txt
+COPY apps/api /src
+RUN /opt/build/bin/python -m pip wheel --no-deps --no-build-isolation --wheel-dir /wheels /src
+
+FROM ubuntu-python AS strategy-c-ubuntu
+# Official Noble already supplies ubuntu with UID/GID 1000. Verify that
+# identity instead of deleting users or creating a colliding account.
+RUN test "$(id -u ubuntu)" = 1000 \
+    && test "$(id -g ubuntu)" = 1000 \
+    && python3.12 -m venv /opt/venv
+COPY infra/hardening/locks/api.txt /tmp/runtime.txt
+RUN /opt/venv/bin/python -m pip install --no-cache-dir --require-hashes -r /tmp/runtime.txt
+COPY --from=ubuntu-wheel-builder /wheels /wheels
+RUN /opt/venv/bin/python -m pip install --no-cache-dir --no-deps /wheels/*.whl \
+    && rm -rf /wheels /tmp/runtime.txt
+COPY --chown=1000:1000 apps/api/alembic.ini /app/alembic.ini
+COPY --chown=1000:1000 apps/api/alembic /app/alembic
 ENV PATH=/opt/venv/bin:$PATH PYTHONUNBUFFERED=1
 WORKDIR /app
 USER 1000:1000

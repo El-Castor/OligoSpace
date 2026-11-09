@@ -65,7 +65,13 @@ def main():
         "profiles": {},
     }
     complete = True
-    for profile in ("baseline", "strategy-a", "strategy-b", "strategy-c"):
+    for profile in (
+        "baseline",
+        "strategy-a",
+        "strategy-b",
+        "strategy-c",
+        "strategy-c-ubuntu",
+    ):
         destination = output / profile
         destination.mkdir(exist_ok=True)
         revision = BASELINE if profile == "baseline" else source
