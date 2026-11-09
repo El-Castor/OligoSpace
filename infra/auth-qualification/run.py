@@ -259,6 +259,26 @@ def harden_compose(compose: dict) -> None:
             pids_limit=256,
             tmpfs=["/tmp:rw,noexec,nosuid,nodev,size=128m,mode=1777"],
         )
+        # The image entrypoint activates its environment. A nested micromamba
+        # run failed the read-only startup probe; invoke the same server/tool
+        # directly while retaining that real entrypoint and scientific arguments.
+        if name == "api":
+            service["command"] = [
+                "uvicorn",
+                "oligospace_api.main:app",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "8000",
+            ]
+        elif name == "bioinfo-worker":
+            service["command"] = [
+                "celery",
+                "--app",
+                "oligospace_bioinfo.celery_app:app",
+                "worker",
+                "--loglevel=INFO",
+            ]
         if name == "scientific-scheduler":
             service["command"] = [
                 "celery",

@@ -31,6 +31,8 @@ class HardenedQualificationTests(unittest.TestCase):
             self.assertNotIn("user", service)
             self.assertNotIn("ports", service)
         scheduler = compose["services"]["scientific-scheduler"]["command"]
+        self.assertEqual(compose["services"]["api"]["command"][0], "uvicorn")
+        self.assertEqual(compose["services"]["bioinfo-worker"]["command"][0], "celery")
         self.assertEqual(scheduler[0], "celery")
         self.assertIn("--schedule=/tmp/celerybeat-schedule", scheduler)
 
