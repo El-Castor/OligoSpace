@@ -1,0 +1,360 @@
+{
+  "run_id": 42644332091,
+  "run_url": "https://github.com/El-Castor/OligoSpace/actions/runs/42644332091",
+  "rows": [
+    {
+      "artifact": "amd64-api",
+      "profile": "baseline",
+      "oci_bytes": 229777408,
+      "severities": {
+        "CRITICAL": 0,
+        "HIGH": 46,
+        "MEDIUM": 82,
+        "LOW": 66,
+        "UNKNOWN": 0
+      },
+      "inventory_packages": 160,
+      "sbom_components": 208,
+      "db": "df53926a9cc6a579932e4163f52e8a9441d09b0e7d7aab06e09c7dc7a0c72723",
+      "runtime_status": "failed",
+      "runtime_reasons": [
+        "native_library_check_failed"
+      ],
+      "primer3_nine_facts": null,
+      "scan_gate": "failed",
+      "source": "9ebbf2cd993395af2b154efb0b4cf5a76b4dd079"
+    },
+    {
+      "artifact": "amd64-api",
+      "profile": "strategy-a",
+      "oci_bytes": 229679616,
+      "severities": {
+        "CRITICAL": 0,
+        "HIGH": 46,
+        "MEDIUM": 81,
+        "LOW": 66,
+        "UNKNOWN": 0
+      },
+      "inventory_packages": 150,
+      "sbom_components": 198,
+      "db": "df53926a9cc6a579932e4163f52e8a9441d09b0e7d7aab06e09c7dc7a0c72723",
+      "runtime_status": "failed",
+      "runtime_reasons": [
+        "native_library_check_failed"
+      ],
+      "primer3_nine_facts": null,
+      "scan_gate": "failed",
+      "source": "9020258e85a38d67b113c8d75614fcaa37745522"
+    },
+    {
+      "artifact": "amd64-api",
+      "profile": "strategy-b",
+      "oci_bytes": 181076480,
+      "severities": {
+        "CRITICAL": 0,
+        "HIGH": 48,
+        "MEDIUM": 87,
+        "LOW": 67,
+        "UNKNOWN": 0
+      },
+      "inventory_packages": 153,
+      "sbom_components": 201,
+      "db": "df53926a9cc6a579932e4163f52e8a9441d09b0e7d7aab06e09c7dc7a0c72723",
+      "runtime_status": "failed",
+      "runtime_reasons": [
+        "native_library_check_failed"
+      ],
+      "primer3_nine_facts": null,
+      "scan_gate": "failed",
+      "source": "9020258e85a38d67b113c8d75614fcaa37745522"
+    },
+    {
+      "artifact": "amd64-api",
+      "profile": "strategy-c",
+      "oci_bytes": 95997440,
+      "severities": {
+        "CRITICAL": 2,
+        "HIGH": 40,
+        "MEDIUM": 129,
+        "LOW": 111,
+        "UNKNOWN": 0
+      },
+      "inventory_packages": 164,
+      "sbom_components": 178,
+      "db": "df53926a9cc6a579932e4163f52e8a9441d09b0e7d7aab06e09c7dc7a0c72723",
+      "runtime_status": "failed",
+      "runtime_reasons": [
+        "native_library_check_failed"
+      ],
+      "primer3_nine_facts": null,
+      "scan_gate": "failed",
+      "source": "9020258e85a38d67b113c8d75614fcaa37745522"
+    },
+    {
+      "artifact": "amd64-worker",
+      "profile": "baseline",
+      "oci_bytes": 534396928,
+      "severities": {
+        "CRITICAL": 0,
+        "HIGH": 46,
+        "MEDIUM": 81,
+        "LOW": 65,
+        "UNKNOWN": 0
+      },
+      "inventory_packages": 127,
+      "sbom_components": 175,
+      "db": "df53926a9cc6a579932e4163f52e8a9441d09b0e7d7aab06e09c7dc7a0c72723",
+      "runtime_status": "failed",
+      "runtime_reasons": [
+        "native_library_check_failed"
+      ],
+      "primer3_nine_facts": true,
+      "scan_gate": "failed",
+      "source": "9ebbf2cd993395af2b154efb0b4cf5a76b4dd079"
+    },
+    {
+      "artifact": "amd64-worker",
+      "profile": "strategy-a",
+      "oci_bytes": 534297088,
+      "severities": {
+        "CRITICAL": 0,
+        "HIGH": 46,
+        "MEDIUM": 80,
+        "LOW": 65,
+        "UNKNOWN": 0
+      },
+      "inventory_packages": 118,
+      "sbom_components": 166,
+      "db": "df53926a9cc6a579932e4163f52e8a9441d09b0e7d7aab06e09c7dc7a0c72723",
+      "runtime_status": "failed",
+      "runtime_reasons": [
+        "native_library_check_failed"
+      ],
+      "primer3_nine_facts": true,
+      "scan_gate": "failed",
+      "source": "9020258e85a38d67b113c8d75614fcaa37745522"
+    },
+    {
+      "artifact": "amd64-worker",
+      "profile": "strategy-b",
+      "oci_bytes": 485800960,
+      "severities": {
+        "CRITICAL": 0,
+        "HIGH": 48,
+        "MEDIUM": 86,
+        "LOW": 66,
+        "UNKNOWN": 0
+      },
+      "inventory_packages": 121,
+      "sbom_components": 169,
+      "db": "df53926a9cc6a579932e4163f52e8a9441d09b0e7d7aab06e09c7dc7a0c72723",
+      "runtime_status": "failed",
+      "runtime_reasons": [
+        "native_library_check_failed"
+      ],
+      "primer3_nine_facts": true,
+      "scan_gate": "failed",
+      "source": "9020258e85a38d67b113c8d75614fcaa37745522"
+    },
+    {
+      "artifact": "amd64-worker",
+      "profile": "strategy-c",
+      "oci_bytes": 400918016,
+      "severities": {
+        "CRITICAL": 2,
+        "HIGH": 40,
+        "MEDIUM": 132,
+        "LOW": 112,
+        "UNKNOWN": 0
+      },
+      "inventory_packages": 133,
+      "sbom_components": 147,
+      "db": "df53926a9cc6a579932e4163f52e8a9441d09b0e7d7aab06e09c7dc7a0c72723",
+      "runtime_status": "failed",
+      "runtime_reasons": [
+        "native_library_check_failed"
+      ],
+      "primer3_nine_facts": true,
+      "scan_gate": "failed",
+      "source": "9020258e85a38d67b113c8d75614fcaa37745522"
+    },
+    {
+      "artifact": "arm64-api",
+      "profile": "baseline",
+      "oci_bytes": 184395776,
+      "severities": {
+        "CRITICAL": 0,
+        "HIGH": 46,
+        "MEDIUM": 82,
+        "LOW": 66,
+        "UNKNOWN": 0
+      },
+      "inventory_packages": 160,
+      "sbom_components": 208,
+      "db": "df53926a9cc6a579932e4163f52e8a9441d09b0e7d7aab06e09c7dc7a0c72723",
+      "runtime_status": "failed",
+      "runtime_reasons": [
+        "native_library_check_failed"
+      ],
+      "primer3_nine_facts": null,
+      "scan_gate": "failed",
+      "source": "9ebbf2cd993395af2b154efb0b4cf5a76b4dd079"
+    },
+    {
+      "artifact": "arm64-api",
+      "profile": "strategy-a",
+      "oci_bytes": 184297984,
+      "severities": {
+        "CRITICAL": 0,
+        "HIGH": 46,
+        "MEDIUM": 81,
+        "LOW": 66,
+        "UNKNOWN": 0
+      },
+      "inventory_packages": 150,
+      "sbom_components": 198,
+      "db": "df53926a9cc6a579932e4163f52e8a9441d09b0e7d7aab06e09c7dc7a0c72723",
+      "runtime_status": "failed",
+      "runtime_reasons": [
+        "native_library_check_failed"
+      ],
+      "primer3_nine_facts": null,
+      "scan_gate": "failed",
+      "source": "9020258e85a38d67b113c8d75614fcaa37745522"
+    },
+    {
+      "artifact": "arm64-api",
+      "profile": "strategy-b",
+      "oci_bytes": 136082432,
+      "severities": {
+        "CRITICAL": 0,
+        "HIGH": 48,
+        "MEDIUM": 87,
+        "LOW": 67,
+        "UNKNOWN": 0
+      },
+      "inventory_packages": 153,
+      "sbom_components": 201,
+      "db": "df53926a9cc6a579932e4163f52e8a9441d09b0e7d7aab06e09c7dc7a0c72723",
+      "runtime_status": "failed",
+      "runtime_reasons": [
+        "native_library_check_failed"
+      ],
+      "primer3_nine_facts": null,
+      "scan_gate": "failed",
+      "source": "9020258e85a38d67b113c8d75614fcaa37745522"
+    },
+    {
+      "artifact": "arm64-api",
+      "profile": "strategy-c",
+      "oci_bytes": 94863872,
+      "severities": {
+        "CRITICAL": 2,
+        "HIGH": 40,
+        "MEDIUM": 129,
+        "LOW": 111,
+        "UNKNOWN": 0
+      },
+      "inventory_packages": 164,
+      "sbom_components": 178,
+      "db": "df53926a9cc6a579932e4163f52e8a9441d09b0e7d7aab06e09c7dc7a0c72723",
+      "runtime_status": "failed",
+      "runtime_reasons": [
+        "native_library_check_failed"
+      ],
+      "primer3_nine_facts": null,
+      "scan_gate": "failed",
+      "source": "9020258e85a38d67b113c8d75614fcaa37745522"
+    },
+    {
+      "artifact": "arm64-worker",
+      "profile": "baseline",
+      "oci_bytes": 434953728,
+      "severities": {
+        "CRITICAL": 0,
+        "HIGH": 46,
+        "MEDIUM": 81,
+        "LOW": 65,
+        "UNKNOWN": 0
+      },
+      "inventory_packages": 127,
+      "sbom_components": 175,
+      "db": "df53926a9cc6a579932e4163f52e8a9441d09b0e7d7aab06e09c7dc7a0c72723",
+      "runtime_status": "failed",
+      "runtime_reasons": [
+        "native_library_check_failed"
+      ],
+      "primer3_nine_facts": true,
+      "scan_gate": "failed",
+      "source": "9ebbf2cd993395af2b154efb0b4cf5a76b4dd079"
+    },
+    {
+      "artifact": "arm64-worker",
+      "profile": "strategy-a",
+      "oci_bytes": 434853376,
+      "severities": {
+        "CRITICAL": 0,
+        "HIGH": 46,
+        "MEDIUM": 80,
+        "LOW": 65,
+        "UNKNOWN": 0
+      },
+      "inventory_packages": 118,
+      "sbom_components": 166,
+      "db": "df53926a9cc6a579932e4163f52e8a9441d09b0e7d7aab06e09c7dc7a0c72723",
+      "runtime_status": "failed",
+      "runtime_reasons": [
+        "native_library_check_failed"
+      ],
+      "primer3_nine_facts": true,
+      "scan_gate": "failed",
+      "source": "9020258e85a38d67b113c8d75614fcaa37745522"
+    },
+    {
+      "artifact": "arm64-worker",
+      "profile": "strategy-b",
+      "oci_bytes": 386759680,
+      "severities": {
+        "CRITICAL": 0,
+        "HIGH": 48,
+        "MEDIUM": 86,
+        "LOW": 66,
+        "UNKNOWN": 0
+      },
+      "inventory_packages": 121,
+      "sbom_components": 169,
+      "db": "df53926a9cc6a579932e4163f52e8a9441d09b0e7d7aab06e09c7dc7a0c72723",
+      "runtime_status": "failed",
+      "runtime_reasons": [
+        "native_library_check_failed"
+      ],
+      "primer3_nine_facts": true,
+      "scan_gate": "failed",
+      "source": "9020258e85a38d67b113c8d75614fcaa37745522"
+    },
+    {
+      "artifact": "arm64-worker",
+      "profile": "strategy-c",
+      "oci_bytes": 345722368,
+      "severities": {
+        "CRITICAL": 2,
+        "HIGH": 40,
+        "MEDIUM": 132,
+        "LOW": 112,
+        "UNKNOWN": 0
+      },
+      "inventory_packages": 133,
+      "sbom_components": 147,
+      "db": "df53926a9cc6a579932e4163f52e8a9441d09b0e7d7aab06e09c7dc7a0c72723",
+      "runtime_status": "failed",
+      "runtime_reasons": [
+        "native_library_check_failed"
+      ],
+      "primer3_nine_facts": true,
+      "scan_gate": "failed",
+      "source": "9020258e85a38d67b113c8d75614fcaa37745522"
+    }
+  ],
+  "same_frozen_database": true,
+  "selection": "none_three_initial_candidates_not_accepted"
+}

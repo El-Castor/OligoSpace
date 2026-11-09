@@ -63,6 +63,11 @@ jobs:
           python3 -m pip install --require-hashes -r infra/hardening/locks/build.txt
           python3 -B -m unittest discover -s infra/deployment/tests -v
           python3 -B -m unittest discover -s infra/hardening/tests -v
+      - name: Verify scientific archive provenance without retaining binaries
+        if: matrix.role == 'worker'
+        env:
+          ARCH: ${{ matrix.architecture }}
+        run: python3 infra/hardening/scientific_downloads.py --architecture "$ARCH" --output "$RUNNER_TEMP/results/blast-download.json"
       - name: Compare baseline and all three runtime strategies
         env:
           ARCH: ${{ matrix.architecture }}
@@ -76,6 +81,7 @@ jobs:
           retention-days: 14
           path: |
             ${{ runner.temp }}/results/comparison.json
+            ${{ runner.temp }}/results/blast-download.json
             ${{ runner.temp }}/results/**/scan.json
             ${{ runner.temp }}/results/**/runtime.json
             ${{ runner.temp }}/results/**/*-oci-report.json

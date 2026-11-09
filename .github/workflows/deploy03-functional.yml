@@ -1,0 +1,54 @@
+name: DEPLOY03 native application regressions (no deployment)
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-regressions:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            cpu: x86_64
+          - runner: ubuntu-24.04-arm
+            cpu: aarch64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Verify native execution and generate disposable credentials
+        env:
+          CPU: ${{ matrix.cpu }}
+        run: |
+          test "$(uname -m)" = "$CPU"
+          python3 scripts/generate_dev_env.py
+      - name: Mandatory format, lint, typecheck and unit checks in built images
+        run: |
+          make format lint typecheck test PYTHON_RUNNER=container
+          git diff --exit-code -- apps/api services/bioinfo-worker scripts/migration_excel
+      - name: Real PostgreSQL and migration round trip
+        run: make test-integration
+      - name: Real Chromium application journeys with disposable services
+        run: make test-e2e
+      - name: Validate Compose and bind successful checks to native source
+        run: |
+          make compose-config
+          git rev-parse HEAD > "$RUNNER_TEMP/native-regression.txt"
+          uname -m >> "$RUNNER_TEMP/native-regression.txt"
+          printf '%s\n' 'format lint typecheck units PostgreSQL migrations Chromium compose: passed' >> "$RUNNER_TEMP/native-regression.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deploy03-functional-${{ matrix.cpu }}
+          path: ${{ runner.temp }}/native-regression.txt
+          if-no-files-found: error
+          retention-days: 14
