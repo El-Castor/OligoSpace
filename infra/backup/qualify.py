@@ -31,6 +31,7 @@ import uuid
 from unittest.mock import patch
 
 from minio import Minio
+from minio.error import S3Error
 
 from recovery import Recovery
 
@@ -62,6 +63,57 @@ class QualificationError(RuntimeError):
 def require(value: bool, rule: str) -> None:
     if not value:
         raise QualificationError(rule)
+
+
+def exception_diagnostic(error: Exception):
+    """Only fixed exception classes and S3 codes; no URL/message/resource text."""
+    allowed_types = {
+        "QualificationError",
+        "S3Error",
+        "HTTPError",
+        "URLError",
+        "ConnectionError",
+        "TimeoutError",
+        "ValueError",
+        "TimeoutExpired",
+        "MaxRetryError",
+        "OSError",
+        "PermissionError",
+        "FileNotFoundError",
+        "InvalidTag",
+        "JSONDecodeError",
+        "KeyError",
+    }
+    name = type(error).__name__
+    result = {"exception_type": name if name in allowed_types else "other"}
+    if isinstance(error, S3Error):
+        allowed_codes = {
+            "NoSuchKey",
+            "NoSuchBucket",
+            "AccessDenied",
+            "SignatureDoesNotMatch",
+            "InvalidAccessKeyId",
+            "InvalidRequest",
+            "InvalidArgument",
+            "InternalError",
+            "ServiceUnavailable",
+            "SlowDown",
+            "NotImplemented",
+            "RequestTimeout",
+            "InvalidBucketName",
+            "AuthorizationHeaderMalformed",
+            "InvalidToken",
+            "ExpiredToken",
+            "EntityTooSmall",
+            "NoSuchUpload",
+            "MalformedXML",
+            "MethodNotAllowed",
+            "InvalidSecurity",
+            "PermanentRedirect",
+            "InvalidResponse",
+        }
+        result["s3_code"] = error.code if error.code in allowed_codes else "other"
+    return result
 
 
 def execute(args: list[str], data: bytes | None = None, *, merge_stderr=False) -> bytes:
@@ -267,7 +319,7 @@ class Stack:
             "OIDC_CLIENT_SECRET": values["client"],
             "OBJECT_STORAGE_ACCESS_KEY": values["storage_access"],
             "OBJECT_STORAGE_SECRET_KEY": values["storage_secret"],
-            "OBJECT_STORAGE_ENDPOINT": "s3:3900",
+            "OBJECT_STORAGE_ENDPOINT": f"s3:{self.storage_port}",
         }
         kc = {
             "image": "quay.io/keycloak/keycloak:26.7.2",
@@ -366,6 +418,9 @@ class Stack:
                 "keycloak": kc,
                 "redis": {"image": "redis:7.4.10-alpine", "tmpfs": ["/data"]},
                 "s3": {
+                    # Seaweed advertises this exact hostname to its filer/volume
+                    # clients; match the existing storage qualification profile.
+                    "container_name": self.project + "-s3",
                     "image": self.storage_image,
                     "command": command(self.storage_kind, self.project + "-s3"),
                     "environment": storage["environment"],
@@ -1277,6 +1332,7 @@ def main():
             if isinstance(error, QualificationError) and re.fullmatch(r"[a-z_]+", text)
             else "qualification_failed"
         )
+        report["exception_diagnostic"] = exception_diagnostic(error)
         if isinstance(error, QualificationError) and error.diagnostic is not None:
             report["command_diagnostic"] = error.diagnostic
         raise SystemExit(

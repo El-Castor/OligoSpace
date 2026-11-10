@@ -20,6 +20,34 @@ spec.loader.exec_module(qualification)
 
 
 class QualificationEvidenceTests(unittest.TestCase):
+    def test_s3_failure_diagnostic_never_retains_message_or_resource(self):
+        from minio.error import S3Error
+
+        for code, expected in (
+            ("NoSuchBucket", "NoSuchBucket"),
+            ("private-code", "other"),
+        ):
+            error = S3Error(
+                response=None,
+                code=code,
+                message="private-message",
+                resource="private-resource",
+                request_id="private-request",
+                host_id="private-host",
+            )
+            diagnostic = qualification.exception_diagnostic(error)
+            self.assertEqual(
+                diagnostic, {"exception_type": "S3Error", "s3_code": expected}
+            )
+            self.assertNotIn("private", json.dumps(diagnostic))
+
+    def test_unknown_exception_class_is_not_written_to_evidence(self):
+        private_class = type("PrivateCredentialClass", (Exception,), {})
+        self.assertEqual(
+            qualification.exception_diagnostic(private_class("private-message")),
+            {"exception_type": "other"},
+        )
+
     def test_disposable_storage_selection_keeps_pinned_variant_and_private_parent(self):
         from storage_profiles import IMAGES, QUALIFICATION_VARIANTS
 
@@ -64,6 +92,13 @@ class QualificationEvidenceTests(unittest.TestCase):
                     self.assertIn(
                         "-s3.config=/etc/seaweedfs/s3.json", service["command"]
                     )
+                    advertised = next(
+                        value[4:]
+                        for value in service["command"]
+                        if value.startswith("-ip=")
+                    )
+                    self.assertEqual(service["container_name"], advertised)
+                    self.assertTrue(advertised.startswith(stack.project))
 
     def test_storage_credentials_never_get_readable_parent(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -301,3 +336,42 @@ class QualificationEvidenceTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class StorageEndpointTests(unittest.TestCase):
+    def test_api_uses_selected_disposable_storage_port(self):
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            values = {
+                name: "x" * 48
+                for name in (
+                    "database",
+                    "app_database",
+                    "worker_database",
+                    "identity_database",
+                    "password",
+                    "client",
+                    "bootstrap",
+                    "storage_access",
+                    "storage_secret",
+                )
+            }
+            for kind, port in (("seaweedfs", 8333), ("garage", 3900)):
+                side = "target-" + kind
+                stack = qualification.Stack(
+                    root,
+                    "default",
+                    side,
+                    values,
+                    {"admin": "a", "viewer": "v"},
+                    storage_kind=kind,
+                )
+                definition = json.loads(stack.compose_file.read_text())
+                self.assertEqual(
+                    definition["services"]["api"]["environment"][
+                        "OBJECT_STORAGE_ENDPOINT"
+                    ],
+                    f"s3:{port}",
+                )
