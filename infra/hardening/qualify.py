@@ -35,6 +35,19 @@ def main():
     parser.add_argument("--role", choices=("api", "worker"), required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--vulnerability-cache", type=Path, required=True)
+    parser.add_argument(
+        "--profiles",
+        nargs="+",
+        default=["baseline", "production"],
+        choices=(
+            "baseline",
+            "production",
+            "strategy-a",
+            "strategy-b",
+            "strategy-c",
+            "strategy-c-ubuntu",
+        ),
+    )
     args = parser.parse_args()
     output = args.output.resolve()
     if output.is_relative_to(ROOT):
@@ -65,13 +78,7 @@ def main():
         "profiles": {},
     }
     complete = True
-    for profile in (
-        "baseline",
-        "strategy-a",
-        "strategy-b",
-        "strategy-c",
-        "strategy-c-ubuntu",
-    ):
+    for profile in args.profiles:
         destination = output / profile
         destination.mkdir(exist_ok=True)
         revision = BASELINE if profile == "baseline" else source
@@ -90,7 +97,7 @@ def main():
         ]
         if profile == "baseline":
             build += ["--source-ref", BASELINE]
-        else:
+        elif profile != "production":
             build += ["--experiment", profile]
         result = invoke(build)
         record = {"source": revision, "build_exit": result.returncode}
@@ -129,7 +136,7 @@ def main():
             scan_data.get("execution", "")
         ).startswith("completed_"):
             complete = False
-        suffix = "" if profile == "baseline" else "-" + profile
+        suffix = "" if profile in ("baseline", "production") else "-" + profile
         image = f"oligospace-qualification/{args.role}{suffix}:{revision}"
         probe = invoke(
             docker
@@ -191,6 +198,8 @@ def main():
         # A rejected alternative is still an observed comparison. No strategy is
         # preselected; technical execution and suitability are separate decisions.
         if probe_data.get("rule_id") == "ENTRYPOINT_OR_PROBE_FAILED":
+            complete = False
+        if profile == "production" and record["runtime_gate"] != "passed":
             complete = False
         record["execution"] = "completed"
         (output / "comparison.json").write_text(json.dumps(summary, indent=2) + "\n")

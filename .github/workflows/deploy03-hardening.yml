@@ -68,7 +68,7 @@ jobs:
         env:
           ARCH: ${{ matrix.architecture }}
         run: python3 infra/hardening/scientific_downloads.py --architecture "$ARCH" --output "$RUNNER_TEMP/results/blast-download.json"
-      - name: Compare baseline and all three runtime strategies
+      - name: Compare baseline and final production artifacts
         env:
           ARCH: ${{ matrix.architecture }}
           ROLE: ${{ matrix.role }}
