@@ -10,8 +10,14 @@ RUN dpkg-deb --extract /tmp/ca-bootstrap.deb /tmp/ca-bootstrap \
     && cat /tmp/ca-bootstrap/usr/share/ca-certificates/mozilla/*.crt > /etc/ssl/certs/ca-certificates.crt \
     && rm -rf /tmp/ca-bootstrap /tmp/ca-bootstrap.deb
 # Official Noble snapshots retain normal archive signature and validity checks.
-RUN printf '%s\n' 'APT::Snapshot "20261109T120000Z";' > /etc/apt/apt.conf.d/50snapshot \
-    && apt-get update \
+RUN printf '%s\n' \
+    'Types: deb' \
+    'URIs: https://snapshot.ubuntu.com/ubuntu/20261109T120000Z' \
+    'Suites: noble noble-updates noble-security' \
+    'Components: main universe' \
+    'Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg' \
+    > /etc/apt/sources.list.d/ubuntu.sources \
+    && apt-get update --error-on=any \
     && apt-get upgrade --yes \
     && apt-get install --yes --no-install-recommends python3.12 ca-certificates libstdc++6 libgomp1 \
     && rm -rf /var/lib/apt/lists/* \
@@ -22,7 +28,7 @@ ENV PATH=/opt/venv/bin:/opt/primer3/bin:/opt/ncbi-blast/bin:$PATH PYTHONUNBUFFER
 ENV LD_LIBRARY_PATH=/opt/ncbi-blast/lib
 
 FROM runtime-base AS primer3-builder
-RUN apt-get update \
+RUN apt-get update --error-on=any \
     && apt-get install --yes --no-install-recommends gcc g++ make \
     && rm -rf /var/lib/apt/lists/*
 ADD --checksum=sha256:805cef7ef39607cd40f0f5bb8b32e35e20007153a0a55131dd430ce644c8fb9e \
@@ -76,7 +82,7 @@ archive.unlink()
 PYTHON
 
 FROM runtime-base AS dependencies
-RUN apt-get update \
+RUN apt-get update --error-on=any \
     && apt-get install --yes --no-install-recommends python3.12-venv \
     && rm -rf /var/lib/apt/lists/* \
     && python3.12 -m venv /opt/venv
