@@ -291,7 +291,18 @@ class Stack:
             self.root.chmod(0o755)
             kc["volumes"] = [f"{realm_file}:/opt/keycloak/data/import/recovery.json:ro"]
         compose = {
-            "networks": {"default": {"internal": True}},
+            "networks": {
+                "default": {"internal": True},
+                # Docker does not publish ports on an internal-only bridge.
+                # Only host-operated HTTP/S3 qualification endpoints join this
+                # second bridge; DB/cache/worker remain on the internal network.
+                "qualification_ingress": {
+                    "driver": "bridge",
+                    "driver_opts": {
+                        "com.docker.network.bridge.host_binding_ipv4": "127.0.0.1"
+                    },
+                },
+            },
             "volumes": {"postgres": {}, "objects": {}},
             "services": {
                 "postgres": {
@@ -373,6 +384,8 @@ class Stack:
                 },
             },
         }
+        for name in ("api", "keycloak", "s3"):
+            compose["services"][name]["networks"] = ["default", "qualification_ingress"]
         # Reuse the proven non-root/read-only API/worker runtime constraints.
         spec = importlib.util.spec_from_file_location(
             "auth_qualification", ROOT / "infra/auth-qualification/run.py"

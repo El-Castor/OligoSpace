@@ -19,6 +19,56 @@ spec.loader.exec_module(qualification)
 
 
 class QualificationEvidenceTests(unittest.TestCase):
+    def test_loopback_ingress_is_separate_from_internal_data_network(self):
+        with tempfile.TemporaryDirectory() as directory:
+            values = {
+                name: "synthetic"
+                for name in (
+                    "database",
+                    "app_database",
+                    "worker_database",
+                    "identity_database",
+                    "client",
+                    "bootstrap",
+                    "password",
+                    "storage_access",
+                    "storage_secret",
+                )
+            }
+            stack = qualification.Stack(
+                Path(directory), "default", "target", values, {}
+            )
+            compose = json.loads(stack.compose_file.read_text())
+            self.assertTrue(compose["networks"]["default"]["internal"])
+            ingress = compose["networks"]["qualification_ingress"]
+            self.assertEqual(
+                ingress["driver_opts"]["com.docker.network.bridge.host_binding_ipv4"],
+                "127.0.0.1",
+            )
+            participants = {
+                name
+                for name, service in compose["services"].items()
+                if "qualification_ingress" in service.get("networks", [])
+            }
+            self.assertEqual(participants, {"api", "keycloak", "s3"})
+            for name in participants:
+                self.assertEqual(
+                    set(compose["services"][name]["networks"]),
+                    {"default", "qualification_ingress"},
+                )
+                self.assertTrue(
+                    all(
+                        port.startswith("127.0.0.1::")
+                        for port in compose["services"][name]["ports"]
+                    )
+                )
+            for name in ("postgres", "redis", "bioinfo-worker", "scientific-scheduler"):
+                self.assertFalse(compose["services"][name].get("ports"))
+                self.assertNotIn(
+                    "qualification_ingress",
+                    compose["services"][name].get("networks", []),
+                )
+
     def test_successful_log_retrieval_includes_stderr(self):
         # A service leaking on stderr must be visible to the log gate as well.
         actual = qualification.execute(
