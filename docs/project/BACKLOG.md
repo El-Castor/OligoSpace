@@ -1,21 +1,32 @@
 # Backlog
 
-## DEPLOY-03 — active qualification (2026-11-09)
+## DEPLOY-03 — qualified for code review (2026-11-10)
 
-Owner-authorized single branch `codex/deploy-03-container-hardening`, draft
-[PR #21](https://github.com/El-Castor/OligoSpace/pull/21), from verified main9ebbf2c.
-Initial inventory and frozen Python/PyPI hashes retained; Kombu5.6.2 unchanged.
-Three runtime strategies and hardened OIDC/scientific paths are being compared
-on native ARM64/AMD64 CI. Production choice, complete proofs and final independent
-review remain pending. Local candidate builds hit host disk exhaustion/Docker I/O;
-only disposable comparison archives removed, personal files/dev containers retained.
-[Current dossier](../deployment/DEPLOY_03_CONTAINER_HARDENING.md). No merge, image
-publication, Mac mini, Cloudflare, S3 adoption, real migration or DEPLOY-04. Existing
-security/storage/provenance and R1-10/11 human acceptance gates remain open.
+Single [PR #21](https://github.com/El-Castor/OligoSpace/pull/21), branch
+`codex/deploy-03-container-hardening`, from verified main `9ebbf2c`; unmerged.
+Three initial strategies and a fourth Ubuntu LTS variant were measured natively
+on AMD64/ARM64. Selected digest-pinned Ubuntu/Python runtime uses a signed dated
+snapshot, hashed dependencies, separate tooling and no runtime pip/compilers.
+Kombu 5.6.2 and Primer3 parameters/nine references are unchanged. Targeted JWT,
+multipart and Biopython security fixes are qualified; the Biopython HIGH missed
+by Trivy is explicitly corrected rather than ignored.
 
-This owner instruction supersedes the earlier stop-after-MVP-02 work boundary
-only for DEPLOY-03; it grants no operational authorization.
+Code `7b9dca4` passes mandatory make checks,99 API / 14 worker units,206 PostgreSQL,
+29 Chromium, 16 OIDC and 7 scientific cases per native architecture. Runtime controls,
+readiness, secret logs, clean stop/cleanup and eight S3 contracts pass. Final same-DB
+scans:0 detected CRITICAL/HIGH, 22 MEDIUM / 4 LOW, 0 secrets per image. Four upstream IDs
+with higher CVSS scores remain open; vendor priority is not a severity waiver.
+All-severity release gates and DEPLOY-02 supplier/license/provenance findings
+remain blocking. Independent review findings resolved; no remaining important
+code finding. API OCI archives shrink 52–60%, worker 22–26%.
+[Full report, retained evidence and limits](../deployment/DEPLOY_03_CONTAINER_HARDENING.md).
 
+Chromium reuses the existing uploads-disabled no-object-service recipe because
+historical MinIO is unavailable; no provider substitution. No image publication,
+Mac mini deployment, Cloudflare, real migration, S3 adoption or DEPLOY-04.
+R1-08/09 operations and R1-10/11 human/curated-data acceptance remain open.
+Next: owner PR review. This supersedes the earlier stop-after-MVP-02 work boundary
+only for the completed DEPLOY-03 lot; it grants no operational authority.
 
 ## MVP-02 — code integration only (2026-11-09)
 

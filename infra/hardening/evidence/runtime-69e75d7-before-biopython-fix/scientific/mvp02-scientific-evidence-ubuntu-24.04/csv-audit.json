@@ -1,0 +1,34 @@
+{
+  "gate": "passed",
+  "counts": {
+    "exports": 6,
+    "invalid_audits": 0,
+    "distinct_requests": 6,
+    "events": [
+      {
+        "actor": "reader",
+        "rows": 0
+      },
+      {
+        "actor": "scientist",
+        "rows": 5
+      },
+      {
+        "actor": "scientist",
+        "rows": 1
+      },
+      {
+        "actor": "scientist",
+        "rows": 0
+      },
+      {
+        "actor": "reader",
+        "rows": 4
+      },
+      {
+        "actor": "rival",
+        "rows": 0
+      }
+    ]
+  }
+}

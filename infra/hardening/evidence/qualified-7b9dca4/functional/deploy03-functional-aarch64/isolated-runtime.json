@@ -1,0 +1,45 @@
+{
+  "schema": "isolated-runtime/v1",
+  "project": "oligospace-hardening-8f77450980b8",
+  "execution": "passed",
+  "checks": {
+    "network_internal": true,
+    "postgres_runtime_controls": true,
+    "redis_runtime_controls": true,
+    "api_runtime_controls": true,
+    "worker_runtime_controls": true,
+    "api_ready": true,
+    "worker_ready": true,
+    "postgres_credentials_absent_from_logs": true,
+    "redis_credentials_absent_from_logs": true,
+    "api_credentials_absent_from_logs": true,
+    "worker_credentials_absent_from_logs": true,
+    "postgres_graceful_stop": true,
+    "redis_graceful_stop": true,
+    "api_graceful_stop": true,
+    "worker_graceful_stop": true
+  },
+  "scientific_jobs": "not_verified",
+  "schema_migrations": "not_verified",
+  "oidc_rls": "not_verified",
+  "publication_authorized": false,
+  "images": {
+    "api": {
+      "id": "sha256:ba8a5d028ca6d4e7ac0ad1e32d471aa6c9002580f47831372fcc8e5fc0fe54ad",
+      "architecture": "arm64"
+    },
+    "worker": {
+      "id": "sha256:6f3fb8c66a0ccdef76973d9ead27f6f287394f9071bfa28d07e5d104199ca4b3",
+      "architecture": "arm64"
+    },
+    "postgres": {
+      "id": "sha256:e29b5f75230807dfc40a4c8ff9e486b87a30df01cfcab04a4e99d5077d77ddfb",
+      "architecture": "arm64"
+    },
+    "redis": {
+      "id": "sha256:4ab05801a605362b921756ce9dff4893add29c678076fe49a72d8cc3278806c6",
+      "architecture": "arm64"
+    }
+  },
+  "cleanup": "passed"
+}

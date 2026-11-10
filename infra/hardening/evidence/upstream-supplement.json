@@ -12,7 +12,8 @@
     "source": "https://github.com/biopython/biopython/security/advisories/GHSA-cxcq-r753-xf25",
     "scanner_detection": "not_observed_in_retained_69e75d7_scan",
     "code_usage": "No direct Bio imports found under services/bioinfo-worker/src; this is not a global non-applicability waiver",
-    "action": "targeted hashed update to1.88; native requalification required"
+    "action": "fixed by observed Biopython1.88 in both native production probes at7b9dca4",
+    "verification": "qualified-7b9dca4/comparison/*/production/runtime.json"
   },
   "cross_vendor_scores": [
     {
@@ -31,6 +32,23 @@
       "redhat_cvss_v3": 7.4,
       "status": "open; no fixed version in retained scan; no severity waiver",
       "source": "https://ubuntu.com/security/CVE-2026-88648"
+    },
+    {
+      "id": "CVE-2026-76642",
+      "package": "util-linux and associated binaries",
+      "scanner_severity": "MEDIUM",
+      "cvss_v3": 7.8,
+      "cvss_v4": 8.5,
+      "status": "open; Ubuntu Noble needs evaluation; no maintained snapshot fix demonstrated; no sid mixing or risk waiver",
+      "source": "https://ubuntu.com/security/CVE-2026-76642"
+    },
+    {
+      "id": "CVE-2026-7210",
+      "package": "python3.12 and associated binaries",
+      "scanner_severity": "MEDIUM",
+      "cvss_v3": 7.5,
+      "status": "open; Ubuntu Noble needs evaluation; complete mitigation requires CPython and Expat changes; no maintained snapshot fix demonstrated",
+      "source": "https://ubuntu.com/security/CVE-2026-7210"
     }
   ],
   "other_biopython_finding": {
@@ -40,5 +58,11 @@
     "source": "https://github.com/biopython/biopython/issues/5109",
     "action": "included in targeted upstream security update; no XML/NEXUS upload capability added"
   },
-  "risk_acceptance": "not_granted"
+  "risk_acceptance": "not_granted",
+  "final_database_observation": {
+    "sha256": "eca36c960436a6ba904508098b151f7f2f70b6300e8b002aef587e816505dd11",
+    "updated_at": "2026-11-10T10:23:24.039108641Z",
+    "additional_medium_occurrences": 11,
+    "breakdown": "seven util-linux CVE-2026-76642 rows and four CPython CVE-2026-7210 rows; dated DB change, not application regression"
+  }
 }

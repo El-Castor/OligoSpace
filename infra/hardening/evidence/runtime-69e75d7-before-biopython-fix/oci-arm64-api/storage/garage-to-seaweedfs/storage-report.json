@@ -1,0 +1,95 @@
+{
+  "schema": "s3-qualification/v1",
+  "project": "oligospace-deploy02-test-b5cb415cbad3",
+  "source": "garage",
+  "target": "seaweedfs",
+  "status": "passed",
+  "checks": [
+    "create_bucket",
+    "binary_unicode_keys",
+    "sha256_contents",
+    "content_types_user_metadata",
+    "source_restart",
+    "logical_export",
+    "independent_instance_restore",
+    "target_restart",
+    "original_retained",
+    "invalid_credentials_refused",
+    "no_host_ports",
+    "no_secret_in_both_log_streams"
+  ],
+  "images": {
+    "garage": "dxflrs/garage@sha256:677e5b758e4425a325b811c425c026bf35a4bf42f7ddbaa773de3f4fd779a5a5",
+    "seaweedfs": "chrislusf/seaweedfs@sha256:f7a49e3f3972ebed5be2ed4befa4a0c68eb7bdddba6e692d42729ceb545134b8"
+  },
+  "qualification_variant": null,
+  "observed_at": "2026-11-10T10:58:41.856037+00:00",
+  "application_adapter_exercised": true,
+  "application_runtime": "python",
+  "sdk": {
+    "name": "minio",
+    "required_version": "7.2.20"
+  },
+  "resource_samples": {
+    "after_put": {
+      "oligospace-deploy02-test-b5cb415cbad3-source": "6.031MiB / 15.57GiB",
+      "oligospace-deploy02-test-b5cb415cbad3-target": "59.21MiB / 15.57GiB"
+    },
+    "after_restore_restart": {
+      "oligospace-deploy02-test-b5cb415cbad3-source": "5.879MiB / 15.57GiB",
+      "oligospace-deploy02-test-b5cb415cbad3-target": "154.5MiB / 15.57GiB"
+    }
+  },
+  "log_diagnostics": {
+    "source": {
+      "status": "passed",
+      "rule_ids": [
+        "LOG_NO_CREDENTIAL_MATCH"
+      ],
+      "stdout_rule_ids": [],
+      "stderr_rule_ids": []
+    },
+    "target": {
+      "status": "passed",
+      "rule_ids": [
+        "LOG_NO_CREDENTIAL_MATCH"
+      ],
+      "stdout_rule_ids": [],
+      "stderr_rule_ids": []
+    }
+  },
+  "stage": "completed",
+  "engine": {
+    "Architecture": "aarch64",
+    "OSType": "linux",
+    "ServerVersion": "29.9.3",
+    "MemTotal": 16715927552,
+    "NCPU": 4
+  },
+  "resources": {
+    "oligospace-deploy02-test-b5cb415cbad3-source": "5.879MiB / 15.57GiB",
+    "oligospace-deploy02-test-b5cb415cbad3-target": "154.5MiB / 15.57GiB"
+  },
+  "resource_measurement_scope": "two snapshots; synthetic tiny corpus; not peak RSS or pilot capacity proof",
+  "image_platforms": {
+    "garage": "arm64",
+    "seaweedfs": "arm64"
+  },
+  "execution_mode": "native_linux_container",
+  "disk_allocated_bytes": 2961408,
+  "runtime_diagnostics": {
+    "source": {
+      "status": "passed",
+      "rule_ids": [
+        "CANDIDATE_RUNNING"
+      ]
+    },
+    "target": {
+      "status": "passed",
+      "rule_ids": [
+        "CANDIDATE_RUNNING"
+      ]
+    }
+  },
+  "cleanup": "passed"
+}

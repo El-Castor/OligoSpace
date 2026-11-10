@@ -1,0 +1,12 @@
+{
+  "token_valid_during_outage": true,
+  "outage_requests": 26,
+  "outage_non_401": 0,
+  "outage_p50_ms": 11.2,
+  "outage_max_ms": 12.4,
+  "health_live_status": 200,
+  "ui_session_required": true,
+  "recovery_old_token_status": 401,
+  "recovery_new_login_status": 200,
+  "seconds_to_recover": 14.2
+}

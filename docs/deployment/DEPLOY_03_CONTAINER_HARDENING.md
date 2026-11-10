@@ -1,9 +1,9 @@
 # DEPLOY-03 — Container hardening and security remediation
 
-Status: **qualification in progress; not technically accepted** (2026-11-09).
+Status: **technical qualification completed for code review; release/pilot blocked** (2026-11-10).
 Single branch `codex/deploy-03-container-hardening`, [PR #21](https://github.com/El-Castor/OligoSpace/pull/21),
 from verified main `9ebbf2cd993395af2b154efb0b4cf5a76b4dd079`.
-No production Dockerfile has been changed at this stage. No image publication,
+Ubuntu LTS has been selected after native comparison; production Dockerfiles and their consumers are updated, with final native artifact qualification recorded below. No image publication,
 deployment, real-data migration, Cloudflare change or S3 provider adoption.
 
 ## Reproducible initial inventory
@@ -50,14 +50,14 @@ The contradictory tracker annotation for `CVE-2026-78409` is explicitly unresolv
 | A | Original micromamba plus removal of development Python tooling | Same maintained trixie baseline; lower-layer bytes remain in OCI | No HIGH reduction; Tk closure unresolved |
 | B | Same `/opt/conda` prefix and scientific artifacts copied into pinned trixie-slim | Retains real Conda activation and metadata | Adds two HIGH occurrences; Tk closure unresolved |
 | C | Pinned official Python 3.12.16 slim-bookworm; hashed wheels; separate Primer3 builder | Maintained glibc distribution; Python patch change qualified against golden values | Adds two CRITICAL findings; `_tkinter` closure unresolved |
-| C / Ubuntu | Pinned Ubuntu 24.04; maintained distro Python 3.12; same hashed runtime wheels | Distro security backports, no Conda; vendor CVE coverage needs cross-check | Native qualification pending |
+| C / Ubuntu | Pinned Ubuntu 24.04; maintained distro Python 3.12; same hashed runtime wheels | Distro security backports, no Conda; vendor CVE coverage needs cross-check | Selected after four native runtime passes; final artifacts under qualification |
 
 Recipes are experiments under `infra/hardening/strategies`, not production images.
 Native CI compares all severities, full inventories, SBOM/provenance, final OCI
 bytes, imports, dynamic libraries, CA trust, actual default entrypoint, non-root
 read-only execution, nine Primer3 golden facts and a synthetic BLAST exact match.
-No strategy is selected before those observations. Bookworm support ending before
-trixie and inherited BLAST archive provenance remain explicit tradeoffs.
+Selection follows those observations. Bookworm support ending before trixie and
+scientific archive provenance remain explicit tradeoffs.
 
 The first three strategies completed natively on both architectures in
 [run 42644332091](https://github.com/El-Castor/OligoSpace/actions/runs/42644332091).
@@ -101,6 +101,73 @@ Both Bookworm CRITICAL IDs are vendor `not-affected` on Noble. Vendor statements
 are distinguished from observed installed versions and from scanner severity.
 A quiet Ubuntu scan will not close unresolved upstream/source-package questions.
 
+## Selected runtime and final changes
+
+Ubuntu selection evidence is retained from native
+[run 42647176195](https://github.com/El-Castor/OligoSpace/actions/runs/42647176195)
+at `74e8d4c8498d72559eaa27bf3e8dbee39386b91b`, before final packaging changes.
+Both roles passed import/complete library closure, CA, non-root, rootfs read-only,
+capability and NNP probes on AMD64 and ARM64. Both workers passed the nine unchanged
+Primer3 facts, BLAST exact-match fixture and timeout/exit classification.
+[Receipts](../../infra/hardening/evidence/ubuntu-selection-74e8d4c/summary.json).
+
+| Selection artifact | OCI MiB | Critical / High / Medium / Low / Unknown | Packages |
+|---|---:|---|---:|
+| API AMD64 | 93.09 | 0 / 0 / 23 / 7 / 0 | 167 |
+| API ARM64 | 91.30 | 0 / 0 / 23 / 7 / 0 | 167 |
+| Worker AMD64 | 383.73 | 0 / 0 / 22 / 6 / 0 | 135 |
+| Worker ARM64 | 330.37 | 0 / 0 / 22 / 6 / 0 | 135 |
+
+Final packaging uses a signed Ubuntu snapshot `20261109T120000Z`, exact hashed
+wheels and separate `tooling`/default `runtime` targets. Pip is removed before
+copying the runtime environment, rather than hidden beneath a deletion layer;
+compilers and the distro pip-wheel/venv installation packages stay in build/tooling
+stages. Runtime application metadata, apt inventory and scientific legal files stay
+present. Both final images use UID/GID 1000. Direct commands replace activation
+wrappers; migration policy still requires one exact command and rejects shell,
+extra arguments, downgrade and legacy command variants.
+
+Two scoped API updates address observed fixable advisories: PyJWT 2.14.0→2.15.0
+(`CVE-2026-101918`, `CVE-2026-102275`) and python-multipart 0.0.30→0.0.31
+(`CVE-2026-53540`). Baseline locks/graphs are preserved, derived inputs document
+exact changes, and all other API runtime versions including Kombu 5.6.2 are unchanged.
+Final native OIDC/application proof is recorded below.
+
+The final cross-check found a maintainer HIGH advisory absent from the retained
+Trivy scan: [GHSA-cxcq-r753-xf25](https://github.com/biopython/biopython/security/advisories/GHSA-cxcq-r753-xf25),
+CVSS 8.8, affects Biopython below 1.88. The worker is therefore updated from
+1.85 to 1.88 with exact PyPI hashes; NumPy 2.5.4 and every other worker pin stay
+unchanged. No direct Bio import exists in the application worker source, and no
+scientific algorithm or reference is changed. Qualification additionally imports
+Bio/NumPy and records their actual versions. Earlier runtime evidence is explicitly
+retained as pre-update evidence, not proof of the corrected dependency.
+
+Scanner severity is not a cross-vendor CVSS normalization: two retained GnuTLS
+findings classified MEDIUM carry Red Hat CVSS 7.4. They remain open, without a
+fixed version demonstrated in the maintained image; Ubuntu's published assessment
+and upstream disagreement are recorded separately. Thus “zero detected HIGH”
+never means “all high-scoring upstream risks eliminated”.
+[Supplement and provenance](../../infra/hardening/evidence/upstream-supplement.json).
+
+The minimal base initially failed snapshot HTTPS because no CA store existed.
+BuildKit now downloads a fixed official Ubuntu CA package with SHA256 verification;
+only public trust anchors bootstrap HTTPS. Normal TLS and signed apt verification
+remain enabled, and apt installs the canonical snapshot CA package.
+[Bootstrap provenance](../../infra/hardening/evidence/ca-bootstrap.json).
+The native tooling checkout ownership failure was corrected by running tooling
+with the checkout owner's UID/GID; deployed runtime identity is unaffected.
+
+Container construction decision: [ADR-0008](../decisions/ADR-0008-maintained-python-runtime.md).
+Legacy Conda files remain optional local environments, not the container source of
+truth. Distro Python reports 3.12.3 with Ubuntu security backports; its installed
+package version is recorded separately. Both pyprojects permit Python 3.12.
+
+Independent code review found and resolved two P2 issues (log retrieval could
+falsely prove absence; Ubuntu split versions were truncated). Final implementation
+and CA-bootstrap follow-up found no further critical/important issue. This review
+does not replace native execution or human acceptance.
+[Review record](../../infra/hardening/evidence/independent-review.json).
+
 ## Runtime and scientific qualification
 
 Isolated qualification declares non-root execution, capability removal,
@@ -140,24 +207,110 @@ a broad dependency upgrade. A lock is not vulnerability acceptance.
 
 Primer3 remains 2.6.1 with source SHA256
 `805cef7ef39607cd40f0f5bb8b32e35e20007153a0a55131dd430ce644c8fb9e`.
-Parameters and nine golden values are unchanged. BLAST remains 2.17.0; upstream
-MD5 sidecars are available, but an upstream-authenticated SHA256/signature has not
-been demonstrated. Locally computing SHA256 will bind bytes without upgrading
-their authentication claim. Additional checks remain pending.
+Parameters and nine golden values are unchanged. BLAST remains 2.17.0. Official
+archives were streamed without retaining or executing binaries; their upstream MD5
+values matched. Captured SHA256 values now pin production downloads as well:
+ARM64 `cb9ac252a1ac8767d90b0bf0a38486f3cb94f71ef9b6b8d194ded19b30250daf`,
+AMD64 `3888112d8207831aa47371d93583c601f058f88b5db22dc782438b039a3a411b`.
+[ARM64 proof](../../infra/hardening/evidence/blast-download-arm64.json),
+[AMD64 proof](../../infra/hardening/evidence/blast-download-amd64.json).
+These bind observed HTTPS archive bytes, not an upstream signature or attestation.
 
-## Remaining acceptance gates
+## Final native qualification
 
-- Complete native AMD64/ARM64 three-strategy builds/scans/SBOM/size/runtime table.
-- Select only a demonstrated compatible and maintained strategy, then qualify its
-  production/tooling consumers and version coherence.
-- Run mandatory make checks, PostgreSQL/migrations, Chromium, native 16 OIDC and
-  seven scientific journeys, Redis/Celery/idempotency and concerned S3 contracts.
-- Complete start/stop, secret permissions, exposed-service, library and hardening
-  proof on both architectures; retain all failure and residual-risk evidence.
-- Finish independent review, correct findings and update tracking/memory/final CI.
+Code `7b9dca48fdf410014d24b060f49d77763f0d24d0` completed all functional and
+scientific checks on native AMD64 and ARM64. Retained [final evidence and summary](../../infra/hardening/evidence/qualified-7b9dca4/summary.json)
+binds results, actual installed Bio 1.88 / NumPy 2.5.4, manifests, digests and
+architecture. The following handoff changes are documentation/evidence only.
+
+| Check | AMD64 | ARM64 | Evidence |
+|---|---|---|---|
+| Mandatory make format/lint/typecheck/units | PASS | PASS | [Native regressions](https://github.com/El-Castor/OligoSpace/actions/runs/42807902881) |
+| PostgreSQL and migration round-trip | PASS | PASS | Same native run |
+| Chromium application journeys | 29 PASS | 29 PASS | Same native run, uploads-disabled overlay |
+| Runtime controls, readiness, credential logs, clean stop/cleanup | PASS | PASS | Retained isolated-runtime.json reports |
+| Real OIDC/permissions/revocation | 16 PASS | 16 PASS | [OIDC](https://github.com/El-Castor/OligoSpace/actions/runs/42807903128) |
+| Scientific end-to-end, persistence/idempotency/CSV | 7 PASS | 7 PASS | [Scientific acceptance](https://github.com/El-Castor/OligoSpace/actions/runs/42807902751) |
+| Primer3 nine values / BLAST / imports / ELF closure | PASS | PASS | [Exact OCI qualification](https://github.com/El-Castor/OligoSpace/actions/runs/42807903192) |
+| Four S3 self/cross-restore contracts | 4 PASS | 4 PASS | API artifact storage reports, same OCI run |
+| Standard application CI / bootstrap foundation | PASS | PASS | [CI](https://github.com/El-Castor/OligoSpace/actions/runs/42807902695), [foundation](https://github.com/El-Castor/OligoSpace/actions/runs/42807902930) |
+
+Host controller checks also passed: 107 deployment, 26 hardening and 23
+qualification-controller tests. Independent review and the targeted follow-ups
+are complete, with no remaining critical/important code finding.
+
+### Same-database final OCI comparison
+
+[Final comparison](https://github.com/El-Castor/OligoSpace/actions/runs/42807903081)
+uses pinned Trivy and one frozen DB SHA256
+`eca36c960436a6ba904508098b151f7f2f70b6300e8b002aef587e816505dd11`,
+updated `2026-11-10T10:23:24Z`, unchanged after offline scans on all four pairs.
+All final scans completed with findings, all runtime probes passed, secrets zero.
+
+| Artifact | Baseline OCI MiB | Final OCI MiB | Variation | Final C / H / M / L / U | Inventory |
+|---|---:|---:|---:|---|---:|
+| API AMD64 | 219.13 | 86.81 | -60.39% | 0 / 0 / 22 / 4 / 0 | 163 |
+| API ARM64 | 175.85 | 85.02 | -51.65% | 0 / 0 / 22 / 4 / 0 | 163 |
+| Worker AMD64 | 509.64 | 377.36 | -25.96% | 0 / 0 / 22 / 4 / 0 | 131 |
+| Worker ARM64 | 414.80 | 324.00 | -21.89% | 0 / 0 / 22 / 4 / 0 | 131 |
+
+The same final DB baseline remains 46 HIGH occurrences per image. Earlier
+individual final-image scans reported API 11 MEDIUM / worker 12 MEDIUM; they used
+an earlier DB and preceded the Bio update. The final common DB adds eleven MEDIUM
+occurrences: seven util-linux `CVE-2026-76642` rows and four CPython
+`CVE-2026-7210` rows. This dated coverage change is retained rather than concealed.
+No fixed version is offered for the remaining findings in that final snapshot
+scan. All finding rows, vendor scores, sources, packages and available fixes are
+retained in the receipts; this table is not an advisory waiver.
+
+`CVE-2026-76642` still has CVSS 7.8 (v3) / 8.5 (v4) and Noble needs-evaluation;
+`CVE-2026-7210` has CVSS 7.5 and Noble needs-evaluation, with complete mitigation
+requiring both CPython and Expat changes. Two GnuTLS findings retain vendor CVSS
+7.4. These four high-scoring upstream IDs remain open even though Ubuntu/Trivy
+priority is MEDIUM. No supported snapshot fix was demonstrated; unstable package
+mixing, custom unsupported runtime substitution and global exemptions were rejected.
+The upstream Biopython HIGH absent from Trivy was specifically fixed, not waived.
+
+All-severity OCI gates therefore remain **FAILED**, as do relevant historical
+DEPLOY-02/storage/source checks. A successful comparison job means completed
+measurement, not scan acceptance. No gate, required check or finding was disabled.
+
+## Still required before release or pilot acceptance
+
+- Owner PR review and any separately authorized integration/publication decision.
+- Resolution/review of residual and evaluation-pending advisories, including
+  high-scoring CVSS discrepancies; no automatic risk acceptance.
+- Object-provider license/provenance/visibility decision and historical MinIO
+  availability resolution; no automatic SeaweedFS/Garage adoption.
+- R1-08/R1-09 host/backup/TLS operations and R1-10/R1-11 curated-data/human acceptance.
+
+Coverage limits remain explicit: package/SBOM presence is not exhaustive advisory
+coverage, particularly for C libraries bundled inside Python wheels. Native ELF
+closure proves resolution and execution, not absence of vulnerabilities. Vendor
+`needs-evaluation`/`ignored` statuses remain open even when scanner findings are
+absent. Locked inputs and documented build digests do not claim bit-for-bit equal
+archives across timestamps or provenance envelopes. Standard Chromium qualification
+uses the existing uploads-disabled, no-object-service overlay because the historical
+MinIO image is unavailable; S3 SDK/cross-restore contracts are independently tested,
+and no replacement provider is adopted. Golden fixtures do not replace validation
+on owner-curated biological data or human R1-10/R1-11 acceptance.
 
 Technical qualification, publication and authorization to operate are separate.
 Every unresolved DEPLOY-02 security, SeaweedFS/Garage provenance/license/visibility
 gate remains open. R1-10/R1-11 human acceptance and R1-08/R1-09 operational gates
-are unaffected. DEPLOY-04 recommendations will follow the completed comparison;
-DEPLOY-04 implementation is not authorized.
+are unaffected. DEPLOY-04 implementation remains unauthorized; recommendations below are preparatory only.
+
+## Recommendations for a separately authorized DEPLOY-04
+
+Review unresolved Ubuntu/source-package advisories against actual backports before
+pilot acceptance; a lower vendor severity or missing advisory is not a fix. Keep
+the ignored ACL issue and six evaluation-pending IDs visible. Review base digest
+and snapshot together on new fixes, with native scientific/OIDC requalification;
+the snapshot service promises bounded historical retention, not indefinite builds.
+
+Resolve object-store supplier, license and provenance gates independently. Establish
+registry/signing/publication authority separately from these local OCI receipts;
+an unsigned SBOM/provenance projection is not a verified supplier attestation.
+Then qualify the real authorized host, backup/restore and TLS/session operations,
+plus owner-curated data and human scientific acceptance. No such action is started
+by this PR.

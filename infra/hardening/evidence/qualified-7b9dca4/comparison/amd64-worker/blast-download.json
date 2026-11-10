@@ -1,0 +1,9 @@
+{
+  "url": "https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.17.0/ncbi-blast-2.17.0+-x64-linux.tar.gz",
+  "version": "2.17.0",
+  "architecture": "amd64",
+  "bytes": 296006458,
+  "md5": "bdec166721de3b55f90a3badc83538e8",
+  "sha256": "3888112d8207831aa47371d93583c601f058f88b5db22dc782438b039a3a411b",
+  "sha256_authority": "locally_observed_not_upstream_signed"
+}

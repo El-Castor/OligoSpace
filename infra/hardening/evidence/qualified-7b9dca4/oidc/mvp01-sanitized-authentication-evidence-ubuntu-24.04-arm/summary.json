@@ -1,0 +1,108 @@
+{
+  "qualification": "passed",
+  "started_at": "2026-11-10T11:32:15.102271+00:00",
+  "execution_platform": "aarch64",
+  "mode": "authentication",
+  "hardened": true,
+  "source_commit": "7b9dca48fdf410014d24b060f49d77763f0d24d0",
+  "tests": [
+    {
+      "test": "real login enforces PKCE, state, nonce and secure session cookies",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "a callback with forged state cannot establish a session",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "administrator provisions a synthetic identity through the real UI",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "member permissions remain server enforced",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "viewer permissions remain server enforced",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "anonymous, malformed and development-header API requests are refused",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "invalid password does not establish an application session",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "project membership grant and revocation apply to the same issued token",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "local account deactivation rejects a still-valid provider token",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "provider logout failure preserves the session and a confirmed retry revokes it",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "expired access tokens refresh and logout revokes the provider session",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "Keycloak account disable rejects an already issued token and failed refresh",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "provider TOTP enrollment and next-login MFA challenge are enforced",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "identities from different organizations cannot read or modify each other's data",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "introspection cost is measured under light concurrency without request errors",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    },
+    {
+      "test": "Keycloak outage fails closed without cached acceptance and recovers",
+      "status": "passed",
+      "source_line": null,
+      "rule_id": null
+    }
+  ],
+  "phase": "full",
+  "finished_at": "2026-11-10T11:38:09.189982+00:00"
+}

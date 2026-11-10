@@ -1,0 +1,334 @@
+{
+  "execution": "completed_clean",
+  "gate": "passed",
+  "secret_findings": 0,
+  "secret_observations": [],
+  "vulnerabilities_by_severity": {},
+  "vulnerability_ids": [],
+  "vulnerabilities": [],
+  "scanner": "aquasec/trivy@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c",
+  "raw_matches_retained": false,
+  "risk_acceptance": "not_granted",
+  "package_inventory": [
+    {
+      "package": "alpine-baselayout",
+      "version": "3.7.2-r0",
+      "source_package": "alpine-baselayout",
+      "source_version": "3.7.2-r0",
+      "ecosystem": "alpine"
+    },
+    {
+      "package": "alpine-baselayout-data",
+      "version": "3.7.2-r0",
+      "source_package": "alpine-baselayout",
+      "source_version": "3.7.2-r0",
+      "ecosystem": "alpine"
+    },
+    {
+      "package": "alpine-keys",
+      "version": "2.6-r0",
+      "source_package": "alpine-keys",
+      "source_version": "2.6-r0",
+      "ecosystem": "alpine"
+    },
+    {
+      "package": "alpine-release",
+      "version": "3.23.8-r0",
+      "source_package": "alpine-base",
+      "source_version": "3.23.8-r0",
+      "ecosystem": "alpine"
+    },
+    {
+      "package": "apk-tools",
+      "version": "3.0.9-r0",
+      "source_package": "apk-tools",
+      "source_version": "3.0.9-r0",
+      "ecosystem": "alpine"
+    },
+    {
+      "package": "busybox",
+      "version": "1.37.0-r30",
+      "source_package": "busybox",
+      "source_version": "1.37.0-r30",
+      "ecosystem": "alpine"
+    },
+    {
+      "package": "busybox-binsh",
+      "version": "1.37.0-r30",
+      "source_package": "busybox",
+      "source_version": "1.37.0-r30",
+      "ecosystem": "alpine"
+    },
+    {
+      "package": "ca-certificates-bundle",
+      "version": "20261020-r0",
+      "source_package": "ca-certificates",
+      "source_version": "20261020-r0",
+      "ecosystem": "alpine"
+    },
+    {
+      "package": "libapk",
+      "version": "3.0.9-r0",
+      "source_package": "apk-tools",
+      "source_version": "3.0.9-r0",
+      "ecosystem": "alpine"
+    },
+    {
+      "package": "libcrypto3",
+      "version": "3.5.9-r0",
+      "source_package": "openssl",
+      "source_version": "3.5.9-r0",
+      "ecosystem": "alpine"
+    },
+    {
+      "package": "libgcc",
+      "version": "15.2.0-r2",
+      "source_package": "gcc",
+      "source_version": "15.2.0-r2",
+      "ecosystem": "alpine"
+    },
+    {
+      "package": "libssl3",
+      "version": "3.5.9-r0",
+      "source_package": "openssl",
+      "source_version": "3.5.9-r0",
+      "ecosystem": "alpine"
+    },
+    {
+      "package": "libstdc++",
+      "version": "15.2.0-r2",
+      "source_package": "gcc",
+      "source_version": "15.2.0-r2",
+      "ecosystem": "alpine"
+    },
+    {
+      "package": "musl",
+      "version": "1.2.5-r24",
+      "source_package": "musl",
+      "source_version": "1.2.5-r24",
+      "ecosystem": "alpine"
+    },
+    {
+      "package": "musl-utils",
+      "version": "1.2.5-r24",
+      "source_package": "musl",
+      "source_version": "1.2.5-r24",
+      "ecosystem": "alpine"
+    },
+    {
+      "package": "scanelf",
+      "version": "1.3.8-r2",
+      "source_package": "pax-utils",
+      "source_version": "1.3.8-r2",
+      "ecosystem": "alpine"
+    },
+    {
+      "package": "ssl_client",
+      "version": "1.37.0-r30",
+      "source_package": "busybox",
+      "source_version": "1.37.0-r30",
+      "ecosystem": "alpine"
+    },
+    {
+      "package": "zlib",
+      "version": "1.4-r0",
+      "source_package": "zlib",
+      "source_version": "1.4-r0",
+      "ecosystem": "alpine"
+    },
+    {
+      "package": "@edge-runtime/cookies",
+      "version": "6.0.0",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "@edge-runtime/ponyfill",
+      "version": "4.0.0",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "@edge-runtime/primitives",
+      "version": "6.0.0",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "@emnapi/runtime",
+      "version": "1.11.3",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "@img/colour",
+      "version": "1.1.0",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "@img/sharp-libvips-linux-arm64",
+      "version": "1.3.4",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "@img/sharp-libvips-linuxmusl-arm64",
+      "version": "1.3.4",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "@img/sharp-linux-arm64",
+      "version": "0.35.5",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "@img/sharp-linuxmusl-arm64",
+      "version": "0.35.5",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "@img/sharp-wasm32",
+      "version": "0.35.5",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "@next/env",
+      "version": "16.4.1",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "@oligospace/web",
+      "version": "0.1.0",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "@swc/helpers",
+      "version": "0.5.23",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "client-only",
+      "version": "0.0.1",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "detect-libc",
+      "version": "2.1.2",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "next",
+      "version": "16.4.1",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "react",
+      "version": "19.2.8",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "react-dom",
+      "version": "19.2.8",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "react-is",
+      "version": "19.3.0-canary-278794d7-20261002",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "regenerator-runtime",
+      "version": "0.13.4",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "semver",
+      "version": "6.3.1",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "semver",
+      "version": "7.8.5",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "sharp",
+      "version": "0.35.5",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "styled-jsx",
+      "version": "5.1.6",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    },
+    {
+      "package": "yarn",
+      "version": "1.22.22",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "node-pkg"
+    }
+  ],
+  "package_inventory_count": 43,
+  "package_inventory_coverage": "observed",
+  "operating_system": {
+    "family": "alpine",
+    "name": "3.23.5"
+  },
+  "os_package_inventory_coverage": "observed",
+  "vulnerability_database": {
+    "Version": 2,
+    "UpdatedAt": "2026-11-10T10:23:24.039108641Z",
+    "NextUpdate": "2026-11-11T10:23:24.039108391Z",
+    "DownloadedAt": "2026-11-10T11:34:11.238773441Z"
+  },
+  "archive_sha256": "9e62c001fddac711cc90825797845bd7f40576afa4262331e21d6f0153911f58",
+  "source": "7b9dca48fdf410014d24b060f49d77763f0d24d0",
+  "architecture": "arm64",
+  "config_digest": "sha256:3690bcc066c0e00dbb24b174d803510ab52ee63cb83812f40e25a197eb7aef89",
+  "view_index_sha256": "4c5bfbc3e08ef880eecc924c862ca8dfef25ece7c2f185a9b7aacf8f6a84f457",
+  "application_digest": "sha256:2f7a513cd5cc4bc161d7b515d5f5e9c711d03d3a3a5f0ff013410f7b3c6edcbb"
+}

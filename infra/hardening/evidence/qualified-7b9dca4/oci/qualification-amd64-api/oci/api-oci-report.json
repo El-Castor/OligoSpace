@@ -1,0 +1,32 @@
+{
+  "status": "verified",
+  "source": "7b9dca48fdf410014d24b060f49d77763f0d24d0",
+  "architecture": "amd64",
+  "descriptor": {
+    "digest": "sha256:c7b528aabac537da74b5c49fb63d31ae7f8ddfce1c9179a1aa534a86bc1b7062",
+    "size": 1814,
+    "mediaType": "application/vnd.oci.image.manifest.v1+json",
+    "platform": {
+      "os": "linux",
+      "architecture": "amd64"
+    }
+  },
+  "config_digest": "sha256:f1b77017ace7e75667c7439824536597d3d6c569e0ca40414cbd16d634220f1a",
+  "rootfs_diff_ids": [
+    "sha256:bec87777bc2fb2edcdf9af11df1531469e7df911309c1413082b18fcb8610278",
+    "sha256:3e8211cdc35a8509a81fc88e161ae8e6bff035b7a8d1f0049ec0c30b967a6d15",
+    "sha256:86231dae8f9aef8f71a344498f0999f2f942cab41e1a2b7dded150b07e153c6f",
+    "sha256:62cee01439215ff3ead5f603b7960a7c7667173ee34bd123ee6e84d69131ff99",
+    "sha256:02cdbff703ced30af529db9bdd397f3b76d99ef43b72854a8a37839c59eb543c",
+    "sha256:4d281fe349e9114decbe29541469bd5a6749ae1b93aab6f86a7fa0315be18ab8",
+    "sha256:997a3096c35385ff8150d131c0b43fa45b84a12f11ce018086cf8a8f8c90c644",
+    "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+  ],
+  "verified_blobs": 15,
+  "attestations": [
+    "https://slsa.dev/provenance/v1",
+    "https://spdx.dev/Document"
+  ],
+  "signature_trust": "not_verified",
+  "role": "api"
+}

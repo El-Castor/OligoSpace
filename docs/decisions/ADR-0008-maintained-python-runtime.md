@@ -1,6 +1,6 @@
 # ADR-0008: Maintained Ubuntu Python runtime and separate tooling
 
-- Status: selected for final qualification; no operational authorization
+- Status: implemented and technically qualified for code review; no operational authorization
 - Date: 2026-11-10
 - Supersedes: ADR-0005 only for API/worker container construction
 

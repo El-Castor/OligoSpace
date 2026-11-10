@@ -1,0 +1,8 @@
+{
+  "has_sub": true,
+  "issuer_expected": true,
+  "audience_expected": true,
+  "realm_roles_present": true,
+  "me_status": 200,
+  "me_rule": "other"
+}
