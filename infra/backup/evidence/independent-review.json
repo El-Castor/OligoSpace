@@ -1,0 +1,42 @@
+{
+  "schema": "oligospace-independent-recovery-review/v1",
+  "source_commit": "0a62f63c103726122630fe7f1b0a2cc0ea8aa8c2",
+  "reviewer": "independent deploy04_restore_review agent",
+  "status": "code_review_completed_runtime_evidence_pending",
+  "findings": [
+    {
+      "id": "DR-ACL",
+      "issue": "native owners and privileges lost",
+      "resolution": "preserve pg_restore ownership/ACL and require matching preprovisioned role attributes/memberships",
+      "status": "resolved"
+    },
+    {
+      "id": "DR-EMPTY",
+      "issue": "relations-only empty target accepted functions/types",
+      "resolution": "reject custom functions/types/namespaces/extensions as well as relations",
+      "status": "resolved"
+    },
+    {
+      "id": "DR-WRITERS",
+      "issue": "arbitrary services could be declared nonwriters",
+      "resolution": "strict DB/Redis/S3 nonwriter allowlist and full disjoint service coverage",
+      "status": "resolved"
+    },
+    {
+      "id": "DR-ATTACHMENTS",
+      "issue": "object and manifest omission could orphan attachments",
+      "resolution": "authenticated attachment references checked against S3 before mutation and restored SQL afterwards",
+      "status": "resolved"
+    }
+  ],
+  "supplemental": [
+    "fsync journal and publication directories",
+    "stream native dump input and table fingerprints to bound host memory"
+  ],
+  "targeted_tests": {
+    "backup": 21,
+    "result": "passed"
+  },
+  "remaining_critical_or_important_code_findings": [],
+  "limitation": "A successful real restore is required separately; review and unit tests alone are not acceptance."
+}

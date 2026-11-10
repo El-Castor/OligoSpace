@@ -6,6 +6,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -19,6 +20,122 @@ spec.loader.exec_module(qualification)
 
 
 class QualificationEvidenceTests(unittest.TestCase):
+    def test_disposable_storage_selection_keeps_pinned_variant_and_private_parent(self):
+        from storage_profiles import IMAGES, QUALIFICATION_VARIANTS
+
+        values = {
+            label: "generated-synthetic-only"
+            for label in (
+                "database",
+                "app_database",
+                "worker_database",
+                "identity_database",
+                "password",
+                "client",
+                "bootstrap",
+                "storage_access",
+                "storage_secret",
+            )
+        }
+        for kind, image, port, config in (
+            ("seaweedfs", QUALIFICATION_VARIANTS["seaweedfs-4.52"], 8333, "s3.json"),
+            ("garage", IMAGES["garage"], 3900, "garage.toml"),
+        ):
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                stack = qualification.Stack(root, "default", "target", values, {}, kind)
+                compose = json.loads(stack.compose_file.read_text())
+                service = compose["services"]["s3"]
+                self.assertEqual(service["image"], image)
+                self.assertEqual(service["ports"], [f"127.0.0.1::{port}"])
+                self.assertTrue(
+                    any(
+                        config in mount and mount.endswith(":ro")
+                        for mount in service["volumes"]
+                    )
+                )
+                self.assertEqual(root.stat().st_mode & 0o777, 0o700)
+                self.assertEqual(stack.storage_port, port)
+                if kind == "seaweedfs":
+                    self.assertFalse(service["environment"])
+                    self.assertEqual(
+                        (stack.root / config).stat().st_mode & 0o777, 0o644
+                    )
+                    self.assertIn(
+                        "-s3.config=/etc/seaweedfs/s3.json", service["command"]
+                    )
+
+    def test_storage_credentials_never_get_readable_parent(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            root.chmod(0o755)
+            with self.assertRaisesRegex(
+                qualification.QualificationError, "private_fixture_root_required"
+            ):
+                qualification.Stack(root, "default", "target", {}, {})
+            self.assertFalse((root / "target").exists())
+
+    def test_secret_log_diagnostic_reports_labels_not_values(self):
+        labels = (
+            "database",
+            "app_database",
+            "worker_database",
+            "identity_database",
+            "password",
+            "client",
+            "bootstrap",
+            "storage_access",
+            "storage_secret",
+        )
+        values = {label: "private-value-for-" + label + "-end" for label in labels}
+
+        def logs(*args):
+            return (
+                values["identity_database"].encode() if args[-1] == "postgres" else b""
+            )
+
+        stack = SimpleNamespace(side="source", storage_secrets=["private-rpc"], dc=logs)
+        retrievals, findings = qualification.check_secret_logs((stack,), values)
+        self.assertEqual(len(retrievals), 7)
+        self.assertTrue(all(item["status"] == "passed" for item in retrievals))
+        self.assertEqual(
+            findings,
+            [
+                {
+                    "side": "source",
+                    "service": "postgres",
+                    "secret_label": "identity_database",
+                }
+            ],
+        )
+        self.assertNotIn("private", json.dumps([retrievals, findings]))
+
+    def test_secret_log_retrieval_failure_remains_explicit(self):
+        values = {
+            label: "private-value-for-" + label + "-end"
+            for label in (
+                "database",
+                "app_database",
+                "worker_database",
+                "identity_database",
+                "password",
+                "client",
+                "bootstrap",
+                "storage_access",
+                "storage_secret",
+            )
+        }
+
+        def failed(*args):
+            raise RuntimeError("private-error-body")
+
+        stack = SimpleNamespace(side="target", storage_secrets=[], dc=failed)
+        retrievals, findings = qualification.check_secret_logs((stack,), values)
+        self.assertEqual(len(retrievals), 7)
+        self.assertTrue(all(item["status"] == "failed" for item in retrievals))
+        self.assertFalse(findings)
+        self.assertNotIn("private", json.dumps(retrievals))
+
     def test_loopback_ingress_is_separate_from_internal_data_network(self):
         with tempfile.TemporaryDirectory() as directory:
             values = {

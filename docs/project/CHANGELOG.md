@@ -1,5 +1,16 @@
 # Changelog
 
+## DEPLOY-04 — coordinated recovery (2026-11-10)
+
+- Add AES-256-GCM backup of both PostgreSQL databases, current S3 objects and
+  selected configuration, with source/version/UTC/SHA256 manifests.
+- Coordinate stopped writers, verify source resume, preserve ownership/grants,
+  reject nonempty targets and fence interrupted restores without automatic restart.
+- Add authenticated transfer/retention, secret-escrow runbook, native disposable
+  restoration/OIDC/scientific/negative tests. Qualification results pending.
+- Keep every DEPLOY-02/03 release barrier and operational/human gate open.
+
+
 ## DEPLOY-03 — qualified for code review (2026-11-10)
 
 Single [PR #21](https://github.com/El-Castor/OligoSpace/pull/21), branch

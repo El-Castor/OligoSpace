@@ -66,3 +66,46 @@ class CoordinationTests(unittest.TestCase):
                 args = run.call_args.args[0]
                 self.assertNotIn("--no-owner", args)
                 self.assertNotIn("--no-acl", args)
+
+    def test_api_cannot_be_reclassified_as_nonwriter(self):
+        import json
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            env = root / "env"
+            env.write_text("")
+            env.chmod(0o600)
+            compose = root / "compose.json"
+            compose.write_text("{}")
+            obj = object.__new__(Recovery)
+            obj.config = {
+                "context": "test",
+                "compose_file": str(compose),
+                "env_file": str(env),
+                "external_writers_excluded": True,
+                "databases": {
+                    "application": {"name": "app", "user": "owner"},
+                    "identity": {"name": "identity", "user": "owner"},
+                },
+                "source_revision": "a" * 40,
+                "database_service": "postgres",
+                "writers": ["keycloak"],
+                "non_writers": ["api", "postgres", "redis", "s3"],
+            }
+            obj._call = lambda args: json.dumps(
+                [{"Endpoints": {"docker": {"Host": "unix:///private/test.sock"}}}]
+            ).encode()
+            obj._compose = lambda *args: json.dumps(
+                {
+                    "services": {
+                        name: {}
+                        for name in ["api", "keycloak", "postgres", "redis", "s3"]
+                    }
+                }
+            ).encode()
+            with patch.dict("os.environ", {}, clear=True):
+                with self.assertRaisesRegex(
+                    ValueError, "invalid_nonwriter_classification"
+                ):
+                    obj._preflight()

@@ -1,5 +1,18 @@
 # Backlog
 
+## DEPLOY-04 — implementation under qualification (2026-11-10)
+
+PR21 is now merged as `ff3f629`; this supersedes its historical pending wording
+below. The owner explicitly authorizes this separate DEPLOY-04 lot only.
+Single [PR #22](https://github.com/El-Castor/OligoSpace/pull/22), isolated branch
+`codex/deploy-04-backup-disaster-recovery`, implements coordinated encrypted
+application/Keycloak/S3 backup and verified empty-target restore, ownership/grants,
+attachment checks, interruption fencing, transfer and controlled retention.
+Native synthetic qualification and final independent review are in progress;
+[report and remaining gates](../deployment/DEPLOY_04_BACKUP_RECOVERY.md).
+No real data, deployment, image publication, provider change or merge authorized.
+
+
 ## DEPLOY-03 — qualified for code review (2026-11-10)
 
 Single [PR #21](https://github.com/El-Castor/OligoSpace/pull/21), branch

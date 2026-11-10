@@ -36,7 +36,7 @@ from recovery import Recovery
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "infra/deployment"))
-from storage_profiles import IMAGES, command, prepare  # noqa: E402
+from storage_profiles import command, image_reference, prepare  # noqa: E402
 
 ISSUER = "http://keycloak:8080/realms/recovery"
 DATABASES = {
@@ -150,12 +150,31 @@ def http(url, *, form=None, body=None, token=None, method=None):
 
 class Stack:
     def __init__(
-        self, root: Path, context: str, side: str, values: dict, identities: dict
+        self,
+        root: Path,
+        context: str,
+        side: str,
+        values: dict,
+        identities: dict,
+        storage_kind="seaweedfs",
     ):
+        require(
+            storage_kind in ("garage", "seaweedfs"), "unsupported_qualification_storage"
+        )
+        require(
+            root.is_absolute()
+            and not root.is_symlink()
+            and root.is_dir()
+            and root.stat().st_mode & 0o077 == 0
+            and root.stat().st_uid == os.getuid(),
+            "private_fixture_root_required",
+        )
+        self.storage_kind = storage_kind
         self.root = root / side
         self.root.mkdir(mode=0o700)
         self.project = "oligospace-deploy04-test-" + side + "-" + secrets.token_hex(5)
         self.context = context
+        self.side = side
         self.values = values
         self.identities = identities
         self.compose_file = self.root / "compose.json"
@@ -211,13 +230,31 @@ class Stack:
     def make_compose(self, source):
         values = self.values
         storage = prepare(
-            "garage",
+            self.storage_kind,
             self.project + "-s3",
             self.root,
             values["storage_access"],
             values["storage_secret"],
         )
         self.storage_secrets = storage["extra_secret_values"]
+        self.storage_port = storage["port"]
+        self.storage_image = image_reference(
+            self.storage_kind,
+            "seaweedfs-4.52" if self.storage_kind == "seaweedfs" else None,
+        )
+        storage_file = self.root / (
+            "s3.json" if self.storage_kind == "seaweedfs" else "garage.toml"
+        )
+        storage_target = (
+            "/etc/seaweedfs/s3.json"
+            if self.storage_kind == "seaweedfs"
+            else "/etc/garage.toml"
+        )
+        if self.storage_kind == "seaweedfs":
+            # Only the generated file is bound directly for the image's non-root
+            # user; its enclosing temporary root stays0700 to exclude host users.
+            # This does not change any real credential or host directory policy.
+            storage_file.chmod(0o644)
         api_env = {
             "ENVIRONMENT": "production",
             "AUTH_MODE": "oidc",
@@ -329,14 +366,14 @@ class Stack:
                 "keycloak": kc,
                 "redis": {"image": "redis:7.4.10-alpine", "tmpfs": ["/data"]},
                 "s3": {
-                    "image": IMAGES["garage"],
-                    "command": command("garage", self.project + "-s3"),
+                    "image": self.storage_image,
+                    "command": command(self.storage_kind, self.project + "-s3"),
                     "environment": storage["environment"],
                     "volumes": [
                         "objects:/data",
-                        f"{self.root / 'garage.toml'}:/etc/garage.toml:ro",
+                        f"{storage_file}:{storage_target}:ro",
                     ],
-                    "ports": ["127.0.0.1::3900"],
+                    "ports": [f"127.0.0.1::{self.storage_port}"],
                 },
                 "api": {
                     "image": "oligospace-deploy04-api:test",
@@ -409,7 +446,7 @@ class Stack:
             "postgres",
         )
         self.sql("CREATE DATABASE keycloak OWNER os_identity;", "postgres")
-        endpoint = self.dc("port", "s3", "3900").decode().strip()
+        endpoint = self.dc("port", "s3", str(self.storage_port)).decode().strip()
         require(
             bool(re.fullmatch(r"127\.0\.0\.1:\d+", endpoint)),
             "loopback_storage_required",
@@ -770,6 +807,62 @@ def verify_runtime_grants(stack: Stack):
     )
 
 
+def check_secret_logs(stacks: tuple[Stack, ...], values: dict):
+    """Scan both streams, retaining only fixed service/side/secret-label enums."""
+    labels = (
+        "database",
+        "app_database",
+        "worker_database",
+        "identity_database",
+        "password",
+        "client",
+        "bootstrap",
+        "storage_access",
+        "storage_secret",
+    )
+    forbidden = {label: values[label] for label in labels}
+    for stack in stacks:
+        require(stack.side in ("source", "target", "interrupted"), "invalid_log_side")
+        for index, secret in enumerate(stack.storage_secrets):
+            require(index == 0, "unexpected_storage_secret_inventory")
+            forbidden[stack.side + "_storage_rpc"] = secret
+    findings = []
+    retrievals = []
+    for stack in stacks:
+        for service in (
+            "postgres",
+            "redis",
+            "s3",
+            "api",
+            "keycloak",
+            "bioinfo-worker",
+            "scientific-scheduler",
+        ):
+            try:
+                logs = stack.dc("logs", "--no-color", service)
+            except Exception:
+                retrievals.append(
+                    {"side": stack.side, "service": service, "status": "failed"}
+                )
+                continue
+            retrievals.append(
+                {"side": stack.side, "service": service, "status": "passed"}
+            )
+            for label, value in forbidden.items():
+                if value and value.encode() in logs:
+                    findings.append(
+                        {"side": stack.side, "service": service, "secret_label": label}
+                    )
+            if re.search(
+                rb"\b[A-Za-z0-9_-]{16,}\.[A-Za-z0-9_-]{16,}\.[A-Za-z0-9_-]{16,}\b", logs
+            ):
+                findings.append(
+                    {"side": stack.side, "service": service, "secret_label": "jwt_like"}
+                )
+            del logs
+    return retrievals, findings
+
+
 def expect_failure(action, rule):
     try:
         action()
@@ -925,7 +1018,7 @@ def omit_referenced_object(tree: Path):
     (tree / "manifest.json").write_text(json.dumps(manifest))
 
 
-def qualification(context: str, report: dict):
+def qualification(context: str, report: dict, *, storage_kind="seaweedfs"):
     endpoint = json.loads(
         execute(["docker", "--context", context, "context", "inspect", context])
     )[0]["Endpoints"]["docker"]["Host"]
@@ -953,12 +1046,12 @@ def qualification(context: str, report: dict):
         ExitStack() as cleanup,
     ):
         work = Path(temporary)
-        work.chmod(0o755)
+        work.chmod(0o700)
         key = work / "backup.key"
         key.write_bytes(secrets.token_bytes(32))
         key.chmod(0o600)
-        source = Stack(work, context, "source", values, identities)
-        target = Stack(work, context, "target", values, identities)
+        source = Stack(work, context, "source", values, identities, storage_kind)
+        target = Stack(work, context, "target", values, identities, storage_kind)
         cleanup.callback(source.stop)
         cleanup.callback(target.stop)
         source.start_data(build=True)
@@ -1077,7 +1170,9 @@ def qualification(context: str, report: dict):
         science(target, token, new["public_id"])
         report["stages"].append("fresh_oidc_permissions_api_and_worker_after_recovery")
         # Interrupted restore uses a third fresh target. Never retry/erase its data.
-        interrupted = Stack(work, context, "interrupted", values, identities)
+        interrupted = Stack(
+            work, context, "interrupted", values, identities, storage_kind
+        )
         cleanup.callback(interrupted.stop)
         interrupted.start_data()
         original = Recovery._restore_database
@@ -1122,27 +1217,14 @@ def qualification(context: str, report: dict):
         require(
             not set(WRITERS).intersection(running), "interrupted_target_started_writers"
         )
-        # The log gate reads all streams into RAM and checks each generated secret.
-        # Failed retrieval fails qualification rather than implying absent secrets.
-        for stack in (source, target, interrupted):
-            logs = stack.dc("logs", "--no-color")
-            forbidden = [
-                *values.values(),
-                *source.storage_secrets,
-                *target.storage_secrets,
-                *interrupted.storage_secrets,
-            ]
-            require(
-                not any(value.encode() in logs for value in forbidden),
-                "generated_secret_present_in_logs",
-            )
-            require(
-                not re.search(
-                    rb"\b[A-Za-z0-9_-]{16,}\.[A-Za-z0-9_-]{16,}\.[A-Za-z0-9_-]{16,}\b",
-                    logs,
-                ),
-                "jwt_present_in_logs",
-            )
+        retrievals, findings = check_secret_logs((source, target, interrupted), values)
+        report["secret_log_retrievals"] = retrievals
+        report["secret_log_violations"] = findings
+        require(
+            all(item["status"] == "passed" for item in retrievals),
+            "secret_log_retrieval_failed",
+        )
+        require(not findings, "generated_secret_present_in_logs")
         report["secret_log_gate"] = "passed"
         report["stages"].append("negative_fail_closed_and_secret_log_gate")
         report["encrypted_archive_bytes"] = archive_path.stat().st_size
@@ -1152,7 +1234,7 @@ def qualification(context: str, report: dict):
         )
         report["limitations"] = [
             "Synthetic tiny corpus; measured durations are not accepted RPO/RTO or pilot capacity.",
-            "Garage is a disposable S3-compatible test service, not a provider adoption or MinIO transferability certification.",
+            "Selected storage is a disposable S3-compatible test service, not a provider adoption or MinIO transferability certification.",
             "OIDC uses a test-only direct-grant client over isolated HTTP; browser/PKCE remains covered by existing OIDC CI, not this DR harness.",
             "Generated role passwords supplied separately; real secret escrow and recovery remain operator gated.",
             "No external destination or real secrets/records/pilot are accessed.",
@@ -1162,6 +1244,9 @@ def qualification(context: str, report: dict):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--context", default="default")
+    parser.add_argument(
+        "--storage-kind", choices=("garage", "seaweedfs"), default="seaweedfs"
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     os.umask(0o077)
@@ -1173,11 +1258,16 @@ def main():
         .strip(),
         "started_at": datetime.now(UTC).isoformat(),
         "native_architecture": platform.machine(),
+        "storage_qualification_kind": args.storage_kind,
+        "storage_qualification_image": image_reference(
+            args.storage_kind,
+            "seaweedfs-4.52" if args.storage_kind == "seaweedfs" else None,
+        ),
         "stages": [],
         "negative_tests": [],
     }
     try:
-        qualification(args.context, report)
+        qualification(args.context, report, storage_kind=args.storage_kind)
         report["status"] = "passed"
     except Exception as error:
         # Only our fixed rule IDs are eligible for artifacts; never third-party text.
