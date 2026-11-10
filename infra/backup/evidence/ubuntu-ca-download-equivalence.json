@@ -1,0 +1,31 @@
+{
+  "schema": "oligospace-public-package-equivalence/v1",
+  "observed_utc": "2026-11-10",
+  "reason": "CI snapshot bootstrap sometimes returns content rejected by fixed checksum; no checksum bypass",
+  "package": "ca-certificates_20260816ubuntu0.24.04.2_all.deb",
+  "expected_sha256": "f9fbacd417b515450b831032cc39d18059e9874e67525679a43c16071dabf9a0",
+  "bytes": 140064,
+  "request_user_agent": "Go-http-client/1.1",
+  "observations": [
+    {
+      "url": "https://snapshot.ubuntu.com/ubuntu/20261109T120000Z/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.24.04.2_all.deb",
+      "http_status": 200,
+      "deb_header": true,
+      "sha256": "f9fbacd417b515450b831032cc39d18059e9874e67525679a43c16071dabf9a0"
+    },
+    {
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.24.04.2_all.deb",
+      "http_status": 200,
+      "deb_header": true,
+      "sha256": "f9fbacd417b515450b831032cc39d18059e9874e67525679a43c16071dabf9a0"
+    },
+    {
+      "url": "https://security.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.24.04.2_all.deb",
+      "http_status": 200,
+      "deb_header": true,
+      "sha256": "f9fbacd417b515450b831032cc39d18059e9874e67525679a43c16071dabf9a0"
+    }
+  ],
+  "changed": "bootstrap transport URL only; dated signed apt repositories, package versions and SHA256 unchanged",
+  "deployment_or_publication": false
+}

@@ -3,7 +3,7 @@ FROM ubuntu:24.04@sha256:fe81560990fae86dc4743202b2cb4d3df98d0bcf949173cecef15ce
 # BuildKit verifies HTTPS and the fixed archive hash before the minimal image
 # has a CA store. Only public Ubuntu trust anchors bootstrap snapshot HTTPS.
 ADD --checksum=sha256:f9fbacd417b515450b831032cc39d18059e9874e67525679a43c16071dabf9a0 \
-    https://snapshot.ubuntu.com/ubuntu/20261109T120000Z/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.24.04.2_all.deb \
+    https://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.24.04.2_all.deb \
     /tmp/ca-bootstrap.deb
 RUN dpkg-deb --extract /tmp/ca-bootstrap.deb /tmp/ca-bootstrap \
     && mkdir -p /etc/ssl/certs \

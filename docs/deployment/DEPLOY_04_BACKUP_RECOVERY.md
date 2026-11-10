@@ -79,7 +79,7 @@ Runtime qualification also exposed a harness port issue: Docker internal bridges
 publish host ports. An additional loopback-only qualification bridge now attaches
 only API/Keycloak/S3; PostgreSQL/Redis/workers remain on the internal network.
 The temporary host root is private0700 even when a child file must be readable
-by the disposable Keycloak UID. No production networking or image changed.
+by the disposable Keycloak UID. No production networking or scientific parameter changed.
 
 ## Coverage limits and operational gates
 
@@ -133,3 +133,15 @@ SeaweedFS candidate strictly as an isolated synthetic S3 service, not as a pilot
 provider decision. The same full log gate, tags/metadata/checksum and permission
 checks remain active. Historical MinIO and any actual chosen provider still need
 its own complete transfer/logging/maintenance/license qualification.
+
+## Necessary inherited build repair
+
+Fresh CI repeatedly refused the CA bootstrap response from the snapshot endpoint
+at the fixed hash. Independent HTTPS requests (including the BuildKit user agent)
+verified that snapshot, archive.ubuntu.com and security.ubuntu.com provide the
+**same140064 bytes/SHA256**. The two production Dockerfiles now retrieve that same
+pinned CA package from the official archive endpoint. Dated signed APT repositories,
+CA version/hash, all runtime dependency/scientific pins and verification flags are
+unchanged. This transport-only repair addresses an observed qualification blocker;
+it does not waive a checksum mismatch or change the selected runtime architecture.
+[Equivalence receipt](../../infra/backup/evidence/ubuntu-ca-download-equivalence.json).
