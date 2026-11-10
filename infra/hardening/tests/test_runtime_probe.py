@@ -108,11 +108,11 @@ class NativeLibraryClosureTests(unittest.TestCase):
         with patch.object(
             self.module.importlib,
             "import_module",
-            side_effect=[object(), ImportError()],
+            side_effect=[object(), ImportError(), object(), object()],
         ):
             self.assertEqual(
                 self.module.native_imports("worker"),
-                {"psycopg": True, "psycopg_binary": False},
+                {"psycopg": True, "psycopg_binary": False, "Bio": True, "numpy": True},
             )
         with patch.object(self.module.importlib, "import_module") as load:
             self.assertTrue(all(self.module.native_imports("api").values()))

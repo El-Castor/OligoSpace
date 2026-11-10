@@ -6,15 +6,25 @@ graph includes two explicit security updates: PyJWT crypto 2.14.0 → 2.15.0 for
 CVE-2026-101918/CVE-2026-102275, and python-multipart 0.0.30 → 0.0.31 for
 CVE-2026-53540. These are fixes indicated by the candidate scan and authorized
 for targeted remediation; this metadata does not prove their runtime remediation.
-No other runtime package version changed. Kombu remains 5.6.2.
+The worker additionally updates only Biopython 1.85 → 1.88 for maintainer
+[GHSA-cxcq-r753-xf25](https://github.com/biopython/biopython/security/advisories/GHSA-cxcq-r753-xf25)
+(HIGH, Bio.Nexus eval, fixed in 1.88) and CVE-2025-68463 (XXE, fixed upstream
+in 1.87). The maintainer advisory is not covered by the observed Trivy result;
+absence from a scanner database is not absence of a vulnerability. PyPI 1.88
+declares `numpy` without a version bound; its requirement accepts the unchanged
+locked NumPy 2.5.4. No other worker version changes. Kombu remains 5.6.2.
 
 `inputs/baseline-api-dependencies.json` preserves the original API export
 byte-for-byte; `baseline/api.txt` and `baseline/provenance.json` preserve its
 original lock and complete original release metadata. The current
 `inputs/api-dependencies.json` is explicitly derived, retaining the original
 Python observation while recording its baseline SHA256 and the two approved
-changes. It is not a newly observed installed closure. Worker and build inputs
-remain the original exports. Those receipts lack root versions and architecture; do not infer
+changes. It is not a newly observed installed closure. Worker originals are
+retained separately as well: `inputs/baseline-worker-dependencies.json`
+and `baseline/worker.txt` preserve the original worker graph/lock, while the current
+worker input explicitly records its baseline hash, approved Biopython update and
+NumPy requirement check. The build input remains the original export. Original
+receipts lack root versions and architecture; do not infer
 architecture or universal marker coverage. The original build export excludes its
 root: generation intentionally adds `hatchling==1.27.0`, the explicit requirement
 in both pyprojects. New exports also record the installed root version.

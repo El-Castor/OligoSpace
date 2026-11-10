@@ -13,6 +13,34 @@ LOCKS = ROOT / "infra/hardening/locks"
 
 
 class DependencyLockTests(unittest.TestCase):
+    def test_worker_targeted_biopython_fix_preserves_numpy_and_other_pins(self):
+        import hashlib
+
+        path = LOCKS / "inputs/baseline-worker-dependencies.json"
+        baseline = json.loads(path.read_text())
+        current = json.loads((LOCKS / "inputs/worker-dependencies.json").read_text())
+        before = {p["name"]: p for p in baseline["packages"]}
+        after = {p["name"]: p for p in current["packages"]}
+        self.assertEqual(set(before), set(after))
+        self.assertEqual(
+            {name for name in before if before[name] != after[name]}, {"biopython"}
+        )
+        self.assertEqual(before["biopython"]["version"], "1.85")
+        self.assertEqual(after["biopython"]["version"], "1.88")
+        self.assertEqual(before["numpy"], after["numpy"])
+        self.assertEqual(after["kombu"]["version"], "5.6.2")
+        self.assertEqual(
+            current["derivation"]["baseline_graph_sha256"],
+            hashlib.sha256(path.read_bytes()).hexdigest(),
+        )
+        self.assertTrue(
+            current["derivation"]["numpy_requirement_check"][
+                "existing_version_satisfies"
+            ]
+        )
+        self.assertIn("biopython==1.85", (LOCKS / "baseline/worker.txt").read_text())
+        self.assertIn("biopython==1.88", (ROOT / "envs/bioinfo.yml").read_text())
+
     def test_targeted_api_updates_preserve_original_receipt_and_all_other_versions(
         self,
     ):

@@ -6,7 +6,7 @@
       "sha256": "3bfa1007c21760a2df5a39dcc6b47254e0ceebc03680e02ab679d986d81abad5"
     },
     "worker": {
-      "sha256": "9c49081633a1cc61e11fe1ea4fc1fd8fbe4eb08f04014eb4f60bd6b92ab8131e"
+      "sha256": "bd0671685a994c2ba4104872bd4f6be4f8c150653165cd4d2fb1bb997d2f4dec"
     },
     "build": {
       "sha256": "beaaf4d4a49e0b8956cf3db0c428c1eefc4cb8fadecce46f9c0101bd8d94f249"
@@ -171,43 +171,52 @@
       "metadata_sha256": "19d290d3244d1d60cf8a6f6b3fba7a7a85b401a0596338213e7f385922f82c33",
       "url": "https://pypi.org/pypi/billiard/4.3.2/json"
     },
-    "biopython==1.85": {
+    "biopython==1.88": {
+      "url": "https://pypi.org/pypi/biopython/1.88/json",
       "hashes": [
-        "0ffb03cd982cb3a79326b84e789f2093880175c44eea10f3030c632f98de24f6",
-        "1b61593765e9ebdb71d73307d55fd4b46eb976608d329ae6803c084d90ed34c7",
-        "327184048b5a50634ae0970119bcb8a35b76d7cefb2658a01f772915f2fb7686",
-        "434dd23e972b0c89e128f2ebbd16b38075d609184f4f1fd16368035f923019c2",
-        "5916eb56df7ecd4a3babc07a48d4894c40cfb45dc18ccda1c148d0131017ce04",
-        "5a236ab1e2797c7dcf1577d80fdaafabead2908bc338eaed0aa1509dab769fef",
-        "5dafab74059de4e78f49f6b5684eddae6e7ce46f09cfa059c1d1339e8b1ea0a6",
-        "66b08905fb1b3f5194f908aaf04bbad474c4e3eaebad6d9f889a04e64dd1faf4",
-        "6985e17a2911defcbd30275a12f5ed5de2765e4bc91a60439740d572fdbfdf43",
-        "6fe47d704c2d3afac99aeb461219ec5f00273120d2d99835dc0a9a617f520141",
-        "7c8326cd2825ba166abecaf72843b9b15823affd6cec04fde65f0d2526767da4",
-        "8208bf2d87ade066fafe9a63a2eb77486c233bc1bdda2cbf721ebee54715f1bf",
-        "8469095907a17f156c76b6644829227efdf4996164f7726e6f4ca15039329776",
-        "86e487b6fe0f20a2b0138cb53f3d4dc26a7e4060ac4cb6fb1d19e194d445ef46",
-        "8e2bbe58cc1a592b239ef6d68396745d3fbfaafc668ce38283871d8ff070dbab",
-        "9a08d082e85778259a83501063871e00ba57336136403b75050eea14d523c00a",
-        "9a630b3804f6c3fcae2f9b7485d7a05425e143fc570f25babbc5a4b3d3db00d7",
-        "a6308053a61f3bdbb11504ece4cf24e264c6f1d6fad278f7e59e6b84b0d9a7b4",
-        "b0cec8833bf3036049129944ee5382dd576dac9670c3814ff2314b52aa94f199",
-        "b1e4918e6399ab0183dd863527fec18b53b7c61b6f0ef95db84b4adfa430ce75",
-        "bae6f17262f20e9587d419ba5683e9dc93a31ee1858b98fa0cff203694d5b786",
-        "cc5b981b9e3060db7c355b6145dfe3ce0b6572e1601b31211f6d742b10543874",
-        "cf88a4c8d8af13138be115949639a5e4a201618185a72ff09adbe175b7946b28",
-        "cffc15ac46688cd4cf662b24d03037234ce00b571df67be45a942264f101f990",
-        "d024ad48997ad53d53a77da24b072aaba8a550bd816af8f2e7e606a9918a3b43",
-        "d3c99db65d57ae4fc5034e42ac6cd8ddce069e664903f04c8a4f684d7609d6fa",
-        "d6f8efb2db03f2ec115c5e8c764dbadf635e0c9ecd4c0e91fc8216c1b62f85f5",
-        "d76e44b46f555da2e72ac36e757efd327f7f5f690e9f00ede6f723b48538b6d5",
-        "d93464e629950e4df87d810125dc4e904538a4344b924f340908ea5bc95db986",
-        "db8822adab0cd75a6e6ae845acf312addd8eab5f9b731c191454b961fc2c2cdc",
-        "e54e495239e623660ad367498c2f7a1a294b1997ba603f2ceafb36fd18f0eba6",
-        "f2f45ab3f1e43fdaa697fd753148999090298623278097c19c2c3c0ba134e57c"
+        "0063aea2051a99b2f278dd8bef23d5eca3f50eb922fb72d4a99678484bae043d",
+        "024e438d044a0b1d4a0157af4ab2411b83389696aee3cdeb71f5ee74d0a59df2",
+        "02a6d8ed4eea1ee9e1c2a9d7690f21a60406bcfee7c71348363e267cce397bee",
+        "0b8fea4940c58915e6d4c670f17f4e9c20797e9e26d4300b6efbe960b99d199d",
+        "0e732f44208f1bab7c42bfea94422609249bd897da6b25b5588618436e80a6d2",
+        "1c5c795fed9469b1115fd00d7681f4953a2d54ec502715720d11fe986678fa1b",
+        "1e29b72bb79786f4157b394fbd852d736ffd883a13a177c21d6d15ea1b67d357",
+        "277b54f1b804a74df1eb7f0fe8f6d6a1eda15bc78a94802c000f5f0a20ce4fdc",
+        "393398c8383217f3f51aaa2372960e697b494a3eee97e1c4d5f62ee60ea9287b",
+        "410eaa083fcc308b44c7051e597ae2f39e4068754bdd605cc32aed025aa132d0",
+        "43ce1fbed01c0ddb903fa426fa0f836062d973a09df15560ac8e895da24c1350",
+        "465caece761b9ec22e0dc63bb5969517c901587a27104c4f1cee69f414b4df2d",
+        "4904abb18a1e039a631e549529c9b8123a166838cafe27f649f83f0183382d61",
+        "5508f8f585d101269982d58abb4ab50cbde5d3c50e21b01986c55ac7cc5f34f9",
+        "5808c5b980e63226426737b6f71b5dd7747e2e3d0074720cc04edf348ab57eab",
+        "793de1a57d9b75546a4041f547b6a848031a71933f66d4c761857b0b0118c46b",
+        "8ffa3f911a8ded827663bb98ffcd5fcfcaed2c7262bf6d3be5338332c81c7b66",
+        "906a7b2d4bc4515f5718f3ae994bd3bcfe8e87d963954008b57e0109e3772a58",
+        "9384c30460832926e765319040d732d1252a713a05af1dd4cc8b19cb1d590439",
+        "9732e2c74b1e3751810b026e568817afb18101039c30c9b16b9193e40ec1efdb",
+        "99144485e7723842fe6c6bb0c13f323a550fc30817d3e0814126987f9b06855a",
+        "99288eb34ce75cb85a10ab3e5d76ffe45f0c03c7f5cc6d144d3777419e44b31e",
+        "99e1f7022ab8eee2ae9e9a05b66ad183b9fe4eeb4e561a65ed0fd85eef5f8267",
+        "9aaa31c0bda4d059f7b2ee00bfdb5cbb73ade3057aa4b737a7cc0187091d071a",
+        "9e6e675ff0ecd0822735c9da0b7091eb29a757279bc810039890ae1f54f18fdd",
+        "ab5c2211a9d1ad7d4b8afd7f53caa7f20e104a5ddf0b30f7cb899f039379de68",
+        "abeda1d57624b82476be498259dbc4531a1957bb1d77c80fd986adaa44f1b406",
+        "adbafdc7769d46cc9e72aba86b7e2da3aa078d2a533b53757ca88ca6ff1d0489",
+        "b321ee0f652aaecefe065b11d64b527c4d04f7826dfb7cfa31edea5ab1db07c2",
+        "b86c1e86c829b372995d5e0eb80146551972a1bff25da1698b48844b6e6840cd",
+        "d4180714488d2ac6418fd42c445d1cda71fdd85ff71ad6748e7a312fa944e138",
+        "d879c732e0dee158cebf09047fa616451fa30f3abcab4105e3ce5cd336571147",
+        "dd5131b70287486af1acef2fc40de51c68de2ea740ab772097ac2d10bad9a0b5",
+        "df709eabdce2fc2cc1059fcefbbea245d2b2c41fc2026eda6194b810474e68d6",
+        "e3ac69b8abddac75dce301cbe77fc2650cbe0bd62ab2d2662d0f6f378b8c8018",
+        "e800cacbf8e240105338f8eb52e92a00cd0103881d3cdf1798e89130cf878ed8",
+        "f0aaf49f0c8919fb7a02cdc3db9e7f89165f53417a18d80508e0f167121cb7c1",
+        "f238b612f15166c6a3c869f833b5aa6c0dd448dabb1d4b94b132281de3e91cab",
+        "f300ef2db3d3fd33631364fe3f83a64d281d255dd0e8182feb8e3db9e290ce32",
+        "f684b0fddbfe3b37de36d1b377c4c10d968226940c307a5a16e360e63063900f",
+        "fe2dccf88e309dc896e7c2cc974a47be7a7b96d59c7f2ffd74ffcc7cfbdebb0c"
       ],
-      "metadata_sha256": "26e7962526c54e77643feb5594da4c271342bdecc9cc1cb8b7d4db532c17aedf",
-      "url": "https://pypi.org/pypi/biopython/1.85/json"
+      "metadata_sha256": "01ca48fecfc509d9360ae1e839efd26ce54c022fe4de6af8c6b4f9cc2dbdca30"
     },
     "celery==5.4.0": {
       "hashes": [
@@ -1974,6 +1983,34 @@
           "from": "0.0.30",
           "name": "python-multipart",
           "to": "0.0.31"
+        }
+      ]
+    },
+    "worker": {
+      "approval_source": "DEPLOY-03 explicit Biopython security-update instruction",
+      "baseline_graph_path": "inputs/baseline-worker-dependencies.json",
+      "baseline_graph_sha256": "9c49081633a1cc61e11fe1ea4fc1fd8fbe4eb08f04014eb4f60bd6b92ab8131e",
+      "method": "approved_targeted_security_update_only_not_installed_closure_export",
+      "numpy_requirement_check": {
+        "existing_locked_version": "2.5.4",
+        "existing_version_satisfies": true,
+        "requirements": [
+          "numpy"
+        ],
+        "source": "https://pypi.org/pypi/biopython/1.88/json"
+      },
+      "qualification": "fresh native scans/scientific and full application qualification required; not demonstrated by this graph",
+      "targeted_updates": [
+        {
+          "advisories": [
+            "GHSA-cxcq-r753-xf25",
+            "CVE-2025-68463"
+          ],
+          "from": "1.85",
+          "name": "biopython",
+          "primary_advisory": "https://github.com/biopython/biopython/security/advisories/GHSA-cxcq-r753-xf25",
+          "rationale": "Maintainer HIGH Bio.Nexus eval advisory fixed in1.88; prior XXE fixed in1.87. Trivy inventory alone does not establish complete advisory coverage.",
+          "to": "1.88"
         }
       ]
     }

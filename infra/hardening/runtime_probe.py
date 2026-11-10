@@ -138,7 +138,7 @@ def native_libraries() -> dict:
 
 def native_imports(role: str) -> dict[str, bool]:
     modules = (
-        ("psycopg", "psycopg_binary")
+        ("psycopg", "psycopg_binary", "Bio", "numpy")
         if role == "worker"
         else ("asyncpg", "cryptography.hazmat.bindings._rust")
     )
@@ -338,6 +338,10 @@ def main() -> int:
         ):
             reasons.append("hardening_check_failed")
         if args.role == "worker":
+            report["scientific_library_versions"] = {
+                "biopython": importlib.metadata.version("biopython"),
+                "numpy": importlib.metadata.version("numpy"),
+            }
             report["scientific_checks"] = checks = worker_checks()
             if not (
                 checks["primer3_nine_golden_facts"]

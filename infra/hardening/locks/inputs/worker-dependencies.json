@@ -1,4 +1,32 @@
 {
+  "derivation": {
+    "approval_source": "DEPLOY-03 explicit Biopython security-update instruction",
+    "baseline_graph_path": "inputs/baseline-worker-dependencies.json",
+    "baseline_graph_sha256": "9c49081633a1cc61e11fe1ea4fc1fd8fbe4eb08f04014eb4f60bd6b92ab8131e",
+    "method": "approved_targeted_security_update_only_not_installed_closure_export",
+    "numpy_requirement_check": {
+      "existing_locked_version": "2.5.4",
+      "existing_version_satisfies": true,
+      "requirements": [
+        "numpy"
+      ],
+      "source": "https://pypi.org/pypi/biopython/1.88/json"
+    },
+    "qualification": "fresh native scans/scientific and full application qualification required; not demonstrated by this graph",
+    "targeted_updates": [
+      {
+        "advisories": [
+          "GHSA-cxcq-r753-xf25",
+          "CVE-2025-68463"
+        ],
+        "from": "1.85",
+        "name": "biopython",
+        "primary_advisory": "https://github.com/biopython/biopython/security/advisories/GHSA-cxcq-r753-xf25",
+        "rationale": "Maintainer HIGH Bio.Nexus eval advisory fixed in1.88; prior XXE fixed in1.87. Trivy inventory alone does not establish complete advisory coverage.",
+        "to": "1.88"
+      }
+    ]
+  },
   "packages": [
     {
       "extras": [],
@@ -18,7 +46,7 @@
     {
       "extras": [],
       "name": "biopython",
-      "version": "1.85"
+      "version": "1.88"
     },
     {
       "extras": [

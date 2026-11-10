@@ -1,0 +1,44 @@
+{
+  "reviewed_on": "2026-11-10",
+  "scanner_counts_are_not_exhaustive": true,
+  "upstream_missing_high": {
+    "id": "GHSA-cxcq-r753-xf25",
+    "package": "biopython",
+    "installed_before": "1.85",
+    "affected": "<1.88",
+    "fixed_version": "1.88",
+    "severity": "HIGH",
+    "cvss_v3": 8.8,
+    "source": "https://github.com/biopython/biopython/security/advisories/GHSA-cxcq-r753-xf25",
+    "scanner_detection": "not_observed_in_retained_69e75d7_scan",
+    "code_usage": "No direct Bio imports found under services/bioinfo-worker/src; this is not a global non-applicability waiver",
+    "action": "targeted hashed update to1.88; native requalification required"
+  },
+  "cross_vendor_scores": [
+    {
+      "id": "CVE-2026-88647",
+      "package": "libgnutls30t64",
+      "scanner_severity": "MEDIUM",
+      "redhat_cvss_v3": 7.4,
+      "ubuntu_cvss_v3": 6.5,
+      "status": "open; Ubuntu fix deferred, upstream disputes issue; no fix demonstrated",
+      "source": "https://ubuntu.com/security/CVE-2026-88647"
+    },
+    {
+      "id": "CVE-2026-88648",
+      "package": "libgnutls30t64",
+      "scanner_severity": "MEDIUM",
+      "redhat_cvss_v3": 7.4,
+      "status": "open; no fixed version in retained scan; no severity waiver",
+      "source": "https://ubuntu.com/security/CVE-2026-88648"
+    }
+  ],
+  "other_biopython_finding": {
+    "id": "CVE-2025-68463",
+    "scanner_severity": "MEDIUM",
+    "redhat_cvss_v3": 7.1,
+    "source": "https://github.com/biopython/biopython/issues/5109",
+    "action": "included in targeted upstream security update; no XML/NEXUS upload capability added"
+  },
+  "risk_acceptance": "not_granted"
+}
