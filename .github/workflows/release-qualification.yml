@@ -52,7 +52,7 @@ jobs:
         run: |
           source_sha=$(git rev-parse HEAD)
           image="oligospace-qualification/worker:$source_sha"
-          docker --context deploy03 build --file infra/docker/bioinfo-worker.Dockerfile --target tooling --tag oligospace-worker-tooling:test .
+          docker --context deploy03 buildx build --builder deploy02-native --platform "linux/$ARCH" --file infra/docker/bioinfo-worker.Dockerfile --target tooling --load --tag oligospace-worker-tooling:test .
           docker --context deploy03 run --rm oligospace-worker-tooling:test pytest
           docker --context deploy03 run --rm --volume "$PWD/infra/deployment:/qualification:ro" "$image" /opt/venv/bin/python /qualification/science_probe.py --source "$source_sha" --architecture "$ARCH" > "$RUNNER_TEMP/oci/science.json"
       - name: Native hardened runtime and complete scientific/library checks
