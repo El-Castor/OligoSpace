@@ -54,6 +54,10 @@ CORPUS = {
 class QualificationError(RuntimeError):
     """Only fixed harness rule IDs may enter sanitized evidence."""
 
+    def __init__(self, rule, *, diagnostic=None):
+        super().__init__(rule)
+        self.diagnostic = diagnostic
+
 
 def require(value: bool, rule: str) -> None:
     if not value:
@@ -71,7 +75,45 @@ def execute(args: list[str], data: bytes | None = None, *, merge_stderr=False) -
     )
     if result.returncode:
         # No subprocess body/URL/password is copied into a failure message.
-        raise QualificationError("qualification_command_failed")
+        output = result.stdout + (result.stderr or b"")
+        diagnostic = {
+            "command_phase": next(
+                (
+                    item
+                    for item in args
+                    if item
+                    in (
+                        "build",
+                        "run",
+                        "up",
+                        "exec",
+                        "down",
+                        "config",
+                        "logs",
+                        "inspect",
+                    )
+                ),
+                "other",
+            ),
+            "categories": [
+                name
+                for name, pattern in {
+                    "permission": rb"permission denied",
+                    "build": rb"failed to solve",
+                    "registry": rb"failed to fetch|manifest unknown|pull access denied",
+                    "dns": rb"could not resolve|temporary failure resolving|name or service not known",
+                    "network": rb"connection refused|network is unreachable|connection timed out|TLS handshake timeout",
+                    "certificate": rb"certificate verify failed|certificate verification failed|x509:",
+                    "apt_index": rb"Unable to locate package|does not have a Release file|Some index files failed",
+                    "apt_integrity": rb"Hash Sum mismatch|signatures couldn't be verified|NO_PUBKEY",
+                    "capacity": rb"no space left on device|disk quota exceeded",
+                    "database": rb"ERROR:|FATAL:",
+                    "missing_file": rb"no such file or directory",
+                }.items()
+                if re.search(pattern, output, flags=re.IGNORECASE)
+            ],
+        }
+        raise QualificationError("qualification_command_failed", diagnostic=diagnostic)
     return result.stdout
 
 
@@ -350,10 +392,10 @@ class Stack:
         self.sql(
             f"CREATE ROLE os_app LOGIN PASSWORD '{self.values['app_database']}';"
             f"CREATE ROLE os_worker LOGIN PASSWORD '{self.values['worker_database']}';"
-            f"CREATE ROLE os_identity LOGIN PASSWORD '{self.values['identity_database']}';"
-            "CREATE DATABASE keycloak OWNER os_identity;",
+            f"CREATE ROLE os_identity LOGIN PASSWORD '{self.values['identity_database']}';",
             "postgres",
         )
+        self.sql("CREATE DATABASE keycloak OWNER os_identity;", "postgres")
         endpoint = self.dc("port", "s3", "3900").decode().strip()
         require(
             bool(re.fullmatch(r"127\.0\.0\.1:\d+", endpoint)),
@@ -796,12 +838,78 @@ def negative_archive_cases(work: Path, backup: Path, key: Path, target: Stack):
             lambda: Recovery(target.config).restore(malformed, key), "missing_object"
         )
     )
+    omitted = work / "omitted-reference-object"
+    archive.unseal(backup, omitted, key)
+    omit_referenced_object(omitted)
+    consistent_omission = work / "consistent-omission.osbk"
+    archive.seal(omitted, consistent_omission, key)
+    tests.append(
+        expect_failure(
+            lambda: Recovery(target.config).restore(consistent_omission, key),
+            "referenced_object_consistently_omitted",
+        )
+    )
     require(
         target.sql("SELECT count(*) FROM pg_tables WHERE schemaname='public';") == "0",
         "negative_preflight_mutated_database",
     )
     require(not target.client.list_buckets(), "negative_preflight_mutated_objects")
+    # A target containing only a function has no rows or tables, but is not empty.
+    # The marker is created/deleted solely in this new synthetic qualification DB.
+    target.sql(
+        "CREATE FUNCTION public.existing_recovery_marker() RETURNS integer LANGUAGE sql IMMUTABLE AS 'SELECT 42';"
+    )
+    try:
+        tests.append(
+            expect_failure(
+                lambda: Recovery(target.config).restore(backup, key),
+                "function_only_target",
+            )
+        )
+        require(
+            target.sql("SELECT public.existing_recovery_marker();") == "42",
+            "existing_function_modified",
+        )
+        require(
+            target.sql("SELECT count(*) FROM pg_tables WHERE schemaname='public';")
+            == "0",
+            "function_target_mutated",
+        )
+        require(not target.client.list_buckets(), "function_target_objects_mutated")
+        require(
+            not (
+                Path(target.config["state_dir"]) / "restore-in-progress.json"
+            ).exists(),
+            "function_target_restore_started",
+        )
+    finally:
+        target.sql("DROP FUNCTION public.existing_recovery_marker();")
     return tests
+
+
+def omit_referenced_object(tree: Path):
+    """Construct an authenticated-but-semantically-incomplete negative fixture."""
+    import archive
+
+    manifest = json.loads((tree / "manifest.json").read_text())
+    require(
+        bool(manifest.get("attachment_references")),
+        "negative_attachment_fixture_missing",
+    )
+    key = manifest["attachment_references"][0]["object_key"]
+    removed = 0
+    for bucket in manifest["buckets"]:
+        for entry in list(bucket["objects"]):
+            if entry["key"] == key:
+                (tree / entry["file"]).unlink()
+                bucket["objects"].remove(entry)
+                removed += 1
+    require(removed == 1, "negative_attachment_object_not_unique")
+    # The database attachment reference stays present. Both the S3 index and
+    # outer checksums are otherwise consistent; only cross-store verification
+    # can detect the omission before the first database import.
+    manifest["files"] = archive.manifest_files(tree)
+    (tree / "manifest.json").write_text(json.dumps(manifest))
 
 
 def qualification(context: str, report: dict):
@@ -1066,6 +1174,8 @@ def main():
             if isinstance(error, QualificationError) and re.fullmatch(r"[a-z_]+", text)
             else "qualification_failed"
         )
+        if isinstance(error, QualificationError) and error.diagnostic is not None:
+            report["command_diagnostic"] = error.diagnostic
         raise SystemExit(
             "DEPLOY04 qualification failed; sanitized report retained"
         ) from None
