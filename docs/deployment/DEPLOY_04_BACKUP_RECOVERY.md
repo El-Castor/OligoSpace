@@ -1,147 +1,173 @@
-# DEPLOY-04 — Backup and disaster recovery
+# DEPLOY-04 — Verified backup and disaster recovery
 
-Status: implementation under qualification in [PR #22](https://github.com/El-Castor/OligoSpace/pull/22).
-Base `ff3f629869d9d61a671c2ed94693a9d00d0c460c`, after PR21 merge.
-This lot authorizes disposable synthetic qualification only. No pilot, real data,
-Mac mini, Cloudflare, image publication, provider adoption or real migration.
+Status: **backup/recovery technically qualified on isolated synthetic stacks**;
+code review only, no pilot/release approval. Single [PR #22](https://github.com/El-Castor/OligoSpace/pull/22)
+from main `ff3f629869d9d61a671c2ed94693a9d00d0c460c` after PR21 merge.
+Qualified code: `953f5fbae2d24fa4be06ac8305f97ad1a31b44fa`.
+Final documentation/evidence follow-up preserves the qualified controller/runtime tree.
 
-## Targeted audit and implementation
+## Architecture and targeted audit
 
-Previous scripts cover an unencrypted application-only pg_dump and destructive
-single-DB test restore; DEPLOY-02 S3 tests cover logical objects only. They remain
-explicit development utilities. No complete coordinated recovery existed.
+Existing shell scripts cover an application-only unencrypted pg_dump and a
+single-DB destructive development restore. Existing DEPLOY-02 S3 contracts cover
+logical objects, not coordinated identity/application recovery. These utilities
+remain explicitly development-only; no functioning component was reimplemented.
 
-`infra/backup/recovery.py` coordinates native logical dumps of application and
-Keycloak databases, S3 export/import and verification. `archive.py` authenticates
-the complete manifest/payload using AES-256-GCM; `s3.py` preserves current keys,
-bytes, SHA256, size, content type, user metadata and tags without disk-format
-coupling. `retention.py` provides authenticated transfer to an explicit mounted
-external destination and opt-in age/count pruning. Exact operator dependencies
-reuse DEPLOY-03 hashes. No new application dependency or framework.
+| Component | Delivered behavior |
+|---|---|
+| `infra/backup/recovery.py` | Pause/verify all writers, two native PG dumps, S3/configuration snapshot, resume verified; empty-target restore and interruption fence |
+| `archive.py` | Private staged manifest with SHA256, streaming AES-256-GCM, authenticate before extraction, reject unsafe/missing/extra members, fsynced no-overwrite publication |
+| `s3.py` | Current bucket/object keys, bytes, SHA256, sizes, content types, user metadata/tags; attachment references checked before mutation and after DB restore |
+| `retention.py` | Authenticated external-filesystem transfer and configurable count/minimum-age cleanup; dry-run default, authenticate all points before opt-in deletion |
+| `qualify.py` / native workflow | Real source/fresh-target/interrupted stacks, PostgreSQL-backed Keycloak, bounded API/worker/identity roles, OIDC/science/integrity/negative/secret tests |
 
-## Consistency and integrity
+Exact operator dependency hashes reuse DEPLOY-03; no application dependency,
+scientific algorithm, Primer3 parameter or UI upload flow changes. Redis is fresh
+transport, not restored authority. [ADR-0009](../decisions/ADR-0009-coordinated-logical-recovery.md)
+records this bounded logical recovery choice and its revisit conditions.
 
-An explicit exclusive maintenance window excludes direct external writers. Every
-Compose service is accounted for; only the identified DB/Redis/S3 may remain up.
-Ingress/application/worker/scheduler/Keycloak writers are stopped and checked,
-then no remaining DB client is allowed. Both databases and objects are captured
-inside this frozen interval, with repeat full-table/object-index checks.
-Previously running source services resume in a finally block and must be healthy.
-This is coordinated downtime, not online three-timestamp consistency.
+## Point of consistency and manifest
 
-The encrypted manifest includes UTC/source/release, PG versions, native TOCs,
-all public-table row counts and SHA256, non-secret role attributes/memberships,
-configuration allow-list, secret names, object inventory and attachment references.
-Exact manifest members and SHA256 are authenticated before target mutation;
-objects referenced by attachments must exist and match bytes/size/type. Native
-restore preserves ownership/grants; target roles/credentials are preprovisioned
-separately and attributes/memberships must match. Restored rows and all object
-bytes/metadata are read back. No schema migration is performed by recovery.
+Reserve exclusive maintenance access and exclude direct external DB/S3 writers.
+Every Compose service must be listed: only explicitly identified DB/Redis/S3 can
+remain up. Ingress/API/worker/scheduler/Keycloak are stopped and checked; no other
+client session may remain on either database. Capture both databases and objects
+inside this frozen interval, checking full table fingerprints and object indexes
+again before completion. Resume only previously running writers in a finally
+block and verify running/health state. Independent timestamps alone are not used
+as a claim of global consistency; privileged external operators must respect the fence.
 
-Restoration requires all writers stopped and empty databases/buckets. Existing
-relations/functions/types/non-public schemas/extensions are refused. An fsynced
-journal fences interrupted/failed targets; no overwrite/drop/automatic retry or
-automatic restart is available. Redis is fresh transport: DB-authoritative jobs
-are reconciled by the existing scheduler, not replayed from an obsolete queue.
+The encrypted manifest includes UTC, declared source SHA, PG versions, custom dump
+TOCs, public-table row counts/SHA256, role attributes/memberships without password
+verifiers, selected configuration, secret names and object/attachment inventories.
+Native dumps preserve owners/ACLs, audits, identities, jobs/results and provenance.
+All expected members/checksums and referenced objects are authenticated/checked
+before import; restored rows and every object are read back. Same PG major and
+matching preprovisioned role attributes/memberships are required. No migration,
+role/password creation or automatic configuration installation occurs at restore.
 
-## Commands and secret recovery
+Existing relations/functions/types/non-public schemas/extensions or nonempty buckets
+are refused. An fsynced `restore-in-progress.json` prevents retry after interrupted
+or failed mutation. Preserve the failed target for diagnosis and create another
+empty target; no overwrite/drop/volume deletion override is available. Success
+leaves writers stopped with `restore-verified.json`, pending controlled startup,
+OIDC/permission checks and scientific reconciliation against fresh Redis.
 
-See [the operator runbook](../BACKUP_RESTORE.md) for protected configuration,
-key generation/escrow, backup, empty-target restore, verified copy and retention.
-No secret/environment inspection output is uploaded. Plaintext staging is private
-and transient; the operator disk must itself be encrypted (SSD secure erasure is
-not claimed). Keep recovery keys separately in an approved encrypted vault with
-independent custodians and test that recovery path. Configurations are inventoried
-and encrypted, never automatically installed into a real stack.
+## Commands, secrets and external destination
 
-## Qualification and review
+Use the [operator runbook](../BACKUP_RESTORE.md) for complete commands and protected
+`configuration.example.json`: `recovery.py backup|restore --config ... --key-file ...
+--archive ...`, then `retention.py transfer|prune` for approved external storage.
+Python3.12, explicit local Unix Docker context, protected env/config/key files and
+private state/staging are required. A realm JSON export is **not** the identity
+backup: the whole Keycloak database is included.
 
-Native workflow `.github/workflows/deploy04-recovery.yml` creates source, fresh
-restore and interrupted-restore stacks with unique volumes. Synthetic data include
-users/subjects, projects/targets/oligos/assays/experiment attachments, audits and
-completed Primer3 jobs. API, worker and Keycloak use distinct database roles.
-A fresh OIDC login, reader denials and a new scientific job are checked after
-restoration. Database fingerprints include all public tables before services start.
+No plaintext credentials, keys, realm dumps or archives are Git/CI artifacts.
+Private plaintext staging requires an encrypted operator disk; SSD secure erasure
+is not claimed. Keys, service credentials, TLS/session secrets and vault recovery
+procedures remain outside Git, independently recoverable by authorized custodians.
+Selected configuration is encrypted and never silently applied to a target.
+Off-host destination setup and schedules are not installed. Destination filesystems
+must support private Unix modes, hard links and fsync; unsupported semantics fail.
 
-Negative cases include corrupt/truncated archive, wrong/missing key, missing
-identity dump, missing object, object-plus-manifest omission, function-only/nonempty
-target and interruption after the first database. Failed integrity must never
-start writers or report success. Logs are retrieved from both streams; retrieval
-failure itself fails the secret gate. Archive/key/raw realm/DB contents are not
-CI artifacts. Only bounded sanitized JSON evidence is retained.
+## Real restoration results and measured durations
 
-Independent review identified and corrected four important issues before delivery:
-loss of PG ownership/ACL, relations-only empty checks, arbitrary nonwriter
-classification and attachment/object omissions. Additional improvements fsync the
-journal/archive directories and stream dumps/table fingerprints to bound host RAM.
-Final code review found no further critical/important finding; runtime acceptance remains separate.
-Runtime qualification also exposed a harness port issue: Docker internal bridges do not
-publish host ports. An additional loopback-only qualification bridge now attaches
-only API/Keycloak/S3; PostgreSQL/Redis/workers remain on the internal network.
-The temporary host root is private0700 even when a child file must be readable
-by the disposable Keycloak UID. No production networking or scientific parameter changed.
+[Native CI run](https://github.com/El-Castor/OligoSpace/actions/runs/42866007006):
+**both AMD64 and ARM64 PASS**, with actual native CPU checks and no emulation.
 
-## Coverage limits and operational gates
+| Platform | Complete backup | Integrity restore | Recovery / negative cases | Secret logs / retrievals |
+|---|---:|---:|---|---|
+| AMD64 native Linux | 27.944s | 14.218s | PASS / 11 | PASS / 21 |
+| ARM64 native Linux | 26.042s | 13.065s | PASS / 11 | PASS / 21 |
 
-- Qualification uses a tiny synthetic corpus; durations measure this workload only,
-  not approved RPO/RTO, peak disk/RAM, full 16-GB pilot capacity or large tables.
-- Garage is an isolated compatible test endpoint only. Historical MinIO availability,
-  maintenance/license and transferability to the actual supplier remain open.
-- Current unversioned buckets only; enabled/suspended version history, object lock
-  and SSE are refused. Bucket policies/ACL/lifecycle/replication need external
-  inventory/recreation; no provider-internal disk restore is claimed.
-- Fresh OIDC here uses an isolated HTTP test-only direct-grant client; production
-  PKCE/browser/TLS coverage remains in existing OIDC/Chromium CI, not inferred.
-- Role passwords/Keycloak client secrets/TLS/session keys must be recovered from
-  the separate vault. The qualification uses generated synthetic values, never
-  exercises a real institutional vault or external failure domain.
-- External destination support and local copy tests do not prove an actual off-host
-  mount, account or institutional transfer. No schedules or network paths installed.
-- Operator must enforce exclusive access and serialize operators; stopping Compose
-  services alone cannot fence an independent privileged DB/S3 administrator.
-- PostgreSQL major and identity release must match; cross-version/PITR/WAL/schema
-  migration and fully automatic install/update are outside this logical pilot path.
+Per platform:22 application tables compared,8 explicitly selected identity tables
+(accounts/credentials/realm/clients/roles/scopes/mappers) compared independently,
+and3 S3 objects (binary, Unicode/special key, empty). The core fingerprints **all**
+identity public tables too. UUIDs, relationships, audits, scientific job/result
+and provenance are preserved. A fresh OIDC login maps to the original subject;
+reader mutations/jobs remain denied and a new Primer3 job succeeds after recovery.
+Separate service-role SQL checks verify API DML and bounded worker grants, including
+no worker deletion, oligo mutation or schema creation. No technical intervention
+was needed to repair restored data.
 
-DEPLOY-02/03 security/supplier/license/provenance gates remain blocking, without
-suppression or waiver. R1-08 requires approved off-host/vault procedures and measured
-owner-approved RPO/RTO; R1-09 operations and R1-10/R1-11 human acceptance remain open.
-Suggested daily full maintenance backup and periodic restore are discussion inputs,
-not imposed service objectives. Stop after PR review; no DEPLOY-05 or auto-merge.
+- [AMD64 proof](../../infra/backup/evidence/native-amd64-953f5fb.json)
+- [ARM64 proof](../../infra/backup/evidence/native-arm64-953f5fb.json)
+- [Additional local ARM64 pass](../../infra/backup/evidence/local-arm64-e98276c.json)
 
-## Evidence and measured durations
+These times measure a tiny synthetic corpus, not approved RPO/RTO, peak memory,
+large-table throughput, total return-to-service or full16-GB pilot capacity.
 
-First real ARM64 run at source `482f6b6` verified the complete recovery path:
-backup24.074s, restore11.523s,22 application tables,8 explicit identity-table
-comparisons (core fingerprints all identity public tables),3 objects, fresh OIDC,
-reader denials and a new Primer3 job. All11 negative cases passed. However the
-final generated-secret log gate failed, so overall qualification remains FAILED
-until corrected and replayed. See sanitized
-[`correctness-before-log-fix-arm64.json`](../../infra/backup/evidence/correctness-before-log-fix-arm64.json).
-These timings are observations on a tiny synthetic corpus, not accepted RPO/RTO.
-Initial CI builds additionally encountered official Ubuntu500/502/503 and a
-checksum-refused response; independent downloads confirmed the locked CA hash.
-Neither hashes nor signature verification were relaxed. Final CI evidence pending.
+| Negative case (both native architectures) | Observed result |
+|---|---|
+| Corrupt archive / truncated archive | Authentication/integrity refusal, target untouched |
+| Wrong key / missing key | Refused, no target import |
+| Missing identity dump | Completeness refusal before import |
+| Missing object | Inner/outer integrity refusal before import |
+| Object and its S3 entry omitted together | Preserved DB attachment reference detects omission before import |
+| Function-only target / nonempty restored target | Refused without destructive cleanup |
+| Interrupted after application DB import / retry | Identity remains empty, journal fences retry, writers remain stopped |
 
-## Observed provider logging defect
+30 targeted backup tests pass, plus107 deployment,26 hardening and23 auth-controller
+checks. [General CI](https://github.com/El-Castor/OligoSpace/actions/runs/42866006786),
+[foundation](https://github.com/El-Castor/OligoSpace/actions/runs/42866006649),
+[real OIDC](https://github.com/El-Castor/OligoSpace/actions/runs/42866007198),
+[scientific acceptance](https://github.com/El-Castor/OligoSpace/actions/runs/42866006934)
+and [native container comparison](https://github.com/El-Castor/OligoSpace/actions/runs/42866007085)
+PASS at953f5fb. Native mandatory make/PostgreSQL/migrations/Chromium run
+[42866006639](https://github.com/El-Castor/OligoSpace/actions/runs/42866006639)
+**PASS** on both architectures, including mandatory make checks,206 PostgreSQL
+cases/migrations and29 Chromium journeys per architecture. Only two redundant manual launches at the same
+SHA were cancelled; corresponding automatic workflows ran all checks.
 
-The Garage disposable service logs the S3 access identifier at WARN when the
-backup SDK requests unsupported `GetObjectTagging` (HTTP501). The private
-reproduction classified the service/credential label without retaining any
-credential value. This remains an open supplier logging finding, not accepted or
-silenced. The final qualification therefore also uses the previously tested
-SeaweedFS candidate strictly as an isolated synthetic S3 service, not as a pilot
-provider decision. The same full log gate, tags/metadata/checksum and permission
-checks remain active. Historical MinIO and any actual chosen provider still need
-its own complete transfer/logging/maintenance/license qualification.
+## Observed anomalies and independent review
 
-## Necessary inherited build repair
+[Independent review](../../infra/backup/evidence/independent-review.json) completed;
+no remaining critical/important code finding observed. Four initial defects were
+corrected: native ownership/ACL loss, relations-only empty checks, arbitrary writer
+classification and attachment/object omission. Journals/publication are fsynced;
+dumps and table fingerprints are streamed to bound host RAM.
 
-Fresh CI repeatedly refused the CA bootstrap response from the snapshot endpoint
-at the fixed hash. Independent HTTPS requests (including the BuildKit user agent)
-verified that snapshot, archive.ubuntu.com and security.ubuntu.com provide the
-**same140064 bytes/SHA256**. The two production Dockerfiles now retrieve that same
-pinned CA package from the official archive endpoint. Dated signed APT repositories,
-CA version/hash, all runtime dependency/scientific pins and verification flags are
-unchanged. This transport-only repair addresses an observed qualification blocker;
-it does not waive a checksum mismatch or change the selected runtime architecture.
-[Equivalence receipt](../../infra/backup/evidence/ubuntu-ca-download-equivalence.json).
+Real execution additionally corrected disposable-only networking: internal bridges
+cannot publish host ports, so only API/Keycloak/S3 attach to a loopback qualification
+bridge; PG/Redis/workers stay internal. SeaweedFS advertised identity and API port
+now match the isolated service. Host temporary parent remains private0700 even
+where a child configuration must be readable by the container UID.
+
+Garage emits its access identifier at WARN for unsupported GetObjectTagging501.
+This is an **open supplier logging finding**, not suppressed or accepted. Its
+[failed full recovery/log proof](../../infra/backup/evidence/garage-tagging-log-failure-arm64.json)
+is retained. Final positive tests use previously qualified SeaweedFS4.52 at the
+existing pinned digest, **strictly as a disposable service**; no pilot supplier
+was selected or changed. Historical MinIO and any selected supplier need their own
+full transfer/logging/maintenance/license qualification.
+
+Fresh CI also refused unstable snapshot CA responses. Independent official HTTPS
+endpoints returned the same140064-byte package and fixed SHA256. API/worker now
+retrieve that unchanged CA package from archive.ubuntu.com; dated signed APT URIs,
+CA version/hash, runtime/scientific pins and verification flags remain unchanged.
+This necessary transport-only repair is documented in the
+[equivalence receipt](../../infra/backup/evidence/ubuntu-ca-download-equivalence.json).
+
+## Limits and remaining owner gates
+
+- Current unversioned object namespace only; enabled/suspended version history,
+  object lock and SSE are refused. Real nonempty tags and supplier bucket ACL,
+  policy/lifecycle/replication behavior require additional supplier qualification;
+  fixture user metadata and attachment checksums are exercised directly.
+- Dedicated PG role inventory includes every non-system role; shared-cluster scope
+  must be reviewed. Passwords and institution vault recovery are externally supplied,
+  never proven by generated synthetic secrets alone.
+- OIDC here uses an isolated HTTP test-only direct-grant client. Production/browser
+  PKCE/TLS remain covered separately by existing OIDC/Chromium CI, not inferred here.
+- External mounted-destination support and local transfer tests do not prove an
+  actual off-host failure domain, institutional account or vault availability.
+- Same PG major/identity release and exclusive maintenance are required. No PITR,
+  WAL, online backup, cross-version migration or concurrent-operator guarantee.
+
+Every DEPLOY-02/03 security/supplier/license/provenance gate remains blocking,
+without waiver. R1-08 still requires approved off-host/vault procedures, capacity,
+retention and measured owner-approved RPO/RTO. Daily full backups and periodic
+isolated restores are proposals, not imposed objectives. R1-09 operations and
+R1-10/R1-11 curated-data/human acceptance remain open. No Mac mini, real data,
+Cloudflare, volume deletion, real migration, image publication, provider adoption,
+merge or DEPLOY-05 was performed or authorized. Stop for owner code review.

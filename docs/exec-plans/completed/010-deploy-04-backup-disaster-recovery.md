@@ -26,14 +26,14 @@ any interrupted restore. No automatic override for nonempty targets.
 
 ## Tasks and evidence
 
-- [ ] Authenticated archive, manifest/path safety and negative tests.
-- [ ] Provider-independent S3 snapshot and full fidelity verification.
-- [ ] Coordinated local Compose PG/Keycloak backup, empty-target restore,
+- [x] Authenticated archive, manifest/path safety and negative tests.
+- [x] Provider-independent S3 snapshot and full fidelity verification.
+- [x] Coordinated local Compose PG/Keycloak backup, empty-target restore,
       state journal, protected inputs, external destination and retention.
-- [ ] Native disposable real restoration and OIDC/scientific/integrity tests,
+- [x] Native disposable real restoration and OIDC/scientific/integrity tests,
       corruption/missing/wrong-key/interruption/nonempty/secret refusals.
-- [ ] Relevant targeted tests then mandatory make/CI; independent restore review.
-- [ ] Report, runbook, STATUS/BACKLOG/CHANGELOG; one PR, no merge/publication.
+- [x] Relevant targeted tests then mandatory make/CI; independent restore review.
+- [x] Report, runbook, STATUS/BACKLOG/CHANGELOG; one PR, no merge/publication.
 
 ## Review focus
 
@@ -42,3 +42,14 @@ member, unauthenticated plaintext or secret log; never infer consistency from
 three independent timestamps. Versioned/object-lock buckets require explicit
 support or refusal, not silent loss. Preserve UUIDs/provenance and OIDC subject.
 RPO/RTO measured on synthetic corpus, owner approves operational objectives.
+
+## Outcome
+
+Qualified code953f5fb: native recovery42866007006 and application42866006639 PASS
+on both architectures;30 backup/107 deployment/26 hardening/23 auth tests PASS.
+Two full dumps, S3/attachment fidelity, fresh OIDC/permissions/new scientific job
+and11 negatives per platform proven. Independent review findings resolved.
+Report docs/deployment/DEPLOY_04_BACKUP_RECOVERY.md; single PR22 delivered for review.
+Garage logging remains an open supplier finding; positive SeaweedFS fixture is
+not adoption. Release and off-host/vault/RPO/RTO/human gates remain open.
+No publication, deployment, real data/volume operation, merge or next lot.

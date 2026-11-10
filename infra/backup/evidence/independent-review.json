@@ -1,8 +1,8 @@
 {
   "schema": "oligospace-independent-recovery-review/v1",
-  "source_commit": "0a62f63c103726122630fe7f1b0a2cc0ea8aa8c2",
+  "source_commit": "953f5fbae2d24fa4be06ac8305f97ad1a31b44fa",
   "reviewer": "independent deploy04_restore_review agent",
-  "status": "code_review_completed_runtime_evidence_pending",
+  "status": "completed_no_remaining_important_code_finding",
   "findings": [
     {
       "id": "DR-ACL",
@@ -31,12 +31,28 @@
   ],
   "supplemental": [
     "fsync journal and publication directories",
-    "stream native dump input and table fingerprints to bound host memory"
+    "stream native dump input and table fingerprints to bound host memory",
+    "private0700 host staging root",
+    "safe fixed-label secret diagnostics with mandatory per-service stdout/stderr retrieval",
+    "S3 advertised identity and API endpoint align with selected disposable port",
+    "same pinned CA bytes from verified official archive URL; dated signed APT unchanged"
   ],
   "targeted_tests": {
-    "backup": 21,
+    "backup": 30,
     "result": "passed"
   },
   "remaining_critical_or_important_code_findings": [],
-  "limitation": "A successful real restore is required separately; review and unit tests alone are not acceptance."
+  "limitation": "Native real restore and full application regressions pass independently on both architectures at953f5fb. Review does not approve pilot, supplier or security gates.",
+  "open_supplier_findings": [
+    {
+      "id": "DR-GARAGE-LOG-ID",
+      "status": "open_blocking_supplier_qualification",
+      "observation": "Garage logs access identifier at WARN for unsupported GetObjectTagging501; no waiver or logger suppression"
+    }
+  ],
+  "native_runtime_evidence": {
+    "restore": 42866007006,
+    "application": 42866006639,
+    "both_architectures": "passed"
+  }
 }

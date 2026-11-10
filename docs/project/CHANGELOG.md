@@ -7,8 +7,11 @@
 - Coordinate stopped writers, verify source resume, preserve ownership/grants,
   reject nonempty targets and fence interrupted restores without automatic restart.
 - Add authenticated transfer/retention, secret-escrow runbook, native disposable
-  restoration/OIDC/scientific/negative tests. Qualification results pending.
-- Keep every DEPLOY-02/03 release barrier and operational/human gate open.
+  restoration/OIDC/scientific/negative tests. Both native architectures pass;
+ 30 backup tests and full make/PostgreSQL/Chromium checks pass.
+- Preserve the pinned CA package/hash while repairing its official download URL.
+- Keep Garage access-ID logging and every DEPLOY-02/03 release barrier plus
+  operational/human gate open; no provider adoption or deployment.
 
 
 ## DEPLOY-03 — qualified for code review (2026-11-10)

@@ -1,0 +1,51 @@
+{
+  "schema": "oligospace-recovery-acceptance/v1",
+  "qualified_code": "953f5fbae2d24fa4be06ac8305f97ad1a31b44fa",
+  "base_main": "ff3f629869d9d61a671c2ed94693a9d00d0c460c",
+  "status": "technical_synthetic_acceptance_passed_code_review_only",
+  "native_restore_run": 42866007006,
+  "native_application_run": 42866006639,
+  "general_ci_run": 42866006786,
+  "foundation_run": 42866006649,
+  "oidc_run": 42866007198,
+  "scientific_run": 42866006934,
+  "comparison_run": 42866007085,
+  "release_run": {
+    "id": 42866006726,
+    "result": "failed_at_scan_evidence_all_four_api_worker_images",
+    "waiver": false
+  },
+  "targeted_tests": {
+    "backup": 30,
+    "deployment": 107,
+    "hardening": 26,
+    "auth_controller": 23,
+    "result": "passed"
+  },
+  "platforms": {
+    "amd64": {
+      "status": "passed",
+      "backup_seconds": 27.944,
+      "restore_seconds": 14.218,
+      "application_tables_compared": 22,
+      "identity_tables_compared": 8,
+      "objects_compared": 3,
+      "secret_log_gate": "passed"
+    },
+    "arm64": {
+      "status": "passed",
+      "backup_seconds": 26.042,
+      "restore_seconds": 13.065,
+      "application_tables_compared": 22,
+      "identity_tables_compared": 8,
+      "objects_compared": 3,
+      "secret_log_gate": "passed"
+    }
+  },
+  "negative_cases_per_architecture": 11,
+  "open_supplier_finding": "Garage access identifier logged at WARN for unsupported GetObjectTagging501; no suppression or acceptance",
+  "operational_acceptance": false,
+  "deployed": false,
+  "image_publication": false,
+  "provider_adoption": false
+}

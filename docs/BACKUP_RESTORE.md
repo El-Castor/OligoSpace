@@ -120,6 +120,8 @@ A same-host volume does not survive host loss. Provision an approved external
 mounted filesystem with private permissions, or use an independently secured pull
 account/channel. The tooling accepts an arbitrary explicit mounted destination;
 no SSH credentials, mount, network permission or schedule is created automatically.
+The destination must support Unix private modes, hard links and fsync; unsupported
+filesystems fail rather than weakening these semantics.
 
 ```sh
 python infra/backup/retention.py transfer --source /private/backups/POINT.osbk \
