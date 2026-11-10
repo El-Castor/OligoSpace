@@ -1,0 +1,211 @@
+{
+  "actual_architecture": "amd64",
+  "ca_certificates": 118,
+  "cap_eff": "0000000000000000",
+  "expected_hardened": true,
+  "gid": 1000,
+  "kombu": "5.6.2",
+  "native_imports": {
+    "psycopg": true,
+    "psycopg_binary": true
+  },
+  "native_libraries": {
+    "contextual_checks": [
+      {
+        "library_path": "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs",
+        "output": "\tlinux-vdso.so.1 (0x00007fc0c638e000)\n\tlibkrb5-fcafa220.so.3.3 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libkrb5-fcafa220.so.3.3 (0x00007fc0c5c00000)\n\tlibk5crypto-b1f99d5c.so.3.1 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libk5crypto-b1f99d5c.so.3.1 (0x00007fc0c5800000)\n\tlibcom_err-2abe824b.so.2.1 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libcom_err-2abe824b.so.2.1 (0x00007fc0c5400000)\n\tlibkrb5support-d0bcff84.so.0.1 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libkrb5support-d0bcff84.so.0.1 (0x00007fc0c5000000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007fc0c637d000)\n\tlibkeyutils-dfe70bd6.so.1.5 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libkeyutils-dfe70bd6.so.1.5 (0x00007fc0c4c00000)\n\tlibresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007fc0c636b000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fc0c560c000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fc0c6366000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fc0c6390000)\n\tlibselinux-0922c95c.so.1 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libselinux-0922c95c.so.1 (0x00007fc0c4800000)\n\tlibpcre-9513aab5.so.1.2.0 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libpcre-9513aab5.so.1.2.0 (0x00007fc0c4400000)\n",
+        "path": "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libgssapi_krb5-497db0c6.so.2.2",
+        "resolved": true,
+        "returncode": 0
+      },
+      {
+        "library_path": "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs",
+        "output": "\tlinux-vdso.so.1 (0x00007fa5a656f000)\n\tlibkrb5support-d0bcff84.so.0.1 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libkrb5support-d0bcff84.so.0.1 (0x00007fa5a5e00000)\n\tlibkeyutils-dfe70bd6.so.1.5 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libkeyutils-dfe70bd6.so.1.5 (0x00007fa5a5a00000)\n\tlibresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007fa5a6553000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fa5a5c0c000)\n\tlibselinux-0922c95c.so.1 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libselinux-0922c95c.so.1 (0x00007fa5a5600000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007fa5a654c000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fa5a6571000)\n\tlibpcre-9513aab5.so.1.2.0 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libpcre-9513aab5.so.1.2.0 (0x00007fa5a5200000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fa5a6547000)\n",
+        "path": "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libk5crypto-b1f99d5c.so.3.1",
+        "resolved": true,
+        "returncode": 0
+      },
+      {
+        "library_path": "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs",
+        "output": "\tlinux-vdso.so.1 (0x00007fe79b8bc000)\n\tlibk5crypto-b1f99d5c.so.3.1 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libk5crypto-b1f99d5c.so.3.1 (0x00007fe79b000000)\n\tlibcom_err-2abe824b.so.2.1 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libcom_err-2abe824b.so.2.1 (0x00007fe79ac00000)\n\tlibkrb5support-d0bcff84.so.0.1 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libkrb5support-d0bcff84.so.0.1 (0x00007fe79a800000)\n\tlibkeyutils-dfe70bd6.so.1.5 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libkeyutils-dfe70bd6.so.1.5 (0x00007fe79a400000)\n\tlibresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007fe79b89e000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fe79ae0c000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fe79b899000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fe79b8be000)\n\tlibselinux-0922c95c.so.1 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libselinux-0922c95c.so.1 (0x00007fe79a000000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007fe79b894000)\n\tlibpcre-9513aab5.so.1.2.0 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libpcre-9513aab5.so.1.2.0 (0x00007fe799c00000)\n",
+        "path": "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libkrb5-fcafa220.so.3.3",
+        "resolved": true,
+        "returncode": 0
+      },
+      {
+        "library_path": "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs",
+        "output": "\tlinux-vdso.so.1 (0x00007f513a81b000)\n\tlibkeyutils-dfe70bd6.so.1.5 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libkeyutils-dfe70bd6.so.1.5 (0x00007f513a200000)\n\tlibresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007f513a5ec000)\n\tlibselinux-0922c95c.so.1 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libselinux-0922c95c.so.1 (0x00007f5139e00000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f513a5e7000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f5139c0c000)\n\tlibpcre-9513aab5.so.1.2.0 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libpcre-9513aab5.so.1.2.0 (0x00007f5139800000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f513a81d000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f513a5e0000)\n",
+        "path": "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libkrb5support-d0bcff84.so.0.1",
+        "resolved": true,
+        "returncode": 0
+      },
+      {
+        "library_path": "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs",
+        "output": "\tlinux-vdso.so.1 (0x00007f34a0bf6000)\n\tlibpcre-9513aab5.so.1.2.0 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libpcre-9513aab5.so.1.2.0 (0x00007f34a0400000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f34a0be7000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f34a020c000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f34a0bf8000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f34a0be2000)\n",
+        "path": "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libselinux-0922c95c.so.1",
+        "resolved": true,
+        "returncode": 0
+      },
+      {
+        "library_path": "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs",
+        "output": "\tlinux-vdso.so.1 (0x00007f87ae700000)\n\tlibcrypto-4054f362.so.3 => /opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libcrypto-4054f362.so.3 (0x00007f87ae044000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f87ae03d000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f87ae038000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f87ade44000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f87ae702000)\n",
+        "path": "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libssl-11ac059b.so.3",
+        "resolved": true,
+        "returncode": 0
+      }
+    ],
+    "elf_files_checked": 472,
+    "first_pass_missing": [
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f2bdda75000)\n\tlibtk8.6.so => /opt/conda/bin/../lib/libtk8.6.so (0x00007f2bdd8f6000)\n\tlibtcl8.6.so => /opt/conda/bin/../lib/libtcl8.6.so (0x00007f2bdd72f000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f2bdd539000)\n\tlibX11.so.6 => not found\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f2bdd447000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f2bdd442000)\n\tlibz.so.1 => /opt/conda/bin/../lib/libz.so.1 (0x00007f2bdd427000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f2bdd422000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f2bdda77000)\n",
+        "path": "/opt/conda/bin/wish"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f01a8583000)\n\tlibtk8.6.so => /opt/conda/bin/../lib/libtk8.6.so (0x00007f01a8404000)\n\tlibtcl8.6.so => /opt/conda/bin/../lib/libtcl8.6.so (0x00007f01a823d000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f01a8047000)\n\tlibX11.so.6 => not found\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f01a7f55000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f01a7f50000)\n\tlibz.so.1 => /opt/conda/bin/../lib/libz.so.1 (0x00007f01a7f35000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f01a7f30000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f01a8585000)\n",
+        "path": "/opt/conda/bin/wish8.6"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f4c45556000)\n\tlibX11.so.6 => not found\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f4c452ea000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f4c450f6000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f4c45558000)\n",
+        "path": "/opt/conda/lib/libtk8.6.so"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007fea9b4c4000)\n\tlibtk8.6.so => /opt/conda/lib/python3.12/lib-dynload/../../libtk8.6.so (0x00007fea9b33a000)\n\tlibtcl8.6.so => /opt/conda/lib/python3.12/lib-dynload/../../libtcl8.6.so (0x00007fea9b173000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fea9af7d000)\n\tlibX11.so.6 => not found\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fea9ae8b000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007fea9ae86000)\n\tlibz.so.1 => /opt/conda/lib/python3.12/lib-dynload/../../libz.so.1 (0x00007fea9ae6b000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fea9ae66000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fea9b4c6000)\n",
+        "path": "/opt/conda/lib/python3.12/lib-dynload/_tkinter.cpython-312-x86_64-linux-gnu.so"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f141ec95000)\n\tlibkrb5-fcafa220.so.3.3 => not found\n\tlibk5crypto-b1f99d5c.so.3.1 => not found\n\tlibcom_err-2abe824b.so.2.1 => not found\n\tlibkrb5support-d0bcff84.so.0.1 => not found\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f141ec84000)\n\tlibkeyutils-dfe70bd6.so.1.5 => not found\n\tlibresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007f141ec72000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f141e80c000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f141ec97000)\n",
+        "path": "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libgssapi_krb5-497db0c6.so.2.2"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007faf6265a000)\n\tlibkrb5support-d0bcff84.so.0.1 => not found\n\tlibkeyutils-dfe70bd6.so.1.5 => not found\n\tlibresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007faf6263e000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007faf6220c000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007faf6265c000)\n",
+        "path": "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libk5crypto-b1f99d5c.so.3.1"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f06de438000)\n\tlibk5crypto-b1f99d5c.so.3.1 => not found\n\tlibcom_err-2abe824b.so.2.1 => not found\n\tlibkrb5support-d0bcff84.so.0.1 => not found\n\tlibkeyutils-dfe70bd6.so.1.5 => not found\n\tlibresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007f06de41a000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f06dde0c000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f06de43a000)\n",
+        "path": "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libkrb5-fcafa220.so.3.3"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007efc6b288000)\n\tlibkeyutils-dfe70bd6.so.1.5 => not found\n\tlibresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007efc6b26c000)\n\tlibselinux-0922c95c.so.1 => not found\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007efc6b267000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007efc6ae0c000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007efc6b28a000)\n",
+        "path": "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libkrb5support-d0bcff84.so.0.1"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f636bafd000)\n\tlibpcre-9513aab5.so.1.2.0 => not found\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f636baee000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f636b60c000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f636baff000)\n",
+        "path": "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libselinux-0922c95c.so.1"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007fa81510d000)\n\tlibcrypto-4054f362.so.3 => not found\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007fa814fef000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fa814fea000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fa814df6000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fa81510f000)\n",
+        "path": "/opt/conda/lib/python3.12/site-packages/psycopg_binary.libs/libssl-11ac059b.so.3"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007fc47201e000)\n\tlibtk8.6.so => /opt/conda/lib/libtk8.6.so (0x00007fc471e94000)\n\tlibtcl8.6.so => /opt/conda/lib/libtcl8.6.so (0x00007fc471ccd000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fc471ad7000)\n\tlibX11.so.6 => not found\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fc4719e5000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007fc4719e0000)\n\tlibz.so.1 => /opt/conda/lib/libz.so.1 (0x00007fc4719c5000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fc4719c0000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fc472020000)\n",
+        "path": "/opt/conda/pkgs/python-3.12.8-h9e4cc4f_1_cpython/lib/python3.12/lib-dynload/_tkinter.cpython-312-x86_64-linux-gnu.so"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007fb617a3d000)\n\tlibtk8.6.so => /opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/bin/../lib/libtk8.6.so (0x00007fb6178be000)\n\tlibtcl8.6.so => /opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/bin/../lib/libtcl8.6.so (0x00007fb6176f7000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fb617501000)\n\tlibX11.so.6 => not found\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fb61740f000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007fb61740a000)\n\tlibz.so.1 => /opt/conda/lib/libz.so.1 (0x00007fb6173ef000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fb6173ea000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fb617a3f000)\n",
+        "path": "/opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/bin/wish"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f9d101a0000)\n\tlibtk8.6.so => /opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/bin/../lib/libtk8.6.so (0x00007f9d10021000)\n\tlibtcl8.6.so => /opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/bin/../lib/libtcl8.6.so (0x00007f9d0fe5a000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f9d0fc64000)\n\tlibX11.so.6 => not found\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f9d0fb72000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f9d0fb6d000)\n\tlibz.so.1 => /opt/conda/lib/libz.so.1 (0x00007f9d0fb52000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f9d0fb4d000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f9d101a2000)\n",
+        "path": "/opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/bin/wish8.6"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f9abe6bd000)\n\tlibX11.so.6 => not found\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f9abe451000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f9abe25d000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f9abe6bf000)\n",
+        "path": "/opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/lib/libtk8.6.so"
+      }
+    ],
+    "missing_libraries": [
+      "/opt/conda/bin/wish",
+      "/opt/conda/bin/wish8.6",
+      "/opt/conda/lib/libtk8.6.so",
+      "/opt/conda/lib/python3.12/lib-dynload/_tkinter.cpython-312-x86_64-linux-gnu.so",
+      "/opt/conda/pkgs/python-3.12.8-h9e4cc4f_1_cpython/lib/python3.12/lib-dynload/_tkinter.cpython-312-x86_64-linux-gnu.so",
+      "/opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/bin/wish",
+      "/opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/bin/wish8.6",
+      "/opt/conda/pkgs/tk-8.6.13-noxft_h1df4ec4_4/lib/libtk8.6.so"
+    ],
+    "unclassified": []
+  },
+  "no_new_privs": "1",
+  "python": "3.12.8",
+  "reason_codes": [
+    "native_library_check_failed"
+  ],
+  "role": "worker",
+  "role_import": true,
+  "role_version": "0.1.0",
+  "rootfs_erofs": true,
+  "rootfs_readonly_proven": true,
+  "rootfs_write_errno": "EROFS",
+  "scientific_checks": {
+    "blast_synthetic_exact_match": true,
+    "blast_version_checks": {
+      "blast_formatter": true,
+      "blast_formatter_vdb": true,
+      "blast_vdb_cmd": true,
+      "blastdb_aliastool": true,
+      "blastdbcheck": true,
+      "blastdbcmd": true,
+      "blastn": true,
+      "blastn_vdb": true,
+      "blastp": true,
+      "blastx": true,
+      "convert2blastmask": true,
+      "deltablast": true,
+      "dustmasker": true,
+      "makeblastdb": true,
+      "makembindex": true,
+      "makeprofiledb": true,
+      "psiblast": true,
+      "rpsblast": true,
+      "rpstblastn": true,
+      "segmasker": true,
+      "tblastn": true,
+      "tblastn_vdb": true,
+      "tblastx": true,
+      "windowmasker": true
+    },
+    "blast_version_scope": "ELF tools accepting -version only",
+    "primer3_nine_golden_facts": true,
+    "primer3_observed_values": [
+      59.62663,
+      69.836183,
+      46.16876,
+      59.62663,
+      69.091431,
+      34.346077,
+      0.0,
+      59.555182,
+      59.555182
+    ],
+    "primer3_parameters": {
+      "dna_conc_nM": 50.0,
+      "dntp_conc_mM": 0.6,
+      "dv_conc_mM": 1.5,
+      "max_loop": 30,
+      "max_nn_length": 60,
+      "mv_conc_mM": 50.0,
+      "salt_correction_method": "santalucia_1998",
+      "tm_method": "santalucia_1998"
+    },
+    "primer3_reference_values": [
+      59.62663,
+      69.836183,
+      46.16876,
+      59.62663,
+      69.091431,
+      34.346077,
+      0.0,
+      59.555182,
+      59.555182
+    ],
+    "primer3_source_sha256": "805cef7ef39607cd40f0f5bb8b32e35e20007153a0a55131dd430ce644c8fb9e",
+    "primer3_version": "2.6.1",
+    "tool_failure_classification": {
+      "exit": true,
+      "timeout": true
+    }
+  },
+  "status": "failed",
+  "tmp_writable": true,
+  "uid": 1000
+}

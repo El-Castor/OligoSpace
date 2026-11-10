@@ -81,6 +81,7 @@ AUTH_TEST_TITLES = (
 TEST_TITLES = AUTH_TEST_TITLES
 CASE_COUNT = len(TEST_TITLES)
 SCIENTIFIC = False
+HARDENED = False
 PHASE_ROLES = {
     "admin": "admin",
     "member": "member",
@@ -243,6 +244,86 @@ def csv_audit_passed(value: object) -> bool:
     )
 
 
+def harden_compose(compose: dict) -> None:
+    """Constrain application runtimes while inheriting their image's non-root USER."""
+    for name in ("api", "bioinfo-worker", "scientific-scheduler"):
+        service = compose["services"].get(name)
+        if service is None:
+            continue
+        service.update(
+            read_only=True,
+            cap_drop=["ALL"],
+            security_opt=["no-new-privileges:true"],
+            cpus="2.0",
+            mem_limit="2g",
+            pids_limit=256,
+            tmpfs=["/tmp:rw,noexec,nosuid,nodev,size=128m,mode=1777"],
+        )
+        # The image entrypoint activates its environment. A nested micromamba
+        # run failed the read-only startup probe; invoke the same server/tool
+        # directly while retaining that real entrypoint and scientific arguments.
+        if name == "api":
+            service["command"] = [
+                "uvicorn",
+                "oligospace_api.main:app",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "8000",
+            ]
+        elif name == "bioinfo-worker":
+            service["command"] = [
+                "celery",
+                "--app",
+                "oligospace_bioinfo.celery_app:app",
+                "worker",
+                "--loglevel=INFO",
+            ]
+        if name == "scientific-scheduler":
+            service["command"] = [
+                "celery",
+                "--app",
+                "oligospace_bioinfo.celery_app:app",
+                "beat",
+                "--loglevel=INFO",
+                "--schedule=/tmp/celerybeat-schedule",
+                "--pidfile=/tmp/celerybeat.pid",
+            ]
+
+
+def hardened_worker_action(dc: list[str], signals: Path, *, fault: bool) -> list[str]:
+    """Recreate only the disposable worker; never exec as root or mutate its image.
+
+    The executable fixture lives beside the private Compose configuration and is
+    mounted read-only over Primer3. Restoring uses the unmodified configuration.
+    """
+    command = list(dc)
+    if fault:
+        config = Path(dc[dc.index("--file") + 1])
+        if config.parent.resolve() != signals.parent.resolve():
+            raise ValueError(
+                "Fault fixture must stay inside the disposable work directory"
+            )
+        fixture = config.parent / "primer3-failure"
+        fixture.write_text("#!/bin/sh\nexit 1\n")
+        fixture.chmod(0o755)
+        compose = json.loads(config.read_text())
+        worker = compose["services"]["bioinfo-worker"]
+        worker.setdefault("volumes", []).append(
+            f"{fixture}:/opt/primer3/bin/primer3_core:ro"
+        )
+        fault_config = config.parent / "compose-worker-fault.json"
+        fault_config.write_text(json.dumps(compose))
+        command[command.index("--file") + 1] = str(fault_config)
+    return command + [
+        "up",
+        "--detach",
+        "--no-deps",
+        "--force-recreate",
+        "bioinfo-worker",
+    ]
+
+
 def serve_outage_signals(
     dc: list[str], signals: Path, process: subprocess.Popen[str]
 ) -> None:
@@ -268,7 +349,11 @@ def serve_outage_signals(
             if (signals / request).exists() and not (
                 signals / acknowledgement
             ).exists():
-                if command in ("fault", "repair"):
+                if command in ("fault", "repair") and HARDENED:
+                    action = hardened_worker_action(
+                        dc, signals, fault=command == "fault"
+                    )
+                elif command in ("fault", "repair"):
                     # Fault injection in this disposable container only; no scientific
                     # parameters or application code are changed. Restore in test finally.
                     script = (
@@ -276,25 +361,25 @@ def serve_outage_signals(
                         if command == "fault"
                         else "import os; os.unlink('/opt/primer3/bin/primer3_core'); os.rename('/opt/primer3/bin/primer3_core.saved','/opt/primer3/bin/primer3_core')"
                     )
-                    action = [
+                    action = dc + [
                         "exec",
                         "-T",
                         "--user",
                         "root",
                         "bioinfo-worker",
-                        "/opt/conda/bin/python",
+                        "/opt/venv/bin/python",
                         "-c",
                         script,
                     ]
                 else:
-                    action = [
+                    action = dc + [
                         command,
                         "bioinfo-worker"
                         if request.startswith("worker-")
                         else "keycloak",
                     ]
                 result = subprocess.run(
-                    dc + action, capture_output=True, check=False, timeout=180
+                    action, capture_output=True, check=False, timeout=180
                 )
                 answer = signals / acknowledgement
                 answer.write_text("ok" if result.returncode == 0 else "failed")
@@ -389,6 +474,128 @@ def collect_evidence(dc: list[str], work: Path, evidence: Path) -> None:
             and state["path_class"] in ("login", "auth", "realms", "other")
         ):
             (evidence / "state-probe.json").write_text(json.dumps(state, indent=2))
+
+
+RUNTIME_LOG_PATTERNS = {
+    "permission_denied": rb"permission denied",
+    "read_only": rb"read[- ]only",
+    "noexec": rb"noexec|cannot execute|operation not permitted",
+    "micromamba": rb"micromamba",
+    "tmp": rb"/tmp(?:/|\b)",
+    "not_found": rb"not found|no such file",
+}
+
+
+def sanitized_runtime_state(value: object) -> dict | None:
+    """Whitelist typed fields; inspect errors, health output and env never escape."""
+    if not isinstance(value, dict):
+        return None
+    status = value.get("Status")
+    exit_code = value.get("ExitCode")
+    oom = value.get("OOMKilled")
+    if (
+        status
+        not in (
+            "created",
+            "running",
+            "paused",
+            "restarting",
+            "removing",
+            "exited",
+            "dead",
+        )
+        or type(exit_code) is not int
+        or not -255 <= exit_code <= 65535
+        or type(oom) is not bool
+    ):
+        return None
+    health = value.get("Health", {})
+    if not isinstance(health, dict):
+        return None
+    health_status = health.get("Status", "absent")
+    if health_status not in ("absent", "starting", "healthy", "unhealthy"):
+        return None
+    return {
+        "status": status,
+        "exit_code": exit_code,
+        "oom_killed": oom,
+        "health": health_status,
+    }
+
+
+def collect_runtime_health(dc: list[str], evidence: Path) -> None:
+    """Retain bounded, sanitized diagnostics before disposable teardown.
+
+    Any failed retrieval is explicitly not_verified; empty logs never imply a
+    successful read. No raw inspect/log output is written to an artifact.
+    """
+    services = ["postgres", "keycloak", "api", "web", "caddy"]
+    if SCIENTIFIC:
+        services += ["redis", "bioinfo-worker", "scientific-scheduler"]
+    observations = []
+    for service in services:
+        state = None
+        try:
+            ids = subprocess.run(
+                dc + ["ps", "--all", "--quiet", service],
+                capture_output=True,
+                text=True,
+                timeout=15,
+                check=False,
+            )
+            identifier = ids.stdout.strip()
+            if ids.returncode == 0 and re.fullmatch(r"[0-9a-f]{12,64}", identifier):
+                inspected = subprocess.run(
+                    ["docker", "inspect", "--format", "{{json .State}}", identifier],
+                    capture_output=True,
+                    text=True,
+                    timeout=15,
+                    check=False,
+                )
+                if inspected.returncode == 0:
+                    state = sanitized_runtime_state(json.loads(inspected.stdout))
+        except (OSError, subprocess.TimeoutExpired, ValueError):
+            pass
+        try:
+            logs, rule = capture_service_logs(dc + ["logs", "--no-color", service])
+        except (OSError, subprocess.TimeoutExpired):
+            logs, rule = b"", "LOG_RETRIEVAL_FAILED"
+        counts = {
+            name: len(re.findall(pattern, logs, re.IGNORECASE))
+            for name, pattern in RUNTIME_LOG_PATTERNS.items()
+        }
+        del logs
+        observations.append(
+            {
+                "service": service,
+                "state": state,
+                "state_gate": "passed" if state is not None else "not_verified",
+                "log_gate": "passed" if rule is None else "not_verified",
+                "log_retrieval_rule": rule
+                if rule
+                in (
+                    "LOG_RETRIEVAL_FAILED",
+                    "LOG_RETRIEVAL_TIMEOUT",
+                    "LOG_LIMIT_EXCEEDED",
+                )
+                else None
+                if rule is None
+                else "LOG_RETRIEVAL_FAILED",
+                "log_category_counts": counts,
+            }
+        )
+    verified = all(
+        item["state_gate"] == item["log_gate"] == "passed" for item in observations
+    )
+    (evidence / "runtime-health.json").write_text(
+        json.dumps(
+            {
+                "retrieval_gate": "passed" if verified else "not_verified",
+                "services": observations,
+            },
+            indent=2,
+        )
+    )
 
 
 def capture_service_logs(command: list[str]) -> tuple[bytes, str | None]:
@@ -544,16 +751,23 @@ def browser_run(
         process = subprocess.Popen(
             command, text=True, stdout=output, stderr=subprocess.STDOUT
         )
-        serve_outage_signals(dc, work / "evidence", process)
+        try:
+            serve_outage_signals(dc, work / "evidence", process)
+        finally:
+            if HARDENED and SCIENTIFIC:
+                run(hardened_worker_action(dc, work / "evidence", fault=False))
         returncode = process.wait()
     return subprocess.CompletedProcess(command, returncode, output_path.read_text(), "")
 
 
 def main() -> None:
-    global SCIENTIFIC, TEST_TITLES, CASE_COUNT, PHASE_ROLES
+    global SCIENTIFIC, HARDENED, TEST_TITLES, CASE_COUNT, PHASE_ROLES
     parser = argparse.ArgumentParser()
     parser.add_argument("--scientific", action="store_true")
-    SCIENTIFIC = parser.parse_args().scientific
+    parser.add_argument("--hardened", action="store_true")
+    args = parser.parse_args()
+    SCIENTIFIC = args.scientific
+    HARDENED = args.hardened
     if SCIENTIFIC:
         spec = (ROOT / "apps/web/e2e-oidc/scientific.spec.ts").read_text()
         TEST_TITLES = tuple(re.findall(r'^test\("([^"]+)"', spec, re.MULTILINE))
@@ -574,6 +788,7 @@ def main() -> None:
     evidence.mkdir(exist_ok=True)
     for name in (
         "scientific-evidence.json",
+        "runtime-health.json",
         "csv-audit.json",
         "synthetic-scientific-mobile.png",
         "synthetic-scientific-desktop.png",
@@ -603,6 +818,7 @@ def main() -> None:
         "started_at": datetime.now(UTC).isoformat(),
         "execution_platform": platform.machine(),
         "mode": "scientific" if SCIENTIFIC else "authentication",
+        "hardened": HARDENED,
         "source_commit": source_commit,
         "tests": [],
     }
@@ -867,10 +1083,6 @@ https://auth-qualification.test {
                             "REDIS_URL": "redis://redis:6379/0",
                         },
                         "command": [
-                            "micromamba",
-                            "run",
-                            "--name",
-                            "base",
                             "celery",
                             "--app",
                             "oligospace_bioinfo.celery_app:app",
@@ -880,6 +1092,8 @@ https://auth-qualification.test {
                     },
                 }
             )
+        if HARDENED:
+            harden_compose(compose)
         config = work / "compose.json"
         config.write_text(json.dumps(compose))
         project = f"oligospace-oidc-{secrets.token_hex(4)}"
@@ -899,10 +1113,8 @@ https://auth-qualification.test {
                     "run",
                     "--rm",
                     "api",
-                    "micromamba",
-                    "run",
-                    "--name",
-                    "base",
+                    "/opt/venv/bin/python",
+                    "-m",
                     "alembic",
                     "upgrade",
                     "head",
@@ -991,6 +1203,7 @@ https://auth-qualification.test {
                 ]
                 summary.update(qualification="failed", phase="preflight", tests=results)
                 (evidence / "summary.json").write_text(json.dumps(summary, indent=2))
+                collect_runtime_health(dc, evidence)
                 collect_evidence(dc, work, evidence)
                 check_log_secrets(dc, private_values, evidence)
                 raise RuntimeError(
@@ -1074,6 +1287,7 @@ https://auth-qualification.test {
                 summary.update(qualification="failed", log_gate=log_gate)
                 (evidence / "summary.json").write_text(json.dumps(summary, indent=2))
             if not passed:
+                collect_runtime_health(dc, evidence)
                 raise RuntimeError(
                     "Qualification phase failed: browser; inspect sanitized summary.json"
                 )
@@ -1087,6 +1301,10 @@ https://auth-qualification.test {
                     }
                 )
             )
+        except Exception:
+            if not (evidence / "runtime-health.json").exists():
+                collect_runtime_health(dc, evidence)
+            raise
         finally:
             run(dc + ["down", "--volumes", "--remove-orphans"])
 

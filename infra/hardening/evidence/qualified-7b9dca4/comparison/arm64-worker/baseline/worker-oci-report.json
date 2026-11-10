@@ -1,0 +1,42 @@
+{
+  "status": "verified",
+  "source": "9ebbf2cd993395af2b154efb0b4cf5a76b4dd079",
+  "architecture": "arm64",
+  "descriptor": {
+    "digest": "sha256:45b857bb040e8efac8fc41cc75e6eb45405b3c1265ef5fb658369789833f0b42",
+    "size": 3708,
+    "mediaType": "application/vnd.oci.image.manifest.v1+json",
+    "platform": {
+      "os": "linux",
+      "architecture": "arm64"
+    }
+  },
+  "config_digest": "sha256:927ce2a130d85579914880476fa986c02a20e015fbf14671d6e5122b719c454c",
+  "rootfs_diff_ids": [
+    "sha256:48c19c2a881df039173a8f575853909f657a3d6541023638dca48313c2f124d7",
+    "sha256:800cfdc21c0d62e5844c0c13c32a9fbe7eceb9bd4b858934e88dcfafe25c66d2",
+    "sha256:bfdd79f6457c8bc5e1e287198ce2f7f9430b6cd14fd3d133b2db1a7e33546c18",
+    "sha256:cb6ccdcf83f2336ff4e4fe0963d9ab63b476cb58803702389ca12c1a928007e8",
+    "sha256:d7762ba2dcce10b4b1c60e4cbb03ea8381fd0f65367f4ced461c73f18544ac58",
+    "sha256:2cb69cecfec59ea22ef087a6c7c3e165e84736580c72102daabe2005b87e3c9d",
+    "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+    "sha256:e138b5fb06fc04887aca9923f8cb7fca045bac40821771e4dda14b2def740ffc",
+    "sha256:9cf26a88ccb7b2777acedeb8fbf3debb5c308a29163254515f902d31e3123fa8",
+    "sha256:d5da1c36b6c5b400a3bebad710bc14c298c3422185cc111215286097fe697359",
+    "sha256:9e3066e2416ac47b46d4eba75851fdda809c11203d4e0cc8adf27e2425104ba8",
+    "sha256:212e56660262359a5641030c150cdf696d235247a60b58d0a7764410016510a8",
+    "sha256:96e7b524c50bd964348520630f21d33076d2fc9bff5ac45208f20109e5a037ac",
+    "sha256:3ee3c0c56609b074a38786ff78251e6072d61c0a773fb00dbfd7cfc4de490de3",
+    "sha256:14e5ff200415e8b22a3d6fc0b46ed916f42d7835884a8f4b2fce20de694ca912",
+    "sha256:5f9b13271df60af5134b3642280c8215d771c976d7fb8fad0ce73341b26c49ef",
+    "sha256:50f426d9121cc7779079b1682b50c4a991915f10d7741ed51cafbed2fd09e372",
+    "sha256:c2eb56ed18e3c6c72f26a7bc0ab8eef7bfdfd25ede2cb2b12fb1f819b32107f4"
+  ],
+  "verified_blobs": 25,
+  "attestations": [
+    "https://slsa.dev/provenance/v1",
+    "https://spdx.dev/Document"
+  ],
+  "signature_trust": "not_verified",
+  "role": "worker"
+}

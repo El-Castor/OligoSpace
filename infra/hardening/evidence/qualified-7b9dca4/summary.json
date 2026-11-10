@@ -1,0 +1,77 @@
+{
+  "source": "7b9dca48fdf410014d24b060f49d77763f0d24d0",
+  "comparison_run": 42807903081,
+  "native_functional_run": 42807902881,
+  "oidc_run": 42807903128,
+  "scientific_run": 42807902751,
+  "same_frozen_db": "eca36c960436a6ba904508098b151f7f2f70b6300e8b002aef587e816505dd11",
+  "release_authorized": false,
+  "rows": [
+    {
+      "artifact": "amd64-api",
+      "before_oci_bytes": 229778432,
+      "after_oci_bytes": 91024384,
+      "variation_percent": -60.39,
+      "counts": {
+        "MEDIUM": 22,
+        "LOW": 4
+      },
+      "secrets": 0,
+      "inventory": 163,
+      "runtime": "passed",
+      "library_versions": null,
+      "archive_sha256": "e485c55e51a5374354952b0a3ae61184b82b5c4764c3bba72b4eaf4122c819c0"
+    },
+    {
+      "artifact": "amd64-worker",
+      "before_oci_bytes": 534396416,
+      "after_oci_bytes": 395685888,
+      "variation_percent": -25.96,
+      "counts": {
+        "MEDIUM": 22,
+        "LOW": 4
+      },
+      "secrets": 0,
+      "inventory": 131,
+      "runtime": "passed",
+      "library_versions": {
+        "biopython": "1.88",
+        "numpy": "2.5.4"
+      },
+      "archive_sha256": "9b8d83b1b88107ab04c43ae5cbb55fee5aed8cb242453d5c813738511147fe1c"
+    },
+    {
+      "artifact": "arm64-api",
+      "before_oci_bytes": 184395264,
+      "after_oci_bytes": 89147904,
+      "variation_percent": -51.65,
+      "counts": {
+        "MEDIUM": 22,
+        "LOW": 4
+      },
+      "secrets": 0,
+      "inventory": 163,
+      "runtime": "passed",
+      "library_versions": null,
+      "archive_sha256": "282d582fe31b047d439e8ba38192b8bc82aa9b9d08887b634e0bed6516edbd07"
+    },
+    {
+      "artifact": "arm64-worker",
+      "before_oci_bytes": 434953216,
+      "after_oci_bytes": 339743744,
+      "variation_percent": -21.89,
+      "counts": {
+        "MEDIUM": 22,
+        "LOW": 4
+      },
+      "secrets": 0,
+      "inventory": 131,
+      "runtime": "passed",
+      "library_versions": {
+        "biopython": "1.88",
+        "numpy": "2.5.4"
+      },
+      "archive_sha256": "dce49bfdd1cc2d9418eae2be18c1feffb2adb072b67272a922e0fb868edb427e"
+    }
+  ]
+}

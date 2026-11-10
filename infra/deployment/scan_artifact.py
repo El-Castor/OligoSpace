@@ -13,6 +13,8 @@ import re
 import subprocess
 import tarfile
 import tempfile
+from urllib.parse import parse_qs, urlsplit
+import math
 
 from scan_layout import prepare_layout
 
@@ -88,7 +90,173 @@ def safe_field(value):
     return value
 
 
-def summarize(raw, proof, database):
+def public_url(value):
+    if value is None or value == "":
+        return None
+    if not isinstance(value, str) or len(value) > 512:
+        raise ValueError("invalid_public_field")
+    parsed = urlsplit(value)
+    # Trivy uses public GitHub advisory searches when no direct advisory exists.
+    # Admit only CVE identifiers or the fixed reviewed-Python ecosystem filter,
+    # never arbitrary query parameters or values.
+    cve_search = (
+        parsed.netloc == "github.com"
+        and parsed.path == "/advisories"
+        and (
+            re.fullmatch(r"query=CVE-[0-9]{4}-[0-9]{4,}", parsed.query)
+            or (
+                parsed.query.count("=") == 1
+                and "&" not in parsed.query
+                and parse_qs(parsed.query) == {"query": ["type:reviewed ecosystem:pip"]}
+            )
+        )
+    )
+    if (
+        parsed.scheme != "https"
+        or not parsed.hostname
+        or parsed.username
+        or parsed.password
+        or (parsed.query and not cve_search)
+        or parsed.fragment
+        or not re.fullmatch(r"https://[A-Za-z0-9./_:~%+@\-]+", value.split("?", 1)[0])
+    ):
+        raise ValueError("invalid_public_field")
+    return value
+
+
+def public_cvss(value):
+    if value is None:
+        return None
+    if not isinstance(value, dict) or len(value) > 32:
+        raise ValueError("invalid_public_field")
+    output = {}
+    for vendor, metrics in value.items():
+        if not isinstance(metrics, dict):
+            raise ValueError("invalid_public_field")
+        result = {}
+        for key, metric in metrics.items():
+            if key in ("V2Score", "V3Score", "V4Score", "V40Score"):
+                if (
+                    type(metric) not in (int, float)
+                    or not math.isfinite(metric)
+                    or not 0 <= metric <= 10
+                ):
+                    raise ValueError("invalid_public_field")
+                result[key] = metric
+            elif key in ("V2Vector", "V3Vector", "V4Vector", "V40Vector"):
+                if (
+                    not isinstance(metric, str)
+                    or len(metric) > 512
+                    or not re.fullmatch(
+                        r"(?:CVSS:[234]\.\d/)?[A-Za-z0-9:/.()\-]+", metric
+                    )
+                ):
+                    raise ValueError("invalid_public_field")
+                result[key] = metric
+            else:
+                raise ValueError("invalid_public_field")
+        output[safe_field(vendor)] = result
+    return output
+
+
+def public_layer(value):
+    if value is None:
+        return None
+    if not isinstance(value, dict):
+        raise ValueError("invalid_public_field")
+    result = {}
+    for key in ("Digest", "DiffID"):
+        if value.get(key):
+            digest = value[key]
+            if not isinstance(digest, str) or not re.fullmatch(
+                r"sha256:[a-f0-9]{64}", digest
+            ):
+                raise ValueError("invalid_public_field")
+            result[key] = digest
+    return result
+
+
+def public_data_source(value):
+    if value is None:
+        return None
+    if not isinstance(value, dict):
+        raise ValueError("invalid_public_field")
+    return {
+        "ID": safe_field(value.get("ID", "")),
+        "Name": safe_field(value.get("Name", "")),
+        "URL": public_url(value.get("URL")),
+    }
+
+
+def inventory_version(package, ecosystem, prefix=""):
+    upstream = safe_field(package.get(prefix + "Version", ""))
+    if ecosystem not in ("debian", "ubuntu"):
+        return upstream, None
+    epoch = package.get(prefix + "Epoch")
+    if epoch is not None and (
+        isinstance(epoch, bool)
+        or not isinstance(epoch, (str, int))
+        or not re.fullmatch(r"[0-9]+", str(epoch))
+    ):
+        raise ValueError("invalid_public_field")
+    release = package.get(prefix + "Release")
+    if release is not None:
+        release = safe_field(release)
+        if release and not re.fullmatch(r"[A-Za-z0-9+.~]+", release):
+            raise ValueError("invalid_public_field")
+    version = upstream
+    if release:
+        version += "-" + release
+    if epoch is not None and int(epoch) != 0:
+        version = str(epoch) + ":" + version
+    return version, {
+        "upstream": upstream,
+        "epoch": epoch,
+        "release": release,
+        "complete": release is not None,
+    }
+
+
+def validate_database(database):
+    if (
+        not isinstance(database, dict)
+        or database.get("Version") != 2
+        or not all(
+            isinstance(database.get(k), str)
+            and re.fullmatch(r"[0-9T:Z.+-]+", database[k])
+            for k in ("UpdatedAt", "NextUpdate", "DownloadedAt")
+        )
+    ):
+        raise ValueError("database_metadata_missing")
+
+
+def frozen_database_identity(directory):
+    """Hash the caller's existing DB; never create, download or modify it."""
+    try:
+        database_file = directory / "db/trivy.db"
+        metadata_file = directory / "db/metadata.json"
+        if not database_file.is_file() or database_file.stat().st_size == 0:
+            raise ValueError("database_metadata_missing")
+        metadata_bytes = metadata_file.read_bytes()
+        validate_database(json.loads(metadata_bytes))
+        digest = hashlib.sha256()
+        with database_file.open("rb") as stream:
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(chunk)
+        return {
+            "database_sha256": digest.hexdigest(),
+            "metadata_sha256": hashlib.sha256(metadata_bytes).hexdigest(),
+        }
+    except (OSError, ValueError, TypeError) as error:
+        raise ValueError("database_metadata_missing") from error
+
+
+def verify_frozen_database(directory, identity):
+    if frozen_database_identity(directory) != identity:
+        raise ValueError("database_changed")
+
+
+def summarize(raw, proof, database, require_inventory=False):
     if (
         not isinstance(raw, dict)
         or raw.get("SchemaVersion") != 2
@@ -111,21 +279,27 @@ def summarize(raw, proof, database):
     operating_system = metadata.get("OS", {})
     if (
         not isinstance(operating_system, dict)
-        or operating_system.get("Family") not in ("debian", "alpine")
+        or operating_system.get("Family") not in ("debian", "alpine", "ubuntu")
         or not operating_system.get("Name")
     ):
         raise ValueError("os_coverage_missing")
-    if (
-        not isinstance(database, dict)
-        or database.get("Version") != 2
-        or not all(
-            isinstance(database.get(k), str)
-            and re.fullmatch(r"[0-9T:Z.+-]+", database[k])
-            for k in ("UpdatedAt", "NextUpdate", "DownloadedAt")
-        )
-    ):
-        raise ValueError("database_metadata_missing")
+    validate_database(database)
     report = summarize_findings(raw)
+    report["operating_system"] = {
+        "family": safe_field(operating_system["Family"]),
+        "name": safe_field(operating_system["Name"]),
+    }
+    os_inventory = any(
+        r.get("Type") == operating_system["Family"]
+        and isinstance(r.get("Packages"), list)
+        and bool(r["Packages"])
+        for r in raw.get("Results", [])
+    )
+    report["os_package_inventory_coverage"] = (
+        "observed" if os_inventory else "not_verified"
+    )
+    if require_inventory and not os_inventory:
+        raise ValueError("os_package_inventory_missing")
     report["vulnerability_database"] = {
         k: database[k] for k in ("Version", "UpdatedAt", "NextUpdate", "DownloadedAt")
     }
@@ -216,9 +390,42 @@ def summarize_findings(raw):
     findings = []
     secret_count = 0
     secret_observations = []
+    packages = []
+    inventory_observed = False
     for result in results:
         if not isinstance(result, dict):
             raise ValueError("invalid_result")
+        if "Packages" in result:
+            if not isinstance(result["Packages"], list):
+                raise ValueError("invalid_result")
+            inventory_observed = True
+            for package in result["Packages"]:
+                if not isinstance(package, dict):
+                    raise ValueError("invalid_result")
+                ecosystem = safe_field(result.get("Type", "unknown"))
+                version, components = inventory_version(package, ecosystem)
+                source_version, source_components = inventory_version(
+                    package, ecosystem, "Src"
+                )
+                packages.append(
+                    {
+                        "package": safe_field(package.get("Name", "")),
+                        "version": version,
+                        "source_package": safe_field(package.get("SrcName", ""))
+                        or None,
+                        "source_version": source_version or None,
+                        "ecosystem": ecosystem,
+                        **(
+                            {
+                                "version_components": components,
+                                "version_complete": components["complete"],
+                                "source_version_components": source_components,
+                            }
+                            if components is not None
+                            else {}
+                        ),
+                    }
+                )
         secrets = result.get("Secrets", [])
         vulnerabilities = result.get("Vulnerabilities", [])
         if not isinstance(secrets, list) or not isinstance(vulnerabilities, list):
@@ -260,6 +467,19 @@ def summarize_findings(raw):
             if level not in ("UNKNOWN", "LOW", "MEDIUM", "HIGH", "CRITICAL"):
                 raise ValueError("advisory_severity_format_unsupported")
             severity[level] += 1
+            package_source = vulnerability.get("SrcName")
+            if package_source is None:
+                candidates = {
+                    p["source_package"]
+                    for p in packages
+                    if p["package"] == vulnerability.get("PkgName")
+                    and p.get("version_complete", True)
+                    and p["version"] == vulnerability.get("InstalledVersion")
+                    and p["ecosystem"] == result.get("Type", "unknown")
+                    and p["source_package"]
+                }
+                if len(candidates) == 1:
+                    package_source = candidates.pop()
             findings.append(
                 {
                     "id": identifier,
@@ -270,6 +490,19 @@ def summarize_findings(raw):
                     ),
                     "fixed_version": safe_field(vulnerability.get("FixedVersion", "")),
                     "origin": safe_field(result.get("Type", "unknown")),
+                    "cvss": public_cvss(vulnerability.get("CVSS")),
+                    "severity_source": safe_field(vulnerability["SeveritySource"])
+                    if vulnerability.get("SeveritySource") is not None
+                    else None,
+                    "data_source": public_data_source(vulnerability.get("DataSource")),
+                    "primary_url": public_url(vulnerability.get("PrimaryURL")),
+                    "package_source": safe_field(package_source)
+                    if package_source is not None
+                    else None,
+                    "layer": public_layer(vulnerability.get("Layer")),
+                    "package_path": public_image_location(vulnerability["PkgPath"])
+                    if vulnerability.get("PkgPath") is not None
+                    else None,
                 }
             )
     blocked = bool(secret_count or findings)
@@ -284,6 +517,11 @@ def summarize_findings(raw):
         "scanner": SCANNER,
         "raw_matches_retained": False,
         "risk_acceptance": "not_granted",
+        "package_inventory": packages,
+        "package_inventory_count": len(packages),
+        "package_inventory_coverage": "observed"
+        if inventory_observed
+        else "not_verified",
     }
 
 
@@ -294,10 +532,12 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--architecture", choices=("arm64", "amd64"), required=True)
     parser.add_argument("--source", required=True)
+    parser.add_argument("--vulnerability-cache", type=Path)
     args = parser.parse_args()
     report = failure("SCAN_NOT_EXECUTED", "not_executed")
     proof = {}
     container_attempted = False
+    frozen_identity = None
     stage = "SCAN_INPUT_INVALID"
     try:
         with tempfile.TemporaryDirectory(
@@ -319,7 +559,13 @@ def main():
             if not endpoint.startswith("unix://") or os.environ.get("DOCKER_HOST"):
                 raise ValueError("local_engine_required")
             stage = "SCAN_CACHE_PERMISSIONS"
-            (root / "cache").mkdir(mode=0o700)
+            cache = root / "cache"
+            if args.vulnerability_cache is None:
+                cache.mkdir(mode=0o700)
+            else:
+                stage = "SCAN_FROZEN_DATABASE_INVALID"
+                cache = args.vulnerability_cache.resolve()
+                frozen_identity = frozen_database_identity(cache)
             stage = "SCAN_CONTAINER_FAILED"
             container_attempted = True
             result = subprocess.run(
@@ -331,10 +577,13 @@ def main():
                     f"{os.getuid()}:{os.getgid()}",
                     "--env",
                     "HOME=/tmp",
+                ]
+                + (["--network", "none"] if frozen_identity else [])
+                + [
                     "--volume",
                     f"{root / 'layout'}:/input/layout:ro",
                     "--volume",
-                    f"{root / 'cache'}:/cache",
+                    f"{cache}:/cache" + (":ro" if frozen_identity else ""),
                     SCANNER,
                     "image",
                     "--input",
@@ -347,14 +596,23 @@ def main():
                     "/cache",
                     "--cache-backend",
                     "memory",
+                    "--list-all-pkgs",
                     "--timeout",
                     "15m",
-                ],
+                ]
+                + (
+                    ["--skip-db-update", "--skip-java-db-update", "--offline-scan"]
+                    if frozen_identity
+                    else []
+                ),
                 capture_output=True,
                 text=True,
                 check=False,
                 timeout=1000,
             )
+            if frozen_identity:
+                stage = "SCAN_FROZEN_DATABASE_CHANGED"
+                verify_frozen_database(cache, frozen_identity)
             if result.returncode:
                 message = result.stderr.lower()
                 if "permission denied" in message or "access denied" in message:
@@ -367,10 +625,17 @@ def main():
                 report.update(failure_diagnostics(result.stderr, result.returncode))
             else:
                 stage = "SCAN_DATABASE_METADATA_INVALID"
-                database = json.loads((root / "cache/db/metadata.json").read_text())
+                database = json.loads((cache / "db/metadata.json").read_text())
                 stage = "SCAN_REPORT_INVALID"
                 raw = json.loads(result.stdout)
-                report = summarize(raw, proof, database)
+                report = summarize(raw, proof, database, require_inventory=True)
+                if frozen_identity:
+                    report["frozen_vulnerability_database"] = {
+                        **frozen_identity,
+                        "unchanged_after_scan": True,
+                        "network": "none",
+                        "updates": "disabled",
+                    }
                 from secret_triage import triage_secrets
 
                 triage = triage_secrets(root / "layout", proof, raw, jwt_triage)

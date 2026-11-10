@@ -1,0 +1,31 @@
+{
+  "actual_architecture": "amd64",
+  "ca_certificates": 120,
+  "cap_eff": "0000000000000000",
+  "expected_hardened": true,
+  "gid": 1000,
+  "kombu": "5.6.2",
+  "native_imports": {
+    "asyncpg": true,
+    "cryptography.hazmat.bindings._rust": true
+  },
+  "native_libraries": {
+    "contextual_checks": [],
+    "elf_files_checked": 954,
+    "first_pass_missing": [],
+    "missing_libraries": [],
+    "unclassified": []
+  },
+  "no_new_privs": "1",
+  "python": "3.12.3",
+  "reason_codes": [],
+  "role": "api",
+  "role_import": true,
+  "role_version": "0.1.0",
+  "rootfs_erofs": true,
+  "rootfs_readonly_proven": true,
+  "rootfs_write_errno": "EROFS",
+  "status": "passed",
+  "tmp_writable": true,
+  "uid": 1000
+}

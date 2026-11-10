@@ -1,0 +1,26 @@
+{
+  "packages": [
+    {
+      "extras": [],
+      "name": "packaging",
+      "version": "26.3"
+    },
+    {
+      "extras": [],
+      "name": "pathspec",
+      "version": "1.1.1"
+    },
+    {
+      "extras": [],
+      "name": "pluggy",
+      "version": "1.7.0"
+    },
+    {
+      "extras": [],
+      "name": "trove-classifiers",
+      "version": "2026.9.21.13"
+    }
+  ],
+  "python": "3.12.8",
+  "root": "hatchling"
+}

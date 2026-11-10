@@ -128,7 +128,7 @@ async def migrate() -> str:
             # No shell and no DB URL in argv/output. Retain lock on this session.
             result = await asyncio.to_thread(
                 subprocess.run,
-                ["micromamba", "run", "--name", "base", "alembic", "upgrade", "head"],
+                [sys.executable, "-m", "alembic", "upgrade", "head"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 check=False,

@@ -1,0 +1,1270 @@
+{
+  "sanitized_projection": true,
+  "original_verbatim": false,
+  "signature_trust": "not_verified",
+  "subject_digest": "sha256:49f5fcb6a96cc1e4b29564f555dbe4f8b7553332627a974d92a47c60fe5a1757",
+  "source_sha": "9020258e85a38d67b113c8d75614fcaa37745522",
+  "source_sha_authority": "verified_image_revision_label",
+  "architecture": "amd64",
+  "attestations": [
+    {
+      "sanitized_projection": true,
+      "original_verbatim": false,
+      "signature_trust": "not_verified",
+      "subject_digest": "sha256:49f5fcb6a96cc1e4b29564f555dbe4f8b7553332627a974d92a47c60fe5a1757",
+      "source_sha": "9020258e85a38d67b113c8d75614fcaa37745522",
+      "source_sha_authority": "verified_image_revision_label",
+      "architecture": "amd64",
+      "predicateType": "https://spdx.dev/Document",
+      "original_attestation_blob_digest": "sha256:3a38678285843c18efcde7684eacd2b6f17f76626022aeeb3d7fb0c4389776f0",
+      "spdxVersion": "SPDX-2.3",
+      "packages": [
+        {
+          "name": "Simple Launcher",
+          "versionInfo": "1.1.0.14",
+          "SPDXID": "SPDXRef-Package-binary-Simple-Launcher-b0da8da07656841f",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "Simple Launcher",
+          "versionInfo": "1.1.0.14",
+          "SPDXID": "SPDXRef-Package-binary-Simple-Launcher-64ad77c4fb41ca0e",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "Simple Launcher",
+          "versionInfo": "1.1.0.14",
+          "SPDXID": "SPDXRef-Package-binary-Simple-Launcher-2b8851c5313001ee",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "Simple Launcher",
+          "versionInfo": "1.1.0.14",
+          "SPDXID": "SPDXRef-Package-binary-Simple-Launcher-4744a497d2fced9d",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "Simple Launcher",
+          "versionInfo": "1.1.0.14",
+          "SPDXID": "SPDXRef-Package-binary-Simple-Launcher-e01eb32543ba89db",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "Simple Launcher",
+          "versionInfo": "1.1.0.14",
+          "SPDXID": "SPDXRef-Package-binary-Simple-Launcher-6ce8d8a87e6c8909",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "Simple Launcher",
+          "versionInfo": "1.1.0.14",
+          "SPDXID": "SPDXRef-Package-binary-Simple-Launcher-3fab729c892a8d06",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "Simple Launcher",
+          "versionInfo": "1.1.0.14",
+          "SPDXID": "SPDXRef-Package-binary-Simple-Launcher-92d6c6b9cc734385",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "Simple Launcher",
+          "versionInfo": "1.1.0.14",
+          "SPDXID": "SPDXRef-Package-binary-Simple-Launcher-b20651ec88338dcf",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "Simple Launcher",
+          "versionInfo": "1.1.0.14",
+          "SPDXID": "SPDXRef-Package-binary-Simple-Launcher-e718ab0312f6596a",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "Simple Launcher",
+          "versionInfo": "1.1.0.14",
+          "SPDXID": "SPDXRef-Package-binary-Simple-Launcher-0caa39142c9cb516",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "Simple Launcher",
+          "versionInfo": "1.1.0.14",
+          "SPDXID": "SPDXRef-Package-binary-Simple-Launcher-175787fc43f2b447",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "adduser",
+          "versionInfo": "3.134",
+          "SPDXID": "SPDXRef-Package-deb-adduser-c02171bf930643dd",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-2.0-only AND GPL-2.0-or-later"
+        },
+        {
+          "name": "alembic",
+          "versionInfo": "1.14.1",
+          "SPDXID": "SPDXRef-Package-python-alembic-0350ae816bd21ab6",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "amqp",
+          "versionInfo": "5.4.2",
+          "SPDXID": "SPDXRef-Package-python-amqp-c2248c761f6483d8",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LicenseRef-BSD"
+        },
+        {
+          "name": "annotated-doc",
+          "versionInfo": "0.0.5",
+          "SPDXID": "SPDXRef-Package-python-annotated-doc-c9d5b78445e98664",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "annotated-types",
+          "versionInfo": "0.8.0",
+          "SPDXID": "SPDXRef-Package-python-annotated-types-9947684678befe19",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "anyio",
+          "versionInfo": "4.16.0",
+          "SPDXID": "SPDXRef-Package-python-anyio-db82c480045f8199",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "apt",
+          "versionInfo": "2.6.2",
+          "SPDXID": "SPDXRef-Package-deb-apt-69cd0ddf2483503f",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND LicenseRef-Expat AND GPL-2.0-only AND GPL-2.0-or-later"
+        },
+        {
+          "name": "argon2-cffi",
+          "versionInfo": "25.1.0",
+          "SPDXID": "SPDXRef-Package-python-argon2-cffi-ee155b1c409050aa",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "argon2-cffi-bindings",
+          "versionInfo": "26.1.0",
+          "SPDXID": "SPDXRef-Package-python-argon2-cffi-bindings-16612aae1db0d22a",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "asyncpg",
+          "versionInfo": "0.30.0",
+          "SPDXID": "SPDXRef-Package-python-asyncpg-673923a5e43a88d4",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LicenseRef-Apache-License--Version-2.0"
+        },
+        {
+          "name": "base-files",
+          "versionInfo": "12.4+deb12u15",
+          "SPDXID": "SPDXRef-Package-deb-base-files-735e4e6d8efde23b",
+          "licenseConcluded": "LicenseRef-fd7e4aae7e7b05f217bcf2d02322825c360e66c52c4c2f1b28d784d6297a1c23",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "base-passwd",
+          "versionInfo": "3.6.1",
+          "SPDXID": "SPDXRef-Package-deb-base-passwd-7cc4c7a70852c7fd",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-2.0-only AND LicenseRef-public-domain"
+        },
+        {
+          "name": "bash",
+          "versionInfo": "5.2.15-2+b13",
+          "SPDXID": "SPDXRef-Package-deb-bash-f910b8efb61f91f7",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-4-Clause-UC AND GFDL-1.3-only AND LicenseRef-GFDL-NIV-1.3 AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND Latex2e AND LicenseRef-MIT-like AND LicenseRef-permissive"
+        },
+        {
+          "name": "billiard",
+          "versionInfo": "4.3.2",
+          "SPDXID": "SPDXRef-Package-python-billiard-e31507858c4a7ec6",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LicenseRef-BSD"
+        },
+        {
+          "name": "bsdutils",
+          "versionInfo": "1:2.38.1-5+deb12u3",
+          "SPDXID": "SPDXRef-Package-deb-bsdutils-f131145b816a43ee",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND BSD-4-Clause AND LicenseRef-BSLA AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LicenseRef-LGPL AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND MIT AND LicenseRef-public-domain"
+        },
+        {
+          "name": "ca-certificates",
+          "versionInfo": "20250419~deb12u2",
+          "SPDXID": "SPDXRef-Package-deb-ca-certificates-b2388d2450e6edaa",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-2.0-only AND GPL-2.0-or-later AND MPL-2.0"
+        },
+        {
+          "name": "celery",
+          "versionInfo": "5.4.0",
+          "SPDXID": "SPDXRef-Package-python-celery-dc545ad47e009620",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause"
+        },
+        {
+          "name": "certifi",
+          "versionInfo": "2026.10.23",
+          "SPDXID": "SPDXRef-Package-python-certifi-ecb2c39f6f8ebc89",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MPL-2.0"
+        },
+        {
+          "name": "cffi",
+          "versionInfo": "2.1.1",
+          "SPDXID": "SPDXRef-Package-python-cffi-ae55386d88b4726a",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT-0"
+        },
+        {
+          "name": "click",
+          "versionInfo": "8.5.1",
+          "SPDXID": "SPDXRef-Package-python-click-9e0ced0b74364d20",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause"
+        },
+        {
+          "name": "click-didyoumean",
+          "versionInfo": "0.3.1",
+          "SPDXID": "SPDXRef-Package-python-click-didyoumean-7d1124e45e404978",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "click-plugins",
+          "versionInfo": "1.1.1.2",
+          "SPDXID": "SPDXRef-Package-python-click-plugins-1cda93517966b53c",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LicenseRef-New-BSD"
+        },
+        {
+          "name": "click-repl",
+          "versionInfo": "0.4.1",
+          "SPDXID": "SPDXRef-Package-python-click-repl-5b358b2867bc4c72",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "coreutils",
+          "versionInfo": "9.1-1",
+          "SPDXID": "SPDXRef-Package-deb-coreutils-eca37691b87c0860",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-4-Clause-UC AND FSFULLR AND GFDL-1.3-only AND LicenseRef-GFDL-NIV-1.3 AND GPL-3.0-only AND GPL-3.0-or-later AND ISC"
+        },
+        {
+          "name": "cryptography",
+          "versionInfo": "50.0.2",
+          "SPDXID": "SPDXRef-Package-python-cryptography-c29af08be5c5adf7",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "(Apache-2.0 OR BSD-3-Clause)"
+        },
+        {
+          "name": "dash",
+          "versionInfo": "0.5.12-2",
+          "SPDXID": "SPDXRef-Package-deb-dash-d99eda363265247f",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later AND LicenseRef-public-domain"
+        },
+        {
+          "name": "debconf",
+          "versionInfo": "1.5.82",
+          "SPDXID": "SPDXRef-Package-deb-debconf-242708e27fd24140",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-2-Clause"
+        },
+        {
+          "name": "debian-archive-keyring",
+          "versionInfo": "2023.3+deb12u2",
+          "SPDXID": "SPDXRef-Package-deb-debian-archive-keyring-13c7b506427f3aee",
+          "licenseConcluded": "LicenseRef-b32aecaae84643700a33bc9ee83fa9b36938d35aa7b61b5042092eca77ddb732",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "debianutils",
+          "versionInfo": "5.7-0.5~deb12u1",
+          "SPDXID": "SPDXRef-Package-deb-debianutils-2587c3c4d8d21d21",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-2.0-only AND GPL-2.0-or-later AND SMAIL-GPL AND LicenseRef-public-domain"
+        },
+        {
+          "name": "diffutils",
+          "versionInfo": "1:3.8-4",
+          "SPDXID": "SPDXRef-Package-deb-diffutils-eae3581d3fe173ec",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "FSFAP AND FSFULLR AND GFDL-1.3-only AND LicenseRef-GFDL-NIV-1.3 AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND X11 AND LicenseRef-public-domain"
+        },
+        {
+          "name": "dpkg",
+          "versionInfo": "1.21.23",
+          "SPDXID": "SPDXRef-Package-deb-dpkg-73ddb57553ac7816",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-2-Clause AND GPL-2.0-only AND GPL-2.0-or-later AND LicenseRef-public-domain-s-s-d"
+        },
+        {
+          "name": "e2fsprogs",
+          "versionInfo": "1.47.0-2+b2",
+          "SPDXID": "SPDXRef-Package-deb-e2fsprogs-4be417a9253d1325",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "Apache-2.0 AND Apache-2.0 AND BSD-3-Clause AND LicenseRef-GPL AND GPL-2.0-only AND GPL-2.0-or-later AND ISC AND Kazlib AND LGPL-2.0-only AND Latex2e"
+        },
+        {
+          "name": "et-xmlfile",
+          "versionInfo": "2.0.0",
+          "SPDXID": "SPDXRef-Package-python-et-xmlfile-6a0a26bfe18c1f7a",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "fastapi",
+          "versionInfo": "0.135.2",
+          "SPDXID": "SPDXRef-Package-python-fastapi-ae2107d184cfa949",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "findutils",
+          "versionInfo": "4.9.0-4",
+          "SPDXID": "SPDXRef-Package-deb-findutils-1b6d210249e3ac45",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND FSFAP AND FSFULLR AND GFDL-1.3-only AND LicenseRef-GFDL-NIV-1.3- AND LicenseRef-GPL AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND ISC AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND X11 AND LicenseRef-public-domain"
+        },
+        {
+          "name": "gcc-12-base",
+          "versionInfo": "12.2.0-14+deb12u1",
+          "SPDXID": "SPDXRef-Package-deb-gcc-12-base-58c10ea7ffbc22a3",
+          "licenseConcluded": "LicenseRef-da8191658b3452ce9caf31638ba61dab31a38c619fa39df119812e050f592fd3",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "gpgv",
+          "versionInfo": "2.2.40-1.1+deb12u2",
+          "SPDXID": "SPDXRef-Package-deb-gpgv-bab4532a87a829c8",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND CC0-1.0 AND LicenseRef-Expat AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND LicenseRef-RFC-Reference AND LicenseRef-TinySCHEME AND LicenseRef-permissive"
+        },
+        {
+          "name": "greenlet",
+          "versionInfo": "3.5.6",
+          "SPDXID": "SPDXRef-Package-python-greenlet-f11de3a4c497db0f",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "(MIT AND PSF-2.0)"
+        },
+        {
+          "name": "grep",
+          "versionInfo": "3.8-5",
+          "SPDXID": "SPDXRef-Package-deb-grep-22c460e1da8ba8cd",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-3.0-only AND GPL-3.0-or-later"
+        },
+        {
+          "name": "gzip",
+          "versionInfo": "1.12-1",
+          "SPDXID": "SPDXRef-Package-deb-gzip-aa527ab8cb576b14",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LicenseRef-FSF-manpages AND LicenseRef-GFDL-1.3--no-invariant AND LicenseRef-GFDL-3 AND GPL-3.0-only AND GPL-3.0-or-later"
+        },
+        {
+          "name": "h11",
+          "versionInfo": "0.16.0",
+          "SPDXID": "SPDXRef-Package-python-h11-f609052828e5781b",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "hostname",
+          "versionInfo": "3.23+nmu1",
+          "SPDXID": "SPDXRef-Package-deb-hostname-6953da8863232503",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-2.0-only"
+        },
+        {
+          "name": "httpcore",
+          "versionInfo": "1.0.9",
+          "SPDXID": "SPDXRef-Package-python-httpcore-1046815bf5933fbf",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause"
+        },
+        {
+          "name": "httptools",
+          "versionInfo": "0.9.0",
+          "SPDXID": "SPDXRef-Package-python-httptools-232970a8bb414712",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "httpx",
+          "versionInfo": "0.28.1",
+          "SPDXID": "SPDXRef-Package-python-httpx-49fec4e582106760",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause"
+        },
+        {
+          "name": "idna",
+          "versionInfo": "3.20",
+          "SPDXID": "SPDXRef-Package-python-idna-74f401a3d16f5352",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause"
+        },
+        {
+          "name": "init-system-helpers",
+          "versionInfo": "1.65.2+deb12u1",
+          "SPDXID": "SPDXRef-Package-deb-init-system-helpers-bc67df4e4ad2e833",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later"
+        },
+        {
+          "name": "kombu",
+          "versionInfo": "5.6.2",
+          "SPDXID": "SPDXRef-Package-python-kombu-87b2deb65cf88efe",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause"
+        },
+        {
+          "name": "libacl1",
+          "versionInfo": "2.3.1-3",
+          "SPDXID": "SPDXRef-Package-deb-libacl1-d047530090108251",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-or-later AND LGPL-2.1-only"
+        },
+        {
+          "name": "libapt-pkg6.0",
+          "versionInfo": "2.6.2",
+          "SPDXID": "SPDXRef-Package-deb-libapt-pkg6.0-8e83c4ffec42684f",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND LicenseRef-Expat AND GPL-2.0-only AND GPL-2.0-or-later"
+        },
+        {
+          "name": "libattr1",
+          "versionInfo": "1:2.5.1-4",
+          "SPDXID": "SPDXRef-Package-deb-libattr1-722285f8005c2384",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-or-later AND LGPL-2.1-only"
+        },
+        {
+          "name": "libaudit-common",
+          "versionInfo": "1:3.0.9-1",
+          "SPDXID": "SPDXRef-Package-deb-libaudit-common-e35c37c43c21e3d0",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-1.0-only AND GPL-2.0-only AND LGPL-2.1-only"
+        },
+        {
+          "name": "libaudit1",
+          "versionInfo": "1:3.0.9-1",
+          "SPDXID": "SPDXRef-Package-deb-libaudit1-366c21d0062ecd94",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-1.0-only AND GPL-2.0-only AND LGPL-2.1-only"
+        },
+        {
+          "name": "libblkid1",
+          "versionInfo": "2.38.1-5+deb12u3",
+          "SPDXID": "SPDXRef-Package-deb-libblkid1-af35543f081d70bf",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND BSD-4-Clause AND LicenseRef-BSLA AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LicenseRef-LGPL AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND MIT AND LicenseRef-public-domain"
+        },
+        {
+          "name": "libbz2-1.0",
+          "versionInfo": "1.0.8-5+b1",
+          "SPDXID": "SPDXRef-Package-deb-libbz2-1.0-751ec9ae4280dd32",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LicenseRef-BSD-variant AND GPL-2.0-only"
+        },
+        {
+          "name": "libc-bin",
+          "versionInfo": "2.36-9+deb12u14",
+          "SPDXID": "SPDXRef-Package-deb-libc-bin-0d487d9c5e9a860d",
+          "licenseConcluded": "LicenseRef-40c7e1f2118531f038ca22999bd976901254e1bc5cd1b0f0211bdd064c599987",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "libc6",
+          "versionInfo": "2.36-9+deb12u14",
+          "SPDXID": "SPDXRef-Package-deb-libc6-3d449c1cd40f62d0",
+          "licenseConcluded": "LicenseRef-40c7e1f2118531f038ca22999bd976901254e1bc5cd1b0f0211bdd064c599987",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "libcap-ng0",
+          "versionInfo": "0.8.3-1+b3",
+          "SPDXID": "SPDXRef-Package-deb-libcap-ng0-9a34227939df7216",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND LGPL-2.1-only AND LGPL-2.1-or-later"
+        },
+        {
+          "name": "libcap2",
+          "versionInfo": "1:2.66-4+deb12u3+b1",
+          "SPDXID": "SPDXRef-Package-deb-libcap2-655ca54e08012b99",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later"
+        },
+        {
+          "name": "libcom-err2",
+          "versionInfo": "1.47.0-2+b2",
+          "SPDXID": "SPDXRef-Package-deb-libcom-err2-d35ef33fd323c933",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "Apache-2.0 AND Apache-2.0 AND BSD-3-Clause AND LicenseRef-GPL AND GPL-2.0-only AND GPL-2.0-or-later AND ISC AND Kazlib AND LGPL-2.0-only AND Latex2e"
+        },
+        {
+          "name": "libcrypt1",
+          "versionInfo": "1:4.4.33-2",
+          "SPDXID": "SPDXRef-Package-deb-libcrypt1-66f0c5120721190f",
+          "licenseConcluded": "LicenseRef-5a5e7ca0e9f3f9679977e3a3e9ede45ad92885a3297ea78e766979f9866c5a16",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "libdb5.3",
+          "versionInfo": "5.3.28+dfsg2-1",
+          "SPDXID": "SPDXRef-Package-deb-libdb5.3-b0cb4641a25bfdd2",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LicenseRef-Artistic AND BSD-3-Clause AND LicenseRef-BSD-3-clause-fjord AND LicenseRef-GPL AND GPL-3.0-only AND LicenseRef-MIT-old AND MS-PL AND Sleepycat AND LicenseRef-TCL-like AND X11 AND Zlib"
+        },
+        {
+          "name": "libdebconfclient0",
+          "versionInfo": "0.270",
+          "SPDXID": "SPDXRef-Package-deb-libdebconfclient0-2690aae2bbaa51bf",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-2-Clause AND BSD-2-Clause AND GPL-2.0-only AND GPL-2.0-or-later"
+        },
+        {
+          "name": "libext2fs2",
+          "versionInfo": "1.47.0-2+b2",
+          "SPDXID": "SPDXRef-Package-deb-libext2fs2-e42f4960873727f9",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "Apache-2.0 AND Apache-2.0 AND BSD-3-Clause AND LicenseRef-GPL AND GPL-2.0-only AND GPL-2.0-or-later AND ISC AND Kazlib AND LGPL-2.0-only AND Latex2e"
+        },
+        {
+          "name": "libffi8",
+          "versionInfo": "3.4.4-1",
+          "SPDXID": "SPDXRef-Package-deb-libffi8-3d64cbaa76084dc4",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LicenseRef-Expat AND LicenseRef-GPL AND GPL-2.0-or-later AND GPL-3.0-or-later AND MPL-1.1 AND X11 AND LicenseRef-public-domain"
+        },
+        {
+          "name": "libgcc-s1",
+          "versionInfo": "12.2.0-14+deb12u1",
+          "SPDXID": "SPDXRef-Package-deb-libgcc-s1-9454a77b5ea4561d",
+          "licenseConcluded": "LicenseRef-da8191658b3452ce9caf31638ba61dab31a38c619fa39df119812e050f592fd3",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "libgcrypt20",
+          "versionInfo": "1.10.1-3+deb12u1",
+          "SPDXID": "SPDXRef-Package-deb-libgcrypt20-df01c68aff59530a",
+          "licenseConcluded": "LicenseRef-95db2f9da663f2bfe2aabe9c72fce9d6c9ae767b912f397d7823f50bd55a1a7d",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "libgdbm6",
+          "versionInfo": "1.23-3",
+          "SPDXID": "SPDXRef-Package-deb-libgdbm6-3aebac098b01f0dd",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LicenseRef-GFDL-NIV-1.3- AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later"
+        },
+        {
+          "name": "libgmp10",
+          "versionInfo": "2:6.2.1+dfsg1-1.1",
+          "SPDXID": "SPDXRef-Package-deb-libgmp10-4a42a38761bb84e0",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later"
+        },
+        {
+          "name": "libgnutls30",
+          "versionInfo": "3.7.9-2+deb12u7",
+          "SPDXID": "SPDXRef-Package-deb-libgnutls30-d1631d475c37518a",
+          "licenseConcluded": "LicenseRef-bb7e5c24b3e27bbba5671dd710d159a0066833bda4caa1d55d8027ffed539337",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "libgpg-error0",
+          "versionInfo": "1.46-1",
+          "SPDXID": "SPDXRef-Package-deb-libgpg-error0-bbf12da6801244e7",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LicenseRef-g10-permissive"
+        },
+        {
+          "name": "libgssapi-krb5-2",
+          "versionInfo": "1.20.1-2+deb12u5",
+          "SPDXID": "SPDXRef-Package-deb-libgssapi-krb5-2-9db16cb04ae3b83d",
+          "licenseConcluded": "LicenseRef-936728f4181718f42951b881c1e8f1386bf6b2723c4fbc533c374d6f42c71816",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "libhogweed6",
+          "versionInfo": "3.8.1-2",
+          "SPDXID": "SPDXRef-Package-deb-libhogweed6-244c6a089f6b6308",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LicenseRef-Expat AND LicenseRef-GAP AND LicenseRef-GPL AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND LicenseRef-LGPL AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-3.0-or-later AND LicenseRef-public-domain"
+        },
+        {
+          "name": "libidn2-0",
+          "versionInfo": "2.3.3-1+b1",
+          "SPDXID": "SPDXRef-Package-deb-libidn2-0-000ea285a5c77eab",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND LicenseRef-Unicode"
+        },
+        {
+          "name": "libk5crypto3",
+          "versionInfo": "1.20.1-2+deb12u5",
+          "SPDXID": "SPDXRef-Package-deb-libk5crypto3-fb1c9cf5b43a5af0",
+          "licenseConcluded": "LicenseRef-936728f4181718f42951b881c1e8f1386bf6b2723c4fbc533c374d6f42c71816",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "libkeyutils1",
+          "versionInfo": "1.6.3-2",
+          "SPDXID": "SPDXRef-Package-deb-libkeyutils1-fbac937687c498c7",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later"
+        },
+        {
+          "name": "libkrb5-3",
+          "versionInfo": "1.20.1-2+deb12u5",
+          "SPDXID": "SPDXRef-Package-deb-libkrb5-3-52548f50c4ff26c7",
+          "licenseConcluded": "LicenseRef-936728f4181718f42951b881c1e8f1386bf6b2723c4fbc533c374d6f42c71816",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "libkrb5support0",
+          "versionInfo": "1.20.1-2+deb12u5",
+          "SPDXID": "SPDXRef-Package-deb-libkrb5support0-309b5ab55a11c7d0",
+          "licenseConcluded": "LicenseRef-936728f4181718f42951b881c1e8f1386bf6b2723c4fbc533c374d6f42c71816",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "liblz4-1",
+          "versionInfo": "1.9.4-1",
+          "SPDXID": "SPDXRef-Package-deb-liblz4-1-7b6901adcac17545",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-2-Clause AND GPL-2.0-only AND GPL-2.0-or-later"
+        },
+        {
+          "name": "liblzma5",
+          "versionInfo": "5.4.1-1+deb12u2",
+          "SPDXID": "SPDXRef-Package-deb-liblzma5-9329fab94efdaef5",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LicenseRef-Autoconf AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND LGPL-2.0-only AND LGPL-2.1-only AND LGPL-2.1-or-later AND LicenseRef-PD AND LicenseRef-PD-debian AND LicenseRef-config-h AND LicenseRef-noderivs AND LicenseRef-permissive-fsf AND LicenseRef-permissive-nowarranty AND LicenseRef-probably-PD"
+        },
+        {
+          "name": "libmd0",
+          "versionInfo": "1.0.4-2",
+          "SPDXID": "SPDXRef-Package-deb-libmd0-f7a02d5b69549304",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-2-Clause AND BSD-2-Clause AND BSD-3-Clause AND LicenseRef-BSD-3-clause-Aaron-D-Gifford AND Beerware AND ISC AND LicenseRef-public-domain-md4 AND LicenseRef-public-domain-md5 AND LicenseRef-public-domain-sha1"
+        },
+        {
+          "name": "libmount1",
+          "versionInfo": "2.38.1-5+deb12u3",
+          "SPDXID": "SPDXRef-Package-deb-libmount1-3578a81ebb651f3d",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND BSD-4-Clause AND LicenseRef-BSLA AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LicenseRef-LGPL AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND MIT AND LicenseRef-public-domain"
+        },
+        {
+          "name": "libncursesw6",
+          "versionInfo": "6.4-4",
+          "SPDXID": "SPDXRef-Package-deb-libncursesw6-2b3a2ba7a41a0529",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND LicenseRef-MIT-X11 AND X11"
+        },
+        {
+          "name": "libnettle8",
+          "versionInfo": "3.8.1-2",
+          "SPDXID": "SPDXRef-Package-deb-libnettle8-1ac1c6a69a1bbe8a",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LicenseRef-Expat AND LicenseRef-GAP AND LicenseRef-GPL AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND LicenseRef-LGPL AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-3.0-or-later AND LicenseRef-public-domain"
+        },
+        {
+          "name": "libnsl2",
+          "versionInfo": "1.3.0-2",
+          "SPDXID": "SPDXRef-Package-deb-libnsl2-2c4166f70097c6d7",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND GPL-2.0-only AND LicenseRef-GPL-2--autoconf-exception AND LicenseRef-GPL-2--libtool-exception AND GPL-3.0-only AND LicenseRef-GPL-3--autoconf-exception AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND LicenseRef-permissive-autoconf-m4 AND LicenseRef-permissive-autoconf-m4-no-warranty AND LicenseRef-permissive-configure AND LicenseRef-permissive-fsf AND LicenseRef-permissive-makefile-in"
+        },
+        {
+          "name": "libp11-kit0",
+          "versionInfo": "0.24.1-2",
+          "SPDXID": "SPDXRef-Package-deb-libp11-kit0-0027543880aaec84",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "Apache-2.0 AND BSD-3-Clause AND ISC AND LicenseRef-ISC-IBM AND LGPL-2.1-only AND LGPL-2.1-or-later AND LicenseRef-permissive-like-automake-output AND LicenseRef-same-as-rest-of-p11kit"
+        },
+        {
+          "name": "libpam-modules",
+          "versionInfo": "1.5.2-6+deb12u2",
+          "SPDXID": "SPDXRef-Package-deb-libpam-modules-4cab7ef7de016d31",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND LicenseRef-BSD-tcp-wrappers AND Beerware AND LicenseRef-GPL AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later AND LicenseRef-public-domain"
+        },
+        {
+          "name": "libpam-modules-bin",
+          "versionInfo": "1.5.2-6+deb12u2",
+          "SPDXID": "SPDXRef-Package-deb-libpam-modules-bin-372dffabd059479c",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND LicenseRef-BSD-tcp-wrappers AND Beerware AND LicenseRef-GPL AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later AND LicenseRef-public-domain"
+        },
+        {
+          "name": "libpam-runtime",
+          "versionInfo": "1.5.2-6+deb12u2",
+          "SPDXID": "SPDXRef-Package-deb-libpam-runtime-ca1034d5d24bcf54",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND LicenseRef-BSD-tcp-wrappers AND Beerware AND LicenseRef-GPL AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later AND LicenseRef-public-domain"
+        },
+        {
+          "name": "libpam0g",
+          "versionInfo": "1.5.2-6+deb12u2",
+          "SPDXID": "SPDXRef-Package-deb-libpam0g-87d8465053cf56c8",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND LicenseRef-BSD-tcp-wrappers AND Beerware AND LicenseRef-GPL AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later AND LicenseRef-public-domain"
+        },
+        {
+          "name": "libpcre2-8-0",
+          "versionInfo": "10.42-1+deb12u2",
+          "SPDXID": "SPDXRef-Package-deb-libpcre2-8-0-07ca3ca10edb8a79",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-2-Clause AND BSD-3-Clause AND LicenseRef-BSD-3-clause-Cambridge AND X11 AND LicenseRef-public-domain"
+        },
+        {
+          "name": "libreadline8",
+          "versionInfo": "8.2-1.3",
+          "SPDXID": "SPDXRef-Package-deb-libreadline8-3a01361b331056e9",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LicenseRef-GFDL AND LicenseRef-GFDL-NIV-1.3- AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LicenseRef-ISC-no-attribution"
+        },
+        {
+          "name": "libseccomp2",
+          "versionInfo": "2.5.4-1+deb12u1",
+          "SPDXID": "SPDXRef-Package-deb-libseccomp2-864deba87ee227ff",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LGPL-2.1-only"
+        },
+        {
+          "name": "libselinux1",
+          "versionInfo": "3.4-1+b6",
+          "SPDXID": "SPDXRef-Package-deb-libselinux1-b898b3b52ac4e1df",
+          "licenseConcluded": "LicenseRef-641806738b0c6a3d03168c2649e6b94205198bb66cd557e6bae3a20b71c9bb0b",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "libsemanage-common",
+          "versionInfo": "3.4-1",
+          "SPDXID": "SPDXRef-Package-deb-libsemanage-common-4a9257795fc45897",
+          "licenseConcluded": "LicenseRef-e00e6a86c598f9e24ced0180a70a5f2f2e45e133d93adf2b17ce8a06ce4b1b51",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "libsemanage2",
+          "versionInfo": "3.4-1+b5",
+          "SPDXID": "SPDXRef-Package-deb-libsemanage2-3e495c97375273f7",
+          "licenseConcluded": "LicenseRef-e00e6a86c598f9e24ced0180a70a5f2f2e45e133d93adf2b17ce8a06ce4b1b51",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "libsepol2",
+          "versionInfo": "3.4-2.1",
+          "SPDXID": "SPDXRef-Package-deb-libsepol2-ef742c3346e74452",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND Zlib"
+        },
+        {
+          "name": "libsmartcols1",
+          "versionInfo": "2.38.1-5+deb12u3",
+          "SPDXID": "SPDXRef-Package-deb-libsmartcols1-ecee94562f1ce06f",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND BSD-4-Clause AND LicenseRef-BSLA AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LicenseRef-LGPL AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND MIT AND LicenseRef-public-domain"
+        },
+        {
+          "name": "libsqlite3-0",
+          "versionInfo": "3.40.1-2+deb12u2",
+          "SPDXID": "SPDXRef-Package-deb-libsqlite3-0-3705ae977c727f09",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-2.0-only AND GPL-2.0-or-later AND LicenseRef-public-domain"
+        },
+        {
+          "name": "libss2",
+          "versionInfo": "1.47.0-2+b2",
+          "SPDXID": "SPDXRef-Package-deb-libss2-1604e864b4a343b7",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "Apache-2.0 AND Apache-2.0 AND BSD-3-Clause AND LicenseRef-GPL AND GPL-2.0-only AND GPL-2.0-or-later AND ISC AND Kazlib AND LGPL-2.0-only AND Latex2e"
+        },
+        {
+          "name": "libssl3",
+          "versionInfo": "3.0.22-1~deb12u2",
+          "SPDXID": "SPDXRef-Package-deb-libssl3-20c79449baf52d89",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "Apache-2.0 AND LicenseRef-Artistic AND GPL-1.0-only AND GPL-1.0-or-later"
+        },
+        {
+          "name": "libstdc++6",
+          "versionInfo": "12.2.0-14+deb12u1",
+          "SPDXID": "SPDXRef-Package-deb-libstdc--6-c2f4fec51904a8ce",
+          "licenseConcluded": "LicenseRef-da8191658b3452ce9caf31638ba61dab31a38c619fa39df119812e050f592fd3",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "libsystemd0",
+          "versionInfo": "252.39-1~deb12u2",
+          "SPDXID": "SPDXRef-Package-deb-libsystemd0-fa8be228d5b7724c",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "CC0-1.0 AND LicenseRef-Expat AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LicenseRef-public-domain"
+        },
+        {
+          "name": "libtasn1-6",
+          "versionInfo": "4.19.0-2+deb12u1",
+          "SPDXID": "SPDXRef-Package-deb-libtasn1-6-9e40126b989ece04",
+          "licenseConcluded": "LicenseRef-572ad60ad184d8f52c6dc66d83a61a68f137db560b3452ce00588c9ecf128a65",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "libtinfo6",
+          "versionInfo": "6.4-4",
+          "SPDXID": "SPDXRef-Package-deb-libtinfo6-a6231fb14cfeaaac",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND LicenseRef-MIT-X11 AND X11"
+        },
+        {
+          "name": "libtirpc-common",
+          "versionInfo": "1.3.3+ds-1",
+          "SPDXID": "SPDXRef-Package-deb-libtirpc-common-39ba7f8dc7eaee8e",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND GPL-2.0-only AND LGPL-2.1-only"
+        },
+        {
+          "name": "libtirpc3",
+          "versionInfo": "1.3.3+ds-1",
+          "SPDXID": "SPDXRef-Package-deb-libtirpc3-1fc9e3e8ec9c423d",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND GPL-2.0-only AND LGPL-2.1-only"
+        },
+        {
+          "name": "libudev1",
+          "versionInfo": "252.39-1~deb12u2",
+          "SPDXID": "SPDXRef-Package-deb-libudev1-55089f35a6363c37",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "CC0-1.0 AND LicenseRef-Expat AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LicenseRef-public-domain"
+        },
+        {
+          "name": "libunistring2",
+          "versionInfo": "1.0-2",
+          "SPDXID": "SPDXRef-Package-deb-libunistring2-f167882223735de0",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LicenseRef-FreeSoftware AND GFDL-1.2-only AND GFDL-1.2-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND MIT"
+        },
+        {
+          "name": "libuuid1",
+          "versionInfo": "2.38.1-5+deb12u3",
+          "SPDXID": "SPDXRef-Package-deb-libuuid1-2049f4c13963925a",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND BSD-4-Clause AND LicenseRef-BSLA AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LicenseRef-LGPL AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND MIT AND LicenseRef-public-domain"
+        },
+        {
+          "name": "libxxhash0",
+          "versionInfo": "0.8.1-1",
+          "SPDXID": "SPDXRef-Package-deb-libxxhash0-662454f7c4742a97",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-2-Clause AND GPL-2.0-only"
+        },
+        {
+          "name": "libzstd1",
+          "versionInfo": "1.5.4+dfsg2-5",
+          "SPDXID": "SPDXRef-Package-deb-libzstd1-7cc55da81007017d",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND LicenseRef-Expat AND GPL-2.0-only AND Zlib"
+        },
+        {
+          "name": "login",
+          "versionInfo": "1:4.13+dfsg1-1+deb12u2",
+          "SPDXID": "SPDXRef-Package-deb-login-d5e0daed57b0ef5c",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND GPL-1.0-only AND GPL-2.0-only AND GPL-2.0-or-later AND LicenseRef-public-domain"
+        },
+        {
+          "name": "logsave",
+          "versionInfo": "1.47.0-2+b2",
+          "SPDXID": "SPDXRef-Package-deb-logsave-db69887a7e4088b2",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "Apache-2.0 AND Apache-2.0 AND BSD-3-Clause AND LicenseRef-GPL AND GPL-2.0-only AND GPL-2.0-or-later AND ISC AND Kazlib AND LGPL-2.0-only AND Latex2e"
+        },
+        {
+          "name": "mako",
+          "versionInfo": "1.4.3",
+          "SPDXID": "SPDXRef-Package-python-mako-9e67299bc3b4344a",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "markupsafe",
+          "versionInfo": "3.0.4",
+          "SPDXID": "SPDXRef-Package-python-markupsafe-7dd36514a2c4f375",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause"
+        },
+        {
+          "name": "mawk",
+          "versionInfo": "1.3.4.20200120-3.1",
+          "SPDXID": "SPDXRef-Package-deb-mawk-81ae31ac445c7dbb",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "CC-BY-3.0 AND GPL-2.0-only AND X11"
+        },
+        {
+          "name": "minio",
+          "versionInfo": "7.2.20",
+          "SPDXID": "SPDXRef-Package-python-minio-2691e389e3a5a9f9",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "Apache-2.0"
+        },
+        {
+          "name": "mount",
+          "versionInfo": "2.38.1-5+deb12u3",
+          "SPDXID": "SPDXRef-Package-deb-mount-e75e0a2b6968d414",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND BSD-4-Clause AND LicenseRef-BSLA AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LicenseRef-LGPL AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND MIT AND LicenseRef-public-domain"
+        },
+        {
+          "name": "ncurses-base",
+          "versionInfo": "6.4-4",
+          "SPDXID": "SPDXRef-Package-deb-ncurses-base-ec73073218fd031a",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND LicenseRef-MIT-X11 AND X11"
+        },
+        {
+          "name": "ncurses-bin",
+          "versionInfo": "6.4-4",
+          "SPDXID": "SPDXRef-Package-deb-ncurses-bin-c5b18ac268f2ccdf",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND LicenseRef-MIT-X11 AND X11"
+        },
+        {
+          "name": "netbase",
+          "versionInfo": "6.4",
+          "SPDXID": "SPDXRef-Package-deb-netbase-61a0a97a032fba8b",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-2.0-only"
+        },
+        {
+          "name": "oligospace-api",
+          "versionInfo": "0.1.0",
+          "SPDXID": "SPDXRef-Package-python-oligospace-api-6effeb9a9c4f7f2b",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "openpyxl",
+          "versionInfo": "3.1.5",
+          "SPDXID": "SPDXRef-Package-python-openpyxl-56758ba7f76b1b1d",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "openssl",
+          "versionInfo": "3.0.22-1~deb12u2",
+          "SPDXID": "SPDXRef-Package-deb-openssl-5f04d40e04479c66",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "Apache-2.0 AND LicenseRef-Artistic AND GPL-1.0-only AND GPL-1.0-or-later"
+        },
+        {
+          "name": "packaging",
+          "versionInfo": "26.3",
+          "SPDXID": "SPDXRef-Package-python-packaging-6373903e1878403c",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "(Apache-2.0 OR BSD-2-Clause)"
+        },
+        {
+          "name": "passwd",
+          "versionInfo": "1:4.13+dfsg1-1+deb12u2",
+          "SPDXID": "SPDXRef-Package-deb-passwd-1853000d374a22b0",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND GPL-1.0-only AND GPL-2.0-only AND GPL-2.0-or-later AND LicenseRef-public-domain"
+        },
+        {
+          "name": "perl-base",
+          "versionInfo": "5.36.0-7+deb12u4",
+          "SPDXID": "SPDXRef-Package-deb-perl-base-5a32e7d822381d5b",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LicenseRef-Artistic AND Artistic-2.0 AND Artistic-dist AND BSD-3-Clause AND LicenseRef-BSD-3-clause-GENERIC AND LicenseRef-BSD-3-clause-with-weird-numbering AND LicenseRef-BSD-4-clause-POWERDOG AND LicenseRef-BZIP AND LicenseRef-DONT-CHANGE-THE-GPL AND LicenseRef-Expat AND GPL-1.0-only AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND LicenseRef-GPL-3--WITH-BISON-EXCEPTION AND LicenseRef-HSIEH-BSD AND LicenseRef-HSIEH-DERIVATIVE AND LGPL-2.1-only AND LicenseRef-REGCOMP AND LicenseRef-REGCOMP- AND LicenseRef-RRA-KEEP-THIS-NOTICE AND LicenseRef-SDBM-PUBLIC-DOMAIN AND LicenseRef-TEXT-TABS AND LicenseRef-Unicode AND Zlib"
+        },
+        {
+          "name": "pip",
+          "versionInfo": "25.0.1",
+          "SPDXID": "SPDXRef-Package-python-pip-df23c4764411e8ea",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "pip",
+          "versionInfo": "25.0.1",
+          "SPDXID": "SPDXRef-Package-python-pip-b07d834d26c4749b",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "prompt-toolkit",
+          "versionInfo": "3.0.53",
+          "SPDXID": "SPDXRef-Package-python-prompt-toolkit-a4cbe5b520817cb3",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "pycparser",
+          "versionInfo": "3.12",
+          "SPDXID": "SPDXRef-Package-python-pycparser-43e8f1fe2ce245b5",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause"
+        },
+        {
+          "name": "pycryptodome",
+          "versionInfo": "4.4.0",
+          "SPDXID": "SPDXRef-Package-python-pycryptodome-40f2d621cec9d51b",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "(BSD-2-Clause AND Unlicense AND MIT)"
+        },
+        {
+          "name": "pydantic",
+          "versionInfo": "2.14.3",
+          "SPDXID": "SPDXRef-Package-python-pydantic-1008712e7b08e50a",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "pydantic-core",
+          "versionInfo": "2.50.4",
+          "SPDXID": "SPDXRef-Package-python-pydantic-core-8977ce3ab485ed89",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "pydantic-settings",
+          "versionInfo": "2.7.1",
+          "SPDXID": "SPDXRef-Package-python-pydantic-settings-eb01fcdc2b77e8ad",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "pyjwt",
+          "versionInfo": "2.14.0",
+          "SPDXID": "SPDXRef-Package-python-pyjwt-6bd3c13550f2ca5e",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "python",
+          "versionInfo": "3.12.16",
+          "SPDXID": "SPDXRef-Package-binary-python-cb42f4a40ec15fde",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "python-dateutil",
+          "versionInfo": "4.0.0",
+          "SPDXID": "SPDXRef-Package-python-python-dateutil-cb4255d1b8d01824",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause"
+        },
+        {
+          "name": "python-dotenv",
+          "versionInfo": "1.2.4",
+          "SPDXID": "SPDXRef-Package-python-python-dotenv-30d18f8fced93567",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause"
+        },
+        {
+          "name": "python-multipart",
+          "versionInfo": "0.0.30",
+          "SPDXID": "SPDXRef-Package-python-python-multipart-bb114416337cd372",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "Apache-2.0"
+        },
+        {
+          "name": "pyyaml",
+          "versionInfo": "6.0.3",
+          "SPDXID": "SPDXRef-Package-python-pyyaml-b2a03919a7dacc70",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "readline-common",
+          "versionInfo": "8.2-1.3",
+          "SPDXID": "SPDXRef-Package-deb-readline-common-2fb6c418d25556b9",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LicenseRef-GFDL AND LicenseRef-GFDL-NIV-1.3- AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LicenseRef-ISC-no-attribution"
+        },
+        {
+          "name": "redis",
+          "versionInfo": "5.3.1",
+          "SPDXID": "SPDXRef-Package-python-redis-8342d7aaa765e1c6",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "sed",
+          "versionInfo": "4.9-1+deb12u1",
+          "SPDXID": "SPDXRef-Package-deb-sed-25af63bae673e973",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-4-Clause-UC AND BSL-1.0 AND GFDL-1.3-only AND LicenseRef-GFDL-NIV-1.3- AND GPL-3.0-only AND GPL-3.0-or-later AND ISC AND X11 AND LicenseRef-pcre"
+        },
+        {
+          "name": "sqlalchemy",
+          "versionInfo": "2.0.38",
+          "SPDXID": "SPDXRef-Package-python-sqlalchemy-144f49bd725a5c65",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "starlette",
+          "versionInfo": "1.3.1",
+          "SPDXID": "SPDXRef-Package-python-starlette-aed29a9058257ece",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause"
+        },
+        {
+          "name": "structlog",
+          "versionInfo": "25.1.0",
+          "SPDXID": "SPDXRef-Package-python-structlog-35b1b59fbae5cd66",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "(MIT OR Apache-2.0)"
+        },
+        {
+          "name": "sysvinit-utils",
+          "versionInfo": "3.06-4",
+          "SPDXID": "SPDXRef-Package-deb-sysvinit-utils-ad6415822991d492",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-2.0-only AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-only"
+        },
+        {
+          "name": "tar",
+          "versionInfo": "1.34+dfsg-1.2+deb12u1",
+          "SPDXID": "SPDXRef-Package-deb-tar-f8ad3f5238dbcf6a",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later"
+        },
+        {
+          "name": "typing-extensions",
+          "versionInfo": "4.16.0",
+          "SPDXID": "SPDXRef-Package-python-typing-extensions-3e087fe9c6db4b15",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "PSF-2.0"
+        },
+        {
+          "name": "typing-inspection",
+          "versionInfo": "0.4.5",
+          "SPDXID": "SPDXRef-Package-python-typing-inspection-859d415c0d0c18be",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "tzdata",
+          "versionInfo": "2026.6",
+          "SPDXID": "SPDXRef-Package-python-tzdata-b227a75422762a4c",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "Apache-2.0"
+        },
+        {
+          "name": "tzdata",
+          "versionInfo": "2026f-0+deb12u1",
+          "SPDXID": "SPDXRef-Package-deb-tzdata-21977cee7efa4834",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LicenseRef-public-domain"
+        },
+        {
+          "name": "urllib3",
+          "versionInfo": "2.8.0",
+          "SPDXID": "SPDXRef-Package-python-urllib3-2d79a584ec2008ab",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "usr-is-merged",
+          "versionInfo": "37~deb12u1",
+          "SPDXID": "SPDXRef-Package-deb-usr-is-merged-5d5368e5a339ea05",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "GPL-2.0-only AND GPL-2.0-or-later"
+        },
+        {
+          "name": "util-linux",
+          "versionInfo": "2.38.1-5+deb12u3",
+          "SPDXID": "SPDXRef-Package-deb-util-linux-b11f4a313957922c",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND BSD-4-Clause AND LicenseRef-BSLA AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LicenseRef-LGPL AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND MIT AND LicenseRef-public-domain"
+        },
+        {
+          "name": "util-linux-extra",
+          "versionInfo": "2.38.1-5+deb12u3",
+          "SPDXID": "SPDXRef-Package-deb-util-linux-extra-fc9180bcad1f4d49",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause AND BSD-4-Clause AND LicenseRef-BSLA AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LicenseRef-LGPL AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND MIT AND LicenseRef-public-domain"
+        },
+        {
+          "name": "uvicorn",
+          "versionInfo": "0.34.0",
+          "SPDXID": "SPDXRef-Package-python-uvicorn-3ec56bd5895b185e",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause"
+        },
+        {
+          "name": "uvloop",
+          "versionInfo": "0.23.0",
+          "SPDXID": "SPDXRef-Package-python-uvloop-5a93df680cb29084",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LicenseRef-MIT-License"
+        },
+        {
+          "name": "vine",
+          "versionInfo": "5.1.0",
+          "SPDXID": "SPDXRef-Package-python-vine-cd5efe3ea3e22f97",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "LicenseRef-BSD"
+        },
+        {
+          "name": "watchfiles",
+          "versionInfo": "1.3.0",
+          "SPDXID": "SPDXRef-Package-python-watchfiles-01353a0e7198852e",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "MIT"
+        },
+        {
+          "name": "wcwidth",
+          "versionInfo": "0.9.4",
+          "SPDXID": "SPDXRef-Package-python-wcwidth-da57977c3c7bfd99",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "NOASSERTION"
+        },
+        {
+          "name": "websockets",
+          "versionInfo": "17.4",
+          "SPDXID": "SPDXRef-Package-python-websockets-5799126bf98ccede",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "BSD-3-Clause"
+        },
+        {
+          "name": "zlib1g",
+          "versionInfo": "1:1.2.13.dfsg-1",
+          "SPDXID": "SPDXRef-Package-deb-zlib1g-077923f667034501",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "Zlib"
+        },
+        {
+          "name": "sbom",
+          "SPDXID": "SPDXRef-DocumentRoot-Directory-sbom",
+          "licenseConcluded": "NOASSERTION",
+          "licenseDeclared": "NOASSERTION"
+        }
+      ]
+    }
+  ]
+}

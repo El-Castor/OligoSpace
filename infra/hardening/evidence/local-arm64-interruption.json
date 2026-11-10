@@ -1,0 +1,49 @@
+{
+  "source": "983fe0036bfdcaa320cc734e7124db40a69a7c24",
+  "execution": "incomplete",
+  "rule_id": "HOST_DISK_EXHAUSTED_DOCKER_IO_ERRORS",
+  "architecture": "arm64",
+  "native": true,
+  "production_images_changed": false,
+  "personal_files_removed": false,
+  "development_containers_stopped": false,
+  "next": "native_GitHub_Actions_comparison",
+  "retention": [
+    {
+      "artifact": "arm64/api/strategy-a/api-strategy-a-983fe0036bfdcaa320cc734e7124db40a69a7c24-arm64.oci.tar",
+      "bytes": 184296448,
+      "sha256": "c0cf0287f04b0dac2c6ec13af75e386cb1e77f7352cc7e1200979f0326e3f06a",
+      "retention": "temporary_archive_removed_after_disk_exhaustion_reports_retained"
+    },
+    {
+      "artifact": "arm64/api/baseline/api-9ebbf2cd993395af2b154efb0b4cf5a76b4dd079-arm64.oci.tar",
+      "bytes": 184394752,
+      "sha256": "90d3a2f934788d52a42788a5cb5c22ce9d71a28fa35a060fa5c680f0f180f81e",
+      "retention": "temporary_archive_removed_after_disk_exhaustion_reports_retained"
+    },
+    {
+      "artifact": "arm64/api/strategy-b/api-strategy-b-983fe0036bfdcaa320cc734e7124db40a69a7c24-arm64.oci.tar",
+      "bytes": 136080896,
+      "sha256": "9e17a0ce72685a5cc5c28a460a9900329cda4d4e6cc528edd00f68e0c8aa4c62",
+      "retention": "temporary_archive_removed_after_disk_exhaustion_reports_retained"
+    },
+    {
+      "artifact": "arm64/worker/strategy-a/worker-strategy-a-983fe0036bfdcaa320cc734e7124db40a69a7c24-arm64.oci.tar",
+      "bytes": 434853376,
+      "sha256": "dd5c631588c1c2231f7084428f44926ab1ed290f8b0b3471b4a24fa8711bb190",
+      "retention": "temporary_archive_removed_after_disk_exhaustion_reports_retained"
+    },
+    {
+      "artifact": "arm64/worker/baseline/worker-9ebbf2cd993395af2b154efb0b4cf5a76b4dd079-arm64.oci.tar",
+      "bytes": 434953728,
+      "sha256": "a05522e19fcd58ecd8a220e6772418045cb7db2d05599af75e5578830c4c15e2",
+      "retention": "temporary_archive_removed_after_disk_exhaustion_reports_retained"
+    },
+    {
+      "artifact": "arm64/worker/strategy-b/worker-strategy-b-983fe0036bfdcaa320cc734e7124db40a69a7c24-arm64.oci.tar",
+      "bytes": 296391168,
+      "sha256": "def346f13fa25e1e17135cdbfb62a2103793f5a8254e97b4a44748a5322f2b3c",
+      "retention": "temporary_archive_removed_after_disk_exhaustion_reports_retained"
+    }
+  ]
+}

@@ -81,11 +81,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: docker build --file infra/docker/bioinfo-worker.Dockerfile --tag oligospace-bioinfo-worker:test .
-      - run: docker run --rm oligospace-bioinfo-worker:test micromamba run --name base ruff check .
-      - run: docker run --rm oligospace-bioinfo-worker:test micromamba run --name base ruff format --check .
-      - run: docker run --rm oligospace-bioinfo-worker:test micromamba run --name base mypy src tests
-      - run: docker run --rm oligospace-bioinfo-worker:test micromamba run --name base pytest
+      - run: docker build --file infra/docker/bioinfo-worker.Dockerfile --target tooling --tag oligospace-bioinfo-worker:test .
+      - run: docker run --rm oligospace-bioinfo-worker:test ruff check .
+      - run: docker run --rm oligospace-bioinfo-worker:test ruff format --check .
+      - run: docker run --rm oligospace-bioinfo-worker:test mypy src tests
+      - run: docker run --rm oligospace-bioinfo-worker:test pytest
       - run: docker run --rm oligospace-bioinfo-worker:test primer3_core --about
       - run: docker run --rm oligospace-bioinfo-worker:test blastn -version
 

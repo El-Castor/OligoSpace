@@ -63,6 +63,26 @@ class PolicyTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("runtime_unverified", result.stdout)
 
+    def test_migration_command_is_exact_direct_runtime_only(self):
+        base = resolved_fixture()
+        expected = ["/opt/venv/bin/python", "-m", "alembic", "upgrade", "head"]
+        self.assertEqual(base["services"]["migrate"]["command"], expected)
+        self.assertEqual(self.check_config(base).returncode, 0)
+        for command in (
+            ["micromamba", "run", "--name", "base", "alembic", "upgrade", "head"],
+            ["python", "-m", "alembic", "upgrade", "head"],
+            expected + ["--sql"],
+            ["/opt/venv/bin/python", "-m", "alembic", "downgrade", "base"],
+            " ".join(expected),
+            ["sh", "-c", " ".join(expected)],
+        ):
+            with self.subTest(command=command):
+                config = copy.deepcopy(base)
+                config["services"]["migrate"]["command"] = command
+                result = self.check_config(config)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("migration_command", json.loads(result.stdout)["rules"])
+
     def test_unsafe_mutations_are_refused(self):
         base = resolved_fixture()
 

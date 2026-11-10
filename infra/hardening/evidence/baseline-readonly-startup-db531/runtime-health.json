@@ -1,0 +1,165 @@
+{
+  "retrieval_gate": "passed",
+  "services": [
+    {
+      "service": "postgres",
+      "state": {
+        "status": "running",
+        "exit_code": 0,
+        "oom_killed": false,
+        "health": "healthy"
+      },
+      "state_gate": "passed",
+      "log_gate": "passed",
+      "log_retrieval_rule": null,
+      "log_category_counts": {
+        "permission_denied": 0,
+        "read_only": 0,
+        "noexec": 0,
+        "micromamba": 0,
+        "tmp": 0,
+        "not_found": 1
+      }
+    },
+    {
+      "service": "keycloak",
+      "state": {
+        "status": "running",
+        "exit_code": 0,
+        "oom_killed": false,
+        "health": "absent"
+      },
+      "state_gate": "passed",
+      "log_gate": "passed",
+      "log_retrieval_rule": null,
+      "log_category_counts": {
+        "permission_denied": 0,
+        "read_only": 0,
+        "noexec": 0,
+        "micromamba": 0,
+        "tmp": 0,
+        "not_found": 0
+      }
+    },
+    {
+      "service": "api",
+      "state": {
+        "status": "exited",
+        "exit_code": 1,
+        "oom_killed": false,
+        "health": "absent"
+      },
+      "state_gate": "passed",
+      "log_gate": "passed",
+      "log_retrieval_rule": null,
+      "log_category_counts": {
+        "permission_denied": 0,
+        "read_only": 1,
+        "noexec": 0,
+        "micromamba": 0,
+        "tmp": 0,
+        "not_found": 1
+      }
+    },
+    {
+      "service": "web",
+      "state": {
+        "status": "running",
+        "exit_code": 0,
+        "oom_killed": false,
+        "health": "absent"
+      },
+      "state_gate": "passed",
+      "log_gate": "passed",
+      "log_retrieval_rule": null,
+      "log_category_counts": {
+        "permission_denied": 0,
+        "read_only": 0,
+        "noexec": 0,
+        "micromamba": 0,
+        "tmp": 0,
+        "not_found": 0
+      }
+    },
+    {
+      "service": "caddy",
+      "state": {
+        "status": "running",
+        "exit_code": 0,
+        "oom_killed": false,
+        "health": "absent"
+      },
+      "state_gate": "passed",
+      "log_gate": "passed",
+      "log_retrieval_rule": null,
+      "log_category_counts": {
+        "permission_denied": 0,
+        "read_only": 0,
+        "noexec": 0,
+        "micromamba": 0,
+        "tmp": 0,
+        "not_found": 0
+      }
+    },
+    {
+      "service": "redis",
+      "state": {
+        "status": "running",
+        "exit_code": 0,
+        "oom_killed": false,
+        "health": "absent"
+      },
+      "state_gate": "passed",
+      "log_gate": "passed",
+      "log_retrieval_rule": null,
+      "log_category_counts": {
+        "permission_denied": 0,
+        "read_only": 0,
+        "noexec": 0,
+        "micromamba": 0,
+        "tmp": 0,
+        "not_found": 0
+      }
+    },
+    {
+      "service": "bioinfo-worker",
+      "state": {
+        "status": "exited",
+        "exit_code": 1,
+        "oom_killed": false,
+        "health": "absent"
+      },
+      "state_gate": "passed",
+      "log_gate": "passed",
+      "log_retrieval_rule": null,
+      "log_category_counts": {
+        "permission_denied": 0,
+        "read_only": 1,
+        "noexec": 0,
+        "micromamba": 0,
+        "tmp": 0,
+        "not_found": 1
+      }
+    },
+    {
+      "service": "scientific-scheduler",
+      "state": {
+        "status": "running",
+        "exit_code": 0,
+        "oom_killed": false,
+        "health": "absent"
+      },
+      "state_gate": "passed",
+      "log_gate": "passed",
+      "log_retrieval_rule": null,
+      "log_category_counts": {
+        "permission_denied": 0,
+        "read_only": 0,
+        "noexec": 0,
+        "micromamba": 0,
+        "tmp": 1,
+        "not_found": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "actual_architecture": "arm64",
+  "ca_certificates": 118,
+  "cap_eff": "0000000000000000",
+  "expected_hardened": true,
+  "gid": 1000,
+  "kombu": "5.6.2",
+  "native_libraries": {
+    "elf_files_checked": 457,
+    "missing_libraries": [
+      "/opt/conda/bin/wish",
+      "/opt/conda/bin/wish8.6",
+      "/opt/conda/lib/libtk8.6.so",
+      "/opt/conda/lib/python3.12/lib-dynload/_tkinter.cpython-312-aarch64-linux-gnu.so",
+      "/opt/conda/pkgs/python-3.12.8-h1683364_1_cpython/lib/python3.12/lib-dynload/_crypt.cpython-312-aarch64-linux-gnu.so",
+      "/opt/conda/pkgs/python-3.12.8-h1683364_1_cpython/lib/python3.12/lib-dynload/_ctypes.cpython-312-aarch64-linux-gnu.so",
+      "/opt/conda/pkgs/python-3.12.8-h1683364_1_cpython/lib/python3.12/lib-dynload/_curses.cpython-312-aarch64-linux-gnu.so",
+      "/opt/conda/pkgs/python-3.12.8-h1683364_1_cpython/lib/python3.12/lib-dynload/_curses_panel.cpython-312-aarch64-linux-gnu.so",
+      "/opt/conda/pkgs/python-3.12.8-h1683364_1_cpython/lib/python3.12/lib-dynload/_tkinter.cpython-312-aarch64-linux-gnu.so",
+      "/opt/conda/pkgs/python-3.12.8-h1683364_1_cpython/lib/python3.12/lib-dynload/nis.cpython-312-aarch64-linux-gnu.so",
+      "/opt/conda/pkgs/python-3.12.8-h1683364_1_cpython/lib/python3.12/lib-dynload/pyexpat.cpython-312-aarch64-linux-gnu.so",
+      "/opt/conda/pkgs/python-3.12.8-h1683364_1_cpython/lib/python3.12/lib-dynload/readline.cpython-312-aarch64-linux-gnu.so",
+      "/opt/conda/pkgs/tk-8.6.13-noxft_hf03c496_4/bin/wish",
+      "/opt/conda/pkgs/tk-8.6.13-noxft_hf03c496_4/bin/wish8.6",
+      "/opt/conda/pkgs/tk-8.6.13-noxft_hf03c496_4/lib/libtk8.6.so"
+    ],
+    "unclassified": []
+  },
+  "no_new_privs": "1",
+  "python": "3.12.8",
+  "reason_codes": [
+    "native_library_check_failed"
+  ],
+  "role": "api",
+  "role_import": true,
+  "role_version": "0.1.0",
+  "rootfs_erofs": true,
+  "rootfs_readonly_proven": true,
+  "rootfs_write_errno": "EROFS",
+  "status": "failed",
+  "tmp_writable": true,
+  "uid": 1000
+}

@@ -1,0 +1,67 @@
+{
+  "source": "74e8d4c8498d72559eaa27bf3e8dbee39386b91b",
+  "run_id": 42647176195,
+  "purpose": "selection evidence; final production artifact qualification separate",
+  "rows": [
+    {
+      "artifact": "amd64-api",
+      "oci_bytes": 97616384,
+      "counts": {
+        "CRITICAL": 0,
+        "HIGH": 0,
+        "MEDIUM": 23,
+        "LOW": 7,
+        "UNKNOWN": 0
+      },
+      "inventory": 167,
+      "runtime": "passed",
+      "golden": null,
+      "scan_gate": "failed"
+    },
+    {
+      "artifact": "amd64-worker",
+      "oci_bytes": 402364928,
+      "counts": {
+        "CRITICAL": 0,
+        "HIGH": 0,
+        "MEDIUM": 22,
+        "LOW": 6,
+        "UNKNOWN": 0
+      },
+      "inventory": 135,
+      "runtime": "passed",
+      "golden": true,
+      "scan_gate": "failed"
+    },
+    {
+      "artifact": "arm64-api",
+      "oci_bytes": 95738368,
+      "counts": {
+        "CRITICAL": 0,
+        "HIGH": 0,
+        "MEDIUM": 23,
+        "LOW": 7,
+        "UNKNOWN": 0
+      },
+      "inventory": 167,
+      "runtime": "passed",
+      "golden": null,
+      "scan_gate": "failed"
+    },
+    {
+      "artifact": "arm64-worker",
+      "oci_bytes": 346419712,
+      "counts": {
+        "CRITICAL": 0,
+        "HIGH": 0,
+        "MEDIUM": 22,
+        "LOW": 6,
+        "UNKNOWN": 0
+      },
+      "inventory": 135,
+      "runtime": "passed",
+      "golden": true,
+      "scan_gate": "failed"
+    }
+  ]
+}

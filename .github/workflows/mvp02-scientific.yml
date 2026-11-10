@@ -9,7 +9,11 @@ permissions:
 
 jobs:
   scientific-keycloak-chromium:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
@@ -21,12 +25,12 @@ jobs:
       - name: Verify evidence and log gates fail closed
         run: python3 -B -m unittest discover -s infra/auth-qualification -p 'test_*.py'
       - name: Scientific acceptance with real Keycloak, PostgreSQL and Primer3
-        run: python3 infra/auth-qualification/run.py --scientific
+        run: python3 infra/auth-qualification/run.py --scientific --hardened
       - name: Retain sanitized scientific evidence and synthetic captures
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: mvp02-scientific-evidence
+          name: mvp02-scientific-evidence-${{ matrix.runner }}
           path: infra/auth-qualification/scientific-evidence/
           if-no-files-found: error
           retention-days: 14

@@ -1,0 +1,15 @@
+{
+  "source": "7b9dca48fdf410014d24b060f49d77763f0d24d0",
+  "native_jobs": {
+    "arm64": 129801699719,
+    "amd64": 129801700550
+  },
+  "measured_per_architecture": {
+    "api_unit_passed": 99,
+    "integration_skipped_in_unit_only_run": 206,
+    "worker_unit_passed": 14,
+    "postgresql_passed_separately": 206,
+    "chromium_passed": 29
+  },
+  "note": "Counts extracted from successful native job logs; integration skips in unit invocation are fulfilled by separate real PostgreSQL phase"
+}

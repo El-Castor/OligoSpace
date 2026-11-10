@@ -1,0 +1,654 @@
+{
+  "schema": "oligospace-advisory-review-v1",
+  "reviewed_on": "2026-11-09",
+  "scope": "DEPLOY03 maintained API/worker image experiments; official Debian tracker review of 11 distinct frozen baseline HIGH IDs",
+  "baseline_scan": "/tmp/oligospace-deploy03/baseline/arm64/api/scan-frozen.json",
+  "frozen_database": {
+    "database_sha256": "b6ce84ecc46809205903624249d7bf688ca3e06e1b75d3683f4ffbda912eb872",
+    "metadata_sha256": "4b1be9b52f492f83c03cfc8839cec14619fe549c231d71b78e4aa86769e1abf2",
+    "unchanged_after_scan": true,
+    "network": "none",
+    "updates": "disabled"
+  },
+  "historical_comparison": {
+    "historical_distinct_high": 9,
+    "current_distinct_high": 11,
+    "additional_ids": [
+      "CVE-2026-119374",
+      "CVE-2026-119379"
+    ],
+    "interpretation": "Database-era finding set change; not evidence of application regression"
+  },
+  "method": "Official Debian tracker pages read through browser on review date; CVSS vendor metrics copied from retained sanitized frozen scan. Debian source policy and scanner CVSS classification are distinct facts. no-dsa/postponed are not fixed or unaffected. No sid packages mixed into maintained runtime.",
+  "source_mapping_limit": "Attempted read-only baseline dpkg-query failed Docker content-store I/O; package source mappings below derive from official advisory source tables, not a completed binary metadata query.",
+  "advisories": [
+    {
+      "id": "CVE-2026-76642",
+      "reviewed_on": "2026-11-09",
+      "tracker_url": "https://security-tracker.debian.org/tracker/CVE-2026-76642",
+      "source_package": "util-linux",
+      "source_mapping_provenance": "Debian tracker source-package table; scanner binary associations retained; baseline dpkg-query blocked by Docker content I/O error",
+      "scanner_severity": "HIGH",
+      "scanner_cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+          "V3Score": 7.8
+        }
+      },
+      "scanner_severity_source": null,
+      "scanner_rows": [
+        {
+          "binary_package": "bsdutils",
+          "installed_version": "1:2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "libblkid1",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "liblastlog2-2",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "libmount1",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "libsmartcols1",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "libuuid1",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "login",
+          "installed_version": "1:4.16.0-2+really2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "mount",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "util-linux",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        }
+      ],
+      "bookworm": {
+        "status": "not_affected",
+        "current_source_version": "2.38.1-5+deb12u3",
+        "fixed_version": null,
+        "status_basis": "explicit not-affected annotation; vulnerable code absent",
+        "table_status": "fixed",
+        "table_annotation_distinction": "Table renders fixed; explicit release annotation says not affected. No patched-version claim is inferred."
+      },
+      "trixie": {
+        "status": "vulnerable",
+        "current_source_version": "2.41.5-0+deb13u1",
+        "fixed_version": null,
+        "security_annotation": "no-dsa"
+      },
+      "unstable_fixed_version": "2.42.3-1",
+      "runtime_context": "Mount-helper failure and privileged post-mount hooks. Bookworm lacks code introduced in v2.39. Dropped capabilities and no-new-privileges reduce privileged execution paths but do not establish non-applicability.",
+      "application_exploitability": "not_established",
+      "risk_acceptance": "not_granted"
+    },
+    {
+      "id": "CVE-2026-78408",
+      "reviewed_on": "2026-11-09",
+      "tracker_url": "https://security-tracker.debian.org/tracker/CVE-2026-78408",
+      "source_package": "util-linux",
+      "source_mapping_provenance": "Debian tracker source-package table; scanner binary associations retained; baseline dpkg-query blocked by Docker content I/O error",
+      "scanner_severity": "HIGH",
+      "scanner_cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:R/S:C/C:N/I:H/A:H",
+          "V3Score": 7.9
+        }
+      },
+      "scanner_severity_source": null,
+      "scanner_rows": [
+        {
+          "binary_package": "bsdutils",
+          "installed_version": "1:2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "libblkid1",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "liblastlog2-2",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "libmount1",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "libsmartcols1",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "libuuid1",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "login",
+          "installed_version": "1:4.16.0-2+really2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "mount",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "util-linux",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        }
+      ],
+      "bookworm": {
+        "status": "not_affected",
+        "current_source_version": "2.38.1-5+deb12u3",
+        "fixed_version": null,
+        "status_basis": "explicit not-affected annotation; vulnerable code absent",
+        "table_status": "fixed",
+        "table_annotation_distinction": "Table renders fixed; explicit release annotation says not affected. No patched-version claim is inferred."
+      },
+      "trixie": {
+        "status": "vulnerable",
+        "current_source_version": "2.41.5-0+deb13u1",
+        "fixed_version": null,
+        "security_annotation": "no-dsa"
+      },
+      "unstable_fixed_version": "2.42.4-1",
+      "runtime_context": "nsenter --join-cgroup descriptor inheritance requires privileged operator action. Bookworm lacks code introduced in v2.40. Namespace/runtime isolation must be observed rather than assumed.",
+      "application_exploitability": "not_established",
+      "risk_acceptance": "not_granted"
+    },
+    {
+      "id": "CVE-2026-78409",
+      "reviewed_on": "2026-11-09",
+      "tracker_url": "https://security-tracker.debian.org/tracker/CVE-2026-78409",
+      "source_package": "util-linux",
+      "source_mapping_provenance": "Debian tracker source-package table; scanner binary associations retained; baseline dpkg-query blocked by Docker content I/O error",
+      "scanner_severity": "HIGH",
+      "scanner_cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H",
+          "V3Score": 7
+        }
+      },
+      "scanner_severity_source": null,
+      "scanner_rows": [
+        {
+          "binary_package": "bsdutils",
+          "installed_version": "1:2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "libblkid1",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "liblastlog2-2",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "libmount1",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "libsmartcols1",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "libuuid1",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "login",
+          "installed_version": "1:4.16.0-2+really2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "mount",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "util-linux",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        }
+      ],
+      "bookworm": {
+        "status": "not_affected",
+        "current_source_version": "2.38.1-5+deb12u3",
+        "fixed_version": null,
+        "status_basis": "explicit not-affected annotation; vulnerable code absent",
+        "table_status": "fixed",
+        "table_annotation_distinction": "Table renders fixed; explicit release annotation says not affected. No patched-version claim is inferred."
+      },
+      "trixie": {
+        "status": "vulnerable",
+        "current_source_version": "2.41.5-0+deb13u1",
+        "fixed_version": null,
+        "security_annotation": "no-dsa"
+      },
+      "unstable_fixed_version": "2.42.3-1",
+      "runtime_context": "X-mount.subdir symlink traversal requires authorized fstab entry and Linux 6.15+; actual host kernel and privileged mount paths were not established.",
+      "application_exploitability": "not_established",
+      "risk_acceptance": "not_granted",
+      "annotation_contradiction": {
+        "observation": "Tracker marks trixie 2.41.5 vulnerable but bookworm note says vulnerable code introduced in v2.42.",
+        "resolution": "unresolved; preserve vulnerable scanner/tracker classification, ask Debian/upstream for clarification rather than invent exemption"
+      }
+    },
+    {
+      "id": "CVE-2026-78410",
+      "reviewed_on": "2026-11-09",
+      "tracker_url": "https://security-tracker.debian.org/tracker/CVE-2026-78410",
+      "source_package": "util-linux",
+      "source_mapping_provenance": "Debian tracker source-package table; scanner binary associations retained; baseline dpkg-query blocked by Docker content I/O error",
+      "scanner_severity": "HIGH",
+      "scanner_cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+          "V3Score": 7.8
+        }
+      },
+      "scanner_severity_source": null,
+      "scanner_rows": [
+        {
+          "binary_package": "bsdutils",
+          "installed_version": "1:2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "libblkid1",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "liblastlog2-2",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "libmount1",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "libsmartcols1",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "libuuid1",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "login",
+          "installed_version": "1:4.16.0-2+really2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "mount",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "util-linux",
+          "installed_version": "2.41.5-0+deb13u1",
+          "scanner_fixed_version": ""
+        }
+      ],
+      "bookworm": {
+        "status": "vulnerable",
+        "current_source_version": "2.38.1-5+deb12u3",
+        "fixed_version": null,
+        "status_basis": "tracker current release table"
+      },
+      "trixie": {
+        "status": "vulnerable",
+        "current_source_version": "2.41.5-0+deb13u1",
+        "fixed_version": null,
+        "security_annotation": "no-dsa"
+      },
+      "unstable_fixed_version": "2.42.3-1",
+      "runtime_context": "Restricted bind mount source replacement with privileged mount and fstab hooks. Read-only root, capability removal and no-new-privileges are defense in depth, not a package fix.",
+      "application_exploitability": "not_established",
+      "risk_acceptance": "not_granted"
+    },
+    {
+      "id": "CVE-2026-54369",
+      "reviewed_on": "2026-11-09",
+      "tracker_url": "https://security-tracker.debian.org/tracker/CVE-2026-54369",
+      "source_package": "acl",
+      "source_mapping_provenance": "Debian tracker source-package table; scanner binary associations retained; baseline dpkg-query blocked by Docker content I/O error",
+      "scanner_severity": "HIGH",
+      "scanner_cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N",
+          "V3Score": 7.1
+        }
+      },
+      "scanner_severity_source": null,
+      "scanner_rows": [
+        {
+          "binary_package": "libacl1",
+          "installed_version": "2.3.2-2+b1",
+          "scanner_fixed_version": ""
+        }
+      ],
+      "bookworm": {
+        "status": "vulnerable",
+        "current_source_version": "2.3.1-3",
+        "fixed_version": null,
+        "status_basis": "tracker current release table"
+      },
+      "trixie": {
+        "status": "vulnerable",
+        "current_source_version": "2.3.2-2",
+        "fixed_version": null,
+        "security_annotation": "no-dsa"
+      },
+      "unstable_fixed_version": "2.4.0-1",
+      "runtime_context": "Path-based ACL APIs follow symlinks when privileged callers process attacker-controlled paths. Bookworm postponed; upstream fix adds acl_*_at ABI and is not individually backportable.",
+      "application_exploitability": "not_established",
+      "risk_acceptance": "not_granted"
+    },
+    {
+      "id": "CVE-2026-119373",
+      "reviewed_on": "2026-11-09",
+      "tracker_url": "https://security-tracker.debian.org/tracker/CVE-2026-119373",
+      "source_package": "sqlite3",
+      "source_mapping_provenance": "Debian tracker source-package table; scanner binary associations retained; baseline dpkg-query blocked by Docker content I/O error",
+      "scanner_severity": "HIGH",
+      "scanner_cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+          "V3Score": 7.8
+        }
+      },
+      "scanner_severity_source": null,
+      "scanner_rows": [
+        {
+          "binary_package": "libsqlite3-0",
+          "installed_version": "3.46.1-7+deb13u2",
+          "scanner_fixed_version": ""
+        }
+      ],
+      "bookworm": {
+        "status": "vulnerable",
+        "current_source_version": "3.40.1-2+deb12u2",
+        "fixed_version": null,
+        "status_basis": "tracker current release table"
+      },
+      "trixie": {
+        "status": "vulnerable",
+        "current_source_version": "3.46.1-7+deb13u2",
+        "fixed_version": null,
+        "security_annotation": "no-dsa"
+      },
+      "unstable_fixed_version": "3.54.1-1",
+      "runtime_context": "FTS5 detail=none prefix doclists and negative rowids can corrupt heap. Whether application/database inputs can trigger this path is not established.",
+      "application_exploitability": "not_established",
+      "risk_acceptance": "not_granted"
+    },
+    {
+      "id": "CVE-2026-119374",
+      "reviewed_on": "2026-11-09",
+      "tracker_url": "https://security-tracker.debian.org/tracker/CVE-2026-119374",
+      "source_package": "sqlite3",
+      "source_mapping_provenance": "Debian tracker source-package table; scanner binary associations retained; baseline dpkg-query blocked by Docker content I/O error",
+      "scanner_severity": "HIGH",
+      "scanner_cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+          "V3Score": 7.8
+        }
+      },
+      "scanner_severity_source": null,
+      "scanner_rows": [
+        {
+          "binary_package": "libsqlite3-0",
+          "installed_version": "3.46.1-7+deb13u2",
+          "scanner_fixed_version": ""
+        }
+      ],
+      "bookworm": {
+        "status": "vulnerable",
+        "current_source_version": "3.40.1-2+deb12u2",
+        "fixed_version": null,
+        "status_basis": "tracker current release table"
+      },
+      "trixie": {
+        "status": "vulnerable",
+        "current_source_version": "3.46.1-7+deb13u2",
+        "fixed_version": null,
+        "security_annotation": "no-dsa"
+      },
+      "unstable_fixed_version": "3.54.1-1",
+      "runtime_context": "FTS5 secure-delete with corrupted footer offsets can corrupt heap. Build flags and handling of attacker-controlled SQLite files need evaluation.",
+      "application_exploitability": "not_established",
+      "risk_acceptance": "not_granted"
+    },
+    {
+      "id": "CVE-2026-119379",
+      "reviewed_on": "2026-11-09",
+      "tracker_url": "https://security-tracker.debian.org/tracker/CVE-2026-119379",
+      "source_package": "sqlite3",
+      "source_mapping_provenance": "Debian tracker source-package table; scanner binary associations retained; baseline dpkg-query blocked by Docker content I/O error",
+      "scanner_severity": "HIGH",
+      "scanner_cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+          "V3Score": 7.8
+        }
+      },
+      "scanner_severity_source": null,
+      "scanner_rows": [
+        {
+          "binary_package": "libsqlite3-0",
+          "installed_version": "3.46.1-7+deb13u2",
+          "scanner_fixed_version": ""
+        }
+      ],
+      "bookworm": {
+        "status": "vulnerable",
+        "current_source_version": "3.40.1-2+deb12u2",
+        "fixed_version": null,
+        "status_basis": "tracker current release table"
+      },
+      "trixie": {
+        "status": "vulnerable",
+        "current_source_version": "3.46.1-7+deb13u2",
+        "fixed_version": null,
+        "security_annotation": "no-dsa"
+      },
+      "unstable_fixed_version": "3.54.1-1",
+      "runtime_context": "SQLite session extension and crafted changesets can corrupt heap. Session extension build/runtime usage is unverified.",
+      "application_exploitability": "not_established",
+      "risk_acceptance": "not_granted"
+    },
+    {
+      "id": "CVE-2026-16742",
+      "reviewed_on": "2026-11-09",
+      "tracker_url": "https://security-tracker.debian.org/tracker/CVE-2026-16742",
+      "source_package": "systemd",
+      "source_mapping_provenance": "Debian tracker source-package table; scanner binary associations retained; baseline dpkg-query blocked by Docker content I/O error",
+      "scanner_severity": "HIGH",
+      "scanner_cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:H",
+          "V3Score": 8.8
+        }
+      },
+      "scanner_severity_source": null,
+      "scanner_rows": [
+        {
+          "binary_package": "libsystemd0",
+          "installed_version": "257.13-1~deb13u1",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "libudev1",
+          "installed_version": "257.13-1~deb13u1",
+          "scanner_fixed_version": ""
+        }
+      ],
+      "bookworm": {
+        "status": "vulnerable",
+        "current_source_version": "252.39-1~deb12u2",
+        "fixed_version": null,
+        "status_basis": "tracker current release table"
+      },
+      "trixie": {
+        "status": "vulnerable",
+        "current_source_version": "257.13-1~deb13u1",
+        "fixed_version": null,
+        "security_annotation": "no-dsa"
+      },
+      "unstable_fixed_version": "261.2-1",
+      "runtime_context": "systemd-homed local group escalation needs homed-managed logged-in users. Scanner marks shared source-package binaries libsystemd0/libudev1; presence or execution of systemd-homed is not established. Bookworm postponed.",
+      "application_exploitability": "not_established",
+      "risk_acceptance": "not_granted"
+    },
+    {
+      "id": "CVE-2025-69720",
+      "reviewed_on": "2026-11-09",
+      "tracker_url": "https://security-tracker.debian.org/tracker/CVE-2025-69720",
+      "source_package": "ncurses",
+      "source_mapping_provenance": "Debian tracker source-package table; scanner binary associations retained; baseline dpkg-query blocked by Docker content I/O error",
+      "scanner_severity": "HIGH",
+      "scanner_cvss": {
+        "julia": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+          "V3Score": 7.8
+        },
+        "nvd": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+          "V3Score": 7.8
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+          "V3Score": 7.8
+        }
+      },
+      "scanner_severity_source": "nvd",
+      "scanner_rows": [
+        {
+          "binary_package": "libtinfo6",
+          "installed_version": "6.5+20250216-2",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "ncurses-base",
+          "installed_version": "6.5+20250216-2",
+          "scanner_fixed_version": ""
+        },
+        {
+          "binary_package": "ncurses-bin",
+          "installed_version": "6.5+20250216-2",
+          "scanner_fixed_version": ""
+        }
+      ],
+      "bookworm": {
+        "status": "vulnerable",
+        "current_source_version": "6.4-4",
+        "fixed_version": null,
+        "status_basis": "tracker current release table"
+      },
+      "trixie": {
+        "status": "vulnerable",
+        "current_source_version": "6.5+20250216-2",
+        "fixed_version": null,
+        "security_annotation": "no-dsa"
+      },
+      "unstable_fixed_version": "6.6+20251231-1",
+      "runtime_context": "infocmp command analyze_string stack overflow. Source-level finding does not establish every linked libtinfo consumer executes this CLI path; do not discard affected package metadata.",
+      "application_exploitability": "not_established",
+      "risk_acceptance": "not_granted"
+    },
+    {
+      "id": "CVE-2026-9538",
+      "reviewed_on": "2026-11-09",
+      "tracker_url": "https://security-tracker.debian.org/tracker/CVE-2026-9538",
+      "source_package": "perl",
+      "source_mapping_provenance": "Debian tracker source-package table; scanner binary associations retained; baseline dpkg-query blocked by Docker content I/O error",
+      "scanner_severity": "HIGH",
+      "scanner_cvss": {
+        "nvd": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "V3Score": 7.5
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "V3Score": 7.5
+        }
+      },
+      "scanner_severity_source": "nvd",
+      "scanner_rows": [
+        {
+          "binary_package": "perl-base",
+          "installed_version": "5.40.1-6+deb13u1",
+          "scanner_fixed_version": ""
+        }
+      ],
+      "bookworm": {
+        "status": "vulnerable",
+        "current_source_version": "5.36.0-7+deb12u3",
+        "fixed_version": null,
+        "status_basis": "tracker current release table"
+      },
+      "trixie": {
+        "status": "vulnerable",
+        "current_source_version": "5.40.1-6+deb13u1",
+        "fixed_version": null,
+        "security_annotation": "postponed"
+      },
+      "unstable_fixed_version": "5.42.3-1",
+      "runtime_context": "Archive::Tar memory exhaustion through attacker-controlled tar size. Actual Archive::Tar module presence/use in perl-base and application flow is unverified; distro fixes postponed pending upstream regressions.",
+      "application_exploitability": "not_established",
+      "risk_acceptance": "not_granted"
+    }
+  ],
+  "blast_provenance": {
+    "version": "2.17.0",
+    "official_release_directory": "https://ftp.ncbi.nlm.nih.gov/blast/executables/blast%2B/2.17.0/",
+    "upstream_checksum_format_observed": "MD5 sidecars only; no advertised SHA256/signatures in directory listing",
+    "locally_computed_sha256_status": "not_obtained",
+    "blocker": "Downloads stopped following disk exhaustion; incomplete files removed. Resume both architectures in CI, verify upstream MD5 then compute SHA256 locally. Local SHA256 is not upstream-authenticated provenance.",
+    "required_architectures": [
+      "aarch64-linux",
+      "x64-linux"
+    ],
+    "stronger_upstream_provenance": "not_found; absence from reviewed directory does not prove unavailable elsewhere"
+  },
+  "release_authorization": "not_granted"
+}

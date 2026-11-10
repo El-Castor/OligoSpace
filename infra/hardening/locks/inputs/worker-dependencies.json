@@ -1,0 +1,158 @@
+{
+  "derivation": {
+    "approval_source": "DEPLOY-03 explicit Biopython security-update instruction",
+    "baseline_graph_path": "inputs/baseline-worker-dependencies.json",
+    "baseline_graph_sha256": "9c49081633a1cc61e11fe1ea4fc1fd8fbe4eb08f04014eb4f60bd6b92ab8131e",
+    "method": "approved_targeted_security_update_only_not_installed_closure_export",
+    "numpy_requirement_check": {
+      "existing_locked_version": "2.5.4",
+      "existing_version_satisfies": true,
+      "requirements": [
+        "numpy"
+      ],
+      "source": "https://pypi.org/pypi/biopython/1.88/json"
+    },
+    "qualification": "fresh native scans/scientific and full application qualification required; not demonstrated by this graph",
+    "targeted_updates": [
+      {
+        "advisories": [
+          "GHSA-cxcq-r753-xf25",
+          "CVE-2025-68463"
+        ],
+        "from": "1.85",
+        "name": "biopython",
+        "primary_advisory": "https://github.com/biopython/biopython/security/advisories/GHSA-cxcq-r753-xf25",
+        "rationale": "Maintainer HIGH Bio.Nexus eval advisory fixed in1.88; prior XXE fixed in1.87. Trivy inventory alone does not establish complete advisory coverage.",
+        "to": "1.88"
+      }
+    ]
+  },
+  "packages": [
+    {
+      "extras": [],
+      "name": "amqp",
+      "version": "5.4.2"
+    },
+    {
+      "extras": [],
+      "name": "annotated-types",
+      "version": "0.8.0"
+    },
+    {
+      "extras": [],
+      "name": "billiard",
+      "version": "4.3.2"
+    },
+    {
+      "extras": [],
+      "name": "biopython",
+      "version": "1.88"
+    },
+    {
+      "extras": [
+        "redis"
+      ],
+      "name": "celery",
+      "version": "5.4.0"
+    },
+    {
+      "extras": [],
+      "name": "click",
+      "version": "8.5.1"
+    },
+    {
+      "extras": [],
+      "name": "click-didyoumean",
+      "version": "0.3.1"
+    },
+    {
+      "extras": [],
+      "name": "click-plugins",
+      "version": "1.1.1.2"
+    },
+    {
+      "extras": [],
+      "name": "click-repl",
+      "version": "0.4.1"
+    },
+    {
+      "extras": [],
+      "name": "kombu",
+      "version": "5.6.2"
+    },
+    {
+      "extras": [],
+      "name": "numpy",
+      "version": "2.5.4"
+    },
+    {
+      "extras": [],
+      "name": "packaging",
+      "version": "26.3"
+    },
+    {
+      "extras": [],
+      "name": "prompt-toolkit",
+      "version": "3.0.53"
+    },
+    {
+      "extras": [
+        "binary"
+      ],
+      "name": "psycopg",
+      "version": "3.2.4"
+    },
+    {
+      "extras": [],
+      "name": "psycopg-binary",
+      "version": "3.2.4"
+    },
+    {
+      "extras": [],
+      "name": "pydantic",
+      "version": "2.10.6"
+    },
+    {
+      "extras": [],
+      "name": "pydantic-core",
+      "version": "2.27.2"
+    },
+    {
+      "extras": [],
+      "name": "pyjwt",
+      "version": "2.15.1"
+    },
+    {
+      "extras": [],
+      "name": "python-dateutil",
+      "version": "4.0.0"
+    },
+    {
+      "extras": [],
+      "name": "redis",
+      "version": "5.3.1"
+    },
+    {
+      "extras": [],
+      "name": "typing-extensions",
+      "version": "4.16.0"
+    },
+    {
+      "extras": [],
+      "name": "tzdata",
+      "version": "2026.6"
+    },
+    {
+      "extras": [],
+      "name": "vine",
+      "version": "5.1.0"
+    },
+    {
+      "extras": [],
+      "name": "wcwidth",
+      "version": "0.9.4"
+    }
+  ],
+  "python": "3.12.8",
+  "root": "oligospace-bioinfo"
+}

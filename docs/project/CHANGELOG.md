@@ -1,5 +1,33 @@
 # Changelog
 
+## DEPLOY-03 — qualified for code review (2026-11-10)
+
+Single [PR #21](https://github.com/El-Castor/OligoSpace/pull/21), branch
+`codex/deploy-03-container-hardening`, from verified main `9ebbf2c`; unmerged.
+Three initial strategies and a fourth Ubuntu LTS variant were measured natively
+on AMD64/ARM64. Selected digest-pinned Ubuntu/Python runtime uses a signed dated
+snapshot, hashed dependencies, separate tooling and no runtime pip/compilers.
+Kombu 5.6.2 and Primer3 parameters/nine references are unchanged. Targeted JWT,
+multipart and Biopython security fixes are qualified; the Biopython HIGH missed
+by Trivy is explicitly corrected rather than ignored.
+
+Code `7b9dca4` passes mandatory make checks,99 API / 14 worker units,206 PostgreSQL,
+29 Chromium, 16 OIDC and 7 scientific cases per native architecture. Runtime controls,
+readiness, secret logs, clean stop/cleanup and eight S3 contracts pass. Final same-DB
+scans:0 detected CRITICAL/HIGH, 22 MEDIUM / 4 LOW, 0 secrets per image. Four upstream IDs
+with higher CVSS scores remain open; vendor priority is not a severity waiver.
+All-severity release gates and DEPLOY-02 supplier/license/provenance findings
+remain blocking. Independent review findings resolved; no remaining important
+code finding. API OCI archives shrink 52–60%, worker 22–26%.
+[Full report, retained evidence and limits](../deployment/DEPLOY_03_CONTAINER_HARDENING.md).
+
+Chromium reuses the existing uploads-disabled no-object-service recipe because
+historical MinIO is unavailable; no provider substitution. No image publication,
+Mac mini deployment, Cloudflare, real migration, S3 adoption or DEPLOY-04.
+R1-08/09 operations and R1-10/11 human/curated-data acceptance remain open.
+Next: owner PR review. This supersedes the earlier stop-after-MVP-02 work boundary
+only for the completed DEPLOY-03 lot; it grants no operational authority.
+
 ## MVP-02 — code integration only (2026-11-09)
 
 The owner explicitly authorized PR #20 at unchanged head `3f2c83a1b8c6d449e1f6d249dfef3c462cdc5c2c`.

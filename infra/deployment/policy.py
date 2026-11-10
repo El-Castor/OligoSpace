@@ -202,7 +202,7 @@ def validate(config: dict) -> list[str]:
     )
     require(
         services["migrate"].get("command")
-        == ["micromamba", "run", "--name", "base", "alembic", "upgrade", "head"],
+        == ["/opt/venv/bin/python", "-m", "alembic", "upgrade", "head"],
         "migration_command",
     )
     require(

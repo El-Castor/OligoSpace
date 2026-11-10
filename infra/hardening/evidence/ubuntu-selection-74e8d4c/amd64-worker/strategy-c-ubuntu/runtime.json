@@ -1,0 +1,168 @@
+{
+  "actual_architecture": "amd64",
+  "ca_certificates": 120,
+  "cap_eff": "0000000000000000",
+  "expected_hardened": true,
+  "gid": 1000,
+  "kombu": "5.6.2",
+  "native_imports": {
+    "psycopg": true,
+    "psycopg_binary": true
+  },
+  "native_libraries": {
+    "contextual_checks": [
+      {
+        "library_path": "/opt/venv/lib/python3.12/site-packages/psycopg_binary.libs",
+        "output": "\tlinux-vdso.so.1 (0x00007f43a948b000)\n\tlibkrb5-fcafa220.so.3.3 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libkrb5-fcafa220.so.3.3 (0x00007f43a8e00000)\n\tlibk5crypto-b1f99d5c.so.3.1 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libk5crypto-b1f99d5c.so.3.1 (0x00007f43a8a00000)\n\tlibcom_err-2abe824b.so.2.1 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libcom_err-2abe824b.so.2.1 (0x00007f43a8600000)\n\tlibkrb5support-d0bcff84.so.0.1 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libkrb5support-d0bcff84.so.0.1 (0x00007f43a8200000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f43a947c000)\n\tlibkeyutils-dfe70bd6.so.1.5 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libkeyutils-dfe70bd6.so.1.5 (0x00007f43a7e00000)\n\tlibresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007f43a9468000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f43a7bed000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f43a9463000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f43a948d000)\n\tlibselinux-0922c95c.so.1 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libselinux-0922c95c.so.1 (0x00007f43a7800000)\n\tlibpcre-9513aab5.so.1.2.0 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libpcre-9513aab5.so.1.2.0 (0x00007f43a7400000)\n",
+        "path": "/opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libgssapi_krb5-497db0c6.so.2.2",
+        "resolved": true,
+        "returncode": 0
+      },
+      {
+        "library_path": "/opt/venv/lib/python3.12/site-packages/psycopg_binary.libs",
+        "output": "\tlinux-vdso.so.1 (0x00007ff0509bf000)\n\tlibkrb5support-d0bcff84.so.0.1 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libkrb5support-d0bcff84.so.0.1 (0x00007ff050200000)\n\tlibkeyutils-dfe70bd6.so.1.5 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libkeyutils-dfe70bd6.so.1.5 (0x00007ff04fe00000)\n\tlibresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007ff0509a3000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007ff04fbed000)\n\tlibselinux-0922c95c.so.1 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libselinux-0922c95c.so.1 (0x00007ff04f800000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007ff05099c000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007ff0509c1000)\n\tlibpcre-9513aab5.so.1.2.0 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libpcre-9513aab5.so.1.2.0 (0x00007ff04f400000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007ff050997000)\n",
+        "path": "/opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libk5crypto-b1f99d5c.so.3.1",
+        "resolved": true,
+        "returncode": 0
+      },
+      {
+        "library_path": "/opt/venv/lib/python3.12/site-packages/psycopg_binary.libs",
+        "output": "\tlinux-vdso.so.1 (0x00007f84a2935000)\n\tlibk5crypto-b1f99d5c.so.3.1 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libk5crypto-b1f99d5c.so.3.1 (0x00007f84a2200000)\n\tlibcom_err-2abe824b.so.2.1 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libcom_err-2abe824b.so.2.1 (0x00007f84a1e00000)\n\tlibkrb5support-d0bcff84.so.0.1 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libkrb5support-d0bcff84.so.0.1 (0x00007f84a1a00000)\n\tlibkeyutils-dfe70bd6.so.1.5 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libkeyutils-dfe70bd6.so.1.5 (0x00007f84a1600000)\n\tlibresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007f84a2919000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f84a13ed000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f84a2912000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f84a2937000)\n\tlibselinux-0922c95c.so.1 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libselinux-0922c95c.so.1 (0x00007f84a1000000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f84a290d000)\n\tlibpcre-9513aab5.so.1.2.0 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libpcre-9513aab5.so.1.2.0 (0x00007f84a0c00000)\n",
+        "path": "/opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libkrb5-fcafa220.so.3.3",
+        "resolved": true,
+        "returncode": 0
+      },
+      {
+        "library_path": "/opt/venv/lib/python3.12/site-packages/psycopg_binary.libs",
+        "output": "\tlinux-vdso.so.1 (0x00007f472ec1e000)\n\tlibkeyutils-dfe70bd6.so.1.5 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libkeyutils-dfe70bd6.so.1.5 (0x00007f472e600000)\n\tlibresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007f472e9ee000)\n\tlibselinux-0922c95c.so.1 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libselinux-0922c95c.so.1 (0x00007f472e200000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f472e9e9000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f472dfed000)\n\tlibpcre-9513aab5.so.1.2.0 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libpcre-9513aab5.so.1.2.0 (0x00007f472dc00000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f472ec20000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f472e9e4000)\n",
+        "path": "/opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libkrb5support-d0bcff84.so.0.1",
+        "resolved": true,
+        "returncode": 0
+      },
+      {
+        "library_path": "/opt/venv/lib/python3.12/site-packages/psycopg_binary.libs",
+        "output": "\tlinux-vdso.so.1 (0x00007fab884d9000)\n\tlibpcre-9513aab5.so.1.2.0 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libpcre-9513aab5.so.1.2.0 (0x00007fab87e00000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007fab884ca000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fab87bed000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fab884db000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fab884c5000)\n",
+        "path": "/opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libselinux-0922c95c.so.1",
+        "resolved": true,
+        "returncode": 0
+      },
+      {
+        "library_path": "/opt/venv/lib/python3.12/site-packages/psycopg_binary.libs",
+        "output": "\tlinux-vdso.so.1 (0x00007f2c5098d000)\n\tlibcrypto-4054f362.so.3 => /opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libcrypto-4054f362.so.3 (0x00007f2c502d1000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f2c502ca000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f2c502c5000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f2c500b2000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f2c5098f000)\n",
+        "path": "/opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libssl-11ac059b.so.3",
+        "resolved": true,
+        "returncode": 0
+      }
+    ],
+    "elf_files_checked": 963,
+    "first_pass_missing": [
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f869ad62000)\n\tlibkrb5-fcafa220.so.3.3 => not found\n\tlibk5crypto-b1f99d5c.so.3.1 => not found\n\tlibcom_err-2abe824b.so.2.1 => not found\n\tlibkrb5support-d0bcff84.so.0.1 => not found\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f869ad53000)\n\tlibkeyutils-dfe70bd6.so.1.5 => not found\n\tlibresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007f869ad3f000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f869a7ed000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f869ad64000)\n",
+        "path": "/opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libgssapi_krb5-497db0c6.so.2.2"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f7898b9a000)\n\tlibkrb5support-d0bcff84.so.0.1 => not found\n\tlibkeyutils-dfe70bd6.so.1.5 => not found\n\tlibresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007f7898b7e000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f78985ed000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f7898b9c000)\n",
+        "path": "/opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libk5crypto-b1f99d5c.so.3.1"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f3010d04000)\n\tlibk5crypto-b1f99d5c.so.3.1 => not found\n\tlibcom_err-2abe824b.so.2.1 => not found\n\tlibkrb5support-d0bcff84.so.0.1 => not found\n\tlibkeyutils-dfe70bd6.so.1.5 => not found\n\tlibresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007f30109ee000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f30107db000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f3010d06000)\n",
+        "path": "/opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libkrb5-fcafa220.so.3.3"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007ff09017d000)\n\tlibkeyutils-dfe70bd6.so.1.5 => not found\n\tlibresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007ff090161000)\n\tlibselinux-0922c95c.so.1 => not found\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007ff09015c000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007ff08fbed000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007ff09017f000)\n",
+        "path": "/opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libkrb5support-d0bcff84.so.0.1"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f1c97fea000)\n\tlibpcre-9513aab5.so.1.2.0 => not found\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f1c97fdb000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f1c979ed000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f1c97fec000)\n",
+        "path": "/opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libselinux-0922c95c.so.1"
+      },
+      {
+        "output": "\tlinux-vdso.so.1 (0x00007f15fde69000)\n\tlibcrypto-4054f362.so.3 => not found\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f15fdd4b000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f15fdd46000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f15fdb33000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f15fde6b000)\n",
+        "path": "/opt/venv/lib/python3.12/site-packages/psycopg_binary.libs/libssl-11ac059b.so.3"
+      }
+    ],
+    "missing_libraries": [],
+    "unclassified": []
+  },
+  "no_new_privs": "1",
+  "python": "3.12.3",
+  "reason_codes": [],
+  "role": "worker",
+  "role_import": true,
+  "role_version": "0.1.0",
+  "rootfs_erofs": true,
+  "rootfs_readonly_proven": true,
+  "rootfs_write_errno": "EROFS",
+  "scientific_checks": {
+    "blast_synthetic_exact_match": true,
+    "blast_version_checks": {
+      "blast_formatter": true,
+      "blast_formatter_vdb": true,
+      "blast_vdb_cmd": true,
+      "blastdb_aliastool": true,
+      "blastdbcheck": true,
+      "blastdbcmd": true,
+      "blastn": true,
+      "blastn_vdb": true,
+      "blastp": true,
+      "blastx": true,
+      "convert2blastmask": true,
+      "deltablast": true,
+      "dustmasker": true,
+      "makeblastdb": true,
+      "makembindex": true,
+      "makeprofiledb": true,
+      "psiblast": true,
+      "rpsblast": true,
+      "rpstblastn": true,
+      "segmasker": true,
+      "tblastn": true,
+      "tblastn_vdb": true,
+      "tblastx": true,
+      "windowmasker": true
+    },
+    "blast_version_scope": "ELF tools accepting -version only",
+    "primer3_nine_golden_facts": true,
+    "primer3_observed_values": [
+      59.62663,
+      69.836183,
+      46.16876,
+      59.62663,
+      69.091431,
+      34.346077,
+      0.0,
+      59.555182,
+      59.555182
+    ],
+    "primer3_parameters": {
+      "dna_conc_nM": 50.0,
+      "dntp_conc_mM": 0.6,
+      "dv_conc_mM": 1.5,
+      "max_loop": 30,
+      "max_nn_length": 60,
+      "mv_conc_mM": 50.0,
+      "salt_correction_method": "santalucia_1998",
+      "tm_method": "santalucia_1998"
+    },
+    "primer3_reference_values": [
+      59.62663,
+      69.836183,
+      46.16876,
+      59.62663,
+      69.091431,
+      34.346077,
+      0.0,
+      59.555182,
+      59.555182
+    ],
+    "primer3_source_sha256": "805cef7ef39607cd40f0f5bb8b32e35e20007153a0a55131dd430ce644c8fb9e",
+    "primer3_version": "2.6.1",
+    "tool_failure_classification": {
+      "exit": true,
+      "timeout": true
+    }
+  },
+  "status": "passed",
+  "tmp_writable": true,
+  "uid": 1000
+}

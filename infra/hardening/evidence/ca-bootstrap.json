@@ -1,0 +1,7 @@
+{
+  "url": "https://snapshot.ubuntu.com/ubuntu/20261109T120000Z/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.24.04.2_all.deb",
+  "sha256": "f9fbacd417b515450b831032cc39d18059e9874e67525679a43c16071dabf9a0",
+  "bytes": 140064,
+  "purpose": "HTTPS trust bootstrap before signed apt snapshot installation",
+  "authority": "observed official HTTPS archive; final apt verifies signed snapshot metadata"
+}

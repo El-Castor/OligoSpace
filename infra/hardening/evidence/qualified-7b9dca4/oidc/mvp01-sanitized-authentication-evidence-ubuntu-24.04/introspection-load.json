@@ -1,0 +1,125 @@
+{
+  "requests_per_phase": 80,
+  "results": [
+    {
+      "endpoint": "health_live_without_authentication",
+      "concurrency": 1,
+      "requests": 80,
+      "errors": 0,
+      "p50_ms": 2.2,
+      "p95_ms": 2.9,
+      "max_ms": 12.1,
+      "throughput_rps": 405.7
+    },
+    {
+      "endpoint": "api_me_jwt_introspection_and_database",
+      "concurrency": 1,
+      "requests": 80,
+      "errors": 0,
+      "p50_ms": 20.6,
+      "p95_ms": 23.4,
+      "max_ms": 27.4,
+      "throughput_rps": 47.6
+    },
+    {
+      "endpoint": "keycloak_introspection_direct",
+      "concurrency": 1,
+      "requests": 80,
+      "errors": 0,
+      "p50_ms": 3.8,
+      "p95_ms": 6.2,
+      "max_ms": 6.5,
+      "throughput_rps": 245.9
+    },
+    {
+      "endpoint": "health_live_without_authentication",
+      "concurrency": 4,
+      "requests": 80,
+      "errors": 0,
+      "p50_ms": 5.9,
+      "p95_ms": 9.4,
+      "max_ms": 20.2,
+      "throughput_rps": 587.4
+    },
+    {
+      "endpoint": "api_me_jwt_introspection_and_database",
+      "concurrency": 4,
+      "requests": 80,
+      "errors": 0,
+      "p50_ms": 54.2,
+      "p95_ms": 69.6,
+      "max_ms": 103.3,
+      "throughput_rps": 72.7
+    },
+    {
+      "endpoint": "keycloak_introspection_direct",
+      "concurrency": 4,
+      "requests": 80,
+      "errors": 0,
+      "p50_ms": 8.9,
+      "p95_ms": 11.9,
+      "max_ms": 12.5,
+      "throughput_rps": 449
+    },
+    {
+      "endpoint": "health_live_without_authentication",
+      "concurrency": 8,
+      "requests": 80,
+      "errors": 0,
+      "p50_ms": 11.6,
+      "p95_ms": 16.2,
+      "max_ms": 20.9,
+      "throughput_rps": 630.4
+    },
+    {
+      "endpoint": "api_me_jwt_introspection_and_database",
+      "concurrency": 8,
+      "requests": 80,
+      "errors": 0,
+      "p50_ms": 120.6,
+      "p95_ms": 309.4,
+      "max_ms": 372.7,
+      "throughput_rps": 53.7
+    },
+    {
+      "endpoint": "keycloak_introspection_direct",
+      "concurrency": 8,
+      "requests": 80,
+      "errors": 0,
+      "p50_ms": 14.1,
+      "p95_ms": 20.7,
+      "max_ms": 22.4,
+      "throughput_rps": 528.6
+    },
+    {
+      "endpoint": "health_live_without_authentication",
+      "concurrency": 16,
+      "requests": 80,
+      "errors": 0,
+      "p50_ms": 23.4,
+      "p95_ms": 38.2,
+      "max_ms": 41.7,
+      "throughput_rps": 635.3
+    },
+    {
+      "endpoint": "api_me_jwt_introspection_and_database",
+      "concurrency": 16,
+      "requests": 80,
+      "errors": 0,
+      "p50_ms": 260.1,
+      "p95_ms": 681.8,
+      "max_ms": 774.8,
+      "throughput_rps": 45.9
+    },
+    {
+      "endpoint": "keycloak_introspection_direct",
+      "concurrency": 16,
+      "requests": 80,
+      "errors": 0,
+      "p50_ms": 24.3,
+      "p95_ms": 36.2,
+      "max_ms": 38.4,
+      "throughput_rps": 599.4
+    }
+  ]
+}

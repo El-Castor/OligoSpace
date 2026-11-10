@@ -35,10 +35,8 @@
         "operations"
       ],
       "command": [
-        "micromamba",
-        "run",
-        "--name",
-        "base",
+        "/opt/venv/bin/python",
+        "-m",
         "alembic",
         "upgrade",
         "head"
@@ -190,11 +188,7 @@
       "healthcheck": {
         "test": [
           "CMD",
-          "micromamba",
-          "run",
-          "--name",
-          "base",
-          "python",
+          "/opt/venv/bin/python",
           "-c",
           "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/live')"
         ],
@@ -257,15 +251,13 @@
         "OLIGOSPACE_BUILD_ID": "${BUILD_ID:?required outside Git}"
       },
       "command": [
-        "micromamba",
-        "run",
-        "--name",
-        "base",
-        "celery",
+        "/opt/venv/bin/celery",
         "--app",
         "oligospace_bioinfo.celery_app:app",
         "beat",
-        "--loglevel=INFO"
+        "--loglevel=INFO",
+        "--schedule=/tmp/celerybeat-schedule",
+        "--pidfile=/tmp/celerybeat.pid"
       ],
       "depends_on": {
         "postgres": {

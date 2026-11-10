@@ -1,0 +1,130 @@
+{
+  "packages": [
+    {
+      "extras": [],
+      "name": "amqp",
+      "version": "5.4.2"
+    },
+    {
+      "extras": [],
+      "name": "annotated-types",
+      "version": "0.8.0"
+    },
+    {
+      "extras": [],
+      "name": "billiard",
+      "version": "4.3.2"
+    },
+    {
+      "extras": [],
+      "name": "biopython",
+      "version": "1.85"
+    },
+    {
+      "extras": [
+        "redis"
+      ],
+      "name": "celery",
+      "version": "5.4.0"
+    },
+    {
+      "extras": [],
+      "name": "click",
+      "version": "8.5.1"
+    },
+    {
+      "extras": [],
+      "name": "click-didyoumean",
+      "version": "0.3.1"
+    },
+    {
+      "extras": [],
+      "name": "click-plugins",
+      "version": "1.1.1.2"
+    },
+    {
+      "extras": [],
+      "name": "click-repl",
+      "version": "0.4.1"
+    },
+    {
+      "extras": [],
+      "name": "kombu",
+      "version": "5.6.2"
+    },
+    {
+      "extras": [],
+      "name": "numpy",
+      "version": "2.5.4"
+    },
+    {
+      "extras": [],
+      "name": "packaging",
+      "version": "26.3"
+    },
+    {
+      "extras": [],
+      "name": "prompt-toolkit",
+      "version": "3.0.53"
+    },
+    {
+      "extras": [
+        "binary"
+      ],
+      "name": "psycopg",
+      "version": "3.2.4"
+    },
+    {
+      "extras": [],
+      "name": "psycopg-binary",
+      "version": "3.2.4"
+    },
+    {
+      "extras": [],
+      "name": "pydantic",
+      "version": "2.10.6"
+    },
+    {
+      "extras": [],
+      "name": "pydantic-core",
+      "version": "2.27.2"
+    },
+    {
+      "extras": [],
+      "name": "pyjwt",
+      "version": "2.15.1"
+    },
+    {
+      "extras": [],
+      "name": "python-dateutil",
+      "version": "4.0.0"
+    },
+    {
+      "extras": [],
+      "name": "redis",
+      "version": "5.3.1"
+    },
+    {
+      "extras": [],
+      "name": "typing-extensions",
+      "version": "4.16.0"
+    },
+    {
+      "extras": [],
+      "name": "tzdata",
+      "version": "2026.6"
+    },
+    {
+      "extras": [],
+      "name": "vine",
+      "version": "5.1.0"
+    },
+    {
+      "extras": [],
+      "name": "wcwidth",
+      "version": "0.9.4"
+    }
+  ],
+  "python": "3.12.8",
+  "root": "oligospace-bioinfo"
+}

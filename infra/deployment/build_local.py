@@ -20,12 +20,57 @@ DOCKERFILES = {
     "web": "infra/docker/web/Dockerfile",
     "worker": "infra/docker/bioinfo-worker.Dockerfile",
 }
+EXPERIMENTS = ("strategy-a", "strategy-b", "strategy-c", "strategy-c-ubuntu")
+MINIMAL_BASE = "debian:trixie-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2"
+
+
+def source_revision(source_ref: str | None, controller: str) -> str:
+    source = controller if source_ref is None else source_ref
+    if not re.fullmatch(r"[a-f0-9]{40}", source):
+        raise ValueError("source_ref_requires_exact_commit")
+    return source
+
+
+def build_recipe(role: str, source: str, experiment: str | None) -> dict:
+    if role not in DOCKERFILES or (
+        experiment and (role == "web" or experiment not in EXPERIMENTS)
+    ):
+        raise ValueError("unsupported_experiment_role")
+    return {
+        "dockerfile": f"infra/hardening/strategies/Dockerfile.{role}"
+        if experiment
+        else DOCKERFILES[role],
+        "tag": f"oligospace-qualification/{role}"
+        + (f"-{experiment}" if experiment else "")
+        + f":{source}",
+        "arguments": [
+            "--target",
+            experiment,
+            "--build-arg",
+            "MINIMAL_BASE=" + MINIMAL_BASE,
+        ]
+        if experiment
+        else [],
+    }
 
 
 def loaded_image_matches(loaded: dict, proof: dict) -> bool:
-    return loaded.get("Id") == proof.get("config_digest") and loaded.get(
-        "RootFS", {}
-    ).get("Layers") == proof.get("rootfs_diff_ids")
+    if loaded.get("RootFS", {}).get("Layers") != proof.get("rootfs_diff_ids"):
+        return False
+    if "Descriptor" not in loaded:
+        return loaded.get("Id") == proof.get("config_digest")
+    # Containerd-backed Docker reports the selected manifest rather than the
+    # config as Id. The verified manifest already binds the config and layers.
+    descriptor = loaded["Descriptor"]
+    verified = proof.get("descriptor", {})
+    media_type = "application/vnd.oci.image.manifest.v1+json"
+    return (
+        bool(verified.get("digest"))
+        and loaded.get("Id") == descriptor.get("digest") == verified.get("digest")
+        and descriptor.get("mediaType") == verified.get("mediaType") == media_type
+        and loaded.get("Architecture") == proof.get("architecture")
+        and loaded.get("Os") == "linux"
+    )
 
 
 def validate_builder(
@@ -61,7 +106,16 @@ def main() -> None:
     parser.add_argument("--builder")
     parser.add_argument("--role", choices=DOCKERFILES)
     parser.add_argument("--load-test-images", action="store_true")
+    parser.add_argument("--experiment", choices=EXPERIMENTS)
+    parser.add_argument("--source-ref")
     args = parser.parse_args()
+    if args.experiment and args.role not in ("api", "worker"):
+        parser.error("experiments require one API or worker role")
+    if args.source_ref is not None:
+        try:
+            source_revision(args.source_ref, "")
+        except ValueError:
+            parser.error("source-ref requires an exact lowercase 40-hex commit")
     repo = Path(__file__).resolve().parents[2]
     output = args.output.resolve()
     if output.is_relative_to(repo):
@@ -79,13 +133,24 @@ def main() -> None:
     if not validate_builder(info, args.context, os.environ, endpoint):
         parser.error("explicit local docker builder required; overrides refused")
     subprocess.run(["git", "diff", "--quiet", "HEAD"], cwd=repo, check=True)
-    sha = subprocess.check_output(
+    controller = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=repo, text=True
     ).strip()
+    sha = source_revision(args.source_ref, controller)
+    # An object hash alone can identify a tree/blob. Only commit objects qualify.
+    if (
+        subprocess.check_output(
+            ["git", "cat-file", "-t", sha], cwd=repo, text=True
+        ).strip()
+        != "commit"
+    ):
+        parser.error("source-ref must identify a commit object")
     archive = subprocess.check_output(["git", "archive", sha], cwd=repo)
     output.mkdir(parents=True, exist_ok=True)
     manifest = {
         "source": sha,
+        "controller_source": controller,
+        "experiment": args.experiment,
         "status": "qualification_only",
         "architecture": args.architecture,
         "mode": "native_or_emulated_unqualified",
@@ -110,8 +175,10 @@ def main() -> None:
         for role, file in DOCKERFILES.items():
             if args.role and role != args.role:
                 continue
-            artifact = output / f"{role}-{sha}-{args.architecture}.oci.tar"
-            metadata = output / f"{role}-{sha}-{args.architecture}.metadata.json"
+            recipe = build_recipe(role, sha, args.experiment)
+            name = role + (f"-{args.experiment}" if args.experiment else "")
+            artifact = output / f"{name}-{sha}-{args.architecture}.oci.tar"
+            metadata = output / f"{name}-{sha}-{args.architecture}.metadata.json"
             subprocess.run(
                 docker
                 + [
@@ -122,9 +189,9 @@ def main() -> None:
                     "--platform",
                     "linux/" + args.architecture,
                     "--file",
-                    str(Path(directory) / file),
+                    str(Path(directory) / recipe["dockerfile"]),
                     "--tag",
-                    f"oligospace-qualification/{role}:{sha}",
+                    recipe["tag"],
                     "--label",
                     "org.opencontainers.image.revision=" + sha,
                     "--provenance=mode=max",
@@ -133,8 +200,9 @@ def main() -> None:
                     str(metadata),
                     "--output",
                     f"type=oci,dest={artifact}",
-                    directory,
-                ],
+                ]
+                + recipe["arguments"]
+                + [directory],
                 check=True,
             )
             digest = json.loads(metadata.read_text()).get("containerimage.digest")
@@ -159,21 +227,9 @@ def main() -> None:
                 subprocess.run(
                     docker
                     + [
-                        "buildx",
-                        "build",
-                        "--builder",
-                        builder,
-                        "--platform",
-                        "linux/" + args.architecture,
-                        "--file",
-                        str(Path(directory) / file),
-                        "--label",
-                        "org.opencontainers.image.revision=" + sha,
-                        "--tag",
-                        f"oligospace-qualification/{role}:{sha}",
-                        "--provenance=false",
-                        "--load",
-                        directory,
+                        "load",
+                        "--input",
+                        str(artifact),
                     ],
                     check=True,
                 )
@@ -183,7 +239,9 @@ def main() -> None:
                         + [
                             "image",
                             "inspect",
-                            f"oligospace-qualification/{role}:{sha}",
+                            "--platform",
+                            "linux/" + args.architecture,
+                            recipe["tag"],
                         ],
                         text=True,
                     )

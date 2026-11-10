@@ -1,0 +1,89 @@
+name: DEPLOY03 native container comparison (no publication)
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  vulnerability-database:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download one shared public vulnerability database
+        run: |
+          mkdir -p "$RUNNER_TEMP/trivy-cache"
+          docker run --rm --volume "$RUNNER_TEMP/trivy-cache:/cache" aquasec/trivy@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c image --download-db-only --cache-dir /cache
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deploy03-vulnerability-database
+          path: ${{ runner.temp }}/trivy-cache/db/
+          retention-days: 1
+
+  native-comparison:
+    needs: vulnerability-database
+    strategy:
+      fail-fast: false
+      matrix:
+        architecture: [amd64, arm64]
+        role: [api, worker]
+        include:
+          - architecture: amd64
+            runner: ubuntu-24.04
+            cpu: x86_64
+          - architecture: arm64
+            runner: ubuntu-24.04-arm
+            cpu: aarch64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - uses: docker/setup-docker-action@v4
+        with:
+          context: deploy03
+          daemon-config: '{"features":{"containerd-snapshotter":true}}'
+      - uses: actions/download-artifact@v4
+        with:
+          name: deploy03-vulnerability-database
+          path: ${{ runner.temp }}/trivy-cache/db
+      - name: Verify controller policy and native runner
+        env:
+          CPU: ${{ matrix.cpu }}
+        run: |
+          test "$(uname -m)" = "$CPU"
+          python3 -m pip install --require-hashes -r infra/hardening/locks/build.txt
+          python3 -B -m unittest discover -s infra/deployment/tests -v
+          python3 -B -m unittest discover -s infra/hardening/tests -v
+      - name: Verify scientific archive provenance without retaining binaries
+        if: matrix.role == 'worker'
+        env:
+          ARCH: ${{ matrix.architecture }}
+        run: python3 infra/hardening/scientific_downloads.py --architecture "$ARCH" --output "$RUNNER_TEMP/results/blast-download.json"
+      - name: Compare baseline and final production artifacts
+        env:
+          ARCH: ${{ matrix.architecture }}
+          ROLE: ${{ matrix.role }}
+        run: python3 infra/hardening/qualify.py --context deploy03 --architecture "$ARCH" --role "$ROLE" --vulnerability-cache "$RUNNER_TEMP/trivy-cache" --output "$RUNNER_TEMP/results"
+      - name: Retain sanitized reports and package inventories, never images
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy03-${{ matrix.architecture }}-${{ matrix.role }}
+          retention-days: 14
+          path: |
+            ${{ runner.temp }}/results/comparison.json
+            ${{ runner.temp }}/results/blast-download.json
+            ${{ runner.temp }}/results/**/scan.json
+            ${{ runner.temp }}/results/**/runtime.json
+            ${{ runner.temp }}/results/**/*-oci-report.json
+            ${{ runner.temp }}/results/**/qualification-manifest.json
+            ${{ runner.temp }}/results/**/*-supply-chain/*.json

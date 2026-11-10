@@ -1,0 +1,32 @@
+{
+  "source": "74e8d4c8498d72559eaa27bf3e8dbee39386b91b",
+  "controller_source": "74e8d4c8498d72559eaa27bf3e8dbee39386b91b",
+  "experiment": "strategy-c-ubuntu",
+  "status": "qualification_only",
+  "architecture": "arm64",
+  "mode": "native_build",
+  "images": {
+    "api": {
+      "digest": "sha256:fd4c07b4dc9ee351fc43dd24daea508e97baac9299621dc6ac57ad2a62f96b0e",
+      "artifact": "api-strategy-c-ubuntu-74e8d4c8498d72559eaa27bf3e8dbee39386b91b-arm64.oci.tar",
+      "metadata": "api-strategy-c-ubuntu-74e8d4c8498d72559eaa27bf3e8dbee39386b91b-arm64.metadata.json",
+      "supply_chain": {
+        "sanitized_projection": true,
+        "original_verbatim": false,
+        "signature_trust": "not_verified",
+        "subject_digest": "sha256:c0c645ebf8921945865285cb040800b4a7bf6607a13b8959887ffdb76087a329",
+        "source_sha": "74e8d4c8498d72559eaa27bf3e8dbee39386b91b",
+        "source_sha_authority": "verified_image_revision_label",
+        "architecture": "arm64",
+        "sbom": "sbom-projection.json",
+        "provenance": "provenance-projection.json",
+        "sbom_attestations": 1,
+        "provenance_attestations": 1
+      }
+    }
+  },
+  "shared_roles": {
+    "migrate": "api",
+    "scheduler": "worker"
+  }
+}
