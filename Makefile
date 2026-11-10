@@ -11,8 +11,8 @@ E2E_COMPOSE = docker compose --project-name oligospace-e2e --file compose.yml --
 .PHONY: dev-env dev stop logs python-tooling web-tooling format lint typecheck test test-integration test-e2e test-local migrate seed import-oligos compose-config backup restore-test
 
 ifeq ($(PYTHON_RUNNER),container)
-API_RUN = docker run --rm --volume "$(CURDIR):/workspace" --workdir /workspace/apps/api --env PYTHONPATH=/workspace/apps/api/src $(API_TOOLING_IMAGE)
-BIOINFO_RUN = docker run --rm --volume "$(CURDIR):/workspace" --workdir /workspace/services/bioinfo-worker --env PYTHONPATH=/workspace/services/bioinfo-worker/src $(BIOINFO_TOOLING_IMAGE)
+API_RUN = docker run --rm --user "$$(id -u):$$(id -g)" --volume "$(CURDIR):/workspace" --workdir /workspace/apps/api --env PYTHONPATH=/workspace/apps/api/src $(API_TOOLING_IMAGE)
+BIOINFO_RUN = docker run --rm --user "$$(id -u):$$(id -g)" --volume "$(CURDIR):/workspace" --workdir /workspace/services/bioinfo-worker --env PYTHONPATH=/workspace/services/bioinfo-worker/src $(BIOINFO_TOOLING_IMAGE)
 WEB_RUN = docker run --rm $(WEB_TOOLING_IMAGE) npm
 
 python-tooling:
