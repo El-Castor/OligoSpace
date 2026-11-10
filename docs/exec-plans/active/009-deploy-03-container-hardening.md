@@ -27,10 +27,14 @@ to change golden scientific results. Keep `kombu==5.6.2`.
 
 - [x] Read request, current status, Docker/env/dependency/scanner code and relevant
   memory. Verify base and create the sole branch without including personal files.
-- [ ] A — Freeze historical inventory (nine distinct Debian CVEs versus 176 binary
+- [x] A — Freeze historical inventory (nine distinct Debian CVEs versus 176 binary
   occurrences across four artifacts), current source/digests/packages/SBOM and fresh
   baseline OCI scans before modifying production images. Mark absent CVSS/layer/
   exploitability facts as unknown. Record scanner and vulnerability DB identity.
+- Native comparison at `9020258` completed for all four role/architecture pairs:
+  all three initial candidates retain unresolved Tk closure; Bookworm adds two
+  CRITICAL findings. Reports and common-DB summary retained. A fourth Ubuntu LTS
+  variant is under qualification; no production strategy selected yet.
 - [ ] B — Build/scan the three candidates, retaining all severities, package metadata,
   exact source/platform identity and final OCI sizes. Execute native import/ELF,
   Primer3 nine-fact and BLAST fixtures. Reject unmaintained or unobservable options.

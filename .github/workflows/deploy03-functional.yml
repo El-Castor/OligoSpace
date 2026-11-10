@@ -40,6 +40,8 @@ jobs:
         run: make test-integration
       - name: Real Chromium application journeys with disposable services
         run: make test-e2e
+      - name: Inspect isolated runtime, secrets, networking and clean shutdown
+        run: python3 infra/hardening/isolated_runtime.py --context default --api-image oligospace-e2e-api:latest --worker-image oligospace-e2e-bioinfo-worker:latest --postgres-image postgres:17.11-alpine --redis-image redis:7.4.10-alpine --output "$RUNNER_TEMP/isolated-runtime.json"
       - name: Validate Compose and bind successful checks to native source
         run: |
           make compose-config
@@ -47,8 +49,11 @@ jobs:
           uname -m >> "$RUNNER_TEMP/native-regression.txt"
           printf '%s\n' 'format lint typecheck units PostgreSQL migrations Chromium compose: passed' >> "$RUNNER_TEMP/native-regression.txt"
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: deploy03-functional-${{ matrix.cpu }}
-          path: ${{ runner.temp }}/native-regression.txt
+          path: |
+            ${{ runner.temp }}/native-regression.txt
+            ${{ runner.temp }}/isolated-runtime.json
           if-no-files-found: error
           retention-days: 14

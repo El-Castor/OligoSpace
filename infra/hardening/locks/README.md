@@ -1,12 +1,20 @@
 # Dependency lock provenance
 
-These locks preserve installed runtime closures exported from baseline source
-`9ebbf2cd993395af2b154efb0b4cf5a76b4dd079`, using Python 3.12.8. Existing
-requirements files and `provenance.json` have not been regenerated or changed by
-the reusable tooling addition. Kombu remains 5.6.2.
+These locks derive from installed runtime closures exported from baseline source
+`9ebbf2cd993395af2b154efb0b4cf5a76b4dd079`, using Python 3.12.8. The current API
+graph includes two explicit security updates: PyJWT crypto 2.14.0 → 2.15.0 for
+CVE-2026-101918/CVE-2026-102275, and python-multipart 0.0.30 → 0.0.31 for
+CVE-2026-53540. These are fixes indicated by the candidate scan and authorized
+for targeted remediation; this metadata does not prove their runtime remediation.
+No other runtime package version changed. Kombu remains 5.6.2.
 
-`inputs/*-dependencies.json` preserves the original three export receipts
-byte-for-byte. Those receipts lack root versions and architecture; do not infer
+`inputs/baseline-api-dependencies.json` preserves the original API export
+byte-for-byte; `baseline/api.txt` and `baseline/provenance.json` preserve its
+original lock and complete original release metadata. The current
+`inputs/api-dependencies.json` is explicitly derived, retaining the original
+Python observation while recording its baseline SHA256 and the two approved
+changes. It is not a newly observed installed closure. Worker and build inputs
+remain the original exports. Those receipts lack root versions and architecture; do not infer
 architecture or universal marker coverage. The original build export excludes its
 root: generation intentionally adds `hatchling==1.27.0`, the explicit requirement
 in both pyprojects. New exports also record the installed root version.
@@ -64,6 +72,10 @@ runtime/scientific checks remain separate evidence. Python locks do not freeze
 apt, Conda, toolchains or external scientific executables.
 
 ## Offline verification
+
+The security updates require fresh native candidate scans and full OIDC/runtime
+qualification. Their presence in a derived graph does not adopt a production
+image or establish that all findings are resolved.
 
 ```sh
 python3.12 -m unittest discover -s infra/hardening/tests -p test_dependency_locks.py

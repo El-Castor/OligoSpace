@@ -149,8 +149,13 @@ def generate(graph_paths, output, build_root_version, release_provenance=None):
             releases[(name, version)] = release
     output.mkdir(parents=True, exist_ok=True)
     for role, packages in graphs.items():
+        graph_metadata = json.loads(graph_paths[role].read_text())
         lines = [
-            "# Frozen from main9ebbf2c installed runtime dependency closure; PyPI release SHA256s.",
+            (
+                "# Derived from main9ebbf2c closure with explicit targeted security updates; PyPI release SHA256s."
+                if graph_metadata.get("derivation")
+                else "# Frozen from main9ebbf2c installed runtime dependency closure; PyPI release SHA256s."
+            ),
             "# No global dependency update; kombu==5.6.2 retained.",
         ]
         for package in packages:
@@ -174,6 +179,11 @@ def generate(graph_paths, output, build_root_version, release_provenance=None):
         "release_metadata": {
             name + "==" + version: release
             for (name, version), release in sorted(releases.items())
+        },
+        "derived_graphs": {
+            role: json.loads(path.read_text())["derivation"]
+            for role, path in graph_paths.items()
+            if "derivation" in json.loads(path.read_text())
         },
     }
     (output / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n")

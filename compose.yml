@@ -83,14 +83,14 @@ services:
       minio: {condition: service_started}
       redis: {condition: service_healthy}
     healthcheck:
-      test: ["CMD", "micromamba", "run", "--name", "base", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/live')"]
+      test: ["CMD", "/opt/venv/bin/python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/live')"]
       interval: 10s
       timeout: 5s
       retries: 10
 
   migrate:
     image: oligospace-api:latest
-    command: ["micromamba", "run", "--name", "base", "alembic", "upgrade", "head"]
+    command: ["/opt/venv/bin/python", "-m", "alembic", "upgrade", "head"]
     environment:
       DATABASE_URL: postgresql+asyncpg://oligospace:${POSTGRES_PASSWORD}@postgres:5432/oligospace
       AUTH_MODE: development
@@ -128,7 +128,7 @@ services:
 
   scientific-scheduler:
     image: oligospace-bioinfo-worker:latest
-    command: ["micromamba", "run", "--name", "base", "celery", "--app", "oligospace_bioinfo.celery_app:app", "beat", "--loglevel=INFO"]
+    command: ["/opt/venv/bin/python", "-m", "celery", "--app", "oligospace_bioinfo.celery_app:app", "beat", "--loglevel=INFO", "--schedule=/tmp/celerybeat-schedule", "--pidfile=/tmp/celerybeat.pid"]
     restart: unless-stopped
     environment:
       REDIS_URL: redis://redis:6379/0
@@ -176,15 +176,16 @@ services:
     build:
       context: .
       dockerfile: infra/docker/api/Dockerfile
+      target: tooling
     profiles: ["test"]
     command:
       - /bin/sh
       - -c
       - >-
-        micromamba run --name base alembic upgrade head &&
-        micromamba run --name base alembic downgrade 0003_experiment_evidence &&
-        micromamba run --name base alembic upgrade head &&
-        micromamba run --name base pytest -rs tests/integration
+        /opt/venv/bin/python -m alembic upgrade head &&
+        /opt/venv/bin/python -m alembic downgrade 0003_experiment_evidence &&
+        /opt/venv/bin/python -m alembic upgrade head &&
+        /opt/venv/bin/python -m pytest -rs tests/integration
     environment:
       ENVIRONMENT: test
       AUTH_MODE: development

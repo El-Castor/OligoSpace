@@ -1,4 +1,30 @@
 {
+  "derivation": {
+    "approval_source": "DEPLOY-03 explicit targeted-security-update instruction",
+    "baseline_graph_path": "inputs/baseline-api-dependencies.json",
+    "baseline_graph_sha256": "b0dd3a2e9073908d5449dac3afe4488220351c922e7b92ab40fa5a7cd1300f8c",
+    "method": "approved_targeted_security_updates_only_not_installed_closure_export",
+    "qualification": "native Ubuntu/OIDC/runtime qualification required; not yet demonstrated by this graph",
+    "targeted_updates": [
+      {
+        "advisories": [
+          "CVE-2026-101918",
+          "CVE-2026-102275"
+        ],
+        "from": "2.14.0",
+        "name": "pyjwt",
+        "to": "2.15.0"
+      },
+      {
+        "advisories": [
+          "CVE-2026-53540"
+        ],
+        "from": "0.0.30",
+        "name": "python-multipart",
+        "to": "0.0.31"
+      }
+    ]
+  },
   "packages": [
     {
       "extras": [],
@@ -192,7 +218,7 @@
         "crypto"
       ],
       "name": "pyjwt",
-      "version": "2.14.0"
+      "version": "2.15.0"
     },
     {
       "extras": [],
@@ -207,7 +233,7 @@
     {
       "extras": [],
       "name": "python-multipart",
-      "version": "0.0.30"
+      "version": "0.0.31"
     },
     {
       "extras": [],

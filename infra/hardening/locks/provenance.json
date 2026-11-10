@@ -1,6 +1,17 @@
 {
   "baseline_source": "9ebbf2cd993395af2b154efb0b4cf5a76b4dd079",
   "source": "https://pypi.org/pypi/{name}/{version}/json",
+  "input_graphs": {
+    "api": {
+      "sha256": "3bfa1007c21760a2df5a39dcc6b47254e0ceebc03680e02ab679d986d81abad5"
+    },
+    "worker": {
+      "sha256": "9c49081633a1cc61e11fe1ea4fc1fd8fbe4eb08f04014eb4f60bd6b92ab8131e"
+    },
+    "build": {
+      "sha256": "beaaf4d4a49e0b8956cf3db0c428c1eefc4cb8fadecce46f9c0101bd8d94f249"
+    }
+  },
   "release_metadata": {
     "alembic==1.14.1": {
       "hashes": [
@@ -1375,13 +1386,13 @@
       "metadata_sha256": "bbaf3083ed4b6e7114f3d9c3af00c5317eb94fd9d43c89f7595b3d4d9b268bc2",
       "url": "https://pypi.org/pypi/pydantic-settings/2.7.1/json"
     },
-    "pyjwt==2.14.0": {
+    "pyjwt==2.15.0": {
+      "url": "https://pypi.org/pypi/pyjwt/2.15.0/json",
       "hashes": [
-        "77283c83fb56ecf566a886c757a714bc83668e38156de2cce8263302f42e0b86",
-        "ad0cef71c756a56e74863c2919cf0985f72decbcfcb550ee2f422e7c62b5eedc"
+        "7a3742debf6b879e912dbb9819ceec1594be812452b78c5f2e2dfc56564954f8",
+        "b11c5f9791d7bf51c2b39a81ed669f6b2dbbd669df2942f6c60167e9e3d1abe4"
       ],
-      "metadata_sha256": "bf8c6cfa99f1024a20b490debac5c4ee9474f32ba0eaaabb0903fd383bfa8f88",
-      "url": "https://pypi.org/pypi/pyjwt/2.14.0/json"
+      "metadata_sha256": "d7d239d115c9442eed19860676c23a4132a38a3880d5722da57fe2e0bd80f570"
     },
     "pyjwt==2.15.1": {
       "hashes": [
@@ -1407,13 +1418,13 @@
       "metadata_sha256": "89701376846132aefd76202d07dad6e84febe4a426a12973004e13018af15c41",
       "url": "https://pypi.org/pypi/python-dotenv/1.2.4/json"
     },
-    "python-multipart==0.0.30": {
+    "python-multipart==0.0.31": {
+      "url": "https://pypi.org/pypi/python-multipart/0.0.31/json",
       "hashes": [
-        "0edfe0475c1f46ddd3ff7785a626f6118af32bdcf359bb21260367313bb32118",
-        "830964def8c90607ac5daa00514e3987815865713ade8d20febc9177ac0c3c5b"
+        "8408153d68a9773291fc1da39a8b85a50044bddbabd2dd72e9229776b7b15e28",
+        "fc631183bb13e56db3158a4909908dfb2e23565286744e798241e63750e5d680"
       ],
-      "metadata_sha256": "4ab955de53ecad066bc45ed40d8a1e273b43902c917a751d723024fad2ffa003",
-      "url": "https://pypi.org/pypi/python-multipart/0.0.30/json"
+      "metadata_sha256": "2b33bcb39d47217216924ecd73d35aae476c369c1f6a3250b97ff6ff70a7e703"
     },
     "pyyaml==6.0.3": {
       "hashes": [
@@ -1937,6 +1948,34 @@
       ],
       "metadata_sha256": "44c13cba2bf7f1b8adec49e89259c2cb2bd5e1a17d2eb89c01261282a0c3f846",
       "url": "https://pypi.org/pypi/websockets/17.4/json"
+    }
+  },
+  "derived_graphs": {
+    "api": {
+      "approval_source": "DEPLOY-03 explicit targeted-security-update instruction",
+      "baseline_graph_path": "inputs/baseline-api-dependencies.json",
+      "baseline_graph_sha256": "b0dd3a2e9073908d5449dac3afe4488220351c922e7b92ab40fa5a7cd1300f8c",
+      "method": "approved_targeted_security_updates_only_not_installed_closure_export",
+      "qualification": "native Ubuntu/OIDC/runtime qualification required; not yet demonstrated by this graph",
+      "targeted_updates": [
+        {
+          "advisories": [
+            "CVE-2026-101918",
+            "CVE-2026-102275"
+          ],
+          "from": "2.14.0",
+          "name": "pyjwt",
+          "to": "2.15.0"
+        },
+        {
+          "advisories": [
+            "CVE-2026-53540"
+          ],
+          "from": "0.0.30",
+          "name": "python-multipart",
+          "to": "0.0.31"
+        }
+      ]
     }
   }
 }

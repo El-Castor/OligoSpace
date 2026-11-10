@@ -1,0 +1,294 @@
+{
+  "packages": [
+    {
+      "extras": [],
+      "name": "alembic",
+      "version": "1.14.1"
+    },
+    {
+      "extras": [],
+      "name": "amqp",
+      "version": "5.4.2"
+    },
+    {
+      "extras": [],
+      "name": "annotated-doc",
+      "version": "0.0.5"
+    },
+    {
+      "extras": [],
+      "name": "annotated-types",
+      "version": "0.8.0"
+    },
+    {
+      "extras": [],
+      "name": "anyio",
+      "version": "4.16.0"
+    },
+    {
+      "extras": [],
+      "name": "argon2-cffi",
+      "version": "25.1.0"
+    },
+    {
+      "extras": [],
+      "name": "argon2-cffi-bindings",
+      "version": "26.1.0"
+    },
+    {
+      "extras": [],
+      "name": "asyncpg",
+      "version": "0.30.0"
+    },
+    {
+      "extras": [],
+      "name": "billiard",
+      "version": "4.3.2"
+    },
+    {
+      "extras": [
+        "redis"
+      ],
+      "name": "celery",
+      "version": "5.4.0"
+    },
+    {
+      "extras": [],
+      "name": "certifi",
+      "version": "2026.10.23"
+    },
+    {
+      "extras": [],
+      "name": "cffi",
+      "version": "2.1.1"
+    },
+    {
+      "extras": [],
+      "name": "click",
+      "version": "8.5.1"
+    },
+    {
+      "extras": [],
+      "name": "click-didyoumean",
+      "version": "0.3.1"
+    },
+    {
+      "extras": [],
+      "name": "click-plugins",
+      "version": "1.1.1.2"
+    },
+    {
+      "extras": [],
+      "name": "click-repl",
+      "version": "0.4.1"
+    },
+    {
+      "extras": [],
+      "name": "cryptography",
+      "version": "50.0.2"
+    },
+    {
+      "extras": [],
+      "name": "et-xmlfile",
+      "version": "2.0.0"
+    },
+    {
+      "extras": [],
+      "name": "fastapi",
+      "version": "0.135.2"
+    },
+    {
+      "extras": [],
+      "name": "greenlet",
+      "version": "3.5.6"
+    },
+    {
+      "extras": [],
+      "name": "h11",
+      "version": "0.16.0"
+    },
+    {
+      "extras": [],
+      "name": "httpcore",
+      "version": "1.0.9"
+    },
+    {
+      "extras": [],
+      "name": "httptools",
+      "version": "0.9.0"
+    },
+    {
+      "extras": [],
+      "name": "httpx",
+      "version": "0.28.1"
+    },
+    {
+      "extras": [],
+      "name": "idna",
+      "version": "3.20"
+    },
+    {
+      "extras": [],
+      "name": "kombu",
+      "version": "5.6.2"
+    },
+    {
+      "extras": [],
+      "name": "mako",
+      "version": "1.4.3"
+    },
+    {
+      "extras": [],
+      "name": "markupsafe",
+      "version": "3.0.4"
+    },
+    {
+      "extras": [],
+      "name": "minio",
+      "version": "7.2.20"
+    },
+    {
+      "extras": [],
+      "name": "openpyxl",
+      "version": "3.1.5"
+    },
+    {
+      "extras": [],
+      "name": "packaging",
+      "version": "26.3"
+    },
+    {
+      "extras": [],
+      "name": "prompt-toolkit",
+      "version": "3.0.53"
+    },
+    {
+      "extras": [],
+      "name": "pycparser",
+      "version": "3.12"
+    },
+    {
+      "extras": [],
+      "name": "pycryptodome",
+      "version": "4.4.0"
+    },
+    {
+      "extras": [],
+      "name": "pydantic",
+      "version": "2.14.3"
+    },
+    {
+      "extras": [],
+      "name": "pydantic-core",
+      "version": "2.50.4"
+    },
+    {
+      "extras": [],
+      "name": "pydantic-settings",
+      "version": "2.7.1"
+    },
+    {
+      "extras": [
+        "crypto"
+      ],
+      "name": "pyjwt",
+      "version": "2.14.0"
+    },
+    {
+      "extras": [],
+      "name": "python-dateutil",
+      "version": "4.0.0"
+    },
+    {
+      "extras": [],
+      "name": "python-dotenv",
+      "version": "1.2.4"
+    },
+    {
+      "extras": [],
+      "name": "python-multipart",
+      "version": "0.0.30"
+    },
+    {
+      "extras": [],
+      "name": "pyyaml",
+      "version": "6.0.3"
+    },
+    {
+      "extras": [],
+      "name": "redis",
+      "version": "5.3.1"
+    },
+    {
+      "extras": [
+        "asyncio"
+      ],
+      "name": "sqlalchemy",
+      "version": "2.0.38"
+    },
+    {
+      "extras": [],
+      "name": "starlette",
+      "version": "1.3.1"
+    },
+    {
+      "extras": [],
+      "name": "structlog",
+      "version": "25.1.0"
+    },
+    {
+      "extras": [],
+      "name": "typing-extensions",
+      "version": "4.16.0"
+    },
+    {
+      "extras": [],
+      "name": "typing-inspection",
+      "version": "0.4.5"
+    },
+    {
+      "extras": [],
+      "name": "tzdata",
+      "version": "2026.6"
+    },
+    {
+      "extras": [],
+      "name": "urllib3",
+      "version": "2.8.0"
+    },
+    {
+      "extras": [
+        "standard"
+      ],
+      "name": "uvicorn",
+      "version": "0.34.0"
+    },
+    {
+      "extras": [],
+      "name": "uvloop",
+      "version": "0.23.0"
+    },
+    {
+      "extras": [],
+      "name": "vine",
+      "version": "5.1.0"
+    },
+    {
+      "extras": [],
+      "name": "watchfiles",
+      "version": "1.3.0"
+    },
+    {
+      "extras": [],
+      "name": "wcwidth",
+      "version": "0.9.4"
+    },
+    {
+      "extras": [],
+      "name": "websockets",
+      "version": "17.4"
+    }
+  ],
+  "python": "3.12.8",
+  "root": "oligospace-api"
+}

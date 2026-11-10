@@ -120,6 +120,15 @@ def probe(action):
     print("s3_contract_passed")
 
 
+def runtime_command(runtime: str) -> list[str]:
+    """Explicit historical activation versus the selected production runtime."""
+    if runtime == "micromamba":
+        return ["micromamba", "run", "--name", "base", "python"]
+    if runtime == "python":
+        return ["/opt/venv/bin/python"]
+    raise ValueError("unsupported_runtime")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--context", required=True)
@@ -127,6 +136,9 @@ def main():
     parser.add_argument("--target", choices=IMAGES, default="seaweedfs")
     parser.add_argument("--seaweedfs-variant", choices=QUALIFICATION_VARIANTS)
     parser.add_argument("--api-image", required=True)
+    parser.add_argument(
+        "--runtime", choices=("micromamba", "python"), default="micromamba"
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if args.seaweedfs_variant and "seaweedfs" not in (args.source, args.target):
@@ -260,11 +272,7 @@ def main():
             "--volume",
             f"{exchange}:/exchange",
             args.api_image,
-            "micromamba",
-            "run",
-            "--name",
-            "base",
-            "python",
+            *runtime_command(args.runtime),
             "/deployment/qualify_storage.py",
             "--probe",
             action,
@@ -283,6 +291,7 @@ def main():
         "qualification_variant": args.seaweedfs_variant,
         "observed_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "application_adapter_exercised": False,
+        "application_runtime": args.runtime,
         "sdk": {"name": "minio", "required_version": "7.2.20"},
         "resource_samples": {},
         "log_diagnostics": {},

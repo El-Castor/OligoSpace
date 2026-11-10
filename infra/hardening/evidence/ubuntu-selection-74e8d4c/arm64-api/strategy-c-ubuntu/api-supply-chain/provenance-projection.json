@@ -1,0 +1,23 @@
+{
+  "sanitized_projection": true,
+  "original_verbatim": false,
+  "signature_trust": "not_verified",
+  "subject_digest": "sha256:c0c645ebf8921945865285cb040800b4a7bf6607a13b8959887ffdb76087a329",
+  "source_sha": "74e8d4c8498d72559eaa27bf3e8dbee39386b91b",
+  "source_sha_authority": "verified_image_revision_label",
+  "architecture": "arm64",
+  "attestations": [
+    {
+      "sanitized_projection": true,
+      "original_verbatim": false,
+      "signature_trust": "not_verified",
+      "subject_digest": "sha256:c0c645ebf8921945865285cb040800b4a7bf6607a13b8959887ffdb76087a329",
+      "source_sha": "74e8d4c8498d72559eaa27bf3e8dbee39386b91b",
+      "source_sha_authority": "verified_image_revision_label",
+      "architecture": "arm64",
+      "predicateType": "https://slsa.dev/provenance/v1",
+      "original_attestation_blob_digest": "sha256:a5903d04d30bd1b7fcb0ae7e6f45cad5919e17671c3b39981a5c5c8c53422738",
+      "build_type": "withheld_or_unknown"
+    }
+  ]
+}

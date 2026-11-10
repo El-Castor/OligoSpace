@@ -14,10 +14,11 @@ jobs:
           python-version: '3.12'
       - run: python3 -m unittest discover -s infra/deployment/tests -v
       - run: docker build --file infra/docker/api/Dockerfile --tag oligospace-deploy01-api-test .
+      - run: docker build --file infra/docker/api/Dockerfile --target tooling --tag oligospace-deploy03-api-tooling .
       - name: Deployment tooling lint
         run: |
-          docker run --rm --volume "$PWD/infra/deployment:/deployment:ro" --workdir /deployment oligospace-deploy01-api-test micromamba run --name base ruff check --no-cache .
-          docker run --rm --volume "$PWD/infra/deployment:/deployment:ro" --workdir /deployment oligospace-deploy01-api-test micromamba run --name base ruff format --no-cache --check .
+          docker run --rm --volume "$PWD/infra/deployment:/deployment:ro" --workdir /deployment oligospace-deploy03-api-tooling ruff check --no-cache .
+          docker run --rm --volume "$PWD/infra/deployment:/deployment:ro" --workdir /deployment oligospace-deploy03-api-tooling ruff format --no-cache --check .
       - name: Disposable bootstrap and persistence only
         env:
           DEPLOY_TEST_API_IMAGE: oligospace-deploy01-api-test

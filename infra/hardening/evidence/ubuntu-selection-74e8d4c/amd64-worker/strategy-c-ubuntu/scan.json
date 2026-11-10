@@ -1,0 +1,3284 @@
+{
+  "execution": "completed_with_findings",
+  "gate": "failed",
+  "secret_findings": 0,
+  "secret_observations": [],
+  "vulnerabilities_by_severity": {
+    "MEDIUM": 22,
+    "LOW": 6
+  },
+  "vulnerability_ids": [
+    "CVE-2024-35195",
+    "CVE-2024-56433",
+    "CVE-2025-66382",
+    "CVE-2025-66418",
+    "CVE-2025-66471",
+    "CVE-2025-68463",
+    "CVE-2025-8869",
+    "CVE-2026-102473",
+    "CVE-2026-102474",
+    "CVE-2026-102633",
+    "CVE-2026-13346",
+    "CVE-2026-1703",
+    "CVE-2026-18477",
+    "CVE-2026-18508",
+    "CVE-2026-21441",
+    "CVE-2026-3219",
+    "CVE-2026-40228",
+    "CVE-2026-6357",
+    "CVE-2026-67693",
+    "CVE-2026-8643",
+    "CVE-2026-88647",
+    "CVE-2026-88648",
+    "CVE-2026-95184",
+    "CVE-2026-95210"
+  ],
+  "vulnerabilities": [
+    {
+      "id": "CVE-2026-102473",
+      "severity": "MEDIUM",
+      "package": "dash",
+      "installed_version": "0.5.12-6ubuntu5",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+          "V3Score": 5.5
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-102473",
+      "package_source": "dash",
+      "layer": {
+        "Digest": "sha256:7a48b8f0e5c73d0cc2a85b008978396aa19d253dc1b96fdb0b769ee6dcbeca4a",
+        "DiffID": "sha256:bec87777bc2fb2edcdf9af11df1531469e7df911309c1413082b18fcb8610278"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2026-102474",
+      "severity": "MEDIUM",
+      "package": "dash",
+      "installed_version": "0.5.12-6ubuntu5",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
+          "V3Score": 4
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-102474",
+      "package_source": "dash",
+      "layer": {
+        "Digest": "sha256:7a48b8f0e5c73d0cc2a85b008978396aa19d253dc1b96fdb0b769ee6dcbeca4a",
+        "DiffID": "sha256:bec87777bc2fb2edcdf9af11df1531469e7df911309c1413082b18fcb8610278"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2025-66382",
+      "severity": "MEDIUM",
+      "package": "libexpat1",
+      "installed_version": "2.6.1-2ubuntu0.6",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "julia": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+          "V3Score": 5.5
+        },
+        "nvd": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+          "V3Score": 5.5
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L",
+          "V3Score": 2.9
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2025-66382",
+      "package_source": "expat",
+      "layer": {
+        "Digest": "sha256:bf8d530fa92b0faf375a9ee2b3d49ad04a651343bfd0663cc8f4d5d7510c7dab",
+        "DiffID": "sha256:7bac01dca0c292c7d3dbd04dae9c614831ca5087017ff506bf44245c16a2860b"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2026-102633",
+      "severity": "MEDIUM",
+      "package": "libexpat1",
+      "installed_version": "2.6.1-2ubuntu0.6",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "V3Score": 5.9
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-102633",
+      "package_source": "expat",
+      "layer": {
+        "Digest": "sha256:bf8d530fa92b0faf375a9ee2b3d49ad04a651343bfd0663cc8f4d5d7510c7dab",
+        "DiffID": "sha256:7bac01dca0c292c7d3dbd04dae9c614831ca5087017ff506bf44245c16a2860b"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2026-67693",
+      "severity": "MEDIUM",
+      "package": "libgnutls30t64",
+      "installed_version": "3.8.3-1.1ubuntu3.6",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+          "V3Score": 5.9
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-67693",
+      "package_source": "gnutls28",
+      "layer": {
+        "Digest": "sha256:7a48b8f0e5c73d0cc2a85b008978396aa19d253dc1b96fdb0b769ee6dcbeca4a",
+        "DiffID": "sha256:bec87777bc2fb2edcdf9af11df1531469e7df911309c1413082b18fcb8610278"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2026-88647",
+      "severity": "MEDIUM",
+      "package": "libgnutls30t64",
+      "installed_version": "3.8.3-1.1ubuntu3.6",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+          "V3Score": 7.4
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-88647",
+      "package_source": "gnutls28",
+      "layer": {
+        "Digest": "sha256:7a48b8f0e5c73d0cc2a85b008978396aa19d253dc1b96fdb0b769ee6dcbeca4a",
+        "DiffID": "sha256:bec87777bc2fb2edcdf9af11df1531469e7df911309c1413082b18fcb8610278"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2026-88648",
+      "severity": "MEDIUM",
+      "package": "libgnutls30t64",
+      "installed_version": "3.8.3-1.1ubuntu3.6",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+          "V3Score": 7.4
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-88648",
+      "package_source": "gnutls28",
+      "layer": {
+        "Digest": "sha256:7a48b8f0e5c73d0cc2a85b008978396aa19d253dc1b96fdb0b769ee6dcbeca4a",
+        "DiffID": "sha256:bec87777bc2fb2edcdf9af11df1531469e7df911309c1413082b18fcb8610278"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2026-95184",
+      "severity": "MEDIUM",
+      "package": "libgnutls30t64",
+      "installed_version": "3.8.3-1.1ubuntu3.6",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+          "V3Score": 5.3
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-95184",
+      "package_source": "gnutls28",
+      "layer": {
+        "Digest": "sha256:7a48b8f0e5c73d0cc2a85b008978396aa19d253dc1b96fdb0b769ee6dcbeca4a",
+        "DiffID": "sha256:bec87777bc2fb2edcdf9af11df1531469e7df911309c1413082b18fcb8610278"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2026-95210",
+      "severity": "MEDIUM",
+      "package": "libgnutls30t64",
+      "installed_version": "3.8.3-1.1ubuntu3.6",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": null,
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-95210",
+      "package_source": "gnutls28",
+      "layer": {
+        "Digest": "sha256:7a48b8f0e5c73d0cc2a85b008978396aa19d253dc1b96fdb0b769ee6dcbeca4a",
+        "DiffID": "sha256:bec87777bc2fb2edcdf9af11df1531469e7df911309c1413082b18fcb8610278"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2026-40228",
+      "severity": "LOW",
+      "package": "libsystemd0",
+      "installed_version": "255.4-1ubuntu8.18",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "nvd": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:L/A:N",
+          "V3Score": 3.3
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N",
+          "V3Score": 2.9
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-40228",
+      "package_source": "systemd",
+      "layer": {
+        "Digest": "sha256:7a48b8f0e5c73d0cc2a85b008978396aa19d253dc1b96fdb0b769ee6dcbeca4a",
+        "DiffID": "sha256:bec87777bc2fb2edcdf9af11df1531469e7df911309c1413082b18fcb8610278"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2026-40228",
+      "severity": "LOW",
+      "package": "libudev1",
+      "installed_version": "255.4-1ubuntu8.18",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "nvd": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:L/A:N",
+          "V3Score": 3.3
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N",
+          "V3Score": 2.9
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-40228",
+      "package_source": "systemd",
+      "layer": {
+        "Digest": "sha256:7a48b8f0e5c73d0cc2a85b008978396aa19d253dc1b96fdb0b769ee6dcbeca4a",
+        "DiffID": "sha256:bec87777bc2fb2edcdf9af11df1531469e7df911309c1413082b18fcb8610278"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2024-56433",
+      "severity": "LOW",
+      "package": "login",
+      "installed_version": "1:4.13+dfsg1-4ubuntu3.2",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:L/I:L/A:N",
+          "V3Score": 3.6
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2024-56433",
+      "package_source": "shadow",
+      "layer": {
+        "Digest": "sha256:7a48b8f0e5c73d0cc2a85b008978396aa19d253dc1b96fdb0b769ee6dcbeca4a",
+        "DiffID": "sha256:bec87777bc2fb2edcdf9af11df1531469e7df911309c1413082b18fcb8610278"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2024-56433",
+      "severity": "LOW",
+      "package": "passwd",
+      "installed_version": "1:4.13+dfsg1-4ubuntu3.2",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:L/I:L/A:N",
+          "V3Score": 3.6
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2024-56433",
+      "package_source": "shadow",
+      "layer": {
+        "Digest": "sha256:7a48b8f0e5c73d0cc2a85b008978396aa19d253dc1b96fdb0b769ee6dcbeca4a",
+        "DiffID": "sha256:bec87777bc2fb2edcdf9af11df1531469e7df911309c1413082b18fcb8610278"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2024-35195",
+      "severity": "MEDIUM",
+      "package": "python3-pip-whl",
+      "installed_version": "24.0+dfsg-1ubuntu1.3",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "ghsa": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:R/S:U/C:H/I:H/A:N",
+          "V3Score": 5.6
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:R/S:U/C:H/I:H/A:N",
+          "V3Score": 5.6
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2024-35195",
+      "package_source": "python-pip",
+      "layer": {
+        "Digest": "sha256:bf8d530fa92b0faf375a9ee2b3d49ad04a651343bfd0663cc8f4d5d7510c7dab",
+        "DiffID": "sha256:7bac01dca0c292c7d3dbd04dae9c614831ca5087017ff506bf44245c16a2860b"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2025-66418",
+      "severity": "MEDIUM",
+      "package": "python3-pip-whl",
+      "installed_version": "24.0+dfsg-1ubuntu1.3",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "ghsa": {
+          "V40Vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:H",
+          "V40Score": 8.9
+        },
+        "nvd": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "V3Score": 7.5
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "V3Score": 7.5
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2025-66418",
+      "package_source": "python-pip",
+      "layer": {
+        "Digest": "sha256:bf8d530fa92b0faf375a9ee2b3d49ad04a651343bfd0663cc8f4d5d7510c7dab",
+        "DiffID": "sha256:7bac01dca0c292c7d3dbd04dae9c614831ca5087017ff506bf44245c16a2860b"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2025-66471",
+      "severity": "MEDIUM",
+      "package": "python3-pip-whl",
+      "installed_version": "24.0+dfsg-1ubuntu1.3",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "ghsa": {
+          "V40Vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:H",
+          "V40Score": 8.9
+        },
+        "nvd": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "V3Score": 7.5
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "V3Score": 7.5
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2025-66471",
+      "package_source": "python-pip",
+      "layer": {
+        "Digest": "sha256:bf8d530fa92b0faf375a9ee2b3d49ad04a651343bfd0663cc8f4d5d7510c7dab",
+        "DiffID": "sha256:7bac01dca0c292c7d3dbd04dae9c614831ca5087017ff506bf44245c16a2860b"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2026-21441",
+      "severity": "MEDIUM",
+      "package": "python3-pip-whl",
+      "installed_version": "24.0+dfsg-1ubuntu1.3",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "ghsa": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "V40Vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:H",
+          "V3Score": 7.5,
+          "V40Score": 8.9
+        },
+        "nvd": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "V3Score": 7.5
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "V3Score": 7.5
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-21441",
+      "package_source": "python-pip",
+      "layer": {
+        "Digest": "sha256:bf8d530fa92b0faf375a9ee2b3d49ad04a651343bfd0663cc8f4d5d7510c7dab",
+        "DiffID": "sha256:7bac01dca0c292c7d3dbd04dae9c614831ca5087017ff506bf44245c16a2860b"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2026-8643",
+      "severity": "MEDIUM",
+      "package": "python3-pip-whl",
+      "installed_version": "24.0+dfsg-1ubuntu1.3",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "ghsa": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:H",
+          "V40Vector": "CVSS:4.0/AV:L/AC:L/AT:P/PR:L/UI:A/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N",
+          "V3Score": 8,
+          "V40Score": 4.1
+        },
+        "nvd": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N",
+          "V3Score": 5.5
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:H",
+          "V3Score": 8
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-8643",
+      "package_source": "python-pip",
+      "layer": {
+        "Digest": "sha256:bf8d530fa92b0faf375a9ee2b3d49ad04a651343bfd0663cc8f4d5d7510c7dab",
+        "DiffID": "sha256:7bac01dca0c292c7d3dbd04dae9c614831ca5087017ff506bf44245c16a2860b"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2026-1703",
+      "severity": "LOW",
+      "package": "python3-pip-whl",
+      "installed_version": "24.0+dfsg-1ubuntu1.3",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "ghsa": {
+          "V40Vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:L/UI:A/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N",
+          "V40Score": 2
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:R/S:U/C:L/I:L/A:N",
+          "V3Score": 3.9
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-1703",
+      "package_source": "python-pip",
+      "layer": {
+        "Digest": "sha256:bf8d530fa92b0faf375a9ee2b3d49ad04a651343bfd0663cc8f4d5d7510c7dab",
+        "DiffID": "sha256:7bac01dca0c292c7d3dbd04dae9c614831ca5087017ff506bf44245c16a2860b"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2026-18477",
+      "severity": "MEDIUM",
+      "package": "tar",
+      "installed_version": "1.35+dfsg-3ubuntu0.4",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "julia": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:R/S:U/C:N/I:H/A:N",
+          "V3Score": 4.4
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:R/S:U/C:N/I:H/A:N",
+          "V3Score": 4.4
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-18477",
+      "package_source": "tar",
+      "layer": {
+        "Digest": "sha256:7a48b8f0e5c73d0cc2a85b008978396aa19d253dc1b96fdb0b769ee6dcbeca4a",
+        "DiffID": "sha256:bec87777bc2fb2edcdf9af11df1531469e7df911309c1413082b18fcb8610278"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2026-18508",
+      "severity": "MEDIUM",
+      "package": "tar",
+      "installed_version": "1.35+dfsg-3ubuntu0.4",
+      "fixed_version": "",
+      "origin": "ubuntu",
+      "cvss": {
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N",
+          "V3Score": 4.4
+        }
+      },
+      "severity_source": "ubuntu",
+      "data_source": {
+        "ID": "ubuntu",
+        "Name": "Ubuntu CVE Tracker",
+        "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-18508",
+      "package_source": "tar",
+      "layer": {
+        "Digest": "sha256:7a48b8f0e5c73d0cc2a85b008978396aa19d253dc1b96fdb0b769ee6dcbeca4a",
+        "DiffID": "sha256:bec87777bc2fb2edcdf9af11df1531469e7df911309c1413082b18fcb8610278"
+      },
+      "package_path": null
+    },
+    {
+      "id": "CVE-2025-68463",
+      "severity": "MEDIUM",
+      "package": "biopython",
+      "installed_version": "1.85",
+      "fixed_version": "",
+      "origin": "python-pkg",
+      "cvss": {
+        "ghsa": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:C/C:L/I:N/A:L",
+          "V3Score": 4.9
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:L",
+          "V3Score": 7.1
+        }
+      },
+      "severity_source": "ghsa",
+      "data_source": {
+        "ID": "ghsa",
+        "Name": "GitHub Security Advisory pip",
+        "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2025-68463",
+      "package_source": null,
+      "layer": {
+        "Digest": "sha256:89da2c646da02c581f59ee37803a1b9462502e86ad8494d64870686a6e8b14a2",
+        "DiffID": "sha256:8000ca605fa22be18b677aa81c086aea748b407fbfa7566eca3a908dfda1945e"
+      },
+      "package_path": "withheld"
+    },
+    {
+      "id": "CVE-2025-8869",
+      "severity": "MEDIUM",
+      "package": "pip",
+      "installed_version": "24.0",
+      "fixed_version": "25.3",
+      "origin": "python-pkg",
+      "cvss": {
+        "ghsa": {
+          "V40Vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:A/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N",
+          "V40Score": 5.9
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:N/I:H/A:N",
+          "V3Score": 5.3
+        }
+      },
+      "severity_source": "ghsa",
+      "data_source": {
+        "ID": "ghsa",
+        "Name": "GitHub Security Advisory pip",
+        "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2025-8869",
+      "package_source": null,
+      "layer": {
+        "Digest": "sha256:beb07f1a7d2aecd71c46e54be4a7dbf862b684a803415f79b589a9501ddc419b",
+        "DiffID": "sha256:51698f24cd919adb53c9de68cc9341561c4a3a3f061c4495f9e7d1a06138cc63"
+      },
+      "package_path": "withheld"
+    },
+    {
+      "id": "CVE-2026-13346",
+      "severity": "MEDIUM",
+      "package": "pip",
+      "installed_version": "24.0",
+      "fixed_version": "26.2.0",
+      "origin": "python-pkg",
+      "cvss": {
+        "ghsa": {
+          "V40Vector": "CVSS:4.0/AV:N/AC:H/AT:P/PR:H/UI:A/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N",
+          "V40Score": 5.6
+        },
+        "nvd": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:H/A:N",
+          "V3Score": 6.5
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:L/UI:R/S:U/C:L/I:H/A:L",
+          "V3Score": 5.9
+        }
+      },
+      "severity_source": "ghsa",
+      "data_source": {
+        "ID": "ghsa",
+        "Name": "GitHub Security Advisory pip",
+        "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-13346",
+      "package_source": null,
+      "layer": {
+        "Digest": "sha256:beb07f1a7d2aecd71c46e54be4a7dbf862b684a803415f79b589a9501ddc419b",
+        "DiffID": "sha256:51698f24cd919adb53c9de68cc9341561c4a3a3f061c4495f9e7d1a06138cc63"
+      },
+      "package_path": "withheld"
+    },
+    {
+      "id": "CVE-2026-3219",
+      "severity": "MEDIUM",
+      "package": "pip",
+      "installed_version": "24.0",
+      "fixed_version": "26.1",
+      "origin": "python-pkg",
+      "cvss": {
+        "ghsa": {
+          "V40Vector": "CVSS:4.0/AV:L/AC:L/AT:N/PR:N/UI:A/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N",
+          "V40Score": 4.6
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:R/S:U/C:N/I:H/A:N",
+          "V3Score": 5
+        }
+      },
+      "severity_source": "ghsa",
+      "data_source": {
+        "ID": "ghsa",
+        "Name": "GitHub Security Advisory pip",
+        "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-3219",
+      "package_source": null,
+      "layer": {
+        "Digest": "sha256:beb07f1a7d2aecd71c46e54be4a7dbf862b684a803415f79b589a9501ddc419b",
+        "DiffID": "sha256:51698f24cd919adb53c9de68cc9341561c4a3a3f061c4495f9e7d1a06138cc63"
+      },
+      "package_path": "withheld"
+    },
+    {
+      "id": "CVE-2026-6357",
+      "severity": "MEDIUM",
+      "package": "pip",
+      "installed_version": "24.0",
+      "fixed_version": "26.1",
+      "origin": "python-pkg",
+      "cvss": {
+        "ghsa": {
+          "V40Vector": "CVSS:4.0/AV:L/AC:L/AT:P/PR:H/UI:A/VC:H/VI:H/VA:N/SC:N/SI:N/SA:N",
+          "V40Score": 5.3
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:R/S:U/C:H/I:H/A:N",
+          "V3Score": 5.8
+        }
+      },
+      "severity_source": "ghsa",
+      "data_source": {
+        "ID": "ghsa",
+        "Name": "GitHub Security Advisory pip",
+        "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-6357",
+      "package_source": null,
+      "layer": {
+        "Digest": "sha256:beb07f1a7d2aecd71c46e54be4a7dbf862b684a803415f79b589a9501ddc419b",
+        "DiffID": "sha256:51698f24cd919adb53c9de68cc9341561c4a3a3f061c4495f9e7d1a06138cc63"
+      },
+      "package_path": "withheld"
+    },
+    {
+      "id": "CVE-2026-8643",
+      "severity": "MEDIUM",
+      "package": "pip",
+      "installed_version": "24.0",
+      "fixed_version": "26.1.2",
+      "origin": "python-pkg",
+      "cvss": {
+        "ghsa": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:H",
+          "V40Vector": "CVSS:4.0/AV:L/AC:L/AT:P/PR:L/UI:A/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N",
+          "V3Score": 8,
+          "V40Score": 4.1
+        },
+        "nvd": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N",
+          "V3Score": 5.5
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:H",
+          "V3Score": 8
+        }
+      },
+      "severity_source": "ghsa",
+      "data_source": {
+        "ID": "ghsa",
+        "Name": "GitHub Security Advisory pip",
+        "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-8643",
+      "package_source": null,
+      "layer": {
+        "Digest": "sha256:beb07f1a7d2aecd71c46e54be4a7dbf862b684a803415f79b589a9501ddc419b",
+        "DiffID": "sha256:51698f24cd919adb53c9de68cc9341561c4a3a3f061c4495f9e7d1a06138cc63"
+      },
+      "package_path": "withheld"
+    },
+    {
+      "id": "CVE-2026-1703",
+      "severity": "LOW",
+      "package": "pip",
+      "installed_version": "24.0",
+      "fixed_version": "26.0",
+      "origin": "python-pkg",
+      "cvss": {
+        "ghsa": {
+          "V40Vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:L/UI:A/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N",
+          "V40Score": 2
+        },
+        "redhat": {
+          "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:R/S:U/C:L/I:L/A:N",
+          "V3Score": 3.9
+        }
+      },
+      "severity_source": "ghsa",
+      "data_source": {
+        "ID": "ghsa",
+        "Name": "GitHub Security Advisory pip",
+        "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+      },
+      "primary_url": "https://avd.aquasec.com/nvd/cve-2026-1703",
+      "package_source": null,
+      "layer": {
+        "Digest": "sha256:beb07f1a7d2aecd71c46e54be4a7dbf862b684a803415f79b589a9501ddc419b",
+        "DiffID": "sha256:51698f24cd919adb53c9de68cc9341561c4a3a3f061c4495f9e7d1a06138cc63"
+      },
+      "package_path": "withheld"
+    }
+  ],
+  "scanner": "aquasec/trivy@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c",
+  "raw_matches_retained": false,
+  "risk_acceptance": "not_granted",
+  "package_inventory": [
+    {
+      "package": "apt",
+      "version": "2.8.4ubuntu0.1",
+      "source_package": "apt",
+      "source_version": "2.8.4ubuntu0.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2.8.4ubuntu0.1",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      },
+      "version_complete": false,
+      "source_version_components": {
+        "upstream": "2.8.4ubuntu0.1",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      }
+    },
+    {
+      "package": "base-files",
+      "version": "13ubuntu10.5",
+      "source_package": "base-files",
+      "source_version": "13ubuntu10.5",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "13ubuntu10.5",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      },
+      "version_complete": false,
+      "source_version_components": {
+        "upstream": "13ubuntu10.5",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      }
+    },
+    {
+      "package": "base-passwd",
+      "version": "3.6.3build1",
+      "source_package": "base-passwd",
+      "source_version": "3.6.3build1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.6.3build1",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      },
+      "version_complete": false,
+      "source_version_components": {
+        "upstream": "3.6.3build1",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      }
+    },
+    {
+      "package": "bash",
+      "version": "5.2.21-2ubuntu4",
+      "source_package": "bash",
+      "source_version": "5.2.21-2ubuntu4",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "5.2.21",
+        "epoch": null,
+        "release": "2ubuntu4",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "5.2.21",
+        "epoch": null,
+        "release": "2ubuntu4",
+        "complete": true
+      }
+    },
+    {
+      "package": "bsdutils",
+      "version": "1:2.39.3-9ubuntu6.6",
+      "source_package": "util-linux",
+      "source_version": "2.39.3-9ubuntu6.6",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2.39.3",
+        "epoch": 1,
+        "release": "9ubuntu6.6",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "2.39.3",
+        "epoch": null,
+        "release": "9ubuntu6.6",
+        "complete": true
+      }
+    },
+    {
+      "package": "ca-certificates",
+      "version": "20260816ubuntu0.24.04.2",
+      "source_package": "ca-certificates",
+      "source_version": "20260816ubuntu0.24.04.2",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "20260816ubuntu0.24.04.2",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      },
+      "version_complete": false,
+      "source_version_components": {
+        "upstream": "20260816ubuntu0.24.04.2",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      }
+    },
+    {
+      "package": "coreutils",
+      "version": "9.4-3ubuntu6.3",
+      "source_package": "coreutils",
+      "source_version": "9.4-3ubuntu6.3",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "9.4",
+        "epoch": null,
+        "release": "3ubuntu6.3",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "9.4",
+        "epoch": null,
+        "release": "3ubuntu6.3",
+        "complete": true
+      }
+    },
+    {
+      "package": "dash",
+      "version": "0.5.12-6ubuntu5",
+      "source_package": "dash",
+      "source_version": "0.5.12-6ubuntu5",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "0.5.12",
+        "epoch": null,
+        "release": "6ubuntu5",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "0.5.12",
+        "epoch": null,
+        "release": "6ubuntu5",
+        "complete": true
+      }
+    },
+    {
+      "package": "debconf",
+      "version": "1.5.86ubuntu1",
+      "source_package": "debconf",
+      "source_version": "1.5.86ubuntu1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.5.86ubuntu1",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      },
+      "version_complete": false,
+      "source_version_components": {
+        "upstream": "1.5.86ubuntu1",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      }
+    },
+    {
+      "package": "debianutils",
+      "version": "5.17build1",
+      "source_package": "debianutils",
+      "source_version": "5.17build1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "5.17build1",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      },
+      "version_complete": false,
+      "source_version_components": {
+        "upstream": "5.17build1",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      }
+    },
+    {
+      "package": "diffutils",
+      "version": "1:3.10-1ubuntu0.1",
+      "source_package": "diffutils",
+      "source_version": "1:3.10-1ubuntu0.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.10",
+        "epoch": 1,
+        "release": "1ubuntu0.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.10",
+        "epoch": 1,
+        "release": "1ubuntu0.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "dpkg",
+      "version": "1.22.6ubuntu6.6",
+      "source_package": "dpkg",
+      "source_version": "1.22.6ubuntu6.6",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.22.6ubuntu6.6",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      },
+      "version_complete": false,
+      "source_version_components": {
+        "upstream": "1.22.6ubuntu6.6",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      }
+    },
+    {
+      "package": "e2fsprogs",
+      "version": "1.47.0-2.4~exp1ubuntu4.1",
+      "source_package": "e2fsprogs",
+      "source_version": "1.47.0-2.4~exp1ubuntu4.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.47.0",
+        "epoch": null,
+        "release": "2.4~exp1ubuntu4.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.47.0",
+        "epoch": null,
+        "release": "2.4~exp1ubuntu4.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "findutils",
+      "version": "4.9.0-5build1",
+      "source_package": "findutils",
+      "source_version": "4.9.0-5build1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "4.9.0",
+        "epoch": null,
+        "release": "5build1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "4.9.0",
+        "epoch": null,
+        "release": "5build1",
+        "complete": true
+      }
+    },
+    {
+      "package": "gcc-14-base",
+      "version": "14.2.0-4ubuntu2~24.04.1",
+      "source_package": "gcc-14",
+      "source_version": "14.2.0-4ubuntu2~24.04.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "14.2.0",
+        "epoch": null,
+        "release": "4ubuntu2~24.04.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "14.2.0",
+        "epoch": null,
+        "release": "4ubuntu2~24.04.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "gpgv",
+      "version": "2.4.4-2ubuntu17.6",
+      "source_package": "gnupg2",
+      "source_version": "2.4.4-2ubuntu17.6",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2.4.4",
+        "epoch": null,
+        "release": "2ubuntu17.6",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "2.4.4",
+        "epoch": null,
+        "release": "2ubuntu17.6",
+        "complete": true
+      }
+    },
+    {
+      "package": "grep",
+      "version": "3.11-4build1",
+      "source_package": "grep",
+      "source_version": "3.11-4build1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.11",
+        "epoch": null,
+        "release": "4build1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.11",
+        "epoch": null,
+        "release": "4build1",
+        "complete": true
+      }
+    },
+    {
+      "package": "gzip",
+      "version": "1.12-1ubuntu3.2",
+      "source_package": "gzip",
+      "source_version": "1.12-1ubuntu3.2",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.12",
+        "epoch": null,
+        "release": "1ubuntu3.2",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.12",
+        "epoch": null,
+        "release": "1ubuntu3.2",
+        "complete": true
+      }
+    },
+    {
+      "package": "hostname",
+      "version": "3.23+nmu2ubuntu2",
+      "source_package": "hostname",
+      "source_version": "3.23+nmu2ubuntu2",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.23+nmu2ubuntu2",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      },
+      "version_complete": false,
+      "source_version_components": {
+        "upstream": "3.23+nmu2ubuntu2",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      }
+    },
+    {
+      "package": "init-system-helpers",
+      "version": "1.66ubuntu1",
+      "source_package": "init-system-helpers",
+      "source_version": "1.66ubuntu1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.66ubuntu1",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      },
+      "version_complete": false,
+      "source_version_components": {
+        "upstream": "1.66ubuntu1",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      }
+    },
+    {
+      "package": "libacl1",
+      "version": "2.3.2-1build1.1",
+      "source_package": "acl",
+      "source_version": "2.3.2-1build1.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2.3.2",
+        "epoch": null,
+        "release": "1build1.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "2.3.2",
+        "epoch": null,
+        "release": "1build1.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libapt-pkg6.0t64",
+      "version": "2.8.4ubuntu0.1",
+      "source_package": "apt",
+      "source_version": "2.8.4ubuntu0.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2.8.4ubuntu0.1",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      },
+      "version_complete": false,
+      "source_version_components": {
+        "upstream": "2.8.4ubuntu0.1",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      }
+    },
+    {
+      "package": "libassuan0",
+      "version": "2.5.6-1build1",
+      "source_package": "libassuan",
+      "source_version": "2.5.6-1build1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2.5.6",
+        "epoch": null,
+        "release": "1build1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "2.5.6",
+        "epoch": null,
+        "release": "1build1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libattr1",
+      "version": "1:2.5.2-1ubuntu0.1",
+      "source_package": "attr",
+      "source_version": "1:2.5.2-1ubuntu0.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2.5.2",
+        "epoch": 1,
+        "release": "1ubuntu0.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "2.5.2",
+        "epoch": 1,
+        "release": "1ubuntu0.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libaudit-common",
+      "version": "1:3.1.2-2.1ubuntu0.1",
+      "source_package": "audit",
+      "source_version": "1:3.1.2-2.1ubuntu0.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.1.2",
+        "epoch": 1,
+        "release": "2.1ubuntu0.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.1.2",
+        "epoch": 1,
+        "release": "2.1ubuntu0.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libaudit1",
+      "version": "1:3.1.2-2.1ubuntu0.1",
+      "source_package": "audit",
+      "source_version": "1:3.1.2-2.1ubuntu0.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.1.2",
+        "epoch": 1,
+        "release": "2.1ubuntu0.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.1.2",
+        "epoch": 1,
+        "release": "2.1ubuntu0.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libblkid1",
+      "version": "2.39.3-9ubuntu6.6",
+      "source_package": "util-linux",
+      "source_version": "2.39.3-9ubuntu6.6",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2.39.3",
+        "epoch": null,
+        "release": "9ubuntu6.6",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "2.39.3",
+        "epoch": null,
+        "release": "9ubuntu6.6",
+        "complete": true
+      }
+    },
+    {
+      "package": "libbz2-1.0",
+      "version": "1.0.8-5.1ubuntu0.1",
+      "source_package": "bzip2",
+      "source_version": "1.0.8-5.1ubuntu0.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.0.8",
+        "epoch": null,
+        "release": "5.1ubuntu0.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.0.8",
+        "epoch": null,
+        "release": "5.1ubuntu0.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libc-bin",
+      "version": "2.39-0ubuntu8.9",
+      "source_package": "glibc",
+      "source_version": "2.39-0ubuntu8.9",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2.39",
+        "epoch": null,
+        "release": "0ubuntu8.9",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "2.39",
+        "epoch": null,
+        "release": "0ubuntu8.9",
+        "complete": true
+      }
+    },
+    {
+      "package": "libc6",
+      "version": "2.39-0ubuntu8.9",
+      "source_package": "glibc",
+      "source_version": "2.39-0ubuntu8.9",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2.39",
+        "epoch": null,
+        "release": "0ubuntu8.9",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "2.39",
+        "epoch": null,
+        "release": "0ubuntu8.9",
+        "complete": true
+      }
+    },
+    {
+      "package": "libcap-ng0",
+      "version": "0.8.4-2build2",
+      "source_package": "libcap-ng",
+      "source_version": "0.8.4-2build2",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "0.8.4",
+        "epoch": null,
+        "release": "2build2",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "0.8.4",
+        "epoch": null,
+        "release": "2build2",
+        "complete": true
+      }
+    },
+    {
+      "package": "libcap2",
+      "version": "1:2.66-5ubuntu2.4",
+      "source_package": "libcap2",
+      "source_version": "1:2.66-5ubuntu2.4",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2.66",
+        "epoch": 1,
+        "release": "5ubuntu2.4",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "2.66",
+        "epoch": 1,
+        "release": "5ubuntu2.4",
+        "complete": true
+      }
+    },
+    {
+      "package": "libcom-err2",
+      "version": "1.47.0-2.4~exp1ubuntu4.1",
+      "source_package": "e2fsprogs",
+      "source_version": "1.47.0-2.4~exp1ubuntu4.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.47.0",
+        "epoch": null,
+        "release": "2.4~exp1ubuntu4.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.47.0",
+        "epoch": null,
+        "release": "2.4~exp1ubuntu4.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libcrypt1",
+      "version": "1:4.4.36-4build1",
+      "source_package": "libxcrypt",
+      "source_version": "1:4.4.36-4build1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "4.4.36",
+        "epoch": 1,
+        "release": "4build1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "4.4.36",
+        "epoch": 1,
+        "release": "4build1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libdb5.3t64",
+      "version": "5.3.28+dfsg2-7",
+      "source_package": "db5.3",
+      "source_version": "5.3.28+dfsg2-7",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "5.3.28+dfsg2",
+        "epoch": null,
+        "release": "7",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "5.3.28+dfsg2",
+        "epoch": null,
+        "release": "7",
+        "complete": true
+      }
+    },
+    {
+      "package": "libdebconfclient0",
+      "version": "0.271ubuntu3",
+      "source_package": "cdebconf",
+      "source_version": "0.271ubuntu3",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "0.271ubuntu3",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      },
+      "version_complete": false,
+      "source_version_components": {
+        "upstream": "0.271ubuntu3",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      }
+    },
+    {
+      "package": "libexpat1",
+      "version": "2.6.1-2ubuntu0.6",
+      "source_package": "expat",
+      "source_version": "2.6.1-2ubuntu0.6",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2.6.1",
+        "epoch": null,
+        "release": "2ubuntu0.6",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "2.6.1",
+        "epoch": null,
+        "release": "2ubuntu0.6",
+        "complete": true
+      }
+    },
+    {
+      "package": "libext2fs2t64",
+      "version": "1.47.0-2.4~exp1ubuntu4.1",
+      "source_package": "e2fsprogs",
+      "source_version": "1.47.0-2.4~exp1ubuntu4.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.47.0",
+        "epoch": null,
+        "release": "2.4~exp1ubuntu4.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.47.0",
+        "epoch": null,
+        "release": "2.4~exp1ubuntu4.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libffi8",
+      "version": "3.4.6-1build1",
+      "source_package": "libffi",
+      "source_version": "3.4.6-1build1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.4.6",
+        "epoch": null,
+        "release": "1build1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.4.6",
+        "epoch": null,
+        "release": "1build1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libgcc-s1",
+      "version": "14.2.0-4ubuntu2~24.04.1",
+      "source_package": "gcc-14",
+      "source_version": "14.2.0-4ubuntu2~24.04.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "14.2.0",
+        "epoch": null,
+        "release": "4ubuntu2~24.04.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "14.2.0",
+        "epoch": null,
+        "release": "4ubuntu2~24.04.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libgcrypt20",
+      "version": "1.10.3-2ubuntu0.2",
+      "source_package": "libgcrypt20",
+      "source_version": "1.10.3-2ubuntu0.2",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.10.3",
+        "epoch": null,
+        "release": "2ubuntu0.2",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.10.3",
+        "epoch": null,
+        "release": "2ubuntu0.2",
+        "complete": true
+      }
+    },
+    {
+      "package": "libgmp10",
+      "version": "2:6.3.0+dfsg-2ubuntu6.1",
+      "source_package": "gmp",
+      "source_version": "2:6.3.0+dfsg-2ubuntu6.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "6.3.0+dfsg",
+        "epoch": 2,
+        "release": "2ubuntu6.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "6.3.0+dfsg",
+        "epoch": 2,
+        "release": "2ubuntu6.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libgnutls30t64",
+      "version": "3.8.3-1.1ubuntu3.6",
+      "source_package": "gnutls28",
+      "source_version": "3.8.3-1.1ubuntu3.6",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.8.3",
+        "epoch": null,
+        "release": "1.1ubuntu3.6",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.8.3",
+        "epoch": null,
+        "release": "1.1ubuntu3.6",
+        "complete": true
+      }
+    },
+    {
+      "package": "libgomp1",
+      "version": "14.2.0-4ubuntu2~24.04.1",
+      "source_package": "gcc-14",
+      "source_version": "14.2.0-4ubuntu2~24.04.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "14.2.0",
+        "epoch": null,
+        "release": "4ubuntu2~24.04.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "14.2.0",
+        "epoch": null,
+        "release": "4ubuntu2~24.04.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libgpg-error0",
+      "version": "1.47-3build2.1",
+      "source_package": "libgpg-error",
+      "source_version": "1.47-3build2.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.47",
+        "epoch": null,
+        "release": "3build2.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.47",
+        "epoch": null,
+        "release": "3build2.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libhogweed6t64",
+      "version": "3.9.1-2.2build1.1",
+      "source_package": "nettle",
+      "source_version": "3.9.1-2.2build1.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.9.1",
+        "epoch": null,
+        "release": "2.2build1.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.9.1",
+        "epoch": null,
+        "release": "2.2build1.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libidn2-0",
+      "version": "2.3.7-2build1.1",
+      "source_package": "libidn2",
+      "source_version": "2.3.7-2build1.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2.3.7",
+        "epoch": null,
+        "release": "2build1.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "2.3.7",
+        "epoch": null,
+        "release": "2build1.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "liblz4-1",
+      "version": "1.9.4-1build1.1",
+      "source_package": "lz4",
+      "source_version": "1.9.4-1build1.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.9.4",
+        "epoch": null,
+        "release": "1build1.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.9.4",
+        "epoch": null,
+        "release": "1build1.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "liblzma5",
+      "version": "5.6.1+really5.4.5-1ubuntu0.4",
+      "source_package": "xz-utils",
+      "source_version": "5.6.1+really5.4.5-1ubuntu0.4",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "5.6.1+really5.4.5",
+        "epoch": null,
+        "release": "1ubuntu0.4",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "5.6.1+really5.4.5",
+        "epoch": null,
+        "release": "1ubuntu0.4",
+        "complete": true
+      }
+    },
+    {
+      "package": "libmd0",
+      "version": "1.1.0-2build1.1",
+      "source_package": "libmd",
+      "source_version": "1.1.0-2build1.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.1.0",
+        "epoch": null,
+        "release": "2build1.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.1.0",
+        "epoch": null,
+        "release": "2build1.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libmount1",
+      "version": "2.39.3-9ubuntu6.6",
+      "source_package": "util-linux",
+      "source_version": "2.39.3-9ubuntu6.6",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2.39.3",
+        "epoch": null,
+        "release": "9ubuntu6.6",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "2.39.3",
+        "epoch": null,
+        "release": "9ubuntu6.6",
+        "complete": true
+      }
+    },
+    {
+      "package": "libncursesw6",
+      "version": "6.4+20240113-1ubuntu2.2",
+      "source_package": "ncurses",
+      "source_version": "6.4+20240113-1ubuntu2.2",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "6.4+20240113",
+        "epoch": null,
+        "release": "1ubuntu2.2",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "6.4+20240113",
+        "epoch": null,
+        "release": "1ubuntu2.2",
+        "complete": true
+      }
+    },
+    {
+      "package": "libnettle8t64",
+      "version": "3.9.1-2.2build1.1",
+      "source_package": "nettle",
+      "source_version": "3.9.1-2.2build1.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.9.1",
+        "epoch": null,
+        "release": "2.2build1.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.9.1",
+        "epoch": null,
+        "release": "2.2build1.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libnpth0t64",
+      "version": "1.6-3.1build1",
+      "source_package": "npth",
+      "source_version": "1.6-3.1build1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.6",
+        "epoch": null,
+        "release": "3.1build1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.6",
+        "epoch": null,
+        "release": "3.1build1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libp11-kit0",
+      "version": "0.25.3-4ubuntu2.2",
+      "source_package": "p11-kit",
+      "source_version": "0.25.3-4ubuntu2.2",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "0.25.3",
+        "epoch": null,
+        "release": "4ubuntu2.2",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "0.25.3",
+        "epoch": null,
+        "release": "4ubuntu2.2",
+        "complete": true
+      }
+    },
+    {
+      "package": "libpam-modules",
+      "version": "1.5.3-5ubuntu5.7",
+      "source_package": "pam",
+      "source_version": "1.5.3-5ubuntu5.7",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.5.3",
+        "epoch": null,
+        "release": "5ubuntu5.7",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.5.3",
+        "epoch": null,
+        "release": "5ubuntu5.7",
+        "complete": true
+      }
+    },
+    {
+      "package": "libpam-modules-bin",
+      "version": "1.5.3-5ubuntu5.7",
+      "source_package": "pam",
+      "source_version": "1.5.3-5ubuntu5.7",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.5.3",
+        "epoch": null,
+        "release": "5ubuntu5.7",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.5.3",
+        "epoch": null,
+        "release": "5ubuntu5.7",
+        "complete": true
+      }
+    },
+    {
+      "package": "libpam-runtime",
+      "version": "1.5.3-5ubuntu5.7",
+      "source_package": "pam",
+      "source_version": "1.5.3-5ubuntu5.7",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.5.3",
+        "epoch": null,
+        "release": "5ubuntu5.7",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.5.3",
+        "epoch": null,
+        "release": "5ubuntu5.7",
+        "complete": true
+      }
+    },
+    {
+      "package": "libpam0g",
+      "version": "1.5.3-5ubuntu5.7",
+      "source_package": "pam",
+      "source_version": "1.5.3-5ubuntu5.7",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.5.3",
+        "epoch": null,
+        "release": "5ubuntu5.7",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.5.3",
+        "epoch": null,
+        "release": "5ubuntu5.7",
+        "complete": true
+      }
+    },
+    {
+      "package": "libpcre2-8-0",
+      "version": "10.42-4ubuntu2.2",
+      "source_package": "pcre2",
+      "source_version": "10.42-4ubuntu2.2",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "10.42",
+        "epoch": null,
+        "release": "4ubuntu2.2",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "10.42",
+        "epoch": null,
+        "release": "4ubuntu2.2",
+        "complete": true
+      }
+    },
+    {
+      "package": "libproc2-0",
+      "version": "2:4.0.4-4ubuntu3.3",
+      "source_package": "procps",
+      "source_version": "2:4.0.4-4ubuntu3.3",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "4.0.4",
+        "epoch": 2,
+        "release": "4ubuntu3.3",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "4.0.4",
+        "epoch": 2,
+        "release": "4ubuntu3.3",
+        "complete": true
+      }
+    },
+    {
+      "package": "libpython3.12-minimal",
+      "version": "3.12.3-1ubuntu0.17",
+      "source_package": "python3.12",
+      "source_version": "3.12.3-1ubuntu0.17",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.12.3",
+        "epoch": null,
+        "release": "1ubuntu0.17",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.12.3",
+        "epoch": null,
+        "release": "1ubuntu0.17",
+        "complete": true
+      }
+    },
+    {
+      "package": "libpython3.12-stdlib",
+      "version": "3.12.3-1ubuntu0.17",
+      "source_package": "python3.12",
+      "source_version": "3.12.3-1ubuntu0.17",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.12.3",
+        "epoch": null,
+        "release": "1ubuntu0.17",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.12.3",
+        "epoch": null,
+        "release": "1ubuntu0.17",
+        "complete": true
+      }
+    },
+    {
+      "package": "libreadline8t64",
+      "version": "8.2-4build1",
+      "source_package": "readline",
+      "source_version": "8.2-4build1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "8.2",
+        "epoch": null,
+        "release": "4build1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "8.2",
+        "epoch": null,
+        "release": "4build1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libseccomp2",
+      "version": "2.5.5-1ubuntu3.1",
+      "source_package": "libseccomp",
+      "source_version": "2.5.5-1ubuntu3.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2.5.5",
+        "epoch": null,
+        "release": "1ubuntu3.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "2.5.5",
+        "epoch": null,
+        "release": "1ubuntu3.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libselinux1",
+      "version": "3.5-2ubuntu2.1",
+      "source_package": "libselinux",
+      "source_version": "3.5-2ubuntu2.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.5",
+        "epoch": null,
+        "release": "2ubuntu2.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.5",
+        "epoch": null,
+        "release": "2ubuntu2.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libsemanage-common",
+      "version": "3.5-1build5",
+      "source_package": "libsemanage",
+      "source_version": "3.5-1build5",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.5",
+        "epoch": null,
+        "release": "1build5",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.5",
+        "epoch": null,
+        "release": "1build5",
+        "complete": true
+      }
+    },
+    {
+      "package": "libsemanage2",
+      "version": "3.5-1build5",
+      "source_package": "libsemanage",
+      "source_version": "3.5-1build5",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.5",
+        "epoch": null,
+        "release": "1build5",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.5",
+        "epoch": null,
+        "release": "1build5",
+        "complete": true
+      }
+    },
+    {
+      "package": "libsepol2",
+      "version": "3.5-2build1",
+      "source_package": "libsepol",
+      "source_version": "3.5-2build1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.5",
+        "epoch": null,
+        "release": "2build1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.5",
+        "epoch": null,
+        "release": "2build1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libsmartcols1",
+      "version": "2.39.3-9ubuntu6.6",
+      "source_package": "util-linux",
+      "source_version": "2.39.3-9ubuntu6.6",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2.39.3",
+        "epoch": null,
+        "release": "9ubuntu6.6",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "2.39.3",
+        "epoch": null,
+        "release": "9ubuntu6.6",
+        "complete": true
+      }
+    },
+    {
+      "package": "libsqlite3-0",
+      "version": "3.45.1-1ubuntu2.9",
+      "source_package": "sqlite3",
+      "source_version": "3.45.1-1ubuntu2.9",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.45.1",
+        "epoch": null,
+        "release": "1ubuntu2.9",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.45.1",
+        "epoch": null,
+        "release": "1ubuntu2.9",
+        "complete": true
+      }
+    },
+    {
+      "package": "libss2",
+      "version": "1.47.0-2.4~exp1ubuntu4.1",
+      "source_package": "e2fsprogs",
+      "source_version": "1.47.0-2.4~exp1ubuntu4.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.47.0",
+        "epoch": null,
+        "release": "2.4~exp1ubuntu4.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.47.0",
+        "epoch": null,
+        "release": "2.4~exp1ubuntu4.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libssl3t64",
+      "version": "3.0.13-0ubuntu3.16",
+      "source_package": "openssl",
+      "source_version": "3.0.13-0ubuntu3.16",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.0.13",
+        "epoch": null,
+        "release": "0ubuntu3.16",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.0.13",
+        "epoch": null,
+        "release": "0ubuntu3.16",
+        "complete": true
+      }
+    },
+    {
+      "package": "libstdc++6",
+      "version": "14.2.0-4ubuntu2~24.04.1",
+      "source_package": "gcc-14",
+      "source_version": "14.2.0-4ubuntu2~24.04.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "14.2.0",
+        "epoch": null,
+        "release": "4ubuntu2~24.04.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "14.2.0",
+        "epoch": null,
+        "release": "4ubuntu2~24.04.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libsystemd0",
+      "version": "255.4-1ubuntu8.18",
+      "source_package": "systemd",
+      "source_version": "255.4-1ubuntu8.18",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "255.4",
+        "epoch": null,
+        "release": "1ubuntu8.18",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "255.4",
+        "epoch": null,
+        "release": "1ubuntu8.18",
+        "complete": true
+      }
+    },
+    {
+      "package": "libtasn1-6",
+      "version": "4.19.0-3ubuntu0.24.04.2",
+      "source_package": "libtasn1-6",
+      "source_version": "4.19.0-3ubuntu0.24.04.2",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "4.19.0",
+        "epoch": null,
+        "release": "3ubuntu0.24.04.2",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "4.19.0",
+        "epoch": null,
+        "release": "3ubuntu0.24.04.2",
+        "complete": true
+      }
+    },
+    {
+      "package": "libtinfo6",
+      "version": "6.4+20240113-1ubuntu2.2",
+      "source_package": "ncurses",
+      "source_version": "6.4+20240113-1ubuntu2.2",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "6.4+20240113",
+        "epoch": null,
+        "release": "1ubuntu2.2",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "6.4+20240113",
+        "epoch": null,
+        "release": "1ubuntu2.2",
+        "complete": true
+      }
+    },
+    {
+      "package": "libudev1",
+      "version": "255.4-1ubuntu8.18",
+      "source_package": "systemd",
+      "source_version": "255.4-1ubuntu8.18",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "255.4",
+        "epoch": null,
+        "release": "1ubuntu8.18",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "255.4",
+        "epoch": null,
+        "release": "1ubuntu8.18",
+        "complete": true
+      }
+    },
+    {
+      "package": "libunistring5",
+      "version": "1.1-2build1.1",
+      "source_package": "libunistring",
+      "source_version": "1.1-2build1.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.1",
+        "epoch": null,
+        "release": "2build1.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.1",
+        "epoch": null,
+        "release": "2build1.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libuuid1",
+      "version": "2.39.3-9ubuntu6.6",
+      "source_package": "util-linux",
+      "source_version": "2.39.3-9ubuntu6.6",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2.39.3",
+        "epoch": null,
+        "release": "9ubuntu6.6",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "2.39.3",
+        "epoch": null,
+        "release": "9ubuntu6.6",
+        "complete": true
+      }
+    },
+    {
+      "package": "libxxhash0",
+      "version": "0.8.2-2build1",
+      "source_package": "xxhash",
+      "source_version": "0.8.2-2build1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "0.8.2",
+        "epoch": null,
+        "release": "2build1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "0.8.2",
+        "epoch": null,
+        "release": "2build1",
+        "complete": true
+      }
+    },
+    {
+      "package": "libzstd1",
+      "version": "1.5.5+dfsg2-2build1.1",
+      "source_package": "libzstd",
+      "source_version": "1.5.5+dfsg2-2build1.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.5.5+dfsg2",
+        "epoch": null,
+        "release": "2build1.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.5.5+dfsg2",
+        "epoch": null,
+        "release": "2build1.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "login",
+      "version": "1:4.13+dfsg1-4ubuntu3.2",
+      "source_package": "shadow",
+      "source_version": "1:4.13+dfsg1-4ubuntu3.2",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "4.13+dfsg1",
+        "epoch": 1,
+        "release": "4ubuntu3.2",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "4.13+dfsg1",
+        "epoch": 1,
+        "release": "4ubuntu3.2",
+        "complete": true
+      }
+    },
+    {
+      "package": "logsave",
+      "version": "1.47.0-2.4~exp1ubuntu4.1",
+      "source_package": "e2fsprogs",
+      "source_version": "1.47.0-2.4~exp1ubuntu4.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.47.0",
+        "epoch": null,
+        "release": "2.4~exp1ubuntu4.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.47.0",
+        "epoch": null,
+        "release": "2.4~exp1ubuntu4.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "mawk",
+      "version": "1.3.4.20240123-1build1",
+      "source_package": "mawk",
+      "source_version": "1.3.4.20240123-1build1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.3.4.20240123",
+        "epoch": null,
+        "release": "1build1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.3.4.20240123",
+        "epoch": null,
+        "release": "1build1",
+        "complete": true
+      }
+    },
+    {
+      "package": "media-types",
+      "version": "10.1.0",
+      "source_package": "media-types",
+      "source_version": "10.1.0",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "10.1.0",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      },
+      "version_complete": false,
+      "source_version_components": {
+        "upstream": "10.1.0",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      }
+    },
+    {
+      "package": "mount",
+      "version": "2.39.3-9ubuntu6.6",
+      "source_package": "util-linux",
+      "source_version": "2.39.3-9ubuntu6.6",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2.39.3",
+        "epoch": null,
+        "release": "9ubuntu6.6",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "2.39.3",
+        "epoch": null,
+        "release": "9ubuntu6.6",
+        "complete": true
+      }
+    },
+    {
+      "package": "ncurses-base",
+      "version": "6.4+20240113-1ubuntu2.2",
+      "source_package": "ncurses",
+      "source_version": "6.4+20240113-1ubuntu2.2",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "6.4+20240113",
+        "epoch": null,
+        "release": "1ubuntu2.2",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "6.4+20240113",
+        "epoch": null,
+        "release": "1ubuntu2.2",
+        "complete": true
+      }
+    },
+    {
+      "package": "ncurses-bin",
+      "version": "6.4+20240113-1ubuntu2.2",
+      "source_package": "ncurses",
+      "source_version": "6.4+20240113-1ubuntu2.2",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "6.4+20240113",
+        "epoch": null,
+        "release": "1ubuntu2.2",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "6.4+20240113",
+        "epoch": null,
+        "release": "1ubuntu2.2",
+        "complete": true
+      }
+    },
+    {
+      "package": "netbase",
+      "version": "6.4",
+      "source_package": "netbase",
+      "source_version": "6.4",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "6.4",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      },
+      "version_complete": false,
+      "source_version_components": {
+        "upstream": "6.4",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      }
+    },
+    {
+      "package": "openssl",
+      "version": "3.0.13-0ubuntu3.16",
+      "source_package": "openssl",
+      "source_version": "3.0.13-0ubuntu3.16",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.0.13",
+        "epoch": null,
+        "release": "0ubuntu3.16",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.0.13",
+        "epoch": null,
+        "release": "0ubuntu3.16",
+        "complete": true
+      }
+    },
+    {
+      "package": "passwd",
+      "version": "1:4.13+dfsg1-4ubuntu3.2",
+      "source_package": "shadow",
+      "source_version": "1:4.13+dfsg1-4ubuntu3.2",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "4.13+dfsg1",
+        "epoch": 1,
+        "release": "4ubuntu3.2",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "4.13+dfsg1",
+        "epoch": 1,
+        "release": "4ubuntu3.2",
+        "complete": true
+      }
+    },
+    {
+      "package": "perl-base",
+      "version": "5.38.2-3.2ubuntu0.6",
+      "source_package": "perl",
+      "source_version": "5.38.2-3.2ubuntu0.6",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "5.38.2",
+        "epoch": null,
+        "release": "3.2ubuntu0.6",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "5.38.2",
+        "epoch": null,
+        "release": "3.2ubuntu0.6",
+        "complete": true
+      }
+    },
+    {
+      "package": "procps",
+      "version": "2:4.0.4-4ubuntu3.3",
+      "source_package": "procps",
+      "source_version": "2:4.0.4-4ubuntu3.3",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "4.0.4",
+        "epoch": 2,
+        "release": "4ubuntu3.3",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "4.0.4",
+        "epoch": 2,
+        "release": "4ubuntu3.3",
+        "complete": true
+      }
+    },
+    {
+      "package": "python3-pip-whl",
+      "version": "24.0+dfsg-1ubuntu1.3",
+      "source_package": "python-pip",
+      "source_version": "24.0+dfsg-1ubuntu1.3",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "24.0+dfsg",
+        "epoch": null,
+        "release": "1ubuntu1.3",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "24.0+dfsg",
+        "epoch": null,
+        "release": "1ubuntu1.3",
+        "complete": true
+      }
+    },
+    {
+      "package": "python3-setuptools-whl",
+      "version": "68.1.2-2ubuntu1.2",
+      "source_package": "setuptools",
+      "source_version": "68.1.2-2ubuntu1.2",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "68.1.2",
+        "epoch": null,
+        "release": "2ubuntu1.2",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "68.1.2",
+        "epoch": null,
+        "release": "2ubuntu1.2",
+        "complete": true
+      }
+    },
+    {
+      "package": "python3.12",
+      "version": "3.12.3-1ubuntu0.17",
+      "source_package": "python3.12",
+      "source_version": "3.12.3-1ubuntu0.17",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.12.3",
+        "epoch": null,
+        "release": "1ubuntu0.17",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.12.3",
+        "epoch": null,
+        "release": "1ubuntu0.17",
+        "complete": true
+      }
+    },
+    {
+      "package": "python3.12-minimal",
+      "version": "3.12.3-1ubuntu0.17",
+      "source_package": "python3.12",
+      "source_version": "3.12.3-1ubuntu0.17",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.12.3",
+        "epoch": null,
+        "release": "1ubuntu0.17",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.12.3",
+        "epoch": null,
+        "release": "1ubuntu0.17",
+        "complete": true
+      }
+    },
+    {
+      "package": "python3.12-venv",
+      "version": "3.12.3-1ubuntu0.17",
+      "source_package": "python3.12",
+      "source_version": "3.12.3-1ubuntu0.17",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.12.3",
+        "epoch": null,
+        "release": "1ubuntu0.17",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.12.3",
+        "epoch": null,
+        "release": "1ubuntu0.17",
+        "complete": true
+      }
+    },
+    {
+      "package": "readline-common",
+      "version": "8.2-4build1",
+      "source_package": "readline",
+      "source_version": "8.2-4build1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "8.2",
+        "epoch": null,
+        "release": "4build1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "8.2",
+        "epoch": null,
+        "release": "4build1",
+        "complete": true
+      }
+    },
+    {
+      "package": "sed",
+      "version": "4.9-2ubuntu0.24.04.1",
+      "source_package": "sed",
+      "source_version": "4.9-2ubuntu0.24.04.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "4.9",
+        "epoch": null,
+        "release": "2ubuntu0.24.04.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "4.9",
+        "epoch": null,
+        "release": "2ubuntu0.24.04.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "sensible-utils",
+      "version": "0.0.22",
+      "source_package": "sensible-utils",
+      "source_version": "0.0.22",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "0.0.22",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      },
+      "version_complete": false,
+      "source_version_components": {
+        "upstream": "0.0.22",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      }
+    },
+    {
+      "package": "sysvinit-utils",
+      "version": "3.08-6ubuntu3",
+      "source_package": "sysvinit",
+      "source_version": "3.08-6ubuntu3",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "3.08",
+        "epoch": null,
+        "release": "6ubuntu3",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "3.08",
+        "epoch": null,
+        "release": "6ubuntu3",
+        "complete": true
+      }
+    },
+    {
+      "package": "tar",
+      "version": "1.35+dfsg-3ubuntu0.4",
+      "source_package": "tar",
+      "source_version": "1.35+dfsg-3ubuntu0.4",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.35+dfsg",
+        "epoch": null,
+        "release": "3ubuntu0.4",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.35+dfsg",
+        "epoch": null,
+        "release": "3ubuntu0.4",
+        "complete": true
+      }
+    },
+    {
+      "package": "tzdata",
+      "version": "2026e-0ubuntu0.24.04.1",
+      "source_package": "tzdata",
+      "source_version": "2026e-0ubuntu0.24.04.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2026e",
+        "epoch": null,
+        "release": "0ubuntu0.24.04.1",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "2026e",
+        "epoch": null,
+        "release": "0ubuntu0.24.04.1",
+        "complete": true
+      }
+    },
+    {
+      "package": "ubuntu-keyring",
+      "version": "2023.11.28.1",
+      "source_package": "ubuntu-keyring",
+      "source_version": "2023.11.28.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2023.11.28.1",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      },
+      "version_complete": false,
+      "source_version_components": {
+        "upstream": "2023.11.28.1",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      }
+    },
+    {
+      "package": "unminimize",
+      "version": "0.2.1",
+      "source_package": "unminimize",
+      "source_version": "0.2.1",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "0.2.1",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      },
+      "version_complete": false,
+      "source_version_components": {
+        "upstream": "0.2.1",
+        "epoch": null,
+        "release": null,
+        "complete": false
+      }
+    },
+    {
+      "package": "util-linux",
+      "version": "2.39.3-9ubuntu6.6",
+      "source_package": "util-linux",
+      "source_version": "2.39.3-9ubuntu6.6",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "2.39.3",
+        "epoch": null,
+        "release": "9ubuntu6.6",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "2.39.3",
+        "epoch": null,
+        "release": "9ubuntu6.6",
+        "complete": true
+      }
+    },
+    {
+      "package": "zlib1g",
+      "version": "1:1.3.dfsg-3.1ubuntu2.3",
+      "source_package": "zlib",
+      "source_version": "1:1.3.dfsg-3.1ubuntu2.3",
+      "ecosystem": "ubuntu",
+      "version_components": {
+        "upstream": "1.3.dfsg",
+        "epoch": 1,
+        "release": "3.1ubuntu2.3",
+        "complete": true
+      },
+      "version_complete": true,
+      "source_version_components": {
+        "upstream": "1.3.dfsg",
+        "epoch": 1,
+        "release": "3.1ubuntu2.3",
+        "complete": true
+      }
+    },
+    {
+      "package": "PyJWT",
+      "version": "2.15.1",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "amqp",
+      "version": "5.4.2",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "annotated-types",
+      "version": "0.8.0",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "billiard",
+      "version": "4.3.2",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "biopython",
+      "version": "1.85",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "celery",
+      "version": "5.4.0",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "click",
+      "version": "8.5.1",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "click-didyoumean",
+      "version": "0.3.1",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "click-plugins",
+      "version": "1.1.1.2",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "click-repl",
+      "version": "0.4.1",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "kombu",
+      "version": "5.6.2",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "numpy",
+      "version": "2.5.4",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "oligospace-bioinfo",
+      "version": "0.1.0",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "packaging",
+      "version": "26.3",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "pip",
+      "version": "24.0",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "prompt_toolkit",
+      "version": "3.0.53",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "psycopg",
+      "version": "3.2.4",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "psycopg-binary",
+      "version": "3.2.4",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "pydantic",
+      "version": "2.10.6",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "pydantic_core",
+      "version": "2.27.2",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "python-dateutil",
+      "version": "4.0.0",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "redis",
+      "version": "5.3.1",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "typing_extensions",
+      "version": "4.16.0",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "tzdata",
+      "version": "2026.6",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "vine",
+      "version": "5.1.0",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    },
+    {
+      "package": "wcwidth",
+      "version": "0.9.4",
+      "source_package": null,
+      "source_version": null,
+      "ecosystem": "python-pkg"
+    }
+  ],
+  "package_inventory_count": 135,
+  "package_inventory_coverage": "observed",
+  "operating_system": {
+    "family": "ubuntu",
+    "name": "24.04"
+  },
+  "os_package_inventory_coverage": "observed",
+  "vulnerability_database": {
+    "Version": 2,
+    "UpdatedAt": "2026-11-09T13:58:27.621115901Z",
+    "NextUpdate": "2026-11-10T13:58:27.621115641Z",
+    "DownloadedAt": "2026-11-09T15:41:41.410787154Z"
+  },
+  "frozen_vulnerability_database": {
+    "database_sha256": "df53926a9cc6a579932e4163f52e8a9441d09b0e7d7aab06e09c7dc7a0c72723",
+    "metadata_sha256": "017f70f7c431983708b0161616291c865c98b796eba8de242b72e7815d5d0f7a",
+    "unchanged_after_scan": true,
+    "network": "none",
+    "updates": "disabled"
+  },
+  "archive_sha256": "d2a083b868583c7bfaff621cdcfcf967fca99dddce76874bb690b8f28e4ea46d",
+  "source": "74e8d4c8498d72559eaa27bf3e8dbee39386b91b",
+  "architecture": "amd64",
+  "config_digest": "sha256:faea4cdc5646db7cd9946bda60bd7ae77f13dc55ee277a1f4073ae6bfb29edcc",
+  "view_index_sha256": "3479b31799b7503d59df42dff4e9277ea8f5778f16010726291b56793affc04a",
+  "application_digest": "sha256:6784b30fe00db037cbb1321f74d64f76a8ee2df79a902fb50f9c48ff19ff79a4"
+}

@@ -13,6 +13,33 @@ LOCKS = ROOT / "infra/hardening/locks"
 
 
 class DependencyLockTests(unittest.TestCase):
+    def test_targeted_api_updates_preserve_original_receipt_and_all_other_versions(
+        self,
+    ):
+        import hashlib
+
+        baseline_path = LOCKS / "inputs/baseline-api-dependencies.json"
+        baseline = json.loads(baseline_path.read_text())
+        current = json.loads((LOCKS / "inputs/api-dependencies.json").read_text())
+        before = {p["name"]: p for p in baseline["packages"]}
+        after = {p["name"]: p for p in current["packages"]}
+        self.assertEqual(set(before), set(after))
+        changed = {name for name in before if before[name] != after[name]}
+        self.assertEqual(changed, {"pyjwt", "python-multipart"})
+        self.assertEqual(before["pyjwt"]["version"], "2.14.0")
+        self.assertEqual(after["pyjwt"]["version"], "2.15.0")
+        self.assertEqual(before["python-multipart"]["version"], "0.0.30")
+        self.assertEqual(after["python-multipart"]["version"], "0.0.31")
+        self.assertEqual(after["pyjwt"]["extras"], ["crypto"])
+        self.assertEqual(
+            current["derivation"]["baseline_graph_sha256"],
+            hashlib.sha256(baseline_path.read_bytes()).hexdigest(),
+        )
+        environment = (ROOT / "envs/api.yml").read_text()
+        self.assertIn("pyjwt[crypto]==2.15.0", environment)
+        self.assertIn("python-multipart==0.0.31", environment)
+        self.assertIn("pyjwt[crypto]==2.14.0", (LOCKS / "baseline/api.txt").read_text())
+
     def module(self):
         spec = importlib.util.spec_from_file_location(
             "freeze_dependencies", LOCKS.parent / "freeze_dependencies.py"
