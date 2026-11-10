@@ -1,5 +1,30 @@
 # Project status
 
+## DEPLOY-04 — verified recovery delivered for code review (2026-11-10)
+
+PR21 is merged as `ff3f629`; this supersedes its historical pending wording below.
+The owner authorized this separate DEPLOY-04 lot. Single
+[PR #22](https://github.com/El-Castor/OligoSpace/pull/22), isolated branch
+`codex/deploy-04-backup-disaster-recovery`, from latest main after that merge.
+
+Qualified code `953f5fb`: coordinated encrypted app/Keycloak/S3 capture with
+verified writer pause/resume, preserved ownership/grants/audits/jobs/provenance,
+empty-target-only restore, attachment integrity, interrupted-target fencing,
+external-filesystem transfer and controlled retention. Native AMD64/ARM64 full
+restores, fresh OIDC/reader permissions/new Primer3 job,11 negatives per platform
+and secret logs pass.30 backup tests and107/26/23 existing controller tests pass;
+mandatory make checks,206 PostgreSQL/migrations,29 Chromium per native architecture,
+real OIDC/scientific and general CI/foundation pass. Review found no remaining
+important code finding. [Report and proof](../deployment/DEPLOY_04_BACKUP_RECOVERY.md).
+
+Garage's access-ID logging on unsupported GetObjectTagging remains OPEN; positive
+S3 proof uses a previously qualified SeaweedFS4.52 **disposable test service only**.
+No provider adoption. All DEPLOY-02/03 security/supplier/license/provenance gates
+remain release-blocking, without waiver. R1-08 still needs approved off-host/vault,
+capacity/retention/RPO/RTO; R1-09 and R1-10/R1-11 remain open. No Mac mini, real data,
+Cloudflare, volume deletion, real migration, image publication or merge. Stop for
+owner review; no DEPLOY-05. Personal working-tree files were preserved.
+
 ## DEPLOY-03 — qualified for code review (2026-11-10)
 
 Single [PR #21](https://github.com/El-Castor/OligoSpace/pull/21), branch

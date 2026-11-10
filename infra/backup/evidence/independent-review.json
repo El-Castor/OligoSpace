@@ -1,0 +1,58 @@
+{
+  "schema": "oligospace-independent-recovery-review/v1",
+  "source_commit": "953f5fbae2d24fa4be06ac8305f97ad1a31b44fa",
+  "reviewer": "independent deploy04_restore_review agent",
+  "status": "completed_no_remaining_important_code_finding",
+  "findings": [
+    {
+      "id": "DR-ACL",
+      "issue": "native owners and privileges lost",
+      "resolution": "preserve pg_restore ownership/ACL and require matching preprovisioned role attributes/memberships",
+      "status": "resolved"
+    },
+    {
+      "id": "DR-EMPTY",
+      "issue": "relations-only empty target accepted functions/types",
+      "resolution": "reject custom functions/types/namespaces/extensions as well as relations",
+      "status": "resolved"
+    },
+    {
+      "id": "DR-WRITERS",
+      "issue": "arbitrary services could be declared nonwriters",
+      "resolution": "strict DB/Redis/S3 nonwriter allowlist and full disjoint service coverage",
+      "status": "resolved"
+    },
+    {
+      "id": "DR-ATTACHMENTS",
+      "issue": "object and manifest omission could orphan attachments",
+      "resolution": "authenticated attachment references checked against S3 before mutation and restored SQL afterwards",
+      "status": "resolved"
+    }
+  ],
+  "supplemental": [
+    "fsync journal and publication directories",
+    "stream native dump input and table fingerprints to bound host memory",
+    "private0700 host staging root",
+    "safe fixed-label secret diagnostics with mandatory per-service stdout/stderr retrieval",
+    "S3 advertised identity and API endpoint align with selected disposable port",
+    "same pinned CA bytes from verified official archive URL; dated signed APT unchanged"
+  ],
+  "targeted_tests": {
+    "backup": 30,
+    "result": "passed"
+  },
+  "remaining_critical_or_important_code_findings": [],
+  "limitation": "Native real restore and full application regressions pass independently on both architectures at953f5fb. Review does not approve pilot, supplier or security gates.",
+  "open_supplier_findings": [
+    {
+      "id": "DR-GARAGE-LOG-ID",
+      "status": "open_blocking_supplier_qualification",
+      "observation": "Garage logs access identifier at WARN for unsupported GetObjectTagging501; no waiver or logger suppression"
+    }
+  ],
+  "native_runtime_evidence": {
+    "restore": 42866007006,
+    "application": 42866006639,
+    "both_architectures": "passed"
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "oligospace-disaster-recovery-qualification/v1",
+  "status": "failed",
+  "source_commit": "482f6b6a3edb43d186f49d3e783a00aeb3174936",
+  "started_at": "2026-11-10T16:25:27.091499+00:00",
+  "native_architecture": "arm64",
+  "stages": [
+    "synthetic_data_science_oidc_and_permissions",
+    "coordinated_encrypted_backup_and_source_resume",
+    "empty_target_restore_all_rows_identity_and_objects",
+    "fresh_oidc_permissions_api_and_worker_after_recovery"
+  ],
+  "negative_tests": [
+    {
+      "case": "corrupt_archive",
+      "status": "passed"
+    },
+    {
+      "case": "incomplete_archive",
+      "status": "passed"
+    },
+    {
+      "case": "wrong_encryption_key",
+      "status": "passed"
+    },
+    {
+      "case": "absent_secrets",
+      "status": "passed"
+    },
+    {
+      "case": "missing_identity_database",
+      "status": "passed"
+    },
+    {
+      "case": "missing_object",
+      "status": "passed"
+    },
+    {
+      "case": "referenced_object_consistently_omitted",
+      "status": "passed"
+    },
+    {
+      "case": "function_only_target",
+      "status": "passed"
+    },
+    {
+      "case": "nonempty_target",
+      "status": "passed"
+    },
+    {
+      "case": "interrupted_restore",
+      "status": "passed"
+    },
+    {
+      "case": "interrupted_retry_refused",
+      "status": "passed"
+    }
+  ],
+  "backup_seconds": 24.074,
+  "restore_seconds": 11.523,
+  "application_tables_compared": 22,
+  "identity_tables_compared": 8,
+  "objects_compared": 3,
+  "runtime_role_permissions": "api_dml_worker_bounded_and_schema_create_denied",
+  "failure_rule": "generated_secret_present_in_logs",
+  "finished_at": "2026-11-10T16:27:43.878302+00:00"
+}

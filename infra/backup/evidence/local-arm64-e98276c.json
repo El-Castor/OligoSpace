@@ -1,0 +1,188 @@
+{
+  "schema": "oligospace-disaster-recovery-qualification/v1",
+  "status": "passed",
+  "source_commit": "e98276c87008357cc343f90a018461d16067346c",
+  "started_at": "2026-11-10T17:31:19.424290+00:00",
+  "native_architecture": "arm64",
+  "storage_qualification_kind": "seaweedfs",
+  "storage_qualification_image": "chrislusf/seaweedfs@sha256:57877e32bb90073b37dc109b438ba66e84fd5ed9ced5f5c04f56444ef243ce59",
+  "stages": [
+    "synthetic_data_science_oidc_and_permissions",
+    "coordinated_encrypted_backup_and_source_resume",
+    "empty_target_restore_all_rows_identity_and_objects",
+    "fresh_oidc_permissions_api_and_worker_after_recovery",
+    "negative_fail_closed_and_secret_log_gate"
+  ],
+  "negative_tests": [
+    {
+      "case": "corrupt_archive",
+      "status": "passed"
+    },
+    {
+      "case": "incomplete_archive",
+      "status": "passed"
+    },
+    {
+      "case": "wrong_encryption_key",
+      "status": "passed"
+    },
+    {
+      "case": "absent_secrets",
+      "status": "passed"
+    },
+    {
+      "case": "missing_identity_database",
+      "status": "passed"
+    },
+    {
+      "case": "missing_object",
+      "status": "passed"
+    },
+    {
+      "case": "referenced_object_consistently_omitted",
+      "status": "passed"
+    },
+    {
+      "case": "function_only_target",
+      "status": "passed"
+    },
+    {
+      "case": "nonempty_target",
+      "status": "passed"
+    },
+    {
+      "case": "interrupted_restore",
+      "status": "passed"
+    },
+    {
+      "case": "interrupted_retry_refused",
+      "status": "passed"
+    }
+  ],
+  "backup_seconds": 23.793,
+  "restore_seconds": 11.408,
+  "application_tables_compared": 22,
+  "identity_tables_compared": 8,
+  "objects_compared": 3,
+  "runtime_role_permissions": "api_dml_worker_bounded_and_schema_create_denied",
+  "secret_log_retrievals": [
+    {
+      "side": "source",
+      "service": "postgres",
+      "status": "passed"
+    },
+    {
+      "side": "source",
+      "service": "redis",
+      "status": "passed"
+    },
+    {
+      "side": "source",
+      "service": "s3",
+      "status": "passed"
+    },
+    {
+      "side": "source",
+      "service": "api",
+      "status": "passed"
+    },
+    {
+      "side": "source",
+      "service": "keycloak",
+      "status": "passed"
+    },
+    {
+      "side": "source",
+      "service": "bioinfo-worker",
+      "status": "passed"
+    },
+    {
+      "side": "source",
+      "service": "scientific-scheduler",
+      "status": "passed"
+    },
+    {
+      "side": "target",
+      "service": "postgres",
+      "status": "passed"
+    },
+    {
+      "side": "target",
+      "service": "redis",
+      "status": "passed"
+    },
+    {
+      "side": "target",
+      "service": "s3",
+      "status": "passed"
+    },
+    {
+      "side": "target",
+      "service": "api",
+      "status": "passed"
+    },
+    {
+      "side": "target",
+      "service": "keycloak",
+      "status": "passed"
+    },
+    {
+      "side": "target",
+      "service": "bioinfo-worker",
+      "status": "passed"
+    },
+    {
+      "side": "target",
+      "service": "scientific-scheduler",
+      "status": "passed"
+    },
+    {
+      "side": "interrupted",
+      "service": "postgres",
+      "status": "passed"
+    },
+    {
+      "side": "interrupted",
+      "service": "redis",
+      "status": "passed"
+    },
+    {
+      "side": "interrupted",
+      "service": "s3",
+      "status": "passed"
+    },
+    {
+      "side": "interrupted",
+      "service": "api",
+      "status": "passed"
+    },
+    {
+      "side": "interrupted",
+      "service": "keycloak",
+      "status": "passed"
+    },
+    {
+      "side": "interrupted",
+      "service": "bioinfo-worker",
+      "status": "passed"
+    },
+    {
+      "side": "interrupted",
+      "service": "scientific-scheduler",
+      "status": "passed"
+    }
+  ],
+  "secret_log_violations": [],
+  "secret_log_gate": "passed",
+  "encrypted_archive_bytes": 460848,
+  "backup_source_resumed": true,
+  "retained_volumes": "only unique qualification volumes; no volume deletion",
+  "limitations": [
+    "Synthetic tiny corpus; measured durations are not accepted RPO/RTO or pilot capacity.",
+    "Selected storage is a disposable S3-compatible test service, not a provider adoption or MinIO transferability certification.",
+    "OIDC uses a test-only direct-grant client over isolated HTTP; browser/PKCE remains covered by existing OIDC CI, not this DR harness.",
+    "Generated role passwords supplied separately; real secret escrow and recovery remain operator gated.",
+    "No external destination or real secrets/records/pilot are accessed."
+  ],
+  "finished_at": "2026-11-10T17:33:15.855362+00:00"
+}

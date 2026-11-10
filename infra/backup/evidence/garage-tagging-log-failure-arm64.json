@@ -1,0 +1,186 @@
+{
+  "schema": "oligospace-disaster-recovery-qualification/v1",
+  "status": "failed",
+  "source_commit": "482f6b6a3edb43d186f49d3e783a00aeb3174936",
+  "started_at": "2026-11-10T16:30:34.495137+00:00",
+  "native_architecture": "arm64",
+  "stages": [
+    "synthetic_data_science_oidc_and_permissions",
+    "coordinated_encrypted_backup_and_source_resume",
+    "empty_target_restore_all_rows_identity_and_objects",
+    "fresh_oidc_permissions_api_and_worker_after_recovery"
+  ],
+  "negative_tests": [
+    {
+      "case": "corrupt_archive",
+      "status": "passed"
+    },
+    {
+      "case": "incomplete_archive",
+      "status": "passed"
+    },
+    {
+      "case": "wrong_encryption_key",
+      "status": "passed"
+    },
+    {
+      "case": "absent_secrets",
+      "status": "passed"
+    },
+    {
+      "case": "missing_identity_database",
+      "status": "passed"
+    },
+    {
+      "case": "missing_object",
+      "status": "passed"
+    },
+    {
+      "case": "referenced_object_consistently_omitted",
+      "status": "passed"
+    },
+    {
+      "case": "function_only_target",
+      "status": "passed"
+    },
+    {
+      "case": "nonempty_target",
+      "status": "passed"
+    },
+    {
+      "case": "interrupted_restore",
+      "status": "passed"
+    },
+    {
+      "case": "interrupted_retry_refused",
+      "status": "passed"
+    }
+  ],
+  "backup_seconds": 23.78,
+  "restore_seconds": 11.278,
+  "application_tables_compared": 22,
+  "identity_tables_compared": 8,
+  "objects_compared": 3,
+  "runtime_role_permissions": "api_dml_worker_bounded_and_schema_create_denied",
+  "secret_log_retrievals": [
+    {
+      "side": "source",
+      "service": "postgres",
+      "status": "passed"
+    },
+    {
+      "side": "source",
+      "service": "redis",
+      "status": "passed"
+    },
+    {
+      "side": "source",
+      "service": "s3",
+      "status": "passed"
+    },
+    {
+      "side": "source",
+      "service": "api",
+      "status": "passed"
+    },
+    {
+      "side": "source",
+      "service": "keycloak",
+      "status": "passed"
+    },
+    {
+      "side": "source",
+      "service": "bioinfo-worker",
+      "status": "passed"
+    },
+    {
+      "side": "source",
+      "service": "scientific-scheduler",
+      "status": "passed"
+    },
+    {
+      "side": "target",
+      "service": "postgres",
+      "status": "passed"
+    },
+    {
+      "side": "target",
+      "service": "redis",
+      "status": "passed"
+    },
+    {
+      "side": "target",
+      "service": "s3",
+      "status": "passed"
+    },
+    {
+      "side": "target",
+      "service": "api",
+      "status": "passed"
+    },
+    {
+      "side": "target",
+      "service": "keycloak",
+      "status": "passed"
+    },
+    {
+      "side": "target",
+      "service": "bioinfo-worker",
+      "status": "passed"
+    },
+    {
+      "side": "target",
+      "service": "scientific-scheduler",
+      "status": "passed"
+    },
+    {
+      "side": "interrupted",
+      "service": "postgres",
+      "status": "passed"
+    },
+    {
+      "side": "interrupted",
+      "service": "redis",
+      "status": "passed"
+    },
+    {
+      "side": "interrupted",
+      "service": "s3",
+      "status": "passed"
+    },
+    {
+      "side": "interrupted",
+      "service": "api",
+      "status": "passed"
+    },
+    {
+      "side": "interrupted",
+      "service": "keycloak",
+      "status": "passed"
+    },
+    {
+      "side": "interrupted",
+      "service": "bioinfo-worker",
+      "status": "passed"
+    },
+    {
+      "side": "interrupted",
+      "service": "scientific-scheduler",
+      "status": "passed"
+    }
+  ],
+  "secret_log_violations": [
+    {
+      "side": "source",
+      "service": "s3",
+      "secret_label": "storage_access"
+    },
+    {
+      "side": "target",
+      "service": "s3",
+      "secret_label": "storage_access"
+    }
+  ],
+  "failure_rule": "generated_secret_present_in_logs",
+  "finished_at": "2026-11-10T16:32:48.573325+00:00"
+}
