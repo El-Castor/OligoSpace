@@ -279,14 +279,22 @@ class Recovery:
                 result[table] = {"rows": count, "sha256": sha.hexdigest()}
         return result
 
-    def _attachment_integrity(self, buckets):
+    def _attachment_records(self):
         if (
             self._sql(
                 "application", "SELECT to_regclass('public.attachments') IS NOT NULL"
             )
             != "t"
         ):
-            return
+            return []
+        return json.loads(
+            self._sql(
+                "application",
+                "SELECT coalesce(json_agg(a ORDER BY a.object_key), '[]'::json) FROM (SELECT object_key, sha256, size_bytes, content_type FROM attachments) a",
+            )
+        )
+
+    def _validate_attachment_records(self, records, buckets):
         bucket = self.config.get("attachment_bucket")
         if bucket is None and len(self.config["buckets"]) == 1:
             bucket = self.config["buckets"][0]
@@ -296,12 +304,6 @@ class Recovery:
             if b["bucket"] == bucket
             for obj in b["objects"]
         }
-        records = json.loads(
-            self._sql(
-                "application",
-                "SELECT coalesce(json_agg(a), '[]'::json) FROM (SELECT object_key, sha256, size_bytes, content_type FROM attachments) a",
-            )
-        )
         for record in records:
             obj = objects.get(record["object_key"])
             if (
@@ -311,6 +313,9 @@ class Recovery:
                 or obj["content_type"] != record["content_type"]
             ):
                 raise ValueError("attachment_object_integrity_failed")
+
+    def _attachment_integrity(self, buckets):
+        self._validate_attachment_records(self._attachment_records(), buckets)
 
     def _roles(self):
         # Password verifiers are deliberately excluded; restore secrets separately.
@@ -432,7 +437,10 @@ class Recovery:
                     manifest["buckets"] = export_buckets(
                         self.client, self.config["buckets"], root
                     )
-                    self._attachment_integrity(manifest["buckets"])
+                    manifest["attachment_references"] = self._attachment_records()
+                    self._validate_attachment_records(
+                        manifest["attachment_references"], manifest["buckets"]
+                    )
                     for i, filename in enumerate(
                         self.config.get("configuration_files", [])
                     ):
@@ -507,6 +515,11 @@ class Recovery:
                     ):
                         raise ValueError("database_major_version_mismatch")
                 validate_export(manifest["buckets"], root)
+                if "attachment_references" not in manifest:
+                    raise ValueError("attachment_inventory_missing")
+                self._validate_attachment_records(
+                    manifest["attachment_references"], manifest["buckets"]
+                )
                 if (
                     manifest.get("roles") != self._roles()
                     or manifest.get("memberships") != self._memberships()
@@ -528,6 +541,8 @@ class Recovery:
                     self._restore_database(role, root / entry["file"])
                     if self._inventory(role) != entry["tables"]:
                         raise ValueError("restored_database_fidelity_failed")
+                if self._attachment_records() != manifest["attachment_references"]:
+                    raise ValueError("attachment_database_inventory_differ")
                 self._attachment_integrity(manifest["buckets"])
                 restore_buckets(self.client, manifest["buckets"], root)
                 verified = self.state / "restore-verified.json"
