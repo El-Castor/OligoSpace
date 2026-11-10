@@ -1,0 +1,44 @@
+name: DEPLOY04 verified disaster recovery (no deployment)
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-recovery:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            cpu: x86_64
+          - runner: ubuntu-24.04-arm
+            cpu: aarch64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Install isolated operator dependencies
+        run: |
+          test "$(uname -m)" = "${{ matrix.cpu }}"
+          python3 -m pip install -r infra/backup/requirements.txt
+      - name: Backup and restore failure contracts
+        run: python3 -B -m unittest discover -s infra/backup/tests -p 'test_*.py'
+      - name: Real coordinated encrypted backup and restore into fresh volumes
+        run: python3 infra/backup/qualify.py --context default --output "$RUNNER_TEMP/deploy04-recovery.json"
+      - name: Retain only sanitized synthetic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy04-recovery-${{ matrix.cpu }}
+          path: ${{ runner.temp }}/deploy04-recovery.json
+          if-no-files-found: error
+          retention-days: 14
