@@ -40,7 +40,7 @@ def migration_action(revisions: list[str]) -> str:
 def guard() -> None:
     if os.environ.get("DEPLOY_TARGET") != "disposable" or not os.environ.get(
         "PILOT_PROJECT", ""
-    ).startswith("oligospace-deploy01-test-"):
+    ).startswith(("oligospace-deploy01-test-", "oligospace-pilot-test-")):
         raise ValueError("disposable_target_required")
 
 

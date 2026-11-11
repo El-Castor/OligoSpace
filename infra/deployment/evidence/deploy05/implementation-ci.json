@@ -1,0 +1,23 @@
+{
+  "implementation_sha": "ba316cbc61df6ac9f90c3a1c8ad16340efca23e3",
+  "qualification": "BLOCKED",
+  "local_contracts": {"deployment_passed": 128, "auth_runner_passed": 23},
+  "application_ci": {
+    "run_id": 43016760999,
+    "passed_jobs": ["backend", "frontend", "migration", "integration"],
+    "failed_build_jobs": ["compose", "bioinfo-worker"]
+  },
+  "foundation": {"run_id": 43016761247, "contracts": "PASS", "api_build": "FAIL"},
+  "native_pilot": {
+    "run_id": 43016760998,
+    "arm64_job": 130509653659,
+    "amd64_job": 130509654188,
+    "operator_contracts_both_architectures": "PASS",
+    "first_api_build_both_architectures": "FAIL: network,build",
+    "oidc_16_cases": "NOT_EXECUTED",
+    "scientific_7_cases_and_recovery": "SKIPPED"
+  },
+  "independent_build_log_observation": "Unchanged official Ubuntu snapshot 20261109T120000Z InRelease HTTP502/503 in foundation and worker builds",
+  "waivers": [],
+  "activation": "BLOCKED"
+}

@@ -1,0 +1,49 @@
+name: DEPLOY05 private pilot qualification (no deployment)
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-pilot:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            cpu: x86_64
+          - runner: ubuntu-24.04-arm
+            cpu: aarch64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Isolated operator dependencies and safety contracts
+        run: |
+          test "$(uname -m)" = "${{ matrix.cpu }}"
+          python3 -m pip install --require-hashes -r infra/backup/requirements.txt
+          python3 -B -m unittest discover -s infra/deployment/tests -p 'test_*.py'
+      - name: Sixteen real OIDC Chromium cases against the production pilot topology
+        run: python3 -B infra/auth-qualification/run.py --pilot
+      - name: Seven scientific Chromium cases and fresh-target encrypted recovery
+        run: python3 -B infra/auth-qualification/run.py --pilot --scientific
+      - name: Retain only sanitized synthetic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy05-pilot-${{ matrix.cpu }}
+          path: |
+            infra/auth-qualification/evidence/*.json
+            infra/auth-qualification/evidence/synthetic-*.png
+            infra/auth-qualification/scientific-evidence/*.json
+            infra/auth-qualification/scientific-evidence/synthetic-*.png
+          if-no-files-found: error
+          retention-days: 14

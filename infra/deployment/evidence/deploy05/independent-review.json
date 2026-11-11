@@ -1,0 +1,30 @@
+{
+  "scope": "independent targeted DEPLOY05 code review",
+  "findings": [
+    {
+      "id": "P5-FILE-MODE",
+      "status": "fixed",
+      "issue": "non-secret configuration and CA/cert group/world write allowed",
+      "fix": "all protected files reject022, secret envs also reject077; chmod tests red then green"
+    },
+    {
+      "id": "P5-CADDY-CAP",
+      "status": "fixed",
+      "issue": "official Caddy file capability and empty bounding set caused EPERM",
+      "fix": "sole NET_BIND_SERVICE for Caddy, uid1000/ALLdrop/NNP/readonly preserved; actual cached boot passes"
+    },
+    {
+      "id": "P5-CADDY-ORDER",
+      "status": "fixed",
+      "issue": "reserved-route respond sorted behind Next fallback",
+      "fix": "handle matcher encloses404 beforefallback; actualcachedadmin/masterchecks404"
+    }
+  ],
+  "remaining_important_code_findings": [],
+  "runtime_limitations": [
+    "cached ARM64 component/science/recovery probes not final-source image build acceptance",
+    "browser16/scientific7 cases not executed",
+    "AMD64 runtime not verified; official snapshot HTTP503 blocks native builds"
+  ],
+  "approval": "none; activation BLOCKED AUTH_B6, owner and existing release gates"
+}

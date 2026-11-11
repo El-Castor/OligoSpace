@@ -1,0 +1,179 @@
+{
+  "scope": "one-off cached component probe only",
+  "browser": "not_executed",
+  "oidc_16": "not_executed",
+  "scientific_7": "not_executed",
+  "recovery": {
+    "backup": "passed",
+    "restore": "passed",
+    "integrity_verified": true,
+    "target_runtime_restart": "passed",
+    "both_postgresql_databases": true,
+    "synthetic_s3_object": "passed",
+    "backup_seconds": 18.957,
+    "restore_seconds": 10.539,
+    "operator_transport": "disposable loopback only while all writers stopped",
+    "production_activation": "blocked"
+  },
+  "production_activation": "blocked",
+  "images": "actual local immutable configuration IDs; no approval or publication",
+  "bootstrap": "passed",
+  "migration_twice": "passed",
+  "keycloak": "production_start_postgresql",
+  "network": {
+    "ingress_only_probe": "passed",
+    "private_dependencies": 6,
+    "dns_and_direct_ip_endpoints": 14,
+    "identity_admin_routes": 2,
+    "fixture_browser": "privileged_application_network"
+  },
+  "tls_headers": "passed",
+  "log_gate": "passed",
+  "worker_science": "nine Primer3 reference values and synthetic BLAST exact match passed",
+  "source_binding": "cached application images; no final SHA binding",
+  "log_gate_after_recovery": "passed",
+  "completed_utc": "2026-11-11T11:55:00.944582+00:00",
+  "execution_platform": "darwin-arm64",
+  "observed_images": {
+    "api": {
+      "local_configuration_id": "sha256:214c65fcef0c1c4275bbf2301614724e878dde5af3a87bf503f03643d4e1d4be",
+      "architecture": "arm64"
+    },
+    "web": {
+      "local_configuration_id": "sha256:551f9a57a4226730e6e43c7fed120ea79bc20b8301afc3cc20c6d9e2eb8e9cf1",
+      "architecture": "arm64"
+    },
+    "worker": {
+      "local_configuration_id": "sha256:b2878b34da4e64d91dc88050ed72671b708615304f255d2b3f0921b134b2f4e5",
+      "architecture": "arm64"
+    },
+    "postgres": {
+      "local_configuration_id": "sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73",
+      "architecture": "arm64"
+    },
+    "redis": {
+      "local_configuration_id": "sha256:e7723ff73d963f5cc6d9c4643ea3d989527a402a319239054e9472a7fb9219a2",
+      "architecture": "arm64"
+    },
+    "keycloak": {
+      "local_configuration_id": "sha256:831330513f55695572286e521f94fcd3c7e285250ed5b848090265a33192f669",
+      "architecture": "arm64"
+    },
+    "caddy": {
+      "local_configuration_id": "sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648",
+      "architecture": "arm64"
+    },
+    "storage_candidate": {
+      "local_configuration_id": "sha256:57877e32bb90073b37dc109b438ba66e84fd5ed9ced5f5c04f56444ef243ce59",
+      "architecture": "arm64"
+    }
+  },
+  "coverage_limits": [
+    "ARM64 cached images only; no final SHA image binding",
+    "OIDC16 and scientific7 browser suites not executed",
+    "Direct worker reference calculations were not persisted as scientific_jobs/results",
+    "No asynchronous job round trip exercised in this probe",
+    "S3 fixture uses disposable SeaweedFS; no production provider approval",
+    "No deployment or release acceptance"
+  ],
+  "restored_runtime_log_gate": {
+    "gate": "passed",
+    "services": [
+      {
+        "service": "postgres",
+        "gate": "passed",
+        "findings": []
+      },
+      {
+        "service": "redis",
+        "gate": "passed",
+        "findings": []
+      },
+      {
+        "service": "object-store",
+        "gate": "passed",
+        "findings": []
+      },
+      {
+        "service": "api",
+        "gate": "passed",
+        "findings": []
+      },
+      {
+        "service": "web",
+        "gate": "passed",
+        "findings": []
+      },
+      {
+        "service": "keycloak",
+        "gate": "passed",
+        "findings": []
+      },
+      {
+        "service": "caddy",
+        "gate": "passed",
+        "findings": []
+      },
+      {
+        "service": "bioinfo-worker",
+        "gate": "passed",
+        "findings": []
+      },
+      {
+        "service": "scientific-scheduler",
+        "gate": "passed",
+        "findings": []
+      }
+    ]
+  },
+  "source_runtime_log_gate": {
+    "gate": "passed",
+    "services": [
+      {
+        "service": "postgres",
+        "gate": "passed",
+        "findings": []
+      },
+      {
+        "service": "redis",
+        "gate": "passed",
+        "findings": []
+      },
+      {
+        "service": "object-store",
+        "gate": "passed",
+        "findings": []
+      },
+      {
+        "service": "api",
+        "gate": "passed",
+        "findings": []
+      },
+      {
+        "service": "web",
+        "gate": "passed",
+        "findings": []
+      },
+      {
+        "service": "keycloak",
+        "gate": "passed",
+        "findings": []
+      },
+      {
+        "service": "caddy",
+        "gate": "passed",
+        "findings": []
+      },
+      {
+        "service": "bioinfo-worker",
+        "gate": "passed",
+        "findings": []
+      },
+      {
+        "service": "scientific-scheduler",
+        "gate": "passed",
+        "findings": []
+      }
+    ]
+  }
+}

@@ -11,7 +11,7 @@ export default defineConfig({
   reporter: "./e2e-oidc/sanitized-reporter.ts",
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL,
-    ignoreHTTPSErrors: true,
+    ignoreHTTPSErrors: process.env.PILOT_STRICT_TLS !== "1",
     actionTimeout: 20_000,
     navigationTimeout: 30_000,
     trace: "off",

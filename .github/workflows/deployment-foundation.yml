@@ -12,6 +12,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - run: python3 -m pip install --require-hashes -r infra/backup/requirements.txt
       - run: python3 -m unittest discover -s infra/deployment/tests -v
       - run: docker build --file infra/docker/api/Dockerfile --tag oligospace-deploy01-api-test .
       - run: docker build --file infra/docker/api/Dockerfile --target tooling --tag oligospace-deploy03-api-tooling .

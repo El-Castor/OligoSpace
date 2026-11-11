@@ -33,7 +33,7 @@ export async function openSession(
   options: Parameters<Browser["newContext"]>[0] = {},
 ): Promise<Session> {
   // browser.newContext does not inherit the configured `use` options.
-  const context = await browser.newContext({ baseURL: origin, ignoreHTTPSErrors: true, ...options });
+  const context = await browser.newContext({ baseURL: origin, ignoreHTTPSErrors: process.env.PILOT_STRICT_TLS !== "1", ...options });
   const page = await context.newPage();
   const session: Session = { persona, context, page, runtimeErrors: 0 };
   // Count only; never retain exception text, which can contain credentials/URLs.

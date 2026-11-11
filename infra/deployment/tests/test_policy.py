@@ -31,6 +31,13 @@ def fixture_value(key):
         "KEYCLOAK_CONFIG": "/qualified/keycloak.conf",
         "BUILD_ID": "a" * 40,
         "INGRESS_IP": "127.0.0.1",
+        "PILOT_HOST": "pilot.invalid",
+        "OIDC_REALM": "oligospace",
+        "REDIS_URL": "redis://:isolated-generated-test-credential-7ab293bd@redis:6379/0",
+        "PROXY_TRUSTED_CIDRS": "172.28.0.0/16",
+        "TLS_CA": "/qualified/ca.pem",
+        "TLS_CERT": "/qualified/cert.pem",
+        "TLS_KEY": "/qualified/key.pem",
     }
     if key.endswith("_IMAGE"):
         return "registry.invalid/test/" + key.lower() + "@sha256:" + "a" * 64

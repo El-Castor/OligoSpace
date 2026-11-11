@@ -226,7 +226,7 @@ test("invalid password does not establish an application session", async ({ page
 test("project membership grant and revocation apply to the same issued token", async ({ page, browser }) => {
   await login(page, "admin");
   const adminToken = (await session(page)).accessToken;
-  const memberContext = await browser.newContext({ baseURL: origin, ignoreHTTPSErrors: true });
+  const memberContext = await browser.newContext({ baseURL: origin, ignoreHTTPSErrors: process.env.PILOT_STRICT_TLS !== "1" });
   try {
     const member = await memberContext.newPage();
     await login(member, "member");
@@ -255,7 +255,7 @@ test("project membership grant and revocation apply to the same issued token", a
 test("local account deactivation rejects a still-valid provider token", async ({ page, browser }) => {
   await login(page, "admin");
   const adminToken = (await session(page)).accessToken;
-  const memberContext = await browser.newContext({ baseURL: origin, ignoreHTTPSErrors: true });
+  const memberContext = await browser.newContext({ baseURL: origin, ignoreHTTPSErrors: process.env.PILOT_STRICT_TLS !== "1" });
   let userId: string | undefined;
   try {
     const member = await memberContext.newPage();
@@ -376,7 +376,7 @@ test("identities from different organizations cannot read or modify each other's
   const sequence = Array.from({ length: 24 }, () => "ACGT"[Math.floor(Math.random() * 4)]).join("");
   await login(page, "admin");
   const tokenA = (await session(page)).accessToken;
-  const otherContext = await browser.newContext({ baseURL: origin, ignoreHTTPSErrors: true });
+  const otherContext = await browser.newContext({ baseURL: origin, ignoreHTTPSErrors: process.env.PILOT_STRICT_TLS !== "1" });
   try {
     const other = await otherContext.newPage();
     await login(other, "foreign");
