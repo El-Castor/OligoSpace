@@ -23,7 +23,30 @@
         "interval": "2s",
         "timeout": "3s",
         "retries": 30
-      }
+      },
+      "user": "70:70",
+      "mem_limit": "1024m",
+      "cpus": "1.0",
+      "pids_limit": 160,
+      "cap_drop": [
+        "ALL"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "read_only": true,
+      "stop_grace_period": "60s",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "tmpfs": [
+        "/tmp:rw,nosuid,noexec,size=64m,mode=1777",
+        "/var/run/postgresql:rw,nosuid,noexec,size=8m,uid=70,gid=70,mode=0775"
+      ]
     },
     "migrate": {
       "image": "${API_IMAGE:?required outside Git}",
@@ -56,13 +79,45 @@
         "OBJECT_STORAGE_SECRET_KEY": "${S3_SECRET_KEY:?required outside Git}",
         "OBJECT_STORAGE_BUCKET": "${S3_BUCKET:?required outside Git}",
         "OBJECT_STORAGE_SECURE": "false",
-        "REDIS_URL": "${REDIS_URL:?required outside Git}"
+        "REDIS_URL": "${REDIS_URL:?required outside Git}",
+        "SSL_CERT_FILE": "/certs/ca.pem",
+        "REQUESTS_CA_BUNDLE": "/certs/ca.pem"
       },
       "depends_on": {
         "postgres": {
           "condition": "service_healthy"
         }
-      }
+      },
+      "user": "1000:1000",
+      "mem_limit": "512m",
+      "cpus": "0.5",
+      "pids_limit": 96,
+      "cap_drop": [
+        "ALL"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "read_only": true,
+      "stop_grace_period": "60s",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "tmpfs": [
+        "/tmp:rw,nosuid,noexec,size=64m,mode=1777"
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "${TLS_CA:?required outside Git}",
+          "target": "/certs/ca.pem",
+          "read_only": true
+        }
+      ]
     },
     "redis": {
       "image": "${REDIS_IMAGE:?required outside Git}",
@@ -92,7 +147,29 @@
         "interval": "5s",
         "timeout": "3s",
         "retries": 20
-      }
+      },
+      "user": "999:1000",
+      "mem_limit": "256m",
+      "cpus": "0.5",
+      "pids_limit": 80,
+      "cap_drop": [
+        "ALL"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "read_only": true,
+      "stop_grace_period": "60s",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "tmpfs": [
+        "/tmp:rw,nosuid,noexec,size=64m,mode=1777"
+      ]
     },
     "object-store": {
       "image": "${MINIO_IMAGE:?required outside Git}",
@@ -112,7 +189,43 @@
       },
       "volumes": [
         "object_data:/data"
-      ]
+      ],
+      "user": "1000:1000",
+      "mem_limit": "1024m",
+      "cpus": "1.0",
+      "pids_limit": 160,
+      "cap_drop": [
+        "ALL"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "read_only": true,
+      "stop_grace_period": "60s",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "tmpfs": [
+        "/tmp:rw,nosuid,noexec,size=64m,mode=1777"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "curl",
+          "--fail",
+          "--max-time",
+          "5",
+          "http://localhost:9000/minio/health/ready"
+        ],
+        "interval": "10s",
+        "timeout": "6s",
+        "retries": 12,
+        "start_period": "30s"
+      }
     },
     "keycloak": {
       "image": "${KEYCLOAK_IMAGE:?required outside Git}",
@@ -133,7 +246,12 @@
         "KC_HOSTNAME": "${APP_ORIGIN:?required outside Git}",
         "KC_HTTP_ENABLED": "true",
         "KC_PROXY_HEADERS": "xforwarded",
-        "KC_HTTP_RELATIVE_PATH": "/"
+        "KC_HTTP_RELATIVE_PATH": "/",
+        "KC_HEALTH_ENABLED": "true",
+        "KC_METRICS_ENABLED": "false",
+        "KC_HOSTNAME_STRICT": "true",
+        "KC_PROXY_TRUSTED_ADDRESSES": "${PROXY_TRUSTED_CIDRS:?required outside Git}",
+        "JAVA_OPTS_KC_HEAP": "-Xms128m -Xmx640m"
       },
       "volumes": [
         {
@@ -147,6 +265,40 @@
         "postgres": {
           "condition": "service_healthy"
         }
+      },
+      "user": "1000:0",
+      "mem_limit": "1024m",
+      "cpus": "1.0",
+      "pids_limit": 256,
+      "cap_drop": [
+        "ALL"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "read_only": false,
+      "stop_grace_period": "60s",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "tmpfs": [
+        "/tmp:rw,nosuid,noexec,size=64m,mode=1777"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "bash",
+          "-ec",
+          "exec 3<>/dev/tcp/127.0.0.1/9000; printf \"GET /health/ready HTTP/1.0\\r\\nHost: localhost\\r\\n\\r\\n\" >&3; grep -q \"200 OK\" <&3"
+        ],
+        "interval": "10s",
+        "timeout": "5s",
+        "retries": 30,
+        "start_period": "90s"
       }
     },
     "api": {
@@ -154,8 +306,7 @@
       "restart": "unless-stopped",
       "networks": [
         "application",
-        "data",
-        "egress"
+        "data"
       ],
       "environment": {
         "ENVIRONMENT": "production",
@@ -172,7 +323,9 @@
         "OBJECT_STORAGE_SECRET_KEY": "${S3_SECRET_KEY:?required outside Git}",
         "OBJECT_STORAGE_BUCKET": "${S3_BUCKET:?required outside Git}",
         "OBJECT_STORAGE_SECURE": "false",
-        "REDIS_URL": "${REDIS_URL:?required outside Git}"
+        "REDIS_URL": "${REDIS_URL:?required outside Git}",
+        "SSL_CERT_FILE": "/certs/ca.pem",
+        "REQUESTS_CA_BUNDLE": "/certs/ca.pem"
       },
       "depends_on": {
         "postgres": {
@@ -195,14 +348,43 @@
         "interval": "10s",
         "timeout": "5s",
         "retries": 12
-      }
+      },
+      "user": "1000:1000",
+      "mem_limit": "768m",
+      "cpus": "1.0",
+      "pids_limit": 160,
+      "cap_drop": [
+        "ALL"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "read_only": true,
+      "stop_grace_period": "60s",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "tmpfs": [
+        "/tmp:rw,nosuid,noexec,size=64m,mode=1777"
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "${TLS_CA:?required outside Git}",
+          "target": "/certs/ca.pem",
+          "read_only": true
+        }
+      ]
     },
     "web": {
       "image": "${WEB_IMAGE:?required outside Git}",
       "restart": "unless-stopped",
       "networks": [
-        "application",
-        "egress"
+        "application"
       ],
       "environment": {
         "AUTH_MODE": "oidc",
@@ -211,12 +393,55 @@
         "NEXTAUTH_SECRET": "${NEXTAUTH_SECRET:?required outside Git}",
         "KEYCLOAK_ISSUER": "${OIDC_ISSUER:?required outside Git}",
         "KEYCLOAK_CLIENT_ID": "${OIDC_CLIENT_ID:?required outside Git}",
-        "KEYCLOAK_CLIENT_SECRET": "${OIDC_CLIENT_SECRET:?required outside Git}"
+        "KEYCLOAK_CLIENT_SECRET": "${OIDC_CLIENT_SECRET:?required outside Git}",
+        "NODE_EXTRA_CA_CERTS": "/certs/ca.pem"
       },
       "depends_on": {
         "api": {
           "condition": "service_healthy"
         }
+      },
+      "user": "1001:1001",
+      "mem_limit": "768m",
+      "cpus": "1.0",
+      "pids_limit": 160,
+      "cap_drop": [
+        "ALL"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "read_only": true,
+      "stop_grace_period": "60s",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "tmpfs": [
+        "/tmp:rw,nosuid,noexec,size=64m,mode=1777"
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "${TLS_CA:?required outside Git}",
+          "target": "/certs/ca.pem",
+          "read_only": true
+        }
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/login').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        ],
+        "interval": "10s",
+        "timeout": "5s",
+        "retries": 18,
+        "start_period": "30s"
       }
     },
     "bioinfo-worker": {
@@ -237,6 +462,44 @@
         "redis": {
           "condition": "service_healthy"
         }
+      },
+      "user": "1000:1000",
+      "mem_limit": "1024m",
+      "cpus": "1.0",
+      "pids_limit": 192,
+      "cap_drop": [
+        "ALL"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "read_only": true,
+      "stop_grace_period": "120s",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "tmpfs": [
+        "/tmp:rw,nosuid,noexec,size=64m,mode=1777"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "/opt/venv/bin/celery",
+          "--app",
+          "oligospace_bioinfo.celery_app:app",
+          "inspect",
+          "ping",
+          "--timeout",
+          "5"
+        ],
+        "interval": "30s",
+        "timeout": "10s",
+        "retries": 5,
+        "start_period": "30s"
       }
     },
     "scientific-scheduler": {
@@ -266,15 +529,56 @@
         "redis": {
           "condition": "service_healthy"
         }
+      },
+      "user": "1000:1000",
+      "mem_limit": "256m",
+      "cpus": "0.5",
+      "pids_limit": 80,
+      "cap_drop": [
+        "ALL"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "read_only": true,
+      "stop_grace_period": "60s",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "tmpfs": [
+        "/tmp:rw,nosuid,noexec,size=64m,mode=1777"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "/opt/venv/bin/python",
+          "-c",
+          "import os; os.kill(1,0)"
+        ],
+        "interval": "30s",
+        "timeout": "5s",
+        "retries": 3
       }
     },
     "caddy": {
       "image": "${CADDY_IMAGE:?required outside Git}",
       "restart": "unless-stopped",
-      "networks": [
-        "ingress",
-        "application"
-      ],
+      "networks": {
+        "ingress": {
+          "aliases": [
+            "${PILOT_HOST:?required outside Git}"
+          ]
+        },
+        "application": {
+          "aliases": [
+            "${PILOT_HOST:?required outside Git}"
+          ]
+        }
+      },
       "ports": [
         {
           "target": 443,
@@ -291,7 +595,19 @@
           "read_only": true
         },
         "caddy_data:/data",
-        "caddy_config:/config"
+        "caddy_config:/config",
+        {
+          "type": "bind",
+          "source": "${TLS_CERT:?required outside Git}",
+          "target": "/etc/oligospace/tls/cert.pem",
+          "read_only": true
+        },
+        {
+          "type": "bind",
+          "source": "${TLS_KEY:?required outside Git}",
+          "target": "/etc/oligospace/tls/key.pem",
+          "read_only": true
+        }
       ],
       "depends_on": {
         "web": {
@@ -300,12 +616,47 @@
         "keycloak": {
           "condition": "service_started"
         }
+      },
+      "user": "1000:1000",
+      "mem_limit": "128m",
+      "cpus": "0.5",
+      "pids_limit": 80,
+      "cap_drop": [
+        "ALL"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "read_only": true,
+      "stop_grace_period": "60s",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "tmpfs": [
+        "/tmp:rw,nosuid,noexec,size=64m,mode=1777"
+      ],
+      "environment": {
+        "PILOT_HOST": "${PILOT_HOST:?required outside Git}",
+        "OIDC_REALM": "${OIDC_REALM:?required outside Git}"
+      },
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "caddy",
+          "version"
+        ],
+        "interval": "30s",
+        "timeout": "5s",
+        "retries": 3
       }
     }
   },
   "networks": {
     "ingress": {},
-    "egress": {},
     "application": {
       "internal": true
     },

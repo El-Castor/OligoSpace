@@ -35,8 +35,8 @@ NETWORKS = {
     "bioinfo-worker": {"data"},
     "scientific-scheduler": {"data"},
     "keycloak": {"application", "data"},
-    "api": {"application", "data", "egress"},
-    "web": {"application", "egress"},
+    "api": {"application", "data"},
+    "web": {"application"},
     "caddy": {"ingress", "application"},
 }
 VOLUMES = {
@@ -80,7 +80,7 @@ def strong(value: object) -> bool:
     )
 
 
-def validate(config: dict) -> list[str]:
+def validate(config: dict, *, qualification: bool = False) -> list[str]:
     errors: set[str] = set()
 
     def require(condition: bool, rule: str) -> None:
@@ -89,12 +89,62 @@ def validate(config: dict) -> list[str]:
 
     project = config.get("name", "")
     require(
-        bool(re.fullmatch(r"oligospace-pilot-[a-z0-9][a-z0-9-]*", project)), "project"
+        project == "oligospace-pilot"
+        or bool(re.fullmatch(r"oligospace-pilot-[a-z0-9][a-z0-9-]*", project)),
+        "project",
+    )
+    require(
+        not qualification
+        or bool(re.fullmatch(r"oligospace-pilot-test-[a-z0-9-]+", project)),
+        "qualification_namespace",
     )
     services = config.get("services", {})
     require(set(services) == SERVICES, "service_set")
     for name, service in services.items():
-        require(bool(IMAGE.fullmatch(service.get("image", ""))), "image_digest")
+        require(
+            bool(IMAGE.fullmatch(service.get("image", "")))
+            or (
+                qualification
+                and bool(re.fullmatch(r"sha256:[a-f0-9]{64}", service.get("image", "")))
+            ),
+            "image_digest",
+        )
+        require(
+            str(service.get("user", "")).split(":")[0].isdigit()
+            and int(str(service.get("user", "0")).split(":")[0]) > 0,
+            "nonroot",
+        )
+        require(
+            service.get("cap_drop") == ["ALL"]
+            and service.get("security_opt") == ["no-new-privileges:true"],
+            "capability_boundary",
+        )
+        require(service.get("read_only") is True or name == "keycloak", "readonly_root")
+        try:
+            require(
+                0 < int(service.get("pids_limit", 0)) <= 512
+                and 0 < float(service.get("cpus", 0)) <= 4
+                and bool(service.get("mem_limit")),
+                "resource_limits",
+            )
+        except (ValueError, TypeError):
+            errors.add("resource_limits")
+        require(
+            service.get("logging", {}).get("driver") == "json-file"
+            and service.get("logging", {}).get("options")
+            == {"max-size": "10m", "max-file": "3"},
+            "bounded_logs",
+        )
+        require(
+            service.get("stop_grace_period") in ("60s", "120s", "1m0s", "2m0s")
+            and service.get("restart")
+            == ("no" if name == "migrate" else "unless-stopped"),
+            "controlled_stop_restart",
+        )
+        require(
+            bool(service.get("healthcheck")) or name == "migrate",
+            "healthcheck_required",
+        )
         for forbidden in (
             "build",
             "network_mode",
@@ -139,12 +189,19 @@ def validate(config: dict) -> list[str]:
             source, target = volume.get("source", ""), volume.get("target", "")
             if volume.get("type") == "bind":
                 expected = {
-                    "caddy": "/etc/caddy/Caddyfile",
-                    "keycloak": "/etc/oligospace/keycloak.conf",
+                    "caddy": {
+                        "/etc/caddy/Caddyfile",
+                        "/etc/oligospace/tls/cert.pem",
+                        "/etc/oligospace/tls/key.pem",
+                    },
+                    "keycloak": {"/etc/oligospace/keycloak.conf"},
+                    "api": {"/certs/ca.pem"},
+                    "migrate": {"/certs/ca.pem"},
+                    "web": {"/certs/ca.pem"},
                 }
                 path = Path(source)
                 require(
-                    target == expected.get(name)
+                    target in expected.get(name, set())
                     and bool(volume.get("read_only"))
                     and path.is_absolute()
                     and not path.resolve().is_relative_to(REPO),
@@ -183,7 +240,7 @@ def validate(config: dict) -> list[str]:
         "volume_set",
     )
     require(
-        set(config.get("networks", {})) == {"application", "data", "egress", "ingress"},
+        set(config.get("networks", {})) == {"application", "data", "ingress"},
         "network_set",
     )
     for key in ("data", "application"):
@@ -265,6 +322,58 @@ def validate(config: dict) -> list[str]:
             for name in ("api", "migrate")
         ),
         "oidc_client",
+    )
+    require(
+        envs["keycloak"].get("KC_DB") == "postgres"
+        and envs["keycloak"].get("KC_HOSTNAME_STRICT") == "true"
+        and envs["keycloak"].get("KC_PROXY_HEADERS") == "xforwarded"
+        and envs["keycloak"].get("KC_HEALTH_ENABLED") == "true",
+        "identity_production_settings",
+    )
+    require(
+        not any("BOOTSTRAP_ADMIN" in k for k in envs["keycloak"]),
+        "bootstrap_identity_removed",
+    )
+    try:
+        cidrs = envs["keycloak"].get("KC_PROXY_TRUSTED_ADDRESSES", "").split(",")
+        require(
+            bool(cidrs)
+            and all(
+                ipaddress.ip_network(v.strip()).is_private
+                and ipaddress.ip_network(v.strip()).prefixlen >= 16
+                for v in cidrs
+            ),
+            "proxy_trust_scope",
+        )
+    except ValueError:
+        errors.add("proxy_trust_scope")
+    require(envs["caddy"].get("PILOT_HOST") == parsed.hostname, "canonical_proxy_host")
+    for name in ("api", "migrate"):
+        require(envs[name].get("SSL_CERT_FILE") == "/certs/ca.pem", "tls_trust")
+    require(envs["web"].get("NODE_EXTRA_CA_CERTS") == "/certs/ca.pem", "tls_trust")
+    realm = envs["caddy"].get("OIDC_REALM", "")
+    require(
+        bool(re.fullmatch(r"[A-Za-z0-9_-]+", realm))
+        and realm != "master"
+        and issuer == origin.rstrip("/") + "/realms/" + realm,
+        "canonical_realm",
+    )
+    password = envs["redis"].get("REDISCLI_AUTH")
+    for role in ("api", "migrate", "bioinfo-worker", "scientific-scheduler"):
+        broker = urlparse(envs[role].get("REDIS_URL", ""))
+        require(
+            broker.scheme == "redis"
+            and broker.hostname == "redis"
+            and broker.port in (None, 6379)
+            and broker.path == "/0"
+            and broker.password == password
+            and strong(password),
+            "broker_credentials",
+        )
+    require(
+        services["redis"].get("command")
+        == ["redis-server", "--appendonly", "yes", "--requirepass", password],
+        "broker_credentials",
     )
     users = []
     for name in ("api", "migrate", "bioinfo-worker"):

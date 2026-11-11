@@ -60,7 +60,7 @@ jobs:
           CPU: ${{ matrix.cpu }}
         run: |
           test "$(uname -m)" = "$CPU"
-          python3 -m pip install --require-hashes -r infra/hardening/locks/build.txt
+          python3 -m pip install --require-hashes -r infra/hardening/locks/build.txt -r infra/backup/requirements.txt
           python3 -B -m unittest discover -s infra/deployment/tests -v
           python3 -B -m unittest discover -s infra/hardening/tests -v
       - name: Verify scientific archive provenance without retaining binaries

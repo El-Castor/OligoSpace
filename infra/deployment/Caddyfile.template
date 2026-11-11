@@ -1,0 +1,67 @@
+{
+  admin off
+  auto_https off
+  persist_config off
+}
+https://{$PILOT_HOST} {
+  tls /etc/oligospace/tls/cert.pem /etc/oligospace/tls/key.pem
+  header {
+    Strict-Transport-Security "max-age=31536000"
+    X-Content-Type-Options nosniff
+    X-Frame-Options SAMEORIGIN
+    Referrer-Policy strict-origin-when-cross-origin
+    Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    Content-Security-Policy "frame-ancestors 'self'"
+    -Server
+  }
+  @restricted path_regexp restricted (?i)^/admin/|^/(metrics|health)(/|$)|^/realms/master(/|$)
+  respond @restricted 404
+  handle /realms/{$OIDC_REALM}/* {
+    reverse_proxy keycloak:8080 {
+      header_up -Forwarded
+      header_up X-Forwarded-For {remote_host}
+      header_up X-Forwarded-Proto https
+      header_up X-Forwarded-Host {$PILOT_HOST}
+      header_up Host {$PILOT_HOST}
+    }
+  }
+  handle /realms/* {
+    respond 404
+  }
+  handle /resources/* {
+    reverse_proxy keycloak:8080 {
+      header_up -Forwarded
+      header_up X-Forwarded-For {remote_host}
+      header_up X-Forwarded-Proto https
+      header_up X-Forwarded-Host {$PILOT_HOST}
+      header_up Host {$PILOT_HOST}
+    }
+  }
+  handle /api/auth/* {
+    reverse_proxy web:3000 {
+      header_up -Forwarded
+      header_up X-Forwarded-For {remote_host}
+      header_up X-Forwarded-Proto https
+      header_up X-Forwarded-Host {$PILOT_HOST}
+      header_up Host {$PILOT_HOST}
+    }
+  }
+  handle /api/* {
+    reverse_proxy api:8000 {
+      header_up -Forwarded
+      header_up X-Forwarded-For {remote_host}
+      header_up X-Forwarded-Proto https
+      header_up X-Forwarded-Host {$PILOT_HOST}
+      header_up Host {$PILOT_HOST}
+    }
+  }
+  handle {
+    reverse_proxy web:3000 {
+      header_up -Forwarded
+      header_up X-Forwarded-For {remote_host}
+      header_up X-Forwarded-Proto https
+      header_up X-Forwarded-Host {$PILOT_HOST}
+      header_up Host {$PILOT_HOST}
+    }
+  }
+}

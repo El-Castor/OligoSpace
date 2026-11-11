@@ -82,6 +82,7 @@ TEST_TITLES = AUTH_TEST_TITLES
 CASE_COUNT = len(TEST_TITLES)
 SCIENTIFIC = False
 HARDENED = False
+PILOT = False
 PHASE_ROLES = {
     "admin": "admin",
     "member": "member",
@@ -646,8 +647,27 @@ def check_log_secrets(
         rb"[A-Za-z0-9_-]{16,}(?![A-Za-z0-9_-])"
     )
     for service in (
-        ("api", "web", "keycloak", "caddy", "bioinfo-worker", "scientific-scheduler")
-        if SCIENTIFIC
+        (
+            "postgres",
+            "redis",
+            "object-store",
+            "api",
+            "web",
+            "keycloak",
+            "caddy",
+            "bioinfo-worker",
+            "scientific-scheduler",
+        )
+        if PILOT
+        else (
+            "api",
+            "web",
+            "keycloak",
+            "caddy",
+            "bioinfo-worker",
+            "scientific-scheduler",
+        )
+        if SCIENTIFIC or PILOT
         else ("api", "web", "keycloak", "caddy")
     ):
         try:
@@ -761,13 +781,15 @@ def browser_run(
 
 
 def main() -> None:
-    global SCIENTIFIC, HARDENED, TEST_TITLES, CASE_COUNT, PHASE_ROLES
+    global SCIENTIFIC, HARDENED, PILOT, TEST_TITLES, CASE_COUNT, PHASE_ROLES
     parser = argparse.ArgumentParser()
     parser.add_argument("--scientific", action="store_true")
     parser.add_argument("--hardened", action="store_true")
+    parser.add_argument("--pilot", action="store_true")
     args = parser.parse_args()
     SCIENTIFIC = args.scientific
-    HARDENED = args.hardened
+    PILOT = args.pilot
+    HARDENED = args.hardened or PILOT
     if SCIENTIFIC:
         spec = (ROOT / "apps/web/e2e-oidc/scientific.spec.ts").read_text()
         TEST_TITLES = tuple(re.findall(r'^test\("([^"]+)"', spec, re.MULTILINE))
@@ -819,6 +841,7 @@ def main() -> None:
         "execution_platform": platform.machine(),
         "mode": "scientific" if SCIENTIFIC else "authentication",
         "hardened": HARDENED,
+        "pilot_template": PILOT,
         "source_commit": source_commit,
         "tests": [],
     }
@@ -1092,34 +1115,54 @@ https://auth-qualification.test {
                     },
                 }
             )
-        if HARDENED:
+        if HARDENED and not PILOT:
             harden_compose(compose)
+        project = (
+            f"oligospace-pilot-test-{secrets.token_hex(4)}"
+            if PILOT
+            else f"oligospace-oidc-{secrets.token_hex(4)}"
+        )
+        if PILOT:
+            import sys
+
+            sys.path.insert(0, str(ROOT / "infra/deployment"))
+            import qualify_pilot
+
+            compose = qualify_pilot.prepare(
+                compose, work, project, private_values, admin_password
+            )
+            shutil.copyfile(
+                work / "pilot-deviations.json", evidence / "pilot-deviations.json"
+            )
         config = work / "compose.json"
         config.write_text(json.dumps(compose))
-        project = f"oligospace-oidc-{secrets.token_hex(4)}"
         dc = ["docker", "compose", "--project-name", project, "--file", str(config)]
         try:
             print("Building disposable qualification images", flush=True)
             run(dc + ["config", "--quiet"])
-            run(
-                dc
-                + ["build", "api", "web", "browser"]
-                + (["bioinfo-worker", "scientific-scheduler"] if SCIENTIFIC else [])
-            )
+            if not PILOT:
+                run(
+                    dc
+                    + ["build", "api", "web", "browser"]
+                    + (["bioinfo-worker", "scientific-scheduler"] if SCIENTIFIC else [])
+                )
             run(dc + ["up", "--detach", "--wait", "postgres"])
-            run(
-                dc
-                + [
-                    "run",
-                    "--rm",
-                    "api",
-                    "/opt/venv/bin/python",
-                    "-m",
-                    "alembic",
-                    "upgrade",
-                    "head",
-                ]
-            )
+            if PILOT:
+                qualify_pilot.bootstrap(dc)
+            else:
+                run(
+                    dc
+                    + [
+                        "run",
+                        "--rm",
+                        "api",
+                        "/opt/venv/bin/python",
+                        "-m",
+                        "alembic",
+                        "upgrade",
+                        "head",
+                    ]
+                )
             organization = str(uuid.uuid4())
             other_organization = str(uuid.uuid4())
             sql = f"INSERT INTO organizations(id,name,slug,active) VALUES ('{organization}','Synthetic qualification','qualification',true);\n"
@@ -1141,9 +1184,9 @@ https://auth-qualification.test {
                     "postgres",
                     "psql",
                     "-U",
-                    "qualification",
+                    "postgres" if PILOT else "qualification",
                     "-d",
-                    "qualification",
+                    "oligospace" if PILOT else "qualification",
                     "-v",
                     "ON_ERROR_STOP=1",
                 ],
@@ -1158,9 +1201,9 @@ https://auth-qualification.test {
                         "postgres",
                         "psql",
                         "-U",
-                        "qualification",
+                        "postgres" if PILOT else "qualification",
                         "-d",
-                        "qualification",
+                        "oligospace" if PILOT else "qualification",
                         "-v",
                         "ON_ERROR_STOP=1",
                     ],
@@ -1170,11 +1213,13 @@ https://auth-qualification.test {
                 dc
                 + ["up", "--detach", "keycloak", "api", "web", "caddy"]
                 + (
-                    ["redis", "bioinfo-worker", "scientific-scheduler"]
-                    if SCIENTIFIC
+                    ["redis", "object-store", "bioinfo-worker", "scientific-scheduler"]
+                    if SCIENTIFIC or PILOT
                     else []
                 )
             )
+            if PILOT:
+                qualify_pilot.network_probe(dc, evidence)
             print(
                 "Running real HTTPS/Keycloak Chromium qualification (credential output suppressed)",
                 flush=True,
@@ -1247,9 +1292,9 @@ https://auth-qualification.test {
                         "postgres",
                         "psql",
                         "-U",
-                        "qualification",
+                        "postgres" if PILOT else "qualification",
                         "-d",
-                        "qualification",
+                        "oligospace" if PILOT else "qualification",
                         "-At",
                         "-v",
                         "ON_ERROR_STOP=1",
@@ -1281,6 +1326,15 @@ https://auth-qualification.test {
                     (evidence / "summary.json").write_text(
                         json.dumps(summary, indent=2)
                     )
+            if PILOT and passed:
+                qualify_pilot.recovery_roundtrip(
+                    dc,
+                    work,
+                    evidence,
+                    lambda command, destination: check_log_secrets(
+                        command, private_values, destination
+                    ),
+                )
             log_gate = check_log_secrets(dc, private_values, evidence)
             if log_gate != "passed":
                 passed = False
@@ -1306,7 +1360,14 @@ https://auth-qualification.test {
                 collect_runtime_health(dc, evidence)
             raise
         finally:
-            run(dc + ["down", "--volumes", "--remove-orphans"])
+            run(
+                dc
+                + (
+                    ["down", "--remove-orphans"]
+                    if PILOT
+                    else ["down", "--volumes", "--remove-orphans"]
+                )
+            )
 
 
 if __name__ == "__main__":
