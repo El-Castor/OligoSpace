@@ -7,7 +7,11 @@
 - Extend read-only preflight and safe maintenance delegation to DEPLOY-04;
   unknown and mandatory blockers never authorize activation.
 - Add real production-topology qualification with strict browser trust, direct-IP
-  isolation probes and fresh-target encrypted recovery; runtime validation pending.
+  isolation probes and fresh-target encrypted recovery. Cached ARM64 component,
+  direct-science and Recovery probes pass; final-source native qualification
+  remains incomplete because frozen Ubuntu snapshot downloads return HTTP502/503.
+- Verify independent-review corrections; 128 deployment and 23 auth-runner tests
+  pass, as do backend/frontend/PostgreSQL/migration CI jobs at ba316cbc.
 - Preserve every release/supplier/security and AUTH-B6/owner gate, without waiver;
   no deployment, publication, scientific change or supplier adoption.
 

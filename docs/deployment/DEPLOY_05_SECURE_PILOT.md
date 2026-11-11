@@ -78,7 +78,8 @@ A disposable SeaweedFS fixture is not an adoption or a real MinIO certification.
 DEPLOY-06 needs a separate owner authorization after exact-source native/recovery
 proof and independent review, approved artifact/supplier decisions and closure
 of mandatory security/identity/operational/human gates. No automatic merge or
-next-lot execution follows this PR. Final native results and review are pending.
+next-lot execution follows this PR. Independent code review is complete; full
+final-source native qualification remains unverified.
 
 ## Actual component and recovery evidence (explicitly limited scope)
 
@@ -118,3 +119,20 @@ still requires16 OIDC and7 scientific cases without skips plus recovery.
 [Independent review](../../infra/deployment/evidence/deploy05/independent-review.json)
 found no other confirmed important code defect.128 deployment contracts and23 auth
 runner tests pass locally; full native runtime remains blocked as in the matrix.
+
+## Implementation-commit CI observation
+
+At `ba316cbc61df6ac9f90c3a1c8ad16340efca23e3`, [application CI](https://github.com/El-Castor/OligoSpace/actions/runs/43016760999)
+passes backend lint/format/types/tests, frontend lint/types/tests/build, PostgreSQL
+integration and migration upgrade/downgrade/upgrade. Compose and worker builds
+fail fetching the unchanged signed Ubuntu snapshot InRelease (HTTP502/503).
+[Foundation](https://github.com/El-Castor/OligoSpace/actions/runs/43016761247)
+passes deployment contracts, then fails the API build at the same upstream.
+[Native pilot](https://github.com/El-Castor/OligoSpace/actions/runs/43016760998)
+passes operator safety contracts on both architectures, then both jobs fail at
+the first API build with `pilot_qualification_command_failed:network,build`,
+before startup. The 16 OIDC cases do not execute; scientific/recovery steps are
+skipped. Full native browser/scientific results remain NOT_VERIFIED.
+These failures are not scientific assertions,
+and no source pin, checksum or TLS requirement was weakened. Later reporting-only
+changes do not make these unexecuted runtime checks pass.

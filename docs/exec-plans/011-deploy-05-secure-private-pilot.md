@@ -18,15 +18,15 @@ local disposable immutable-image qualification. TLS templates and host diagnosti
 must never fabricate real DNS/cert/supplier/scan/vault/offhost approval. Real
 activation remains blocked by existing release gates and explicit AUTH-B6.
 
-- [ ] Extend resolved Compose/policy contracts and adversarial tests.
-- [ ] Add private HTTPS/production Keycloak configuration and trust checks.
-- [ ] Extend non-destructive doctor: explicit PASS/FAIL/BLOCKED/NOT_VERIFIED,
+- [x] Extend resolved Compose/policy contracts and adversarial tests.
+- [x] Add private HTTPS/production Keycloak configuration and trust checks.
+- [x] Extend non-destructive doctor: explicit PASS/FAIL/BLOCKED/NOT_VERIFIED,
       local architecture/images/resources/permissions/schema and release blockers.
-- [ ] Reuse backup and migration/rollback maintenance contracts; no real executor.
+- [x] Reuse backup and migration/rollback maintenance contracts; no real executor.
 - [ ] Real disposable production topology: HTTPS/PKCE/OIDC/MFA/permissions,
       bounded worker/science/BLAST, migrations/restart and DEPLOY04 recovery.
 - [ ] Targeted tests then native ARM64/AMD64 CI, independent review/corrections.
-- [ ] DEPLOY05 report, STATUS/BACKLOG/CHANGELOG/runbook; sole PR, stopunmerged.
+- [x] DEPLOY05 report, STATUS/BACKLOG/CHANGELOG/runbook; sole PR, stopunmerged.
 
 ## Review focus
 
@@ -34,3 +34,8 @@ Reject untrusted proxy headers/alternate host/admin routes, missing secrets/weak
 TLS, mutable/unapproved images, namespace overlap, broad worker grants, incomplete
 qualification or fabricated PASS. Never cache revocation decisions. No app/JWKS
 change in this lot; AUTH-B6 remains mandatory BLOCKED before pilot activation.
+
+Independent review and corrections are complete; 128 deployment and 23 auth-runner
+contracts pass. Full final-source native browser/scientific qualification remains
+open: Ubuntu snapshot HTTP502/503 blocks image builds. Cached ARM64 component,
+direct scientific and Recovery evidence is scoped separately in the report.
