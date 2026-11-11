@@ -136,3 +136,30 @@ skipped. Full native browser/scientific results remain NOT_VERIFIED.
 These failures are not scientific assertions,
 and no source pin, checksum or TLS requirement was weakened. Later reporting-only
 changes do not make these unexecuted runtime checks pass.
+
+## Final targeted availability check — 2026-11-11
+
+The remote branch still matched `730b10691cc44676ab57acff6e69426c8cd47429`.
+Its [foundation run](https://github.com/El-Castor/OligoSpace/actions/runs/43058413437),
+job130654028418, fails even earlier: the runner resolver127.0.0.53 times out
+resolving archive.ubuntu.com for the unchanged checksum-pinned CA package.
+Both [native pilot jobs](https://github.com/El-Castor/OligoSpace/actions/runs/43058413205)
+(130654004606 AMD64,130654005084 ARM64) fail at their first API build, before boot.
+
+[One bounded independent probe](../../infra/deployment/evidence/deploy05/upstream-availability.json)
+at16:50UTC preserves normal HTTPS verification: all three frozen snapshot
+InRelease URLs time out connecting443; the exact official CA package and current
+official ports archive return200. Thus the earlier runner DNS failure is distinct
+from the still-unreachable snapshot endpoint. No available equivalent immutable
+source was established; the moving archive is not a substitute for the dated
+signed snapshot. No dependency/source/signature/checksum/TLS/gate was changed.
+
+Reproduce each recorded URL once with
+`curl --silent --show-error --location --max-time 12 --connect-timeout 8 --output /dev/null --write-out '%{http_code}' URL`.
+Exit28/HTTP000 records a connection timeout, not an HTTP502/503 response.
+No new full qualification campaign or redundant green tests were launched.
+**Decision: BLOCKED** until the immutable source is reachable and the required
+native OIDC/scientific/recovery qualification can execute. Stop here; no merge,
+deployment or DEPLOY-06.
+Independent review of this final documentation/evidence delta found no important
+anomaly; it confirmed the separate timeout/HTTP/DNS observations and BLOCKED status.
