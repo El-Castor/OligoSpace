@@ -115,7 +115,9 @@ def validate(config: dict, *, qualification: bool = False) -> list[str]:
             "nonroot",
         )
         require(
-            service.get("cap_drop") == ["ALL"]
+            service.get("cap_add", [])
+            == (["NET_BIND_SERVICE"] if name == "caddy" else [])
+            and service.get("cap_drop") == ["ALL"]
             and service.get("security_opt") == ["no-new-privileges:true"],
             "capability_boundary",
         )
@@ -151,7 +153,6 @@ def validate(config: dict, *, qualification: bool = False) -> list[str]:
             "container_name",
             "privileged",
             "devices",
-            "cap_add",
             "volumes_from",
             "extends",
             "env_file",

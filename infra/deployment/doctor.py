@@ -31,6 +31,7 @@ def protected_file(path: Path, *, secret=False):
     return (
         info.st_uid in (os.getuid(), 0)
         and info.st_nlink == 1
+        and stat.S_IMODE(info.st_mode) & 0o022 == 0
         and (not secret or stat.S_IMODE(info.st_mode) & 0o077 == 0)
     )
 
@@ -142,8 +143,64 @@ def template_checks(config):
     return checks
 
 
+def namespace_checks(docker, config, project):
+    """Read metadata only: never mount or inspect volume contents."""
+    checks = {"target_namespace": "NOT_VERIFIED", "ingress_port": "NOT_VERIFIED"}
+    try:
+        volumes = command(
+            docker
+            + [
+                "volume",
+                "ls",
+                "--filter",
+                "name=" + project + "_",
+                "--format",
+                "{{.Name}}",
+            ]
+        )
+        networks = command(
+            docker
+            + [
+                "network",
+                "ls",
+                "--filter",
+                "name=" + project + "_",
+                "--format",
+                "{{.Name}}",
+            ]
+        )
+        containers = command(
+            docker
+            + [
+                "ps",
+                "--all",
+                "--filter",
+                "label=com.docker.compose.project=" + project,
+                "--quiet",
+            ]
+        )
+        checks["target_namespace"] = (
+            "BLOCKED"
+            if volumes.strip() or networks.strip() or containers.strip()
+            else "PASS"
+        )
+        # Docker listeners only; native/host listeners cannot be inferred from this.
+        occupied = command(docker + ["ps", "--filter", "publish=443", "--quiet"])
+        checks["ingress_docker_port"] = "BLOCKED" if occupied.strip() else "PASS"
+    except (OSError, ValueError, subprocess.TimeoutExpired):
+        pass
+    return checks
+
+
 def diagnose(
-    context, env_file, project, evidence=None, *, min_memory_gib=8, min_disk_gib=12
+    context,
+    env_file,
+    project,
+    evidence=None,
+    *,
+    min_memory_gib=8,
+    min_disk_gib=12,
+    min_cpus=2,
 ):
     checks = {
         "docker_compose": "NOT_VERIFIED",
@@ -164,7 +221,7 @@ def diagnose(
         or os.environ.get("DOCKER_CONTEXT")
     ):
         raise ValueError("protected_local_inputs_required")
-    if min_memory_gib <= 0 or min_disk_gib <= 0:
+    if min_memory_gib <= 0 or min_disk_gib <= 0 or min_cpus < 1:
         raise ValueError("positive_capacity_thresholds_required")
     docker = ["docker", "--context", context]
     endpoint = json.loads(command(docker + ["context", "inspect", context]))[0][
@@ -175,6 +232,7 @@ def diagnose(
     command(docker + ["compose", "version", "--short"])
     info = json.loads(command(docker + ["info", "--format", "{{json .}}"]))
     checks["docker_compose"] = "PASS"
+    checks["capacity_cpu"] = "PASS" if info.get("NCPU", 0) >= min_cpus else "FAIL"
     checks["capacity_memory"] = (
         "PASS" if info.get("MemTotal", 0) >= min_memory_gib * 1024**3 else "FAIL"
     )
@@ -184,12 +242,15 @@ def diagnose(
         else "FAIL"
     )
     engine = Path(info.get("DockerRootDir", "/nonexistent"))
-    if engine.is_dir():
-        checks["capacity_engine_disk"] = (
-            "PASS"
-            if shutil.disk_usage(engine).free >= min_disk_gib * 1024**3
-            else "FAIL"
-        )
+    try:
+        if engine.is_dir():
+            checks["capacity_engine_disk"] = (
+                "PASS"
+                if shutil.disk_usage(engine).free >= min_disk_gib * 1024**3
+                else "FAIL"
+            )
+    except OSError:
+        checks["capacity_engine_disk"] = "NOT_VERIFIED"
     dc = docker + [
         "compose",
         "--project-name",
@@ -205,6 +266,7 @@ def diagnose(
     rules = validate(config)
     checks["configuration"] = "FAIL" if rules else "PASS"
     checks.update(template_checks(config))
+    checks.update(namespace_checks(docker, config, project))
     if config.get("name") != project:
         rules.append("explicit_project_mismatch")
         checks["configuration"] = "FAIL"
@@ -282,6 +344,7 @@ def main():
     parser.add_argument("--env-file", type=Path, required=True)
     parser.add_argument("--project", required=True)
     parser.add_argument("--release-evidence", type=Path)
+    parser.add_argument("--min-cpus", type=int, default=2)
     parser.add_argument("--min-memory-gib", type=float, default=8)
     parser.add_argument("--min-disk-gib", type=float, default=12)
     args = parser.parse_args()
@@ -293,6 +356,7 @@ def main():
             args.release_evidence,
             min_memory_gib=args.min_memory_gib,
             min_disk_gib=args.min_disk_gib,
+            min_cpus=args.min_cpus,
         )
     except Exception:
         report = {

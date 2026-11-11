@@ -652,7 +652,10 @@
         "interval": "30s",
         "timeout": "5s",
         "retries": 3
-      }
+      },
+      "cap_add": [
+        "NET_BIND_SERVICE"
+      ]
     }
   },
   "networks": {

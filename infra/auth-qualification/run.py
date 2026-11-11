@@ -931,7 +931,7 @@ def main() -> None:
                 "rsa:2048",
                 "-nodes",
                 "-days",
-                "1",
+                "2" if PILOT else "1",
                 "-subj",
                 "/CN=auth-qualification.test",
                 "-addext",
@@ -1136,7 +1136,11 @@ https://auth-qualification.test {
             )
         config = work / "compose.json"
         config.write_text(json.dumps(compose))
-        dc = ["docker", "compose", "--project-name", project, "--file", str(config)]
+        dc = (
+            ["docker"]
+            + (["--context", qualify_pilot.CONTEXT] if PILOT else [])
+            + ["compose", "--project-name", project, "--file", str(config)]
+        )
         try:
             print("Building disposable qualification images", flush=True)
             run(dc + ["config", "--quiet"])

@@ -1,5 +1,23 @@
 # Project status
 
+## DEPLOY-05 — private pilot configuration under qualification (2026-11-11)
+
+PR22 is merged as `36b0bf6`; this supersedes its historical pending wording below.
+The owner separately authorizes this DEPLOY-05 lot, one isolated branch and
+[PR #23](https://github.com/El-Castor/OligoSpace/pull/23). Existing pilot Compose,
+policy/bootstrap/doctor and OIDC/scientific/Recovery harnesses are reused.
+Resource/log/stop/non-root/TLS/proxy/secret contracts and read-only explicit-status
+preflight are implemented. Activation remains BLOCKED by AUTH-B6, owner approval
+and every unresolved DEPLOY-02/03 release gate; no identity cache is introduced.
+
+Runtime qualification is in progress. Initial native jobs fail before boot on
+upstream Ubuntu HTTP503; component-only local bootstrap/migrations/KC import pass
+but are not a substitute for full browser/scientific/recovery proof.
+[Current report and matrix](../deployment/DEPLOY_05_SECURE_PILOT.md).
+No real server/Mac mini, Cloudflare/WARP, secret or data change, volume deletion,
+OCI publication, provider adoption, merge or DEPLOY-06. Personal files preserved.
+
+
 ## DEPLOY-04 — verified recovery delivered for code review (2026-11-10)
 
 PR21 is merged as `ff3f629`; this supersedes its historical pending wording below.

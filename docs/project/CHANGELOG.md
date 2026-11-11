@@ -1,5 +1,17 @@
 # Changelog
 
+## DEPLOY-05 — secure private pilot preparation (2026-11-11)
+
+- Complete existing pilot Compose with bounded non-root services, log rotation,
+  health/stop controls and private canonical TLS/production Keycloak configuration.
+- Extend read-only preflight and safe maintenance delegation to DEPLOY-04;
+  unknown and mandatory blockers never authorize activation.
+- Add real production-topology qualification with strict browser trust, direct-IP
+  isolation probes and fresh-target encrypted recovery; runtime validation pending.
+- Preserve every release/supplier/security and AUTH-B6/owner gate, without waiver;
+  no deployment, publication, scientific change or supplier adoption.
+
+
 ## DEPLOY-04 — coordinated recovery (2026-11-10)
 
 - Add AES-256-GCM backup of both PostgreSQL databases, current S3 objects and

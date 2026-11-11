@@ -55,3 +55,9 @@ class PilotSecurityTests(unittest.TestCase):
             "redis://redis:6379/0"
         )
         self.assertIn("broker_credentials", validate(changed))
+
+    def test_caddy_has_only_its_required_file_capability(self):
+        c = resolved_fixture()
+        self.assertEqual(c["services"]["caddy"].get("cap_add"), ["NET_BIND_SERVICE"])
+        c["services"]["caddy"]["cap_add"] = ["NET_ADMIN"]
+        self.assertIn("capability_boundary", validate(c))

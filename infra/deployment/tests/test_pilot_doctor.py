@@ -5,7 +5,12 @@ import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from doctor import certificate_checks, protected_file, mandatory_blockers
+from doctor import (
+    certificate_checks,
+    protected_file,
+    mandatory_blockers,
+    namespace_checks,
+)
 
 
 class PilotDoctorTests(unittest.TestCase):
@@ -92,3 +97,25 @@ class PilotDoctorTests(unittest.TestCase):
                 ],
                 "FAIL",
             )
+
+    def test_existing_target_is_blocked_without_reading_volume_data(self):
+        from unittest.mock import patch
+
+        with patch(
+            "doctor.command",
+            side_effect=[b"oligospace-pilot_postgres_data", b"", b"", b""],
+        ) as run:
+            checks = namespace_checks(["docker"], {}, "oligospace-pilot")
+        self.assertEqual(checks["target_namespace"], "BLOCKED")
+        self.assertEqual(checks["ingress_port"], "NOT_VERIFIED")
+        self.assertFalse(any("inspect" in call.args[0] for call in run.call_args_list))
+
+    def test_public_configuration_cannot_be_modified_by_other_users(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "config"
+            p.write_text("synthetic")
+            for mode in (0o666, 0o664, 0o660):
+                p.chmod(mode)
+                self.assertFalse(protected_file(p))
+            p.chmod(0o644)
+            self.assertTrue(protected_file(p))

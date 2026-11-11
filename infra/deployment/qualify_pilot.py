@@ -10,6 +10,7 @@ from __future__ import annotations
 import copy
 import ipaddress
 import json
+import os
 from pathlib import Path
 import re
 import secrets
@@ -19,10 +20,13 @@ import time
 
 ROOT = Path(__file__).resolve().parents[2]
 DEPLOY = ROOT / "infra/deployment"
+CONTEXT = None
 SEAWEED = "chrislusf/seaweedfs@sha256:57877e32bb90073b37dc109b438ba66e84fd5ed9ced5f5c04f56444ef243ce59"
 
 
 def captured(command, data=None):
+    if CONTEXT and command[0] == "docker" and "--context" not in command:
+        command = ["docker", "--context", CONTEXT, *command[1:]]
     result = subprocess.run(
         command, input=data, capture_output=True, text=True, check=False
     )
@@ -69,6 +73,14 @@ def image_id(reference):
 def prepare(legacy, work, project, private_values, admin_password):
     if not project.startswith("oligospace-pilot-test-"):
         raise ValueError("disposable_project_required")
+    global CONTEXT
+    if os.environ.get("DOCKER_HOST") or os.environ.get("DOCKER_CONTEXT"):
+        raise ValueError("local_docker_context_required")
+    selected = captured(["docker", "context", "show"])
+    context = json.loads(captured(["docker", "context", "inspect", selected]))
+    if not context[0]["Endpoints"]["docker"]["Host"].startswith("unix://"):
+        raise ValueError("local_docker_context_required")
+    CONTEXT = selected
     # The private parent protects all fixture credentials. Docker mounts selected
     # child files directly, so it does not need world traversal of this directory.
     work.chmod(0o700)
@@ -120,12 +132,10 @@ def prepare(legacy, work, project, private_values, admin_password):
     web = legacy["services"]["web"]["environment"]
     cert = work / "certs/ca.pem"
     key = work / "certs/key.pem"
-    # Non-root Caddy reads the one-day synthetic key, protected by private parent.
+    # Non-root Caddy reads the two-day synthetic key, protected by private parent.
     key.chmod(0o644)
     kc_config = work / "keycloak.conf"
-    kc_config.write_text(
-        "db=postgres\nhttp-enabled=true\nproxy-headers=xforwarded\nhealth-enabled=true\n"
-    )
+    kc_config.write_text((DEPLOY / "keycloak.conf.example").read_text())
     kc_config.chmod(0o644)
     caddy = work / "Caddyfile"
     caddy.write_text((DEPLOY / "Caddyfile.template").read_text())
@@ -253,7 +263,7 @@ def prepare(legacy, work, project, private_values, admin_password):
     browser["entrypoint"] = [
         "/bin/sh",
         "-ec",
-        'mkdir -p "$HOME/.pki/nssdb"; certutil -N -d sql:"$HOME/.pki/nssdb" --empty-password; certutil -A -d sql:"$HOME/.pki/nssdb" -n pilot-synthetic-ca -t "C,," -i /certs/ca.pem; exec "$@"',
+        'mkdir -p "$$HOME/.pki/nssdb"; certutil -N -d sql:"$$HOME/.pki/nssdb" --empty-password; certutil -A -d sql:"$$HOME/.pki/nssdb" -n pilot-synthetic-ca -t "C,," -i /certs/ca.pem; exec "$$@"',
         "pilot-browser",
     ]
     services["browser"] = browser
@@ -293,7 +303,7 @@ def prepare(legacy, work, project, private_values, admin_password):
                     "SeaweedFS 4.52 candidate; no provider adoption",
                     "offline synthetic realm import and bounded PostgreSQL fixture bootstrap",
                     "privileged fixture browser on application; untrusted probe separately ingress only",
-                    "one-day synthetic CA trusted through NSS",
+                    "two-day synthetic CA trusted through NSS",
                     "candidate S3 readiness via SDK instead of MinIO health command",
                 ],
             },
@@ -306,7 +316,7 @@ def prepare(legacy, work, project, private_values, admin_password):
 def narrow_proxy_trust(dc):
     # Compose chooses the disposable network. Inspect its actual subnet instead
     # of trusting every Docker/private address range or assigning static IPAM.
-    captured(dc + ["create", "--no-deps", "keycloak"])
+    captured(dc + ["create", "--pull", "never", "--no-build", "keycloak"])
     config = Path(dc[dc.index("--file") + 1])
     compose = json.loads(config.read_text())
     subnet = captured(
@@ -350,8 +360,44 @@ def bootstrap(dc):
 
 def network_probe(dc, evidence):
     # No socket, host network, production credentials or application membership.
-    script = """import socket, ssl, urllib.request, json
-for host, port in [('postgres',5432),('redis',6379),('object-store',8333),('keycloak',8080),('api',8000),('web',3000)]:
+    endpoints = []
+    for service, port in (
+        ("postgres", 5432),
+        ("redis", 6379),
+        ("object-store", 8333),
+        ("keycloak", 8080),
+        ("api", 8000),
+        ("web", 3000),
+    ):
+        container = captured(dc + ["ps", "--quiet", service])
+        if not re.fullmatch(r"[0-9a-f]{12,64}", container):
+            raise ValueError("probe_service_not_running")
+        networks = json.loads(
+            captured(
+                [
+                    "docker",
+                    "inspect",
+                    "--format",
+                    "{{json .NetworkSettings.Networks}}",
+                    container,
+                ]
+            )
+        )
+        addresses = [
+            network["IPAddress"]
+            for network in networks.values()
+            if network.get("IPAddress")
+        ]
+        if not addresses:
+            raise ValueError("probe_private_address_missing")
+        endpoints.append((service, port))
+        endpoints.extend((address, port) for address in addresses)
+    script = (
+        "import socket, ssl, urllib.request, json\nendpoints="
+        + repr(endpoints)
+        + "\n"
+        + """
+for host, port in endpoints:
  try:
   socket.create_connection((host,port),timeout=2).close()
  except OSError:
@@ -376,6 +422,7 @@ for path in ['/admin/','/realms/master/.well-known/openid-configuration']:
   raise SystemExit('identity administration exposed')
 print('pilot_network_isolation_passed')
 """
+    )
     config = Path(dc[dc.index("--file") + 1])
     compose = json.loads(config.read_text())
     probe = copy.deepcopy(compose["services"]["migrate"])
@@ -400,6 +447,7 @@ print('pilot_network_isolation_passed')
             {
                 "ingress_only_probe": "passed",
                 "private_dependencies": 6,
+                "dns_and_direct_ip_endpoints": len(endpoints),
                 "identity_admin_routes": 2,
                 "fixture_browser": "privileged_application_network",
             }
@@ -617,3 +665,24 @@ def recovery_roundtrip(dc, work, evidence, log_checker):
         captured(dc + ["up", "--detach", "--no-deps", "object-store"])
         if writers:
             captured(dc + ["start", *writers])
+
+
+def main():
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--scientific", action="store_true")
+    args = parser.parse_args()
+    command = [
+        sys.executable,
+        "-B",
+        str(ROOT / "infra/auth-qualification/run.py"),
+        "--pilot",
+    ]
+    if args.scientific:
+        command.append("--scientific")
+    return subprocess.run(command, check=False).returncode
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

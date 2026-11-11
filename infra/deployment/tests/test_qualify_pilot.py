@@ -24,6 +24,30 @@ class PilotQualificationTests(unittest.TestCase):
                     pilot.prepare({}, Path("/does-not-exist"), project, {}, "unused")
             execute.assert_not_called()
 
+    def test_remote_or_environment_docker_selection_is_refused_before_build(self):
+        with patch.dict(pilot.os.environ, {"DOCKER_HOST": "ssh://real-server"}):
+            with self.assertRaisesRegex(ValueError, "local_docker_context_required"):
+                pilot.prepare(
+                    {}, Path("/unused"), "oligospace-pilot-test-safe", {}, "unused"
+                )
+        with (
+            patch.dict(pilot.os.environ, {}, clear=True),
+            patch.object(
+                pilot,
+                "captured",
+                side_effect=[
+                    "remote",
+                    json.dumps(
+                        [{"Endpoints": {"docker": {"Host": "ssh://real-server"}}}]
+                    ),
+                ],
+            ),
+        ):
+            with self.assertRaisesRegex(ValueError, "local_docker_context_required"):
+                pilot.prepare(
+                    {}, Path("/unused"), "oligospace-pilot-test-safe", {}, "unused"
+                )
+
     def test_interpolation_keeps_secrets_data_and_rejects_missing(self):
         template = '{"environment":{"SECRET":"${PASSWORD:?required outside Git}"}}'
         value = '"\n${OTHER}\\private'
@@ -88,6 +112,18 @@ class PilotQualificationTests(unittest.TestCase):
             legacy["services"]["web"]["environment"] = {"NEXTAUTH_SECRET": password}
 
             def execute(command, data=None):
+                if command[:3] == ["docker", "context", "show"]:
+                    return "qualification-local"
+                if command[:3] == ["docker", "context", "inspect"]:
+                    return json.dumps(
+                        [
+                            {
+                                "Endpoints": {
+                                    "docker": {"Host": "unix:///qualification.sock"}
+                                }
+                            }
+                        ]
+                    )
                 if command[:3] == ["docker", "image", "inspect"]:
                     return "sha256:" + "a" * 64
                 if command[0] == "git":
@@ -193,7 +229,15 @@ class PilotQualificationTests(unittest.TestCase):
                 )
             )
             dc = ["docker", "compose", "--file", str(config)]
-            with patch.object(pilot, "captured"):
+
+            def execute(command, data=None):
+                if "ps" in command:
+                    return "a" * 64
+                if "inspect" in command:
+                    return json.dumps({"private": {"IPAddress": "172.29.0.3"}})
+                return ""
+
+            with patch.object(pilot, "captured", side_effect=execute):
                 pilot.network_probe(dc, root)
             probe = json.loads((root / "probe.json").read_text())["services"][
                 "untrusted-probe"

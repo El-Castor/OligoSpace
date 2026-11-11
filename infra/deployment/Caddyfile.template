@@ -15,7 +15,9 @@ https://{$PILOT_HOST} {
     -Server
   }
   @restricted path_regexp restricted (?i)^/admin/|^/(metrics|health)(/|$)|^/realms/master(/|$)
-  respond @restricted 404
+  handle @restricted {
+    respond 404
+  }
   handle /realms/{$OIDC_REALM}/* {
     reverse_proxy keycloak:8080 {
       header_up -Forwarded
