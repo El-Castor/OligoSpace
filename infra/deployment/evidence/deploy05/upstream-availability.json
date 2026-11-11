@@ -1,0 +1,37 @@
+{
+  "observed_utc": "2026-11-11T16:50:43.847559+00:00",
+  "tls_verification": "enabled; no overrides",
+  "attempts_per_url": 1,
+  "results": [
+    {
+      "url": "https://snapshot.ubuntu.com/ubuntu/20261109T120000Z/dists/noble/InRelease",
+      "exit_code": 28,
+      "http_code": "000",
+      "diagnostic": "curl: (28) Failed to connect to snapshot.ubuntu.com port 443 after 8006 ms: Timeout was reached"
+    },
+    {
+      "url": "https://snapshot.ubuntu.com/ubuntu/20261109T120000Z/dists/noble-updates/InRelease",
+      "exit_code": 28,
+      "http_code": "000",
+      "diagnostic": "curl: (28) Failed to connect to snapshot.ubuntu.com port 443 after 8002 ms: Timeout was reached"
+    },
+    {
+      "url": "https://snapshot.ubuntu.com/ubuntu/20261109T120000Z/dists/noble-security/InRelease",
+      "exit_code": 28,
+      "http_code": "000",
+      "diagnostic": "curl: (28) Failed to connect to snapshot.ubuntu.com port 443 after 8004 ms: Timeout was reached"
+    },
+    {
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.24.04.2_all.deb",
+      "exit_code": 0,
+      "http_code": "200",
+      "diagnostic": ""
+    },
+    {
+      "url": "https://ports.ubuntu.com/ubuntu-ports/dists/noble/InRelease",
+      "exit_code": 0,
+      "http_code": "200",
+      "diagnostic": ""
+    }
+  ]
+}

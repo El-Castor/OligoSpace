@@ -2,6 +2,10 @@
 
 ## DEPLOY-05 — secure private pilot preparation (2026-11-11)
 
+- Record final bounded official-source reachability proof and latest CI build
+  failures at730b106. Qualification remains BLOCKED; no dependency, executable,
+  checksum, TLS or gate change and no redundant full campaign.
+
 - Complete existing pilot Compose with bounded non-root services, log rotation,
   health/stop controls and private canonical TLS/production Keycloak configuration.
 - Extend read-only preflight and safe maintenance delegation to DEPLOY-04;

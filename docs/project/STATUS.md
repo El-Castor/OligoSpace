@@ -2,6 +2,12 @@
 
 ## DEPLOY-05 — private pilot configuration under qualification (2026-11-11)
 
+Final targeted check: **BLOCKED**. At730b106, native pilot43058413205 fails
+before boot; foundation43058413437 also records runner DNS failure. Independent
+bounded HTTPS probes confirm the frozen snapshot remains unreachable while the
+official exact CA URL responds200. No executable change or redundant campaign;
+see the report's final availability evidence. No merge or DEPLOY-06.
+
 PR22 is merged as `36b0bf6`; this supersedes its historical pending wording below.
 The owner separately authorizes this DEPLOY-05 lot, one isolated branch and
 [PR #23](https://github.com/El-Castor/OligoSpace/pull/23). Existing pilot Compose,

@@ -2,6 +2,10 @@
 
 ## DEPLOY-05 — private pilot configuration under qualification (2026-11-11)
 
+Finalization remains **BLOCKED** by frozen snapshot reachability (bounded probe
+and latest native/foundation failures recorded in the report). Next: after source
+recovery, one native qualification campaign; no executable changes in this check.
+
 PR22 is merged as `36b0bf6`; this supersedes its historical pending wording below.
 The owner separately authorizes this DEPLOY-05 lot, one isolated branch and
 [PR #23](https://github.com/El-Castor/OligoSpace/pull/23). Existing pilot Compose,
